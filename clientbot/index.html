@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClientBot</title>
+<style>
+  /* To match Socialworky's brand when embedding, change --accent (and --accentDeep) below. */
+  :root{
+    --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
+    --accent:#EB786B; --accentDeep:#C2452F;
+    --coach:#B26A00; --coachSoft:#FBF3E4; --coachLine:#EAD6A8;
+    --adherent:#2E7D54; --neutral:#5B5B5B; --nonadherent:#B23A2E; --white:#FFFFFF;
+    --sans:Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:20px;line-height:1.5;}
+  .wrap{max-width:760px;margin:0 auto;}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:18px;}
+  .brand{font-weight:700;font-size:20px;letter-spacing:-0.2px;}
+  .brand .bot{color:var(--accent);}
+  .tagline{color:var(--muted);font-size:12.5px;margin-top:2px;}
+  h1{font-size:23px;font-weight:700;margin:0 0 6px;}
+  .lead{color:var(--muted);font-size:15px;margin:8px 0 0;max-width:600px;}
+  .persona{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:8px;padding:12px 16px;font-size:14px;color:var(--muted);}
+  .persona strong{color:var(--ink);}
+  .tgt{margin-top:8px;font-size:13px;color:var(--ink);}
+  .tgt span{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);
+    font-weight:700;display:block;margin-bottom:2px;}
+  /* home */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;}
+  .pick{text-align:left;background:var(--white);border:1px solid var(--line);border-radius:10px;
+    padding:16px;cursor:pointer;font-family:var(--sans);transition:border-color .12s,box-shadow .12s;}
+  .pick:hover{border-color:var(--accent);box-shadow:0 1px 8px rgba(0,0,0,.06);}
+  .pick .tag{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accent);}
+  .pick .nm{font-size:17px;font-weight:700;margin:6px 0 4px;}
+  .pick .ds{font-size:13.5px;color:var(--muted);}
+  .pick.build{grid-column:1 / -1;border-style:dashed;border-color:var(--coach);}
+  .pick.build .tag{color:var(--coach);}
+  .pick.build .nm{color:var(--coach);}
+  /* form */
+  .field{margin:14px 0;}
+  .field label{display:block;font-size:14px;font-weight:700;margin-bottom:5px;}
+  .field .hint{font-weight:400;color:var(--muted);font-size:12.5px;}
+  .field input,.field textarea,.field select{width:100%;padding:10px 12px;border:1px solid var(--line);
+    border-radius:8px;font-size:15px;font-family:var(--sans);background:var(--white);color:var(--ink);outline:none;}
+  .field input:focus,.field textarea:focus{border-color:var(--accent);}
+  .field textarea{resize:vertical;min-height:64px;}
+  /* chat */
+  #scroll{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;
+    height:380px;overflow-y:auto;margin-top:14px;}
+  .placeholder{color:var(--muted);font-size:15px;padding-top:6px;}
+  .row{display:flex;margin:10px 0;}
+  .row.you{justify-content:flex-end;}
+  .bubble{max-width:80%;border-radius:12px;padding:10px 14px;font-size:15px;white-space:pre-wrap;}
+  .bubble .who{font-size:11px;opacity:.75;margin-bottom:3px;letter-spacing:.3px;}
+  .bubble.you{background:var(--accentDeep);color:var(--white);border-bottom-right-radius:3px;}
+  .bubble.client{background:var(--white);color:var(--ink);border:1px solid var(--line);border-bottom-left-radius:3px;}
+  .coachnote{background:var(--coachSoft);border:1px solid var(--coachLine);border-radius:10px;
+    padding:12px 14px;margin:12px 0;font-size:14.5px;color:#6B3E00;white-space:pre-wrap;}
+  .coachnote .who{font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--coach);
+    font-weight:700;margin-bottom:5px;}
+  .status{font-size:13px;font-style:italic;margin:8px 2px;}
+  .inrow{display:flex;gap:8px;margin-top:12px;align-items:flex-end;}
+  textarea#input{flex:1;resize:none;min-height:auto;border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;font-size:15px;font-family:var(--sans);outline:none;}
+  textarea#input:focus{border-color:var(--accent);}
+  button{font-family:var(--sans);font-weight:700;border-radius:8px;cursor:pointer;}
+  .btn{background:var(--accentDeep);color:var(--white);border:none;padding:11px 18px;font-size:14px;}
+  .btn:disabled{background:#AEB6C2;cursor:default;}
+  .btnout{background:var(--white);border:1px solid var(--coach);color:var(--coach);padding:10px 16px;font-size:14px;}
+  .btnout.accent{border-color:var(--accentDeep);color:var(--accentDeep);}
+  .btnout.plain{border-color:var(--line);color:var(--muted);}
+  .btnout:disabled{border-color:var(--line);color:#AEB6C2;cursor:default;}
+  .actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center;}
+  .turns{margin-left:auto;font-size:12px;color:var(--muted);}
+  .err{color:var(--nonadherent);font-size:13px;margin-top:10px;}
+  .back{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:0;
+    margin-top:16px;text-decoration:underline;font-weight:400;}
+  /* report */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px;}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;}
+  .card .lbl{font-size:12px;color:var(--muted);margin-bottom:6px;}
+  .card .val{font-size:23px;font-weight:700;}
+  .card .foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px;}
+  .card .st{font-size:11px;font-weight:700;text-transform:uppercase;}
+  .card .note{font-size:10.5px;color:var(--muted);}
+  .countbox{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;}
+  .countbox .top{display:flex;justify-content:space-between;align-items:baseline;}
+  .countbox .name{font-size:14px;font-weight:700;}
+  .countbox .num{font-size:24px;font-weight:700;}
+  .countbox .sub{font-size:11.5px;color:var(--muted);margin-top:4px;}
+  .seclabel{font-size:11px;letter-spacing:1px;color:var(--ink);text-transform:uppercase;font-weight:700;
+    border-bottom:1px solid var(--line);padding-bottom:6px;margin-bottom:12px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px;}
+  .chip{font-size:12.5px;border-radius:16px;padding:5px 11px;border:1px solid var(--line);}
+  .gbar{display:flex;align-items:center;gap:12px;margin:7px 0;}
+  .gbar .glbl{width:200px;font-size:13.5px;}
+  .gbar .track{flex:1;display:flex;gap:4px;}
+  .gbar .seg{flex:1;height:9px;border-radius:2px;background:var(--line);}
+  .gbar .seg.on{background:var(--accent);}
+  .gbar .gnum{width:28px;text-align:right;font-size:13px;color:var(--muted);font-weight:700;}
+  .turn{border-radius:6px;padding:10px 14px;margin-bottom:8px;background:var(--surface);}
+  .turn .hd{display:flex;justify-content:space-between;gap:12px;align-items:baseline;}
+  .turn .said{font-size:14.5px;line-height:1.45;}
+  .turn .code{font-size:11px;white-space:nowrap;font-weight:700;}
+  .turn .why{font-size:12.5px;color:var(--muted);margin-top:5px;}
+  .disc{font-size:13.5px;color:var(--muted);margin:0 0 20px;max-width:620px;}
+  .print-only,.print-date{display:none;}
+  .hublink{display:inline-block;margin-bottom:10px;font-size:13px;color:var(--accent);text-decoration:none;}
+  .sharerow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0 14px;}
+  .consent{font-size:12.5px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:8px 0;}
+  .consent label{display:flex;gap:8px;align-items:flex-start;cursor:pointer;}
+  .consent input{margin-top:3px;}
+  @media (max-width:560px){
+    body{padding:12px;}
+    h1{font-size:21px;}
+    .cards,.grid3,.grid2{grid-template-columns:1fr;}
+    .gbar .glbl{width:110px;font-size:12.5px;}
+    #scroll{height:auto;min-height:300px;max-height:58vh;}
+    .bubble{max-width:90%;}
+    .inrow{flex-direction:column;align-items:stretch;}
+    .inrow .btn{width:100%;padding:13px;}
+    .btn,.btnout{padding:12px 16px;}
+  }
+  @media print{
+    body{padding:0;color:#000;background:#fff;}
+    .head{border:none;}
+    .hublink,.inrow,.actions,.sharerow,.back,.placeholder,#err,.consent,.seclabel-share{display:none !important;}
+    .print-only{display:block !important;}
+    .print-date{display:block !important;font-size:12px;color:#444;margin-top:2px;}
+    #scroll{height:auto !important;max-height:none !important;overflow:visible !important;border:none !important;background:#fff !important;padding:0 !important;}
+    .bubble{max-width:100% !important;border:1px solid #ccc !important;background:#fff !important;color:#000 !important;break-inside:avoid;}
+    .bubble.you{background:#eee !important;color:#000 !important;}
+    .coachnote{display:none !important;}
+    .persona{background:#fff !important;break-inside:avoid;}
+    .turn,.card,.countbox,.gbar,.chip{break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+const T={accent:"#EB786B",accentDeep:"#C2452F",coach:"#B26A00",adherent:"#2E7D54",
+  neutral:"#5B5B5B",nonadherent:"#B23A2E",muted:"#5B5B5B",line:"#E4E4E7"};
+
+const CLIENT_MODEL="gpt-4.1-mini"; // role-play + coach; move up to "gpt-5.4-mini" for more nuance
+const CODER_MODEL ="gpt-4.1";      // MITI coding; move up to "gpt-5.4" for sharper judgment
+const RESEARCH_EMAIL="you@example.com"; // <-- replace with the email where voluntary research submissions should arrive
+
+const CORE=[
+  {
+    tag:"Substance use",
+    name:"Dani Whitfield",
+    card:"Dani Whitfield, 44. Laid off from a warehouse supervisor job four months ago. Drinking has crept up most evenings. Came in because Renee, their spouse, asked them to. Ambivalent and a little guarded.",
+    target:"Cutting back on or stopping the evening drinking.",
+    system:`You are role-playing a counseling client named Dani Whitfield in a Motivational Interviewing practice session. You are NOT an assistant and you never break character. You never coach, evaluate, or comment on the counselor's technique. You only ever respond as Dani would.
+
+WHO YOU ARE
+Dani, 44, was a warehouse shift supervisor for eleven years until a round of layoffs cut your job four months ago. You pick up odd jobs but nothing steady. Evenings are long, and you've been drinking more than you used to: most nights now, sometimes six or seven beers, sometimes more. Your spouse, Renee, asked you to come talk to someone. You agreed mostly to get her to stop worrying. You play in a Tuesday-night rec softball league and you've been part of the same congregation at Hillcrest for years, though you've skipped the last several Sundays. You have two kids, 9 and 13.
+
+HOW YOU FEEL ABOUT IT (your ambivalence is real and roughly balanced)
+- Reasons it bothers you: you don't like how foggy you feel in the mornings, you snapped at your 13-year-old last week and felt awful, you used to be the dependable one, money is tight and beer adds up.
+- Reasons you don't want to change: it's the one thing that takes the edge off, you feel like you've earned a break after getting laid off, "everybody has a few beers," you don't think it's anywhere near as bad as Renee makes it sound.
+
+HOW YOU TALK
+- Natural, plain, sometimes guarded. Short at first. You don't volunteer everything.
+- When the counselor reflects what you mean accurately, you feel understood and open up a little more.
+- When the counselor asks a closed or yes/no question, you answer briefly, sometimes flatly.
+- When the counselor asks a good open question, you actually think about it and say more.
+- When the counselor lectures you, warns you, or tells you what to do, you get a little defensive or shut down ("yeah, I've heard all that"). You do not suddenly agree.
+- When the counselor affirms something real about you, you soften.
+- You can move toward change talk when it is drawn out gently, and toward sustain talk when you feel pushed.
+- Keep replies to a few sentences. This is a conversation, not a monologue.`
+  },
+  {
+    tag:"Health behavior",
+    name:"Cheryl Dawson",
+    card:"Cheryl Dawson, 56. Newly diagnosed with Type 2 diabetes. Cafeteria aide, choir member, and the one everybody at church and home leans on. Warm and talkative, but keeps turning the focus back to everyone but herself.",
+    target:"Starting to manage her diabetes through blood-sugar monitoring and changes to her own eating.",
+    system:`You are role-playing a primary-care client named Cheryl Dawson in a Motivational Interviewing practice session. You are NOT an assistant and you never break character. You never coach, evaluate, or comment on the counselor's technique. You only ever respond as Cheryl would.
+
+WHO YOU ARE
+Cheryl, 56, was diagnosed with Type 2 diabetes about six weeks ago. You work as an aide in a school cafeteria and you are deeply woven into Mount Calvary Baptist, where you sing in the choir and cook for every funeral and fellowship. You help raise two grandkids and you look after your mother, who is 80 and not well. Your own doctor's visit got squeezed in between everybody else's needs. The clinic gave you a glucose meter and a diet sheet, and you came back today because the nurse asked you to follow up.
+
+HOW YOU FEEL ABOUT IT (your ambivalence is real and roughly balanced)
+- Reasons it matters to you: you want to be there to see the grandkids grow up, your mother lost toes to "the sugar" and it scared you, you know deep down you have been running on empty.
+- Reasons you don't want to change: cooking and feeding people is how you show love, you genuinely don't have time for yourself, the diet sheet feels like it erases everything you know about your own kitchen, and honestly you "feel fine," so part of you wonders if it's overblown.
+
+HOW YOU TALK
+- Warm, chatty, generous. You deflect by talking about other people, the grandkids, the church, your mother.
+- When the counselor reflects the care underneath your deflecting, you slow down and let something real show.
+- When the counselor asks a closed or yes/no question, you give a polite short answer and pivot back to others.
+- When the counselor lectures you about diet or numbers, you nod and agree on the surface ("mm-hmm, I know, I know") without really taking it in.
+- When the counselor affirms how much you carry, you get a little emotional and more honest.
+- You can move toward change talk when someone helps you see your own care as something you're allowed to turn toward yourself, and toward sustain talk when you feel managed or scolded.
+- Keep replies to a few sentences, in your own warm voice.`
+  }
+];
+
+const COACH_SYSTEM=`You are CoachBot, an expert Motivational Interviewing coach observing a live practice session. The learner has paused to ask for help.
+
+Give brief, specific, in-the-moment guidance in 3 to 5 sentences:
+1. Name what is happening with the client right now (change talk emerging, sustain talk, a moment of discord).
+2. Point to one or two concrete MI moves the learner could make next (reflect the value underneath what the client just said, try an open question about a time things felt different, affirm an effort). Describe the move and why. Do NOT hand them a scripted line to read aloud.
+3. Stay warm, plain, and encouraging. You are a coach in their ear, not a textbook.
+
+Do not role-play the client. Do not continue the conversation. Only coach.`;
+
+const CODER_SYSTEM=`You are coding a Motivational Interviewing practice transcript using a behavior scheme informed by MITI 4.2.1. You will be given the dialogue and a numbered list of the counselor's utterances.
+
+For EACH numbered counselor utterance, assign exactly ONE primary behavior code and a short one-sentence rationale. Codes:
+OQ = Open Question
+CQ = Closed Question
+SR = Simple Reflection (repeats or rephrases, stays close to what the client said)
+CR = Complex Reflection (adds meaning, emotion, or a guess about what is underneath)
+AF = Affirm (names a client strength or effort; usually starts with "you")
+SC = Seeking Collaboration (genuinely sharing power or asking permission about direction)
+EA = Emphasizing Autonomy (highlighting the client's freedom and choice)
+GI = Giving Information (neutral facts, no spin)
+PER = Persuade (advising without permission, arguing, warning, telling them what to do)
+PERP = Persuade with Permission (advice or information offered after asking)
+CON = Confront (disagreeing, shaming, labeling, heavy-handed warning)
+
+Also estimate the four MITI global scores on a 1 to 5 scale (holistic and approximate): cultivating_change_talk, softening_sustain_talk, partnership, empathy.
+
+Return ONLY valid JSON, no markdown fences, no preamble, in exactly this shape:
+{"tags":[{"i":1,"code":"OQ","rationale":"..."}],"globals":{"cultivating_change_talk":3,"softening_sustain_talk":3,"partnership":3,"empathy":3}}`;
+
+const GENERATOR_SYSTEM=`You write realistic client personas for Motivational Interviewing practice. Given a learner's description of their practice setting and the kind of client they want to practice with, invent ONE fictional client that fits.
+
+THE MOST IMPORTANT RULE: every client must have ONE clear, specific, preferably behavioral change target. This is the single change the MI conversation is about, the thing the client is ambivalent toward. Motivational Interviewing only works when there is a concrete target, so:
+- State the target as an observable behavior or action whenever possible (for example "cut back on evening drinking," "take the blood pressure medication daily," "attend the outpatient group," "have one honest conversation with his daughter"), not as a feeling, diagnosis, or vague aspiration.
+- If the learner's input is broad (a feeling like "anxiety," a diagnosis, or a fuzzy situation), translate it into a specific behavioral target that would realistically be the focus of MI in that setting. For example, "help with their depression" becomes "start getting out of the house once a day," and "thinking about dropping out of school" becomes "go to one class a day this week" or "meet with their advisor about a reduced load."
+- Build ALL of the ambivalence, the reasons for and the reasons against, around this one target. Do not let it drift.
+- Avoid non-targets like "feel better," "be healthier," or "improve their life."
+
+Then write the persona so the role-play feels like a real, messy human, not a textbook case:
+- Give the client a realistic first and last name that is NOT a stereotype of their background.
+- Ground them in specifics: a real setting, a concrete community tie rather than vague references. If the client is multiracial, use the word "multiracial" and name the specific heritage.
+- Make the ambivalence real and roughly balanced, and weave in some maladaptive coping and real vulnerability.
+- Describe how they talk in their own voice. Avoid clinical tidiness.
+- The client should move toward change talk when met with skill and toward sustain talk when pushed.
+- The persona text MUST instruct the role-player to never break character, never coach or evaluate, and keep replies to a few conversational sentences.
+
+Return ONLY valid JSON, no markdown, no preamble, in exactly this shape:
+{"name":"First Last","target":"The one clear, behavioral change target in a short phrase.","card":"One or two sentence description for an on-screen card.","persona":"Full persona written in second person beginning 'You are role-playing a client named NAME...', with WHO YOU ARE, the CHANGE TARGET named explicitly, HOW YOU FEEL ABOUT IT (balanced reasons centered on that target), and HOW YOU TALK sections."}`;
+
+const CODE_META={
+  OQ:{label:"Open Question",group:"neutral"},CQ:{label:"Closed Question",group:"neutral"},
+  SR:{label:"Simple Reflection",group:"neutral"},CR:{label:"Complex Reflection",group:"adherent"},
+  AF:{label:"Affirm",group:"adherent"},SC:{label:"Seeking Collaboration",group:"adherent"},
+  EA:{label:"Emphasizing Autonomy",group:"adherent"},GI:{label:"Giving Information",group:"neutral"},
+  PER:{label:"Persuade",group:"nonadherent"},PERP:{label:"Persuade w/ Permission",group:"neutral"},
+  CON:{label:"Confront",group:"nonadherent"}
+};
+const GROUP_COLOR={adherent:T.adherent,neutral:T.neutral,nonadherent:T.nonadherent};
+
+let view="home", activeSystem=null, activeCard="", activeTarget="", activeName="", messages=[], busy=false, reportData=null;
+
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function firstName(n){return (n||"").trim().split(/\s+/)[0]||"Client";}
+
+async function callChat(system,msgs,model,maxTokens){
+  const headers={"content-type":"application/json"};
+  const code=localStorage.getItem("clientbot_access_code");
+  if(code) headers["x-access-code"]=code;
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),45000);
+  let res;
+  try{
+    res=await fetch("/api/chat",{method:"POST",headers,signal:ctrl.signal,
+      body:JSON.stringify({system,messages:msgs,model,max_tokens:maxTokens})});
+  }catch(e){clearTimeout(timer);throw new Error(e.name==="AbortError"?"the request timed out after 45 seconds":("network error - "+e.message));}
+  clearTimeout(timer);
+  if(res.status===401){
+    const entered=prompt("Enter the access code for this tool:");
+    if(entered){localStorage.setItem("clientbot_access_code",entered);return callChat(system,msgs,model,maxTokens);}
+    throw new Error("Access code required.");
+  }
+  let data;
+  try{data=await res.json();}
+  catch(e){throw new Error("the server did not return readable data (status "+res.status+"). The /api function may not be deployed, or the key is missing.");}
+  if(!res.ok) throw new Error((data&&data.error)||("status "+res.status));
+  return (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+}
+function extractJSON(text){
+  let t=text.replace(/```json/gi,"").replace(/```/g,"").trim();
+  const s=t.indexOf("{"),e=t.lastIndexOf("}");
+  if(s!==-1&&e!==-1)t=t.slice(s,e+1);
+  return JSON.parse(t);
+}
+const clientHistory=ms=>ms.filter(m=>m.role==="client"||m.role==="counselor")
+  .map(m=>({role:m.role==="counselor"?"user":"assistant",content:m.text}));
+
+function headerHtml(){
+  return `<a class="hublink" href="/">\u2190 All tools</a>
+    <div class="head"><div><div class="brand">Client<span class="bot">Bot</span></div>
+    <div class="tagline">Motivational Interviewing practice</div>
+    <div class="print-date">${new Date().toLocaleDateString()}</div></div></div>`;
+}
+function render(){
+  if(view==="home")return renderHome();
+  if(view==="build")return renderBuild();
+  if(view==="report")return renderReport();
+  return renderChat();
+}
+
+function renderHome(){
+  const app=document.getElementById("app");
+  const coreCards=CORE.map((c,i)=>`
+    <button class="pick" data-core="${i}">
+      <div class="tag">${esc(c.tag)}</div>
+      <div class="nm">${esc(c.name)}</div>
+      <div class="ds">${esc(c.card)}</div>
+      <div class="tgt"><span>Change target</span>${esc(c.target)}</div>
+    </button>`).join("");
+  app.innerHTML=headerHtml()+`
+    <h1>Choose who you'll work with</h1>
+    <p class="lead">Practice with a prepared client, or build one that matches the people you actually see. Either way you'll get a coding sheet at the end, and you can ask CoachBot for help any time.</p>
+    <div class="cards">
+      ${coreCards}
+      <button class="pick build" data-build="1">
+        <div class="tag">Build my own client</div>
+        <div class="nm">Make it look like your caseload</div>
+        <div class="ds">Answer a few quick questions about your setting and the kind of client you want, and ClientBot will generate a fitting client for you.</div>
+      </button>
+    </div>`;
+  app.querySelectorAll("[data-core]").forEach(b=>b.onclick=()=>startCore(+b.dataset.core));
+  app.querySelector("[data-build]").onclick=()=>{view="build";render();};
+}
+
+function renderBuild(){
+  const app=document.getElementById("app");
+  app.innerHTML=headerHtml()+`
+    <h1>Build my own client</h1>
+    <p class="lead">A few quick answers and ClientBot will generate a realistic, fictional client you can sit with. Nothing here needs to be polished.</p>
+    <div class="field"><label>Where do you practice, and in what setting?<span class="hint"> e.g. rural community mental health, a VA clinic, school social work</span></label><input id="f_setting" /></div>
+    <div class="field"><label>Who is a client you want to practice with?<span class="hint"> age, background, life situation</span></label><input id="f_who" /></div>
+    <div class="field"><label>What specific change or behavior is in play?<span class="hint"> the one thing they're weighing, ideally a behavior: cutting back drinking, taking a medication, attending group, leaving an unsafe situation</span></label><input id="f_change" /><div class="hint" style="margin-top:5px">MI works best with a concrete behavioral target. If you enter a broad concern, a behavioral focus will be chosen for you.</div></div>
+    <div class="field"><label>What pulls them toward and away from changing? <span class="hint">(optional)</span></label><textarea id="f_pull"></textarea></div>
+    <div class="field"><label>How do they tend to show up? <span class="hint">(optional)</span></label>
+      <select id="f_stance">
+        <option value="">No preference</option>
+        <option>Guarded and short</option>
+        <option>Talkative and deflecting</option>
+        <option>Mandated and resistant</option>
+        <option>Withdrawn and flat</option>
+        <option>Eager to please</option>
+      </select></div>
+    <div id="err"></div>
+    <div class="actions">
+      <button class="btn" id="gen">Generate client</button>
+      <button class="btnout plain" id="cancel">Cancel</button>
+    </div>`;
+  document.getElementById("gen").onclick=generateClient;
+  document.getElementById("cancel").onclick=()=>{view="home";render();};
+}
+
+async function generateClient(){
+  if(busy)return;
+  const v=id=>(document.getElementById(id).value||"").trim();
+  const setting=v("f_setting"),who=v("f_who"),change=v("f_change");
+  if(!setting||!who||!change){showErr("Please fill in the first three questions.");return;}
+  const pull=v("f_pull"),stance=v("f_stance");
+  busy=true;
+  const gen=document.getElementById("gen");gen.disabled=true;gen.textContent="Generating...";
+  clearErr();
+  const ask=`Practice setting: ${setting}\nClient: ${who}\nAmbivalent about: ${change}`
+    +(pull?`\nPulls toward and away: ${pull}`:"")+(stance?`\nHow they show up: ${stance}`:"");
+  try{
+    const raw=await callChat(GENERATOR_SYSTEM,[{role:"user",content:ask}],CODER_MODEL,1000);
+    const c=extractJSON(raw);
+    activeSystem=c.persona; activeCard=c.card||(c.name+"."); activeTarget=c.target||""; activeName=c.name||"Client";
+    messages=[];reportData=null;view="session";busy=false;render();
+  }catch(e){
+    busy=false;gen.disabled=false;gen.textContent="Generate client";
+    showErr("Couldn't generate a client. Reason: "+e.message);
+  }
+}
+function startCore(i){
+  const c=CORE[i];activeSystem=c.system;activeCard=c.card;activeTarget=c.target||"";activeName=c.name;
+  messages=[];reportData=null;view="session";render();
+}
+
+function setBusy(b){busy=b;if(view==="session")render();}
+async function sendTurn(){
+  const ta=document.getElementById("input");
+  const text=(ta&&ta.value||"").trim();
+  if(!text||busy)return;
+  messages.push({role:"counselor",text});ta.value="";setBusy(true);clearErr();
+  try{
+    const reply=(await callChat(activeSystem,clientHistory(messages),CLIENT_MODEL,600)).trim();
+    messages.push({role:"client",text:reply});
+  }catch(e){showErr("ClientBot didn't respond. Reason: "+e.message);}
+  setBusy(false);
+}
+async function askCoach(){
+  if(busy||messages.length===0)return;
+  setBusy(true);clearErr();
+  const transcript=messages.filter(m=>m.role!=="coach").map(m=>(m.role==="counselor"?"Counselor: ":"Client: ")+m.text).join("\n");
+  try{
+    const note=(await callChat(COACH_SYSTEM,[{role:"user",content:"Here is the session so far. Coach my next move.\n\n"+transcript}],CLIENT_MODEL,400)).trim();
+    messages.push({role:"coach",text:note});
+  }catch(e){showErr("CoachBot didn't respond. Reason: "+e.message);}
+  setBusy(false);
+}
+async function endSession(){
+  const turns=messages.filter(m=>m.role==="counselor");
+  if(busy||turns.length===0)return;
+  setBusy(true);clearErr();
+  const dialogue=messages.filter(m=>m.role!=="coach").map(m=>(m.role==="counselor"?"Counselor: ":"Client: ")+m.text).join("\n");
+  const numbered=turns.map((m,i)=>(i+1)+". "+m.text).join("\n");
+  try{
+    const raw=await callChat(CODER_SYSTEM,[{role:"user",content:"FULL DIALOGUE:\n"+dialogue+"\n\nCOUNSELOR UTTERANCES TO CODE:\n"+numbered}],CODER_MODEL,1200);
+    reportData=buildReport(extractJSON(raw),turns);busy=false;view="report";render();
+  }catch(e){showErr("Couldn't generate the feedback. Reason: "+e.message);setBusy(false);}
+}
+function reset(){messages=[];reportData=null;view="session";render();}
+
+function renderChat(){
+  const turns=messages.filter(m=>m.role==="counselor").length;
+  const cname=firstName(activeName);
+  const app=document.getElementById("app");
+  app.innerHTML=headerHtml()+`
+    <div class="persona">${esc(activeCard)}${activeTarget?`<div class="tgt"><span>Change target</span>${esc(activeTarget)}</div>`:""}</div>
+    <div id="scroll"></div>
+    <div id="err"></div>
+    <div class="inrow">
+      <textarea id="input" rows="2" placeholder="Say something to ${esc(cname)}..."></textarea>
+      <button class="btn" id="send">Send</button>
+    </div>
+    <div class="actions">
+      <button class="btnout" id="coach">Ask CoachBot</button>
+      <button class="btnout accent" id="end">${busy?"Working...":"End session &amp; get feedback"}</button>
+      <button class="btnout plain" id="savepdf">Save as PDF</button>
+      <span class="turns">${turns} turn${turns===1?"":"s"}</span>
+    </div>
+    <button class="back" id="home">Leave and choose a different client</button>`;
+  const scroll=document.getElementById("scroll");
+  if(messages.length===0){
+    scroll.innerHTML=`<div class="placeholder">${esc(cname)} is across from you. Open the session however you would, and the conversation responds to your skill. Tap <strong style="color:${T.coach}">Ask CoachBot</strong> any time for a read on the room.</div>`;
+  }else{
+    scroll.innerHTML=messages.map(m=>{
+      if(m.role==="coach")return `<div class="coachnote"><div class="who">CoachBot</div>${esc(m.text)}</div>`;
+      const you=m.role==="counselor";
+      return `<div class="row ${you?"you":""}"><div class="bubble ${you?"you":"client"}"><div class="who">${you?"You":esc(cname)}</div>${esc(m.text)}</div></div>`;
+    }).join("");
+  }
+  if(busy)scroll.innerHTML+=`<div class="status" style="color:${T.accent}">Working...</div>`;
+  scroll.scrollTop=scroll.scrollHeight;
+  const send=document.getElementById("send"),coach=document.getElementById("coach"),end=document.getElementById("end");
+  send.disabled=busy;coach.disabled=busy||messages.length===0;end.disabled=busy||turns===0;
+  send.onclick=sendTurn;coach.onclick=askCoach;end.onclick=endSession;
+  document.getElementById("savepdf").onclick=printDoc;
+  document.getElementById("home").onclick=()=>{if(!busy){view="home";render();}};
+  const input=document.getElementById("input");
+  input.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendTurn();}};
+  input.focus();
+}
+
+function buildReport(parsed,turns){
+  const tags=Array.isArray(parsed.tags)?parsed.tags:[];
+  const byI={};tags.forEach(t=>{if(t&&typeof t.i==="number")byI[t.i]=t;});
+  const rows=turns.map((m,idx)=>{const t=byI[idx+1]||{};const code=CODE_META[t.code]?t.code:"GI";
+    return {text:m.text,code,rationale:t.rationale||""};});
+  const c={};Object.keys(CODE_META).forEach(k=>c[k]=0);rows.forEach(r=>c[r.code]++);
+  const refl=c.SR+c.CR,ques=c.OQ+c.CQ;
+  const metrics={rq:ques>0?refl/ques:null,pctCR:refl>0?c.CR/refl:null,pctOQ:ques>0?c.OQ/ques:null,
+    adherent:c.SC+c.EA+c.AF,nonadherent:c.PER+c.CON};
+  return {rows,counts:c,metrics,globals:parsed.globals||{}};
+}
+function statusOf(v,fair,good){
+  if(v===null)return{label:"no data",color:T.muted};
+  if(v>=good)return{label:"good",color:T.adherent};
+  if(v>=fair)return{label:"fair",color:T.coach};
+  return{label:"developing",color:T.nonadherent};
+}
+function renderReport(){
+  const R=reportData,m=R.metrics;
+  const rq=statusOf(m.rq,1,2),cr=statusOf(m.pctCR,0.4,0.5),oq=statusOf(m.pctOQ,0.5,0.7);
+  const card=(lbl,val,st,note)=>`<div class="card"><div class="lbl">${lbl}</div><div class="val">${val}</div><div class="foot"><span class="st" style="color:${st.color}">${st.label}</span><span class="note">${note}</span></div></div>`;
+  const cbox=(name,sub,num,color)=>`<div class="countbox" style="border-top:3px solid ${color}"><div class="top"><span class="name">${name}</span><span class="num" style="color:${color}">${num}</span></div><div class="sub">${sub}</div></div>`;
+  const chips=Object.keys(CODE_META).map(k=>{const meta=CODE_META[k],col=GROUP_COLOR[meta.group],empty=R.counts[k]===0;
+    return `<span class="chip" style="color:${empty?T.muted:col};border-color:${empty?T.line:col+'66'};background:${empty?'transparent':col+'14'}">${meta.label} <strong>${R.counts[k]}</strong></span>`;}).join("");
+  const gRows=[["Cultivating change talk",R.globals.cultivating_change_talk],["Softening sustain talk",R.globals.softening_sustain_talk],["Partnership",R.globals.partnership],["Empathy",R.globals.empathy]];
+  const gbar=(lbl,v)=>`<div class="gbar"><div class="glbl">${lbl}</div><div class="track">${[1,2,3,4,5].map(n=>`<div class="seg ${v&&n<=v?'on':''}"></div>`).join("")}</div><div class="gnum">${v||"\u2014"}</div></div>`;
+  const turnsHtml=R.rows.map(r=>{const meta=CODE_META[r.code],col=GROUP_COLOR[meta.group];
+    return `<div class="turn" style="border-left:3px solid ${col}"><div class="hd"><div class="said">${esc(r.text)}</div><span class="code" style="color:${col}">${r.code}</span></div><div class="why"><span style="color:${col};font-weight:700">${meta.label}.</span> ${esc(r.rationale)}</div></div>`;}).join("");
+  const transcriptHtml=messages.filter(x=>x.role!=="coach").map(x=>{const you=x.role==="counselor";return `<div class="row ${you?"you":""}"><div class="bubble ${you?"you":"client"}"><div class="who">${you?"You":esc(firstName(activeName))}</div>${esc(x.text)}</div></div>`;}).join("");
+  document.getElementById("app").innerHTML=headerHtml()+`
+    <div class="print-only">
+      <h1>ClientBot session</h1>
+      <div class="persona">${esc(activeCard)}${activeTarget?`<div class="tgt"><span>Change target</span>${esc(activeTarget)}</div>`:""}</div>
+      <div style="margin:14px 0 24px">${transcriptHtml}</div>
+    </div>
+    <h1>Your coding sheet</h1>
+    <p class="disc">MI feedback structured around the MITI framework. These are AI estimates meant to start a conversation about your practice, not certified MITI coding. The simple vs complex reflection line and the global ratings are exactly where trained coders calibrate, so read them as a prompt to look closer, not a verdict.</p>
+    <div class="grid3">
+      ${card("Reflection : Question",m.rq===null?"\u2014":m.rq.toFixed(1)+" : 1",rq,"fair 1:1 \u00b7 good 2:1")}
+      ${card("% Complex reflections",m.pctCR===null?"\u2014":Math.round(m.pctCR*100)+"%",cr,"fair 40% \u00b7 good 50%")}
+      ${card("% Open questions",m.pctOQ===null?"\u2014":Math.round(m.pctOQ*100)+"%",oq,"fair 50% \u00b7 good 70%")}
+    </div>
+    <div class="grid2">
+      ${cbox("MI adherent","Seeking collaboration \u00b7 Emphasizing autonomy \u00b7 Affirm",m.adherent,T.adherent)}
+      ${cbox("MI non-adherent","Persuade \u00b7 Confront",m.nonadherent,T.nonadherent)}
+    </div>
+    <div class="seclabel">Behavior counts</div>
+    <div class="chips">${chips}</div>
+    <div class="seclabel">Global impressions (1\u20135, holistic AI estimate)</div>
+    <div style="margin-bottom:24px">${gRows.map(g=>gbar(g[0],typeof g[1]==="number"?g[1]:null)).join("")}</div>
+    <div class="seclabel">Turn by turn</div>
+    <p class="disc">Every counselor utterance, tagged with one primary code and why. This is the part to argue with: if you would code a turn differently, that disagreement is the lesson.</p>
+    <div style="margin-bottom:28px">${turnsHtml}</div>
+    <div class="seclabel seclabel-share">Save &amp; share</div>
+    <div class="sharerow">
+      <button class="btn" id="savepdf">Save as PDF</button>
+    </div>
+    <div id="err"></div>
+    <div class="consent">
+      <label><input type="checkbox" id="consent" /> <span>I voluntarily agree to share this session (the client details, my transcript, and the summary) with the researcher for training and research purposes. This is optional and will not affect my standing in any course or program. [Replace this sentence with your own IRB-approved consent language.]</span></label>
+    </div>
+    <div class="sharerow">
+      <button class="btnout" id="submit">Email this session to the researcher</button>
+    </div>
+    <div class="actions">
+      <button class="btn" id="again">Practice again</button>
+      <button class="btnout plain" id="home">Choose a different client</button>
+    </div>`;
+  document.getElementById("savepdf").onclick=printDoc;
+  document.getElementById("submit").onclick=submitByEmail;
+  document.getElementById("again").onclick=()=>{messages=[];reportData=null;view="session";render();};
+  document.getElementById("home").onclick=()=>{view="home";render();};
+  window.scrollTo(0,0);
+}
+
+function printDoc(){window.print();}
+function buildSubmissionText(){
+  let t="ClientBot research submission\n\n";
+  t+="Client: "+activeName+"\nChange target: "+activeTarget+"\n\nTRANSCRIPT\n";
+  messages.filter(m=>m.role!=="coach").forEach(m=>{t+=(m.role==="counselor"?"Counselor: ":"Client: ")+m.text+"\n";});
+  if(reportData){const m=reportData.metrics;
+    t+="\nMI SUMMARY (AI estimate)\n";
+    t+="Reflection:Question = "+(m.rq===null?"-":m.rq.toFixed(1)+":1")+"\n";
+    t+="% complex reflections = "+(m.pctCR===null?"-":Math.round(m.pctCR*100)+"%")+"\n";
+    t+="% open questions = "+(m.pctOQ===null?"-":Math.round(m.pctOQ*100)+"%")+"\n";
+    t+="MI adherent = "+m.adherent+", MI non-adherent = "+m.nonadherent+"\n";
+  }
+  return t;
+}
+function submitByEmail(){
+  const chk=document.getElementById("consent");
+  if(chk&&!chk.checked){showErr("Please check the consent box before submitting.");return;}
+  clearErr();
+  const subject=encodeURIComponent("ClientBot research submission");
+  const body=encodeURIComponent(buildSubmissionText());
+  window.location.href="mailto:"+RESEARCH_EMAIL+"?subject="+subject+"&body="+body;
+}
+function showErr(msg){const e=document.getElementById("err");if(e)e.innerHTML='<div class="err">'+esc(msg)+'</div>';}
+function clearErr(){const e=document.getElementById("err");if(e)e.innerHTML="";}
+
+render();
+</script>
+</body>
+</html>
