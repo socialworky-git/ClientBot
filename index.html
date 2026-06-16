@@ -238,14 +238,22 @@ async function callChat(system,msgs,model,maxTokens){
   const headers={"content-type":"application/json"};
   const code=localStorage.getItem("clientbot_access_code");
   if(code) headers["x-access-code"]=code;
-  const res=await fetch("/api/chat",{method:"POST",headers,
-    body:JSON.stringify({system,messages:msgs,model,max_tokens:maxTokens})});
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),45000);
+  let res;
+  try{
+    res=await fetch("/api/chat",{method:"POST",headers,signal:ctrl.signal,
+      body:JSON.stringify({system,messages:msgs,model,max_tokens:maxTokens})});
+  }catch(e){clearTimeout(timer);throw new Error(e.name==="AbortError"?"the request timed out after 45 seconds":("network error - "+e.message));}
+  clearTimeout(timer);
   if(res.status===401){
     const entered=prompt("Enter the access code for this tool:");
     if(entered){localStorage.setItem("clientbot_access_code",entered);return callChat(system,msgs,model,maxTokens);}
     throw new Error("Access code required.");
   }
-  const data=await res.json();
+  let data;
+  try{data=await res.json();}
+  catch(e){throw new Error("the server did not return readable data (status "+res.status+"). The /api function may not be deployed, or the key is missing.");}
   if(!res.ok) throw new Error((data&&data.error)||("status "+res.status));
   return (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
 }
@@ -338,7 +346,7 @@ async function generateClient(){
     messages=[];reportData=null;view="session";busy=false;render();
   }catch(e){
     busy=false;gen.disabled=false;gen.textContent="Generate client";
-    showErr("Couldn't generate a client just now. Try again, or pick a prepared one.");
+    showErr("Couldn't generate a client. Reason: "+e.message);
   }
 }
 function startCore(i){
@@ -355,7 +363,7 @@ async function sendTurn(){
   try{
     const reply=(await callChat(activeSystem,clientHistory(messages),CLIENT_MODEL,600)).trim();
     messages.push({role:"client",text:reply});
-  }catch(e){showErr("Couldn't reach ClientBot. Try that turn again.");}
+  }catch(e){showErr("ClientBot didn't respond. Reason: "+e.message);}
   setBusy(false);
 }
 async function askCoach(){
@@ -365,7 +373,7 @@ async function askCoach(){
   try{
     const note=(await callChat(COACH_SYSTEM,[{role:"user",content:"Here is the session so far. Coach my next move.\n\n"+transcript}],CLIENT_MODEL,400)).trim();
     messages.push({role:"coach",text:note});
-  }catch(e){showErr("Couldn't reach CoachBot. Try again.");}
+  }catch(e){showErr("CoachBot didn't respond. Reason: "+e.message);}
   setBusy(false);
 }
 async function endSession(){
@@ -377,7 +385,7 @@ async function endSession(){
   try{
     const raw=await callChat(CODER_SYSTEM,[{role:"user",content:"FULL DIALOGUE:\n"+dialogue+"\n\nCOUNSELOR UTTERANCES TO CODE:\n"+numbered}],CODER_MODEL,1200);
     reportData=buildReport(extractJSON(raw),turns);busy=false;view="report";render();
-  }catch(e){showErr("Couldn't generate the feedback. Try ending again.");setBusy(false);}
+  }catch(e){showErr("Couldn't generate the feedback. Reason: "+e.message);setBusy(false);}
 }
 function reset(){messages=[];reportData=null;view="session";render();}
 
