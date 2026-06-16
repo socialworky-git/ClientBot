@@ -1,72 +1,59 @@
-# MI Practice tool — deploy guide (OpenAI version)
+# Socialworky practice tools — platform guide
 
-This is a self-contained MI practice tool. A learner picks a prepared client or builds one to match their caseload, has a typed session, can tap **Pause to coach** for in-the-moment help, and gets an MITI-framed coding sheet at the end. It runs as a web page anyone can open with a link. No app store, no install.
+This is now a small platform, not a single page. A hub page lists your tools, and each tool lives in its own folder but shares one backend and one OpenAI key. Adding a new tool later is just a new folder plus a card on the hub.
 
-Two files do the work:
+## Structure
 
-- `index.html` — the whole tool (the page, the conversation, the feedback). This is also the file you edit to change scenarios.
-- `api/chat.js` — a small server file that holds your secret OpenAI API key and relays messages to the model. Your key never touches the web page.
+```
+index.html              <- the hub (lists and links to every tool)
+clientbot/index.html    <- the ClientBot tool (MI practice + coaching + feedback)
+api/chat.js             <- ONE shared backend that holds your OpenAI key
+README.md               <- this guide
+```
 
-You pay OpenAI for usage, but for typed sessions this is pennies each. The steps below also show how to cap spending and keep the open internet from running up your bill.
+The backend lives at `/api/chat` for the whole site, so every tool can call it. You set the key once and all tools share it.
 
----
+## Deploy (same as before)
 
-## What you need (all free to set up)
+1. Put these files in your GitHub repo, keeping the folders exactly as shown.
+2. In Vercel, set environment variables: `OPENAI_API_KEY` (required) and optionally `ACCESS_CODE` (a short code learners must enter, which protects your bill). Redeploy after any change to these.
+3. Visit your site. The hub appears at the root, and ClientBot at `/clientbot/`.
 
-1. A free **GitHub** account.
-2. A free **Vercel** account (sign in with GitHub).
-3. Your **OpenAI API key** from platform.openai.com, which you already have funded.
+## Set your research email (do this before sharing)
 
----
+ClientBot can email a learner's session to you when they opt in. Open `clientbot/index.html`, find the line near the top:
 
-## Step 1 — Copy your key and set a spending cap
+```
+const RESEARCH_EMAIL="you@example.com";
+```
 
-1. Go to platform.openai.com and sign in.
-2. Open the billing or limits settings and set a **monthly usage limit** plus an email alert. This is your safety net so the bill cannot exceed the cap.
-3. Under API keys, copy an existing key or create a new one. You will paste it into Vercel in Step 3, never into a file.
+Replace it with the address where submissions should arrive. Also edit the consent sentence on the feedback screen (search for "Replace this sentence") so it matches your own IRB-approved language. Submissions are voluntary, gated behind a consent checkbox, and arrive as a pre-filled email the learner sends from their own mail app.
 
-## Step 2 — Put the files on GitHub
+## What learners can do with their work
 
-1. Create a new repository (private is fine).
-2. Upload the folder, keeping the structure exactly: `index.html` at the top level, and `chat.js` inside a folder named `api`.
+Because there are no accounts, two options let learners keep or share their work:
 
-## Step 3 — Deploy on Vercel
+- Save as PDF: on both the session and the feedback screen, this opens the browser print dialog. Choosing "Save as PDF" produces a clean document with the client, the change target, the full transcript, and the coding sheet.
+- Email to researcher: on the feedback screen, after checking the consent box, this opens a pre-filled email to you containing the transcript and a short summary. Note that a few email apps shorten very long messages, so the PDF is the complete record.
 
-1. Go to vercel.com and sign in with GitHub.
-2. Add a new project and import the repository.
-3. Before deploying, open **Environment Variables** and add:
-   - `OPENAI_API_KEY` set to the key you copied in Step 1.
-   - Optional but recommended: `ACCESS_CODE` set to any short code you choose. With it set, the tool asks for the code before it runs, which stops strangers from using your key.
-4. Deploy. After a minute Vercel gives you a public link like `your-tool.vercel.app`.
+## Adding a new tool later
 
-## Step 4 — Test it
+1. Make a new folder, for example `sbirt/`, with its own `index.html`. The quickest start is to copy `clientbot/index.html` and rewrite the personas and labels.
+2. It can call the same backend at `/api/chat`, so you do not set up the key again.
+3. On the hub (`index.html`), copy the commented tool block and point it at the new folder.
 
-Open the link. If you set an access code, it prompts once. Pick a prepared client or try Build my own client, have a few exchanges, and end the session to confirm the coding sheet renders. If it errors, the usual causes are a missing or mistyped `OPENAI_API_KEY`, or a usage limit set to zero.
+## Editing clients and the generator (ClientBot)
 
-## Step 5 — Get it to learners
+Prepared clients live near the top of `clientbot/index.html` in the `CORE` list, each with a `tag`, `name`, `card`, `target`, and `system`. Edit a `system` to change a client, or copy a block to add one. The `GENERATOR_SYSTEM` block controls the build-your-own feature; its first rule is that every generated client must have a clear, preferably behavioral change target.
 
-Put the link in your Canvas course for students, which keeps it to enrolled people. For CEU or workshop groups, share the link and the access code in your materials, and avoid posting the raw link on a fully public page. Each new tool you make gets its own link, and they all gather behind your Craft hub.
+## Cost, access, and privacy
 
----
+The only running cost is OpenAI usage, a few pennies per typed session; set a monthly cap on your OpenAI account. The `ACCESS_CODE` plus linking from Canvas keeps strangers off your key. Nothing is stored on a server: sessions live only in the browser and disappear on refresh, which is friendly for FERPA and clinical ethics. Tell learners to use only fictional or composite details, never real client information, since their text is sent to OpenAI to generate replies.
 
-## Cost, in plain terms
+## Embedding in your site
 
-The tool defaults to the GPT-4.1 family: `gpt-4.1-mini` for the conversation and coaching, and `gpt-4.1` for the coding sheet. These use simple billing and do not generate hidden reasoning tokens, so cost stays low and predictable, a few pennies per full session. Your monthly cap from Step 1 makes the worst case impossible.
+For phones especially, a full-page link to a tool feels better than an iframe, which forces an awkward inner scroll. If you do embed, size the iframe to fill the screen rather than a fixed height. The pages themselves are now responsive and adjust to phones, tablets, and desktops.
 
-If you want more nuance later, open `index.html` and change `CLIENT_MODEL` to `gpt-5.4-mini` and `CODER_MODEL` to `gpt-5.4`. The server file already handles the parameter differences for the GPT-5 family, so no other change is needed.
+## A note on hosting terms
 
----
-
-## What learners see
-
-The tool opens on a home screen with three choices: two prepared clients (Dani, an ambivalent drinker, and Cheryl, newly diagnosed with diabetes), and a **Build my own client** option. The build option asks a few quick questions about the learner's setting and the kind of client they want, then generates a fitting fictional client and drops them into a session. The coach and the coding sheet work the same no matter which client is chosen.
-
-## Editing or adding prepared clients
-
-The two prepared clients live near the top of `index.html` in a list called `CORE`. Each has a `tag`, a `name`, a `card` (the on-screen description), a `target` (the change target shown on screen), and a `system` (the full persona the role-player follows). To change a client, edit its `system`. To add a third, copy one of the existing blocks and edit it.
-
-To shape how the generated clients come out, edit the `GENERATOR_SYSTEM` block. Its first and most important rule is that every generated client must have one clear, preferably behavioral change target, since MI only works with a concrete target. If a learner enters a vague concern, the generator narrows it into a specific behavior. The change target is shown on screen so the MI focus is always explicit.
-
-## Adding voice later
-
-This version is typed on purpose, to keep cost low and deployment simple. When you want spoken practice, the cleanest path is to let a hosted voice agent run the live conversation using the same persona text, capture the transcript it produces, and send that transcript to this same coder to render the same coding sheet. The feedback layer does not change.
+Vercel's free Hobby plan is for personal, non-commercial use. As this grows or is embedded in your professional site, the clean options are Vercel's Pro plan or a host without that restriction, such as Cloudflare Pages.
