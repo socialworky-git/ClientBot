@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Treatment Planning Practice</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
+    --accent:#EB786B; --accentDeep:#C2452F;
+    --client:#3E4A57; --clientbg:#EEF1F4; --clientline:#D5DDE5;
+    --sans:Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:22px;line-height:1.5;}
+  .wrap{max-width:780px;margin:0 auto;}
+  .hublink{display:inline-block;margin-bottom:10px;font-size:13px;color:var(--accentDeep);text-decoration:none;}
+  .eyebrow{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);}
+  h1{font-size:25px;font-weight:700;margin:4px 0 0;}
+  .tagline{color:var(--muted);font-size:13.5px;margin-top:3px;}
+  .intro{color:var(--muted);font-size:15px;margin:14px 0 0;}
+  .print-date{display:none;}
+  .seclabel{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);
+    border-bottom:1px solid var(--line);padding-bottom:6px;margin:26px 0 14px;}
+  .vignette{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:10px;padding:14px 16px;margin-top:16px;font-size:15px;line-height:1.55;}
+  .vignette .who{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);margin-bottom:6px;}
+
+  .ssf{border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .area{padding:12px 14px;border-bottom:1px solid var(--line);}
+  .area:last-child{border-bottom:none;}
+  .area .hd{display:flex;align-items:center;gap:10px;}
+  .area .nm{font-weight:700;font-size:14px;}
+  .badge{margin-left:auto;font-size:12px;font-weight:700;color:#fff;background:var(--client);border-radius:20px;padding:2px 10px;}
+  .stem{font-size:14px;color:#26313C;margin-top:6px;font-style:italic;}
+  .stem b{font-style:normal;color:var(--muted);font-weight:700;}
+
+  details.guide{border:1px solid var(--line);border-radius:10px;padding:0 14px;margin-top:6px;background:#fff;}
+  details.guide>summary{cursor:pointer;font-weight:700;font-size:14px;padding:13px 0;list-style:none;}
+  details.guide>summary::-webkit-details-marker{display:none;}
+  details.guide>summary::before{content:"\25B8 ";color:var(--accentDeep);}
+  details.guide[open]>summary::before{content:"\25BE ";}
+  .def{padding:2px 0 12px;border-top:1px solid var(--line);}
+  .def dt{font-weight:700;font-size:14px;margin-top:12px;color:var(--accentDeep);}
+  .def dd{margin:3px 0 0;font-size:14px;color:var(--ink);}
+  .def .ex{font-size:13px;color:var(--muted);margin-top:2px;}
+  .keepstraight{background:var(--surface);border-radius:8px;padding:10px 12px;margin:12px 0;font-size:13.5px;color:#333;}
+
+  .worked{border:1px solid var(--clientline);border-radius:10px;padding:12px 14px;background:var(--clientbg);font-size:14px;}
+  .worked .tag{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);margin-bottom:6px;}
+  .worked .line{margin-top:5px;}
+  .worked .lab{font-weight:700;color:var(--accentDeep);}
+
+  .planrow{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:14px;}
+  .planrow .pnum{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);}
+  .driverbox{background:var(--clientbg);border:1px solid var(--clientline);border-left:3px solid var(--client);
+    border-radius:8px;padding:11px 13px;margin:8px 0 4px;font-size:14.5px;color:#26313C;}
+  .driverbox b{display:block;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--accentDeep);margin-bottom:3px;}
+  .planrow .instr{font-size:13px;color:var(--muted);margin:8px 0 4px;}
+  .fieldlabel{font-size:13px;font-weight:700;margin:12px 0 4px;}
+  textarea,input[type=text]{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;
+    font-size:15px;font-family:var(--sans);background:#fff;color:var(--ink);outline:none;}
+  textarea:focus,input[type=text]:focus{border-color:var(--accent);}
+  textarea{resize:vertical;min-height:52px;}
+  .dur{max-width:240px;}
+  .pmirror{display:none;}
+
+  .btn{background:var(--accentDeep);color:#fff;border:none;border-radius:8px;padding:11px 18px;font-size:14px;
+    font-weight:700;font-family:var(--sans);cursor:pointer;}
+  .btnout{background:#fff;border:1px solid var(--accentDeep);color:var(--accentDeep);border-radius:8px;
+    padding:10px 16px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+  .foot{color:var(--muted);font-size:12px;margin-top:30px;border-top:1px solid var(--line);padding-top:14px;}
+  @media (max-width:560px){ body{padding:14px;} h1{font-size:21px;} .btn,.btnout{width:100%;} }
+  @media print{
+    body{padding:0;color:#000;}
+    .hublink,.btn,.btnout,.row{display:none !important;}
+    .print-date{display:block !important;font-size:12px;color:#444;margin-top:2px;}
+    textarea,input[type=text]{display:none !important;}
+    .pmirror{display:block !important;white-space:pre-wrap;border:1px solid #ccc;border-radius:6px;
+      padding:8px 10px;font-size:14px;min-height:0;background:#fff;}
+    details.guide{display:block !important;}
+    details.guide>*{display:block !important;}
+    .ssf,.area,.worked,.planrow,.vignette{break-inside:avoid;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="hublink" href="/">&larr; All tools</a>
+  <div class="eyebrow">Suicide-specific clinical skills</div>
+  <h1>Treatment Planning Practice</h1>
+  <div class="tagline">Turning a suicide risk assessment into clear goals and objectives</div>
+  <div class="print-date" id="pdate"></div>
+  <p class="intro">Practice taking what a suicide risk assessment surfaces and shaping it into an initial treatment plan. Read where things stand and Jamie's SSF Section A, then build two problems with clear goals, objectives, and interventions. Open the definitions if you want them. When you are done, save your plan as a PDF.</p>
+
+  <div class="vignette" id="vignette"></div>
+
+  <div class="seclabel">SSF Section A (Jamie's ratings, 1 to 5)</div>
+  <div class="ssf">
+    <div class="area"><div class="hd"><div class="nm">Psychological Pain</div><div class="badge">4 / 5</div></div>
+      <div class="stem"><b>What I find most painful is</b> feeling like I'm failing my kids. They need a parent who has it together, and most days I'm barely holding on.</div></div>
+    <div class="area"><div class="hd"><div class="nm">Stress</div><div class="badge">4 / 5</div></div>
+      <div class="stem"><b>What I find most stressful is</b> carrying all of it by myself, the kids, the job, the bills, with no one to hand any of it to.</div></div>
+    <div class="area"><div class="hd"><div class="nm">Agitation</div><div class="badge">3 / 5</div></div>
+      <div class="stem"><b>I most need to take action when</b> the house finally goes quiet at night and everything I'm behind on starts crowding in.</div></div>
+    <div class="area"><div class="hd"><div class="nm">Hopelessness</div><div class="badge">4 / 5</div></div>
+      <div class="stem"><b>I am most hopeless about</b> whether life is ever going to feel any lighter than it does right now.</div></div>
+    <div class="area"><div class="hd"><div class="nm">Self-Hate</div><div class="badge">3 / 5</div></div>
+      <div class="stem"><b>What I hate most about myself is</b> that I've shut everyone out and let down the people who were trying to be there for me.</div></div>
+  </div>
+
+  <div class="seclabel">Before you plan: the four parts</div>
+  <details class="guide">
+    <summary>Not sure how problem, goal, objective, and intervention differ? Open this.</summary>
+    <dl class="def">
+      <dt>Problem description</dt>
+      <dd>The specific concern you are working on, stated plainly. It usually comes straight from what the assessment surfaced, a driver or a Section A area.</dd>
+      <dd class="ex">Example: Social isolation. Jamie has pulled away from the people who could support them.</dd>
+      <dt>Goal</dt>
+      <dd>The broad outcome you are aiming for. Where you want things to land. A goal is usually not measurable on its own.</dd>
+      <dd class="ex">Example: Jamie no longer faces things alone and has people they can lean on.</dd>
+      <dt>Objective</dt>
+      <dd>The concrete, measurable, time-bound step that shows you are moving toward the goal. How you will know it is working.</dd>
+      <dd class="ex">Example: Within four weeks, Jamie reaches out to one trusted person at least once a week.</dd>
+      <dt>Intervention</dt>
+      <dd>What you and Jamie actually do to get there: the sessions, skills, and actions.</dd>
+      <dd class="ex">Example: Weekly sessions; identify one specific person to contact; practice what to say; problem-solve what gets in the way.</dd>
+    </dl>
+    <div class="keepstraight">A simple way to keep them straight: the <b>problem</b> is what is wrong, the <b>goal</b> is where you want to get to, the <b>objective</b> is the measurable step that proves you are getting there, and the <b>intervention</b> is what you do to make it happen.</div>
+  </details>
+
+  <div class="seclabel">The treatment plan</div>
+
+  <div class="worked">
+    <div class="tag">Worked example, already done for you</div>
+    <div class="line"><span class="lab">Problem 1:</span> Acute safety risk, with suicidal thoughts worst at night.</div>
+    <div class="line"><span class="lab">Goal:</span> Jamie stays safe and the immediate crisis settles.</div>
+    <div class="line"><span class="lab">Objective:</span> Jamie uses the stabilization plan in high-risk moments over the next two weeks.</div>
+    <div class="line"><span class="lab">Intervention:</span> Stabilization plan; weekly CAMS sessions; follow-up this week.</div>
+    <div class="line"><span class="lab">Duration:</span> Ongoing, reviewed weekly.</div>
+  </div>
+
+  <div class="planrow">
+    <div class="pnum">Problem 2</div>
+    <div class="driverbox"><b>Driver Jamie named</b>Being on my own with all of it. I've stopped letting anyone in, and nobody really knows how bad it's gotten.</div>
+    <div class="instr">Build a problem, goal, objective, and intervention that respond to this driver.</div>
+    <div class="fieldlabel">Problem description</div>
+    <textarea id="p2desc"></textarea><div class="pmirror" data-for="p2desc"></div>
+    <div class="fieldlabel">Goal</div>
+    <textarea id="p2goal"></textarea><div class="pmirror" data-for="p2goal"></div>
+    <div class="fieldlabel">Objective(s)</div>
+    <textarea id="p2obj"></textarea><div class="pmirror" data-for="p2obj"></div>
+    <div class="fieldlabel">Intervention(s)</div>
+    <textarea id="p2int"></textarea><div class="pmirror" data-for="p2int"></div>
+    <div class="fieldlabel">Duration</div>
+    <input type="text" id="p2dur" class="dur" /><div class="pmirror" data-for="p2dur"></div>
+  </div>
+
+  <div class="planrow">
+    <div class="pnum">Problem 3</div>
+    <div class="driverbox"><b>Driver Jamie named</b>Feeling like I'm letting my kids down. They deserve better than what I can give them right now.</div>
+    <div class="instr">Build a problem, goal, objective, and intervention that respond to this driver.</div>
+    <div class="fieldlabel">Problem description</div>
+    <textarea id="p3desc"></textarea><div class="pmirror" data-for="p3desc"></div>
+    <div class="fieldlabel">Goal</div>
+    <textarea id="p3goal"></textarea><div class="pmirror" data-for="p3goal"></div>
+    <div class="fieldlabel">Objective(s)</div>
+    <textarea id="p3obj"></textarea><div class="pmirror" data-for="p3obj"></div>
+    <div class="fieldlabel">Intervention(s)</div>
+    <textarea id="p3int"></textarea><div class="pmirror" data-for="p3int"></div>
+    <div class="fieldlabel">Duration</div>
+    <input type="text" id="p3dur" class="dur" /><div class="pmirror" data-for="p3dur"></div>
+  </div>
+
+  <div class="row">
+    <button class="btnout" id="savepdf">Save as PDF</button>
+  </div>
+
+  <div class="foot">A Socialworky training resource. This is a fictional practice scenario for educational use. Please use only fictional or composite details.</div>
+</div>
+
+<script>
+const VIGNETTE="Jamie is a 41-year-old parent, recently separated and raising two children while working full time. Jamie has completed the CAMS suicide risk assessment with you, and together you developed and agreed to a robust stabilization plan. It is now time to take what the assessment surfaced, especially the SSF Section A below, and begin shaping it into an initial treatment plan.";
+
+function syncMirrors(){
+  document.querySelectorAll(".pmirror").forEach(d=>{const f=document.getElementById(d.dataset.for);d.textContent=f?f.value:"";});
+}
+function printDoc(){syncMirrors();window.print();}
+
+document.getElementById("vignette").innerHTML='<div class="who">Where things stand</div>'+VIGNETTE;
+document.getElementById("pdate").textContent=new Date().toLocaleDateString();
+document.getElementById("savepdf").onclick=printDoc;
+</script>
+</body>
+</html>
