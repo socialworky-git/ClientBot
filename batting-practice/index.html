@@ -46,19 +46,99 @@
   .base.pop{animation:basepop .4s ease;}
   @keyframes basepop{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
 
+  /* Pitcher Scenario Card */
+  .scen-card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:16px;}
+  .scen-card .title{font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);margin-bottom:4px;}
+  .scen-card p{margin:0;font-size:14.5px;color:var(--ink);}
+
   .pitch{background:#EEF1F4;border:1px solid #D5DDE5;border-left:3px solid #3E4A57;border-radius:10px;
     padding:14px 16px;font-size:16px;color:#26313C;margin-top:16px;}
   .pitch .who{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:#3E4A57;margin-bottom:4px;}
   .pitch.show{animation:pitchin .5s ease;}
   @keyframes pitchin{0%{transform:translateY(-12px) scale(.97);opacity:0}100%{transform:none;opacity:1}}
 
-  .cdwrap{height:8px;background:#e4e4e7;border-radius:6px;overflow:hidden;margin-top:10px;}
-  .cdbar{height:100%;width:100%;background:linear-gradient(90deg,var(--accent),var(--accentDeep));}
+  /* Cute Baseball Timer styling */
+  .cdwrap{height:24px;background:#e4e4e7;border-radius:12px;overflow:visible;margin-top:16px;position:relative;border:1px solid var(--line);}
+  .cdbar{height:100%;width:100%;background:linear-gradient(90deg, #bbf7d0, #fecdd3);border-radius:12px;transform-origin:left;}
+  .ball-runner{position:absolute;top:-4px;left:100%;transform:translateX(-100%);font-size:22px;line-height:1;transition:left 0s linear;margin-left:-10px;}
   .cdlabel{font-size:11px;color:var(--muted);margin-top:4px;}
 
-  textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;font-size:15px;
-    font-family:var(--sans);background:#fff;color:var(--ink);outline:none;resize:vertical;min-height:56px;margin-top:12px;}
+  /* Input area with Dictation mic overlay */
+  .input-container{position:relative;margin-top:12px;}
+  textarea{width:100%;padding:11px 45px 11px 12px;Here is the updated, self-contained HTML code for **Reflection Batting Practice**. 
+
+The code has been fully refactored to incorporate all of your structural and aesthetic ideas: completely customized client scenarios acting as the "pitcher," an updated scoring hierarchy aligned with standard Motivational Interviewing depth, a relaxed timer with a visual baseball asset, and an integrated Web Speech API dictation button[cite: 1].
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Reflection Batting Practice</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
+    --accent:#EB786B; --accentDeep:#C2452F;
+    --field:#3F7D4E; --fielddk:#2B5D38; --dirt:#C8A06A;
+    --sans:Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:22px;line-height:1.5;}
+  .wrap{max-width:720px;margin:0 auto;}
+  .hublink{display:inline-block;margin-bottom:10px;font-size:13px;color:var(--accentDeep);text-decoration:none;}
+  .eyebrow{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);}
+  h1{font-size:25px;font-weight:700;margin:4px 0 0;}
+  .tagline{color:var(--muted);font-size:13.5px;margin-top:3px;}
+  .intro{color:var(--muted);font-size:15px;margin:14px 0 0;}
+  .hidden{display:none;}
+
+  .rules{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:16px;font-size:14px;}
+  .rules ul{margin:8px 0 0;padding-left:18px;} .rules li{margin:3px 0;}
+  .pill{display:inline-block;font-weight:700;border-radius:20px;padding:1px 9px;font-size:12px;color:#fff;}
+  .p-single{background:#6B8E9E;} .p-double{background:#4E86A0;} .p-triple{background:#2E7D54;} .p-hr{background:var(--accentDeep);} .p-k{background:#9aa0a6;}
+
+  .btn{background:var(--accentDeep);color:#fff;border:none;border-radius:8px;padding:12px 20px;font-size:15px;
+    font-weight:700;font-family:var(--sans);cursor:pointer;}
+  .btn:disabled{background:#AEB6C2;cursor:default;}
+  .btnout{background:#fff;border:1px solid var(--accentDeep);color:var(--accentDeep);border-radius:8px;
+    padding:10px 16px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+
+  .scoreboard{background:#1C2B22;color:#fff;border-radius:12px;padding:12px 16px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+  .sb .n{font-size:24px;font-weight:800;line-height:1;}
+  .sb .n.score{color:var(--accent);}
+  .sb .l{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9FB8A8;margin-top:3px;}
+  .tally{margin-left:auto;font-size:12px;color:#cfe0d5;text-align:right;line-height:1.5;}
+
+  .field-wrap{display:flex;justify-content:center;margin-top:16px;}
+  .diamond{width:230px;height:230px;}
+  .base{fill:#fff;stroke:var(--fielddk);stroke-width:2;transition:fill .25s ease,transform .25s ease;transform-origin:center;}
+  .base.occupied{fill:var(--accent);}
+  .base.pop{animation:basepop .4s ease;}
+  @keyframes basepop{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+
+  .pitch-container{background:#EEF1F4;border:1px solid #D5DDE5;border-left:4px solid #3E4A57;border-radius:10px;padding:14px 16px;margin-top:16px;}
+  .pitch-container .header-line{display:flex;justify-content:space-between;border-bottom:1px dashed #CDD7E0;padding-bottom:6px;margin-bottom:10px;}
+  .pitch-container .pitcher-profile{font-size:11px;letter-spacing:0.5px;text-transform:uppercase;font-weight:700;color:#3E4A57;}
+  .pitch-container .target-change{font-size:11px;font-weight:700;color:var(--accentDeep);background:#FCECEB;padding:1px 6px;border-radius:4px;}
+  .pitch-container .quote-text{font-size:16px;color:#26313C;font-style:italic;line-height:1.4;}
+  .pitch-container.show{animation:pitchin .5s ease;}
+  @keyframes pitchin{0%{transform:translateY(-12px) scale(.97);opacity:0}100%{transform:none;opacity:1}}
+
+  .cdwrap{height:14px;background:#e4e4e7;border-radius:20px;overflow:visible;margin-top:14px;position:relative;border:1px solid #D4D4D8;}
+  .cdbar{height:100%;width:100%;background:linear-gradient(90deg, #62c462, var(--accent));border-radius:20px;position:relative;}
+  .ball-runner{position:absolute;right:-7px;top:-4px;width:22px;height:22px;z-index:10;transition:inherit;}
+
+  .input-container{position:relative;margin-top:12px;}
+  textarea{width:100%;padding:11px 45px 11px 12px;border:1px solid var(--line);border-radius:8px;font-size:15px;
+    font-family:var(--sans);background:#fff;color:var(--ink);outline:none;resize:vertical;min-height:72px;}
   textarea:focus{border-color:var(--accent);}
+  
+  .mic-btn{position:absolute;right:12px;top:12px;background:none;border:none;cursor:pointer;padding:4px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
+  .mic-btn:hover{background:#E4E4E7;}
+  .mic-btn.listening{animation:pulse 1.5s infinite;background:#FCECEB;}
+  @keyframes pulse{0%{transform:scale(1);}50%{transform:scale(1.1);background:#F87171;}100%{transform:scale(1);}}
 
   .call{text-align:center;font-size:30px;font-weight:800;letter-spacing:1px;margin:14px 0 4px;}
   .call.show{animation:pop .6s ease;}
@@ -71,7 +151,7 @@
   .summary .big{font-size:40px;font-weight:800;color:var(--accentDeep);}
   .bd{margin-top:12px;}
   .bdrow{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:14px;}
-  .bdrow .lab{width:150px;font-weight:700;}
+  .bdrow .lab{width:180px;font-weight:700;}
   .bdbar{flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden;}
   .bdbar span{display:block;height:100%;background:var(--accent);}
   .obs{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:14.5px;}
@@ -84,21 +164,21 @@
   <a class="hublink" href="/">&larr; All tools</a>
   <div class="eyebrow">Motivational Interviewing</div>
   <h1>Reflection Batting Practice</h1>
-  <div class="tagline">Step up to the plate and reflect</div>
+  <div class="tagline">Step up to the plate and track the client's pitch</div>
 
   <!-- START -->
   <div id="start">
-    <p class="intro">A client statement gets pitched to you. Reflect something back, and swing. The better and faster your reflection, the more you score. Ten pitches, then your box score.</p>
+    <p class="intro">Each "pitch" delivers a unique profile of a client alongside a short statement containing a hidden target of change. Formulate an intentional reflection to hit it out of the park. 10 pitches total.</p>
     <div class="rules">
-      <b>How the swings score:</b>
+      <b>MI Scorecard Matrix:</b>
       <ul>
-        <li><span class="pill p-single">Single</span> Simple reflection (you repeat or rephrase)</li>
-        <li><span class="pill p-double">Double</span> Affirmation (you name a real strength)</li>
-        <li><span class="pill p-triple">Triple</span> Complex reflection (you add meaning or emotion)</li>
-        <li><span class="pill p-hr">Home run</span> Double-sided reflection (you hold both sides)</li>
-        <li><span class="pill p-k">Strikeout</span> A question, advice, or praise about you, not a reflection</li>
+        <li><span class="pill p-single">Single</span> <b>Simple Reflection</b> (light mirroring, restating, or rephrasing)</li>
+        <li><span class="pill p-double">Double</span> <b>Affirmation</b> (naming a core strength or value)</li>
+        <li><span class="pill p-triple">Triple</span> <b>Complex Reflection</b> (adding deep meaning, reflecting unstated emotion, or feeling reflections)</li>
+        <li><span class="pill p-hr">Home Run</span> <b>Change-Oriented Reflection</b> (double-sided reflections or strategies that cultivate change talk/soften sustain talk)</li>
+        <li><span class="pill p-k">Strikeout</span> <b>Non-Adherent</b> (questions, roadblocks, unasked advice, or self-centered tracking)</li>
       </ul>
-      <div style="margin-top:8px">The bar under each pitch is your speed bonus. Swing while it lasts for extra points, but a rushed weak reflection still only earns the weak score.</div>
+      <div style="margin-top:10px">The speed bonus bar tracks the ball traveling across the plate. Don't stress—the timer is relaxed to give you plenty of space to draft or speak your answer!</div>
     </div>
     <div class="row"><button class="btn" id="playball">Play ball</button></div>
   </div>
@@ -124,10 +204,36 @@
     </div>
 
     <div id="atbat">
-      <div class="pitch" id="pitch"><div class="who">Client</div><span id="pitchText"></span></div>
-      <div class="cdwrap"><div class="cdbar" id="cdbar"></div></div>
-      <div class="cdlabel">Speed bonus</div>
-      <textarea id="reflection" placeholder="Reflect it back..."></textarea>
+      <div class="pitch-container" id="pitchBox">
+        <div class="header-line">
+          <div class="pitcher-profile" id="pitcherProfile">Loading pitcher info...</div>
+          <div class="target-change" id="targetChange">Target Change</div>
+        </div>
+        <div class="quote-text" id="pitchText">...</div>
+      </div>
+
+      <div class="cdwrap">
+        <div class="cdbar" id="cdbar">
+          <svg class="ball-runner" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="40" fill="#fff" stroke="#C2452F" stroke-width="4"/>
+            <path d="M 22,22 A 38,38 0 0,1 78,78" fill="none" stroke="#C2452F" stroke-width="4" stroke-dasharray="4,4"/>
+            <path d="M 78,22 A 38,38 0 0,0 22,78" fill="none" stroke="#C2452F" stroke-width="4" stroke-dasharray="4,4"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="input-container">
+        <textarea id="reflection" placeholder="Type your reflection or use the mic to dictate..."></textarea>
+        <button class="mic-btn" id="micBtn" title="Start Dictation" type="button">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B5B5B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v1a7 7 0 0 1-14 0v-1"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </button>
+      </div>
+
       <div id="err"></div>
       <div class="row"><button class="btn" id="swing">Swing</button></div>
       <div id="status"></div>
@@ -142,7 +248,7 @@
 
   <!-- END -->
   <div id="end" class="hidden summary">
-    <div class="eyebrow" style="margin-top:18px">Final box score</div>
+    <div class="eyebrow" style="margin-top:18px">Final Box Score</div>
     <div class="big" id="finalScore">0</div>
     <div style="color:var(--muted);font-size:14px" id="finalLine"></div>
     <div class="bd" id="breakdown"></div>
@@ -153,39 +259,55 @@
     </div>
   </div>
 
-  <div class="foot">A Socialworky training resource. Pitches and scoring are AI-generated for practice. Please use only fictional details.</div>
+  <div class="foot">A Socialworky training resource. Pitches and metrics are AI-generated to mimic intentional Motivational Interviewing micro-coaching. Please omit any real-world identifying details.</div>
 </div>
 
 <script>
 const GEN_MODEL="gpt-4.1-mini";
 const EVAL_MODEL="gpt-4.1";
 const TOTAL_PITCHES=10;
-const BONUS_MS=18000;
+const BONUS_MS=32000; // Relaxed timer window to account for processing/speech entry
 
 const HIT={
   simple_reflection:{call:"SINGLE",bases:1,pts:10,cls:"p-single",tally:"1B"},
   affirmation:{call:"DOUBLE",bases:2,pts:20,cls:"p-double",tally:"2B"},
   complex_reflection:{call:"TRIPLE",bases:3,pts:30,cls:"p-triple",tally:"3B"},
-  double_sided_reflection:{call:"HOME RUN",bases:4,pts:50,cls:"p-hr",tally:"HR"},
+  change_oriented_reflection:{call:"HOME RUN",bases:4,pts:50,cls:"p-hr",tally:"HR"},
   other:{call:"STRIKEOUT",bases:0,pts:0,cls:"p-k",tally:"K"}
 };
 
 let score,runs,pitchNum,bases,tally,used,history,pitchStart;
 
-const GEN_SYSTEM=`You are generating client statements for a Motivational Interviewing reflection drill. Produce ONE short client statement (one or two sentences, first person) that a real client might say, the kind that gives a learner something to reflect. Vary widely: ambivalence about change, frustration, discouragement, a flash of motivation, mixed feelings, and different life areas (health, work, relationships, substances, school, parenting, money). Make it natural and specific, not generic. Output ONLY the statement itself, with no quotation marks, label, or preamble.`;
+// System instructions tuned to generate quick-to-skim contextual scenarios 
+const GEN_SYSTEM=`You are generating programmatic client targets for a Motivational Interviewing training simulation. Generate a brief context profile, an explicit target, and a concise statement. 
+Vary areas wildly (health, work, relationships, substances, school, life habits).
+Output ONLY a JSON object format matching this architecture exactly, without markdown fences or text:
+{"profile": "Age/demographic and core situational context (10 words max)", "target": "Target Change (2-4 words max)", "statement": "The direct quote spoken by the client displaying sustain talk or ambivalence (1-2 brief sentences max)"}`;
 
-const EVAL_SYSTEM=`You are a Motivational Interviewing coach scoring a learner's response in a reflection drill. You are given a client statement and the learner's response. Classify the response into EXACTLY ONE category:
-- simple_reflection: repeats or lightly rephrases the client's words, with little added meaning.
-- complex_reflection: adds meaning, emotion, or an inference about what is underneath, going beyond the surface.
-- double_sided_reflection: a reflection that holds both sides of the client's ambivalence in a single statement.
-- affirmation: names a genuine strength, effort, or positive quality of the client, focused on the client and usually centered on "you". Note: praise that centers on the speaker ("I'm proud of you", "I think that's great") is NOT an affirmation; classify that as other.
-- other: a question, advice, a judgment, or anything that is not a reflection or affirmation. Reflections are statements, not questions; if the response is a question, it is other.
-Then write ONE short, encouraging sentence of feedback. For simple_reflection, nudge them to add meaning or emotion next time. For other, briefly say why it is not a reflection and how to turn it into one.
-Respond with ONLY a JSON object, no code fences and no extra text: {"category":"...","feedback":"..."}`;
+const EVAL_SYSTEM=`You are an expert Motivational Interviewing supervisor scoring a learner's clinical tracking response.
+Evaluate the client profile, target change, context statement, and the user's reflection response. Categorize into EXACTLY ONE:
+- simple_reflection: Light restating, basic rephrasing, keeping close to what was said with no added unstated depth.
+- affirmation: Clear recognition of inner strengths, positive choices, values, or structural efforts rooted cleanly in a "you" focus.
+- complex_reflection: Adds depth, tracks implicit assumptions, unstated metaphors, or directly hits feeling reflections (emotion tracking).
+- change_oriented_reflection: Successfully highlights, balances, or amplifies implicit change talk, or beautifully softens sustain talk through structural tools like double-sided reflections.
+- other: Roadblocks, evaluations, tracking checks framed as questions, advice-giving, or self-focused reactions ("I hear you...").
+
+Provide 1 succinct sentence of analytical, encouraging feedback detailing its clinical utility.
+Respond with ONLY a clean JSON object, no fences: {"category":"...","feedback":"..."}`;
 
 function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function show(id){document.getElementById(id).classList.remove("hidden");}
 function hide(id){document.getElementById(id).classList.add("hidden");}
+
+// Speech recognition setup
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition = null;
+if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
+}
 
 async function callChat(system,msgs,model,maxTokens){
   const headers={"content-type":"application/json"};
@@ -213,7 +335,7 @@ function extractJSON(t){const s=t.indexOf("{"),e=t.lastIndexOf("}");if(s<0||e<0)
 
 function resetGame(){
   score=0;runs=0;pitchNum=1;bases=[false,false,false];
-  tally={simple_reflection:0,affirmation:0,complex_reflection:0,double_sided_reflection:0,other:0};
+  tally={simple_reflection:0,affirmation:0,complex_reflection:0,change_oriented_reflection:0,other:0};
   used=[];history=[];
   renderScore();renderBases();
 }
@@ -221,7 +343,7 @@ function renderScore(){
   document.getElementById("scoreN").textContent=score;
   document.getElementById("runsN").textContent=runs;
   document.getElementById("pitchN").textContent=pitchNum+" / "+TOTAL_PITCHES;
-  document.getElementById("tally").innerHTML="1B "+tally.simple_reflection+" &middot; 2B "+tally.affirmation+" &middot; 3B "+tally.complex_reflection+" &middot; HR "+tally.double_sided_reflection+" &middot; K "+tally.other;
+  document.getElementById("tally").innerHTML="1B "+tally.simple_reflection+" &middot; 2B "+tally.affirmation+" &middot; 3B "+tally.complex_reflection+" &middot; HR "+tally.change_oriented_reflection+" &middot; K "+tally.other;
 }
 function renderBases(){
   [["base1",bases[0]],["base2",bases[1]],["base3",bases[2]]].forEach(([id,on])=>{
@@ -255,35 +377,48 @@ async function loadPitch(){
   document.getElementById("reflection").value="";
   const status=document.getElementById("status");
   const swingBtn=document.getElementById("swing");
-  swingBtn.disabled=true; status.innerHTML='<div class="status">A pitch is on the way...</div>';
-  let msg="Give the next client statement.";
-  if(used.length) msg+=" Do not repeat any of these: "+used.map(u=>'"'+u+'"').join(" ");
+  swingBtn.disabled=true; status.innerHTML='<div class="status">The pitcher is winded up...</div>';
+  let msg="Provide the structured client object profile prompt.";
+  if(used.length) msg+=" Do not duplicate these specific statements: "+used.map(u=>'"'+u+'"').join(" ");
   try{
-    const stmt=(await callChat(GEN_SYSTEM,[{role:"user",content:msg}],GEN_MODEL,200)).trim().replace(/^["']|["']$/g,"");
-    used.push(stmt);
-    const pt=document.getElementById("pitchText");pt.textContent=stmt;
-    const pitch=document.getElementById("pitch");pitch.classList.remove("show");void pitch.offsetWidth;pitch.classList.add("show");
+    const raw=(await callChat(GEN_SYSTEM,[{role:"user",content:msg}],GEN_MODEL,250)).trim();
+    const payload=extractJSON(raw);
+    used.push(payload.statement);
+    
+    document.getElementById("pitcherProfile").textContent=payload.profile;
+    document.getElementById("targetChange").textContent=payload.target;
+    document.getElementById("pitchText").textContent=payload.statement;
+    
+    const pitchBox=document.getElementById("pitchBox");
+    pitchBox.classList.remove("show");void pitchBox.offsetWidth;pitchBox.classList.add("show");
     status.innerHTML="";swingBtn.disabled=false;
     pitchStart=Date.now();startCountdown();
     document.getElementById("reflection").focus();
   }catch(e){
     status.innerHTML="";
-    document.getElementById("err").innerHTML='<div class="err">Couldn\'t load a pitch. '+esc(e.message)+' <button class="btnout" id="retry">Try again</button></div>';
+    document.getElementById("err").innerHTML='<div class="err">Slight error delivery on that throw. '+esc(e.message)+' <button class="btnout" id="retry">Signal pitcher again</button></div>';
     document.getElementById("retry").onclick=loadPitch;
   }
 }
 
 async function swing(){
+  // Stop recognition if active
+  if(recognition && document.getElementById("micBtn").classList.contains("listening")) {
+    recognition.stop();
+  }
   const refl=document.getElementById("reflection").value.trim();
-  if(!refl){document.getElementById("err").innerHTML='<div class="err">Take a swing: type a reflection first.</div>';return;}
+  if(!refl){document.getElementById("err").innerHTML='<div class="err">Load up your response before swinging!</div>';return;}
   document.getElementById("err").innerHTML="";
   const elapsed=Date.now()-pitchStart;
   const swingBtn=document.getElementById("swing"),status=document.getElementById("status");
-  swingBtn.disabled=true;status.innerHTML='<div class="status">The umpire is calling it...</div>';
+  swingBtn.disabled=true;status.innerHTML='<div class="status">Umpire checking tracking precision...</div>';
   const stmt=document.getElementById("pitchText").textContent;
+  const target=document.getElementById("targetChange").textContent;
+  const profile=document.getElementById("pitcherProfile").textContent;
   try{
-    const raw=await callChat(EVAL_SYSTEM,[{role:"user",content:'Client statement: "'+stmt+'"\nLearner response: "'+refl+'"'}],EVAL_MODEL,300);
-    let parsed;try{parsed=extractJSON(raw);}catch(e){parsed={category:"other",feedback:"That one was hard to read. Try a clear reflection that mirrors what the client said."};}
+    const evalInput=`Client Context: ${profile}\nTarget Change: ${target}\nStatement: "${stmt}"\nLearner Reflection: "${refl}"`;
+    const raw=await callChat(EVAL_SYSTEM,[{role:"user",content:evalInput}],EVAL_MODEL,300);
+    let parsed;try{parsed=extractJSON(raw);}catch(e){parsed={category:"other",feedback:"Tricky tracking. Ensure you mirror cleanly with an assertive processing statement instead of an inquiry."};}
     let cat=parsed.category; if(!HIT[cat])cat="other";
     const hit=HIT[cat];
     const bonus=hit.bases>0?Math.max(0,Math.round((1-elapsed/BONUS_MS)*10)):0;
@@ -295,14 +430,14 @@ async function swing(){
     status.innerHTML="";
     const callEl=document.getElementById("call");
     callEl.innerHTML='<span class="pill '+hit.cls+'" style="font-size:26px;padding:4px 16px">'+hit.call+'</span>'
-      +'<span class="gain">'+(hit.pts>0?("+"+hit.pts+" pts"+(bonus>0?(" and +"+bonus+" speed bonus"):"")):"no points, shake it off")
-      +(r>0?(" &middot; "+r+" run"+(r>1?"s":"")+" in!"):"")+'</span>';
+      +'<span class="gain">'+(hit.pts>0?("+"+hit.pts+" pts"+(bonus>0?(" and +"+bonus+" momentum bonus"):"")):"no points, stick to reflections")
+      +(r>0?(" &middot; "+r+" run"+(r>1?"s":"")+" cross home plate!"):"")+'</span>';
     callEl.classList.remove("show");void callEl.offsetWidth;callEl.classList.add("show");
     document.getElementById("fb").textContent=parsed.feedback||"";
     hide("atbat");show("result");
   }catch(e){
     status.innerHTML="";swingBtn.disabled=false;
-    document.getElementById("err").innerHTML='<div class="err">Couldn\'t score that swing. '+esc(e.message)+'</div>';
+    document.getElementById("err").innerHTML='<div class="err">Couldn\'t compile scorecard metrics. '+esc(e.message)+'</div>';
   }
 }
 
@@ -315,8 +450,8 @@ function nextPitch(){
 function endGame(){
   hide("game");show("end");
   document.getElementById("finalScore").textContent=score;
-  document.getElementById("finalLine").textContent=runs+" run"+(runs===1?"":"s")+" batted in over "+TOTAL_PITCHES+" pitches.";
-  const order=[["double_sided_reflection","Home runs (double-sided)"],["complex_reflection","Triples (complex)"],["affirmation","Doubles (affirmations)"],["simple_reflection","Singles (simple)"],["other","Strikeouts"]];
+  document.getElementById("finalLine").textContent=runs+" run"+(runs===1?"":"s")+" batted home across "+TOTAL_PITCHES+" global pitches.";
+  const order=[["change_oriented_reflection","Home Runs (Change Talk Amplified)"],["complex_reflection","Triples (Deep Meaning/Emotion)"],["affirmation","Doubles (Affirmations)"],["simple_reflection","Singles (Simple Reflections)"],["other","Strikeouts (Non-Adherent Matrix)"]];
   let html="";
   order.forEach(([k,lab])=>{
     const pct=Math.round((tally[k]/TOTAL_PITCHES)*100);
@@ -326,12 +461,40 @@ function endGame(){
   document.getElementById("observations").textContent=observe();
 }
 function observe(){
-  const deep=tally.complex_reflection+tally.double_sided_reflection;
-  if(tally.other>=4) return "A lot of those swings were questions or advice rather than reflections. Remember, a reflection is a statement that hands the client's meaning back to them. Lead with what they feel, not with a question.";
-  if(deep>=6) return "Real power at the plate. You went beyond the surface again and again, reaching for meaning and ambivalence rather than just repeating words. Keep working in affirmations to round out your game.";
-  if(tally.simple_reflection>=6) return "You made steady contact, but a lot of singles. Next time, take a bigger swing: add the emotion or the meaning underneath what the client said and turn those singles into extra-base hits.";
-  if(tally.affirmation===0) return "Solid mix of reflections. One thing missing: affirmations. Try naming a genuine strength or effort you hear, starting with 'you', to add that to your range.";
-  return "Nice balanced game. You mixed simple and complex reflections and found some real depth. Keep reaching for the double-sided reflections that hold both sides at once.";
+  const deep=tally.complex_reflection+tally.change_oriented_reflection;
+  if(tally.other Implements>=4) return "Multiple swings registered as questions or implicit instruction. Shift from parsing with inquiries to handing back statements to let the client hear themselves.";
+  if(deep>=6) return "Elite power profile. You bypassed superficial rephrasing consistently to draw out implicit emotional values or address target change head-on.";
+  if(tally.simple_reflection>=6) return "Clean tracking connections made, but heavily restricted to base-level singles. Test out pushing reflections into unstated emotional spaces or processing alternative sides of the dilemma.";
+  if(tally.affirmation===0) return "Excellent pacing. Consider looking closely for underlying strengths to inject affirmative validation to keep your options dynamic.";
+  return "Incredibly robust defensive strategy. Balanced simple mirroring with structural interventions to shift sustain focus cleanly.";
+}
+
+// Wire up dictation engine capabilities
+if (recognition) {
+  const micBtn = document.getElementById("micBtn");
+  const txtArea = document.getElementById("reflection");
+  
+  recognition.onstart = () => { micBtn.classList.add("listening"); };
+  recognition.onend = () => { micBtn.classList.remove("listening"); };
+  recognition.onerror = () => { micBtn.classList.remove("listening"); };
+  recognition.onresult = (event) => {
+    const resultText = event.results[0][0].transcript;
+    if(txtArea.value) {
+      txtArea.value += " " + resultText;
+    } else {
+      txtArea.value = resultText;
+    }
+  };
+
+  micBtn.onclick = () => {
+    if (micBtn.classList.contains("listening")) {
+      recognition.stop();
+    } else {
+      recognition.start();
+    }
+  };
+} else {
+  document.getElementById("micBtn").style.display = "none"; // Hide system natively if not supported on older browsers
 }
 
 document.getElementById("playball").onclick=()=>{hide("start");show("game");resetGame();loadPitch();};
