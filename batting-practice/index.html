@@ -33,13 +33,9 @@
     padding:10px 16px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px;}
 
-  .clientcard{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;
-    padding:13px 15px;margin-top:16px;font-size:14.5px;}
-  .clientcard .nm{font-weight:700;font-size:15px;}
-  .clientcard .sc{color:#333;margin-top:3px;}
-  .target{display:inline-block;margin-top:9px;font-size:12.5px;font-weight:700;color:#fff;background:var(--accentDeep);
-    border-radius:20px;padding:3px 12px;}
-  .target b{font-weight:400;opacity:.85;text-transform:uppercase;letter-spacing:1px;font-size:10px;margin-right:6px;}
+  .focusbar{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;
+    padding:11px 15px;margin-top:16px;font-size:15px;}
+  .focusbar b{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--accentDeep);margin-right:8px;}
 
   .scoreboard{background:#1C2B22;color:#fff;border-radius:12px;padding:12px 18px;display:flex;gap:26px;align-items:center;margin-top:14px;}
   .sb .n{font-size:24px;font-weight:800;line-height:1;}
@@ -117,7 +113,7 @@
 
   <!-- GAME -->
   <div id="game" class="hidden">
-    <div class="clientcard" id="clientcard"></div>
+    <div class="focusbar" id="focusbar"></div>
 
     <div class="scoreboard">
       <div class="sb"><div class="n score" id="scoreN">0</div><div class="l">Score</div></div>
@@ -185,9 +181,9 @@ const HIT={
 
 let score,runs,pitchNum,totalPitches,bases,tally,history,pitchStart,client;
 
-const GEN_SYSTEM=`You are creating a client for a Motivational Interviewing reflection drill. Invent ONE realistic client with a single, clearly defined change target: a specific behavior they feel two ways about changing. Then write ten short first-person statements this same client might say across a session, each one or two sentences, that give a learner something to reflect. Mix change talk, sustain talk, ambivalence, and emotion, all consistent with this one client and their change target. Keep the background brief and easy to skim.
+const GEN_SYSTEM=`You are creating material for a Motivational Interviewing reflection drill. Invent ONE clearly defined change focus: a specific behavior a client feels two ways about changing (for example, cutting back on drinking, starting to exercise, leaving an unhealthy relationship). Then write ten short first-person statements a client with that change focus might say, each one or two sentences, that give a learner something to reflect. Mix change talk, sustain talk, ambivalence, and emotion, all consistent with that one change focus.
 Respond with ONLY a JSON object, no code fences and no extra text:
-{"name":"first name","scenario":"two or three sentence skimmable background","changeTarget":"the specific behavior they are ambivalent about, stated plainly","statements":["...", ... ten total]}`;
+{"changeTarget":"the specific behavior the client is ambivalent about, stated plainly","statements":["...", ... ten total]}`;
 
 const EVAL_SYSTEM=`You are a Motivational Interviewing coach scoring a learner's reflection in a drill. You are given the client's change target, the client statement, and the learner's response. Classify the response into EXACTLY ONE category, in this order of priority:
 - other: not a reflection or affirmation. A question, advice, a judgment, or praise centered on the speaker ("I'm proud of you", "I think that's great"). Reflections are statements, not questions.
@@ -228,10 +224,10 @@ function extractJSON(t){const s=t.indexOf("{"),e=t.lastIndexOf("}");if(s<0||e<0)
 
 async function newClientAndStart(){
   hide("start");hide("end");show("game");
-  document.getElementById("clientcard").innerHTML='<div class="status">Warming up a new client...</div>';
+  document.getElementById("focusbar").innerHTML='<span class="status">Lining up your pitches...</span>';
   document.getElementById("atbat").classList.add("hidden");hide("result");
   try{
-    const raw=await callChat(GEN_SYSTEM,[{role:"user",content:"Create the client and statements."}],GEN_MODEL,900);
+    const raw=await callChat(GEN_SYSTEM,[{role:"user",content:"Create the change focus and statements."}],GEN_MODEL,900);
     const c=extractJSON(raw);
     if(!c.statements||!c.statements.length) throw new Error("no statements returned");
     client=c;
@@ -239,16 +235,12 @@ async function newClientAndStart(){
     score=0;runs=0;pitchNum=1;bases=[false,false,false];
     tally={simple_reflection:0,complex_reflection:0,affirmation:0,change_reflection:0,other:0};
     history=[];
-    document.getElementById("clientcard").innerHTML=
-      '<div class="nm">'+esc(c.name||"Your client")+'</div>'
-      +'<div class="sc">'+esc(c.scenario||"")+'</div>'
-      +'<div class="target"><b>Change target</b>'+esc(c.changeTarget||"")+'</div>';
-    document.getElementById("pitchWho").textContent=c.name||"Client";
+    document.getElementById("focusbar").innerHTML='<b>Change focus</b>'+esc(c.changeTarget||"");
     renderScore();renderBases();
     document.getElementById("atbat").classList.remove("hidden");
     loadPitch();
   }catch(e){
-    document.getElementById("clientcard").innerHTML='<div class="err">Couldn\'t warm up a client. '+esc(e.message)+' <button class="btnout" id="cretry">Try again</button></div>';
+    document.getElementById("focusbar").innerHTML='<div class="err">Couldn\'t set up the round. '+esc(e.message)+' <button class="btnout" id="cretry">Try again</button></div>';
     document.getElementById("cretry").onclick=newClientAndStart;
   }
 }
