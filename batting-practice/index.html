@@ -113,7 +113,7 @@
 
   <!-- GAME -->
   <div id="game" class="hidden">
-    <div class="focusbar" id="focusbar"></div>
+    <div id="setupMsg"></div>
 
     <div class="scoreboard">
       <div class="sb"><div class="n score" id="scoreN">0</div><div class="l">Score</div></div>
@@ -133,6 +133,7 @@
     </div>
 
     <div id="atbat">
+      <div class="focusbar" id="focusbar"></div>
       <div class="pitch" id="pitch"><div class="who" id="pitchWho">Client</div><span id="pitchText"></span></div>
       <div class="cdwrap"><div class="cdbar" id="cdbar"><span class="cdball">&#9918;</span></div></div>
       <div class="cdlabel">Speed bonus</div>
@@ -181,9 +182,9 @@ const HIT={
 
 let score,runs,pitchNum,totalPitches,bases,tally,history,pitchStart,client;
 
-const GEN_SYSTEM=`You are creating material for a Motivational Interviewing reflection drill. Invent ONE clearly defined change focus: a specific behavior a client feels two ways about changing (for example, cutting back on drinking, starting to exercise, leaving an unhealthy relationship). Then write ten short first-person statements a client with that change focus might say, each one or two sentences, that give a learner something to reflect. Mix change talk, sustain talk, ambivalence, and emotion, all consistent with that one change focus.
+const GEN_SYSTEM=`You are creating material for a Motivational Interviewing reflection drill. Create ten separate practice pitches. Each pitch is a different client with a different change focus, so the set stays varied: a specific behavior that client feels two ways about changing (for example, cutting back on drinking, starting to exercise, leaving an unhealthy relationship, taking medication, quitting vaping, setting boundaries with a parent). For each, write one short first-person client statement (one or two sentences) that gives a learner something to reflect, mixing change talk, sustain talk, ambivalence, and emotion across the ten. Vary the topics widely.
 Respond with ONLY a JSON object, no code fences and no extra text:
-{"changeTarget":"the specific behavior the client is ambivalent about, stated plainly","statements":["...", ... ten total]}`;
+{"pitches":[{"changeTarget":"the behavior this client is ambivalent about, stated plainly","statement":"the client's words"}, ... ten total]}`;
 
 const EVAL_SYSTEM=`You are a Motivational Interviewing coach scoring a learner's reflection in a drill. You are given the client's change target, the client statement, and the learner's response. Classify the response into EXACTLY ONE category, in this order of priority:
 - other: not a reflection or affirmation. A question, advice, a judgment, or praise centered on the speaker ("I'm proud of you", "I think that's great"). Reflections are statements, not questions.
@@ -224,23 +225,23 @@ function extractJSON(t){const s=t.indexOf("{"),e=t.lastIndexOf("}");if(s<0||e<0)
 
 async function newClientAndStart(){
   hide("start");hide("end");show("game");
-  document.getElementById("focusbar").innerHTML='<span class="status">Lining up your pitches...</span>';
+  document.getElementById("setupMsg").innerHTML='<div class="status">Lining up your pitches...</div>';
   document.getElementById("atbat").classList.add("hidden");hide("result");
   try{
-    const raw=await callChat(GEN_SYSTEM,[{role:"user",content:"Create the change focus and statements."}],GEN_MODEL,900);
+    const raw=await callChat(GEN_SYSTEM,[{role:"user",content:"Create the ten pitches."}],GEN_MODEL,1000);
     const c=extractJSON(raw);
-    if(!c.statements||!c.statements.length) throw new Error("no statements returned");
+    if(!c.pitches||!c.pitches.length) throw new Error("no pitches returned");
     client=c;
-    totalPitches=Math.min(10,c.statements.length);
+    totalPitches=Math.min(10,c.pitches.length);
     score=0;runs=0;pitchNum=1;bases=[false,false,false];
     tally={simple_reflection:0,complex_reflection:0,affirmation:0,change_reflection:0,other:0};
     history=[];
-    document.getElementById("focusbar").innerHTML='<b>Change focus</b>'+esc(c.changeTarget||"");
+    document.getElementById("setupMsg").innerHTML="";
     renderScore();renderBases();
     document.getElementById("atbat").classList.remove("hidden");
     loadPitch();
   }catch(e){
-    document.getElementById("focusbar").innerHTML='<div class="err">Couldn\'t set up the round. '+esc(e.message)+' <button class="btnout" id="cretry">Try again</button></div>';
+    document.getElementById("setupMsg").innerHTML='<div class="err">Couldn\'t set up the round. '+esc(e.message)+' <button class="btnout" id="cretry">Try again</button></div>';
     document.getElementById("cretry").onclick=newClientAndStart;
   }
 }
@@ -277,8 +278,9 @@ function loadPitch(){
   hide("result");show("atbat");
   document.getElementById("err").innerHTML="";
   document.getElementById("reflection").value="";
-  const pt=document.getElementById("pitchText");
-  pt.textContent=client.statements[pitchNum-1];
+  const p=client.pitches[pitchNum-1];
+  document.getElementById("focusbar").innerHTML='<b>Change focus</b>'+esc(p.changeTarget||"");
+  document.getElementById("pitchText").textContent=p.statement;
   const pitch=document.getElementById("pitch");pitch.classList.remove("show");void pitch.offsetWidth;pitch.classList.add("show");
   document.getElementById("swing").disabled=false;
   pitchStart=Date.now();startCountdown();
@@ -292,9 +294,9 @@ async function swing(){
   const elapsed=Date.now()-pitchStart;
   const swingBtn=document.getElementById("swing"),status=document.getElementById("status");
   swingBtn.disabled=true;status.innerHTML='<div class="status">The umpire is calling it...</div>';
-  const stmt=client.statements[pitchNum-1];
+  const p=client.pitches[pitchNum-1];
   try{
-    const raw=await callChat(EVAL_SYSTEM,[{role:"user",content:'Change target: "'+client.changeTarget+'"\nClient statement: "'+stmt+'"\nLearner response: "'+refl+'"'}],EVAL_MODEL,300);
+    const raw=await callChat(EVAL_SYSTEM,[{role:"user",content:'Change target: "'+p.changeTarget+'"\nClient statement: "'+p.statement+'"\nLearner response: "'+refl+'"'}],EVAL_MODEL,300);
     let parsed;try{parsed=extractJSON(raw);}catch(e){parsed={category:"other",feedback:"That one was hard to read. Try a clear reflection that hands the client's meaning back to them."};}
     let cat=parsed.category; if(!HIT[cat])cat="other";
     const hit=HIT[cat];
