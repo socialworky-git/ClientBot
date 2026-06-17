@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Socialworky Practice Tools</title>
+<style>
+  /* To match your site's brand, change --accent below. */
+  :root{
+    --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
+    --accent:#EB786B; --accentDeep:#C2452F;
+    --sans:Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:24px;line-height:1.5;}
+  .wrap{max-width:780px;margin:0 auto;}
+  .brand{font-weight:700;font-size:26px;letter-spacing:-0.3px;}
+  .brand .acc{color:var(--accent);}
+  .tagline{color:var(--muted);font-size:14px;margin-top:4px;}
+  .lead{color:var(--muted);font-size:15.5px;margin:14px 0 0;max-width:620px;}
+  .divider{height:1px;background:var(--line);margin:20px 0 4px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;}
+  .tool{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);
+    border-radius:12px;padding:18px;transition:border-color .12s,box-shadow .12s;}
+  .tool:hover{border-color:var(--accent);box-shadow:0 1px 10px rgba(0,0,0,.06);}
+  .tool .tag{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);}
+  .tool .nm{font-size:19px;font-weight:700;margin:7px 0 5px;}
+  .tool .ds{font-size:14px;color:var(--muted);}
+  .tool .go{display:inline-block;margin-top:12px;font-size:13.5px;font-weight:700;color:var(--accentDeep);}
+  .soon{opacity:.6;cursor:default;border-style:dashed;}
+  .soon:hover{border-color:var(--line);box-shadow:none;}
+  .soon .tag{color:var(--muted);}
+  .foot{color:var(--muted);font-size:12.5px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;}
+  @media (max-width:560px){ body{padding:16px;} .grid{grid-template-columns:1fr;} .brand{font-size:23px;} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">Social<span class="acc">worky</span> Tools</div>
+  <div class="tagline">Practice tools and interactive activities for social work training</div>
+  <p class="lead">Pick a tool to get started. Each one runs right in your browser, nothing to install. Your work is private and is not saved unless you choose to download or share it.</p>
+
+  <div class="divider"></div>
+  <div class="grid">
+
+    <a class="tool" href="/clientbot/">
+      <div class="tag">Motivational Interviewing</div>
+      <div class="nm">ClientBot</div>
+      <div class="ds">Practice MI with a realistic AI client, ask CoachBot for help mid-session, and get a coding sheet on your skills at the end. Build your own client to match your caseload.</div>
+      <span class="go">Open ClientBot &rarr;</span>
+    </a>
+
+    <a class="tool" href="/empathy-screening/">
+      <div class="tag">Suicide prevention</div>
+      <div class="nm">Empathy as a Pathway to Screening</div>
+      <div class="ds">Practice reflecting on a client's pain, summarizing the meaning, and moving into a suicide screening question. Work as a group and get coaching feedback on each scenario.</div>
+      <span class="go">Open &rarr;</span>
+    </a>
+
+    <!-- To add another tool later: copy this block, change the path, name, and text.
+    <a class="tool" href="/toolname/">
+      <div class="tag">Category</div>
+      <div class="nm">Tool name</div>
+      <div class="ds">Short description.</div>
+      <span class="go">Open &rarr;</span>
+    </a>
+    -->
+
+    <div class="tool soon">
+      <div class="tag">Coming soon</div>
+      <div class="nm">More tools on the way</div>
+      <div class="ds">Additional practice chatbots and interactive activities will appear here as they are added.</div>
+    </div>
+
+  </div>
+
+  <div class="foot">A Socialworky training resource. Tools are practice simulations, not clinical advice. Please use only fictional or composite details, never real client information.</div>
+</div>
+</body>
+</html>
