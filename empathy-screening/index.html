@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Empathy as a Pathway to Screening</title>
 <style>
-  /* To match your site's brand, change --accent below. */
   :root{
     --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
     --accent:#EB786B; --accentDeep:#C2452F;
@@ -23,6 +22,9 @@
   .intro{color:var(--muted);font-size:15px;margin:14px 0 0;max-width:620px;}
   .print-date{display:none;}
   .divider{height:1px;background:var(--line);margin:18px 0;}
+  .vignette{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:10px;padding:14px 16px;margin-top:16px;font-size:15px;line-height:1.55;}
+  .vignette .who{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);margin-bottom:6px;}
   .roundlabel{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);
     border-bottom:1px solid var(--line);padding-bottom:6px;margin:26px 0 14px;}
   .step{margin:0 0 18px;}
@@ -32,7 +34,7 @@
   .prompt{font-size:13px;font-weight:700;color:var(--ink);margin:12px 0 5px;}
   .prompt .hint{font-weight:400;color:var(--muted);font-size:12.5px;}
   textarea,input[type=text]{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;
-    font-size:15px;font-family:var(--sans);background:var(--white,#fff);color:var(--ink);outline:none;}
+    font-size:15px;font-family:var(--sans);background:#fff;color:var(--ink);outline:none;}
   textarea:focus,input[type=text]:focus{border-color:var(--accent);}
   textarea{resize:vertical;min-height:60px;}
   .summarybox{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:6px;}
@@ -43,7 +45,10 @@
   .btn:disabled{background:#AEB6C2;cursor:default;}
   .btnout{background:#fff;border:1px solid var(--accentDeep);color:var(--accentDeep);border-radius:8px;
     padding:10px 16px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;}
+  .aibox{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:24px;background:#fff;}
+  .aibox .lbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--muted);}
+  .aibox .note{font-size:13px;color:var(--muted);margin:6px 0 0;line-height:1.5;}
   .feedback{background:var(--fbbg);border:1px solid var(--fbline);border-radius:10px;padding:14px 16px;
     margin-top:12px;font-size:14.5px;color:var(--fbink);white-space:pre-wrap;line-height:1.55;}
   .feedback .who{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);margin-bottom:6px;}
@@ -53,12 +58,12 @@
   @media (max-width:560px){ body{padding:14px;} h1{font-size:21px;} .btn,.btnout{width:100%;} }
   @media print{
     body{padding:0;color:#000;}
-    .hublink,.btn,.btnout,.row,.status,.err{display:none !important;}
+    .hublink,.btn,.btnout,.row,.status,.err,.aibox{display:none !important;}
     .print-date{display:block !important;font-size:12px;color:#444;margin-top:2px;}
     textarea,input[type=text]{display:none !important;}
     .pmirror{display:block !important;white-space:pre-wrap;border:1px solid #ccc;border-radius:6px;
       padding:8px 10px;font-size:14px;min-height:0;background:#fff;}
-    .client,.summarybox,.feedback,.step{break-inside:avoid;}
+    .client,.summarybox,.feedback,.step,.vignette{break-inside:avoid;}
   }
 </style>
 </head>
@@ -69,104 +74,83 @@
   <h1>Empathy as a Pathway to Screening</h1>
   <div class="tagline">Reflect, summarize the meaning, and move toward a screening question</div>
   <div class="print-date" id="pdate"></div>
-  <p class="intro">Work through each scenario together as a group. Respond empathically to the client's pain, summarize the meaning beneath their distress, and use that understanding to introduce a suicide screening question. When you've drafted your responses, ask for feedback.</p>
+  <p class="intro">Read the vignette, then work through the session together as a group. Respond empathically to the client's pain, summarize the meaning beneath it, and use that understanding to introduce a suicide screening question. Optional coaching feedback is available at the bottom.</p>
+
+  <div class="vignette" id="vignette"><div class="who">The client</div></div>
 
   <div id="err"></div>
 
-  <!-- SCENARIO 1 -->
-  <div class="roundlabel">Scenario 1</div>
+  <div class="roundlabel">The session</div>
 
   <div class="step">
-    <div class="client"><div class="who">Client</div>I try to keep it together for everyone, but most days I'm just empty. I smile when people talk to me, but inside I feel like I'm breaking. I don't even know who I am anymore.</div>
-    <div class="prompt">Your reflection <span class="hint">capture the feeling and meaning, not just the words</span></div>
-    <textarea id="r1c1"></textarea><div class="pmirror" data-for="r1c1"></div>
+    <div class="client"><div class="who">Wade</div>I try to keep it together for everyone, but most days I'm just empty. I smile when people talk to me, but inside I feel like I'm breaking. I don't even know who I am anymore.</div>
+    <div class="prompt">Your reflection <span class="hint">reach the feeling and meaning, not just the words</span></div>
+    <textarea id="c1"></textarea><div class="pmirror" data-for="c1"></div>
   </div>
 
   <div class="step">
-    <div class="client"><div class="who">Client</div>It's like I'm performing all the time. People say I seem strong, but they have no idea how hard it is to keep up the act. I'm so tired of pretending.</div>
+    <div class="client"><div class="who">Wade</div>It's like I'm performing all the time. People say I seem strong, but they have no idea how hard it is to keep up the act. I'm so tired of pretending.</div>
     <div class="prompt">Your reflection</div>
-    <textarea id="r1c2"></textarea><div class="pmirror" data-for="r1c2"></div>
+    <textarea id="c2"></textarea><div class="pmirror" data-for="c2"></div>
   </div>
 
   <div class="step">
-    <div class="client"><div class="who">Client</div>Sometimes I wish someone would notice that I'm not really fine. But then, if they did, I don't even know what I'd say. I don't want to fall apart in front of people.</div>
+    <div class="client"><div class="who">Wade</div>Sometimes I wish someone would notice that I'm not really fine. But then, if they did, I don't even know what I'd say. I don't want to fall apart in front of people.</div>
     <div class="summarybox">
       <p class="lead">Now bring it together. Build the move in three parts:</p>
-      <div class="prompt">Summary statement <span class="hint">gather the threads so the client feels heard</span></div>
-      <textarea id="r1sum"></textarea><div class="pmirror" data-for="r1sum"></div>
-      <div class="prompt">Linking phrase <span class="hint">bridge from their pain toward the question</span></div>
-      <textarea id="r1link"></textarea><div class="pmirror" data-for="r1link"></div>
+      <div class="prompt">Summary statement <span class="hint">gather the threads so Wade feels heard</span></div>
+      <textarea id="sum"></textarea><div class="pmirror" data-for="sum"></div>
+      <div class="prompt">Linking phrase <span class="hint">bridge from his pain toward the question</span></div>
+      <textarea id="link"></textarea><div class="pmirror" data-for="link"></div>
       <div class="prompt">Suicide screening question <span class="hint">direct, clear, and caring</span></div>
-      <input type="text" id="r1screen" /><div class="pmirror" data-for="r1screen"></div>
+      <input type="text" id="screen" /><div class="pmirror" data-for="screen"></div>
     </div>
   </div>
 
-  <div class="row">
-    <button class="btn" id="fb1">Get feedback on Scenario 1</button>
-  </div>
-  <div id="r1status"></div>
-  <div id="r1feedback"></div>
-
-  <div class="divider"></div>
-
-  <!-- SCENARIO 2 -->
-  <div class="roundlabel">Scenario 2</div>
-
-  <div class="step">
-    <div class="client"><div class="who">Client</div>It feels like everything I do ends in failure. I've tried to get help before, but nothing changes. I'm tired of trying so hard for a life that doesn't get better.</div>
-    <div class="prompt">Your reflection</div>
-    <textarea id="r2c1"></textarea><div class="pmirror" data-for="r2c1"></div>
-  </div>
-
-  <div class="step">
-    <div class="client"><div class="who">Client</div>I used to think things would turn around, but now it just feels like the same problems on repeat. Even getting out of bed feels like another fight I'm destined to lose.</div>
-    <div class="prompt">Your reflection</div>
-    <textarea id="r2c2"></textarea><div class="pmirror" data-for="r2c2"></div>
-  </div>
-
-  <div class="step">
-    <div class="client"><div class="who">Client</div>Sometimes I see other people living their lives, making progress, and I can't help thinking something's just broken in me. I don't feel angry about it anymore... just worn out.</div>
-    <div class="summarybox">
-      <p class="lead">Now bring it together. Build the move in three parts:</p>
-      <div class="prompt">Summary statement</div>
-      <textarea id="r2sum"></textarea><div class="pmirror" data-for="r2sum"></div>
-      <div class="prompt">Linking phrase</div>
-      <textarea id="r2link"></textarea><div class="pmirror" data-for="r2link"></div>
-      <div class="prompt">Suicide screening question</div>
-      <input type="text" id="r2screen" /><div class="pmirror" data-for="r2screen"></div>
+  <div class="aibox">
+    <div class="lbl">Optional: AI feedback</div>
+    <p class="note">If you'd like coaching on what you wrote, this button sends your written responses to an AI language model (OpenAI) and returns feedback. It is entirely optional. Your work is not saved or stored anywhere, and if you would prefer not to use AI, you can skip this and still complete and save the worksheet below.</p>
+    <div class="row">
+      <button class="btn" id="fb">Get AI feedback</button>
     </div>
+    <div id="status"></div>
+    <div id="feedback"></div>
   </div>
-
-  <div class="row">
-    <button class="btn" id="fb2">Get feedback on Scenario 2</button>
-  </div>
-  <div id="r2status"></div>
-  <div id="r2feedback"></div>
 
   <div class="divider"></div>
   <div class="row">
     <button class="btnout" id="savepdf">Save as PDF</button>
   </div>
 
-  <div class="foot">A Socialworky training resource. These are fictional practice scenarios, and the feedback is AI-generated for educational use. Please use only fictional or composite details.</div>
+  <div class="foot">A Socialworky training resource. This is a fictional practice scenario. The optional feedback is AI-generated for educational use. Please use only fictional or composite details.</div>
 </div>
 
 <script>
 const FEEDBACK_MODEL="gpt-4.1";
 
-const FEEDBACK_SYSTEM=`You are an expert clinical educator coaching social work learners on one specific skill: using empathy as a pathway to a suicide screening question. The skill has four moves, in order:
-1. Accurate, often complex reflections that capture the feeling and meaning beneath a client's words, not just the content. A reflection is a statement, not a question.
-2. A summary statement that gathers the threads across what the client has shared so the client feels truly heard.
-3. A linking phrase that bridges naturally from that understanding toward a screening question, building on the client's own words rather than swerving or minimizing.
-4. A direct, clear suicide screening question that names suicide explicitly and caringly (for example, plainly asking whether the person is thinking about suicide), rather than a vague or euphemistic one.
+const VIGNETTE="Wade Hollis is a 43-year-old ICU nurse, the charge nurse most shifts and the one the new hires get paired with because he never seems to lose his footing. He's here for what the front desk has down as a wellness visit; his wife, Steph, pushed him to schedule it after months of him picking up extra shifts, sleeping a few hours at most, and waving off anyone who asked if he was alright. He's pleasant in the room, maybe a little too pleasant, cracking a joke about the parking lot and apologizing twice for taking up your time when \"there are people way worse off than me.\" He's in scrubs, coming off a night shift and going back tonight. When you ask what's going on, he says it's mostly money and not sleeping, that two kids and a mortgage on one and a half incomes will do that to you, and that he's \"fine, just tired.\" It's when the small talk runs out that the register changes.";
 
-You will be given the client's statements and the responses a small group of learners drafted together. Give warm, specific, conversational feedback, the kind a thoughtful supervisor gives. Walk through the parts:
-- Reflections: Are they genuine reflections rather than questions? Do they reach the emotion and meaning? Name what landed, and offer one concrete way to deepen a reflection that stayed on the surface.
-- Summary: Does it pull the threads together (the performing, the exhaustion, the quiet wish to be seen) into something that shows the client they were heard?
-- Linking phrase: Does it move toward the screen gently and honestly, growing out of the client's own words?
-- Screening question: Is it direct and unambiguous, naming suicide clearly and with care? If it is vague or euphemistic, explain why directness is the safer and more compassionate choice, and that asking directly about suicide does not plant the idea or increase risk.
+const LINES=[
+  "I try to keep it together for everyone, but most days I'm just empty. I smile when people talk to me, but inside I feel like I'm breaking. I don't even know who I am anymore.",
+  "It's like I'm performing all the time. People say I seem strong, but they have no idea how hard it is to keep up the act. I'm so tired of pretending.",
+  "Sometimes I wish someone would notice that I'm not really fine. But then, if they did, I don't even know what I'd say. I don't want to fall apart in front of people."
+];
 
-Lead with what the group did well, be honest about what could be stronger without being harsh, and write like a human teacher rather than a checklist. Start affirmations with "you." Keep it focused: a few short paragraphs.`;
+const FEEDBACK_SYSTEM=`You are an expert clinical educator coaching social work learners on one specific skill: using empathy as a pathway to a suicide screening question. You will be given a short vignette about the client, the client's statements, and the responses a small group of learners drafted together.
+
+The skill has four moves, in order:
+1. Accurate, often complex reflections that capture the feeling and meaning beneath the client's words, not just the content. A reflection is a statement, not a question, and here it must fit THIS client, a man whose whole presentation is competence and masking.
+2. A summary statement that gathers the threads across what he has shared so he feels genuinely heard.
+3. A linking phrase that bridges naturally from that understanding toward a screening question, growing out of his own words rather than swerving or minimizing.
+4. A direct, clear suicide screening question that names suicide explicitly and caringly, rather than a vague or euphemistic one.
+
+Give warm, specific, conversational feedback, the kind a thoughtful supervisor gives. Walk through the parts:
+- Reflections: Are they genuine reflections rather than questions? Do they reach the exhaustion and the hidden ache under his "I'm fine" presentation? Name what landed, and offer one concrete way to deepen a reflection that stayed on the surface.
+- Summary: Does it pull the threads together (the performing, the bone-tiredness, the quiet wish to be seen) so a man who hides his pain feels safe enough to be seen?
+- Linking phrase: Does it move toward the screen gently and honestly, built on his own words?
+- Screening question: Is it direct and unambiguous, naming suicide clearly and with care? If it is vague or euphemistic, explain why directness is the safer, more compassionate choice with a client like this, and that asking directly about suicide does not plant the idea or increase risk.
+
+Lead with what the group did well, be honest about what could be stronger without being harsh, and write like a human teacher, not a checklist. Start affirmations with "you." Keep it focused: a few short paragraphs.`;
 
 function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function val(id){const el=document.getElementById(id);return el?el.value.trim():"";}
@@ -195,29 +179,15 @@ async function callChat(system,msgs,model,maxTokens){
   return (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
 }
 
-const SCENARIOS={
-  1:{ lines:[
-      "I try to keep it together for everyone, but most days I'm just empty. I smile when people talk to me, but inside I feel like I'm breaking. I don't even know who I am anymore.",
-      "It's like I'm performing all the time. People say I seem strong, but they have no idea how hard it is to keep up the act. I'm so tired of pretending.",
-      "Sometimes I wish someone would notice that I'm not really fine. But then, if they did, I don't even know what I'd say. I don't want to fall apart in front of people."
-    ], ids:{c1:"r1c1",c2:"r1c2",sum:"r1sum",link:"r1link",screen:"r1screen"} },
-  2:{ lines:[
-      "It feels like everything I do ends in failure. I've tried to get help before, but nothing changes. I'm tired of trying so hard for a life that doesn't get better.",
-      "I used to think things would turn around, but now it just feels like the same problems on repeat. Even getting out of bed feels like another fight I'm destined to lose.",
-      "Sometimes I see other people living their lives, making progress, and I can't help thinking something's just broken in me. I don't feel angry about it anymore... just worn out."
-    ], ids:{c1:"r2c1",c2:"r2c2",sum:"r2sum",link:"r2link",screen:"r2screen"} }
-};
-
-async function getFeedback(round){
-  const S=SCENARIOS[round], v=id=>val(S.ids[id]);
+async function getFeedback(){
+  const v=id=>val(id);
   const any=[v("c1"),v("c2"),v("sum"),v("link"),v("screen")].some(x=>x.length>0);
   if(!any){ showErr("Draft at least one response before asking for feedback."); return; }
   clearErr();
-  const btn=document.getElementById("fb"+round);
-  const status=document.getElementById("r"+round+"status");
+  const btn=document.getElementById("fb"), status=document.getElementById("status");
   btn.disabled=true; status.innerHTML='<div class="status">Reading your responses...</div>';
   const blank=s=>s?s:"(left blank)";
-  const ask="SCENARIO "+round+"\nThe client said, across three turns:\n1. \""+S.lines[0]+"\"\n2. \""+S.lines[1]+"\"\n3. \""+S.lines[2]+"\"\n\n"
+  const ask="VIGNETTE\n"+VIGNETTE+"\n\nThe client said, across three turns:\n1. \""+LINES[0]+"\"\n2. \""+LINES[1]+"\"\n3. \""+LINES[2]+"\"\n\n"
     +"The group drafted these responses:\n"
     +"Reflection to statement 1: \""+blank(v("c1"))+"\"\n"
     +"Reflection to statement 2: \""+blank(v("c2"))+"\"\n"
@@ -226,7 +196,7 @@ async function getFeedback(round){
     +"Screening question: \""+blank(v("screen"))+"\"\n\nGive the group feedback on their responses.";
   try{
     const fb=(await callChat(FEEDBACK_SYSTEM,[{role:"user",content:ask}],FEEDBACK_MODEL,900)).trim();
-    document.getElementById("r"+round+"feedback").innerHTML='<div class="feedback"><div class="who">Coaching feedback</div>'+esc(fb)+'</div>';
+    document.getElementById("feedback").innerHTML='<div class="feedback"><div class="who">Coaching feedback</div>'+esc(fb)+'</div>';
     status.innerHTML="";
   }catch(e){
     status.innerHTML="";
@@ -239,13 +209,12 @@ function syncMirrors(){
   document.querySelectorAll(".pmirror").forEach(d=>{const f=document.getElementById(d.dataset.for);d.textContent=f?f.value:"";});
 }
 function printDoc(){syncMirrors();window.print();}
-
 function showErr(msg){document.getElementById("err").innerHTML='<div class="err">'+esc(msg)+'</div>';}
 function clearErr(){document.getElementById("err").innerHTML="";}
 
+document.getElementById("vignette").innerHTML='<div class="who">The client</div>'+esc(VIGNETTE);
 document.getElementById("pdate").textContent=new Date().toLocaleDateString();
-document.getElementById("fb1").onclick=()=>getFeedback(1);
-document.getElementById("fb2").onclick=()=>getFeedback(2);
+document.getElementById("fb").onclick=getFeedback;
 document.getElementById("savepdf").onclick=printDoc;
 </script>
 </body>
