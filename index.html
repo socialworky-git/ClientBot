@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Socialworky Practice Tools</title>
+<title>Socialworky Tools</title>
 <style>
   /* To match your site's brand, change --accent below. */
   :root{
@@ -18,8 +18,9 @@
   .brand .acc{color:var(--accent);}
   .tagline{color:var(--muted);font-size:14px;margin-top:4px;}
   .lead{color:var(--muted);font-size:15.5px;margin:14px 0 0;max-width:620px;}
-  .divider{height:1px;background:var(--line);margin:20px 0 4px;}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;}
+  .section-title{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);
+    margin:30px 0 0;padding-bottom:6px;border-bottom:1px solid var(--line);}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;}
   .tool{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);
     border-radius:12px;padding:18px;transition:border-color .12s,box-shadow .12s;}
   .tool:hover{border-color:var(--accent);box-shadow:0 1px 10px rgba(0,0,0,.06);}
@@ -30,7 +31,7 @@
   .soon{opacity:.6;cursor:default;border-style:dashed;}
   .soon:hover{border-color:var(--line);box-shadow:none;}
   .soon .tag{color:var(--muted);}
-  .foot{color:var(--muted);font-size:12.5px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;}
+  .foot{color:var(--muted);font-size:12.5px;margin-top:30px;border-top:1px solid var(--line);padding-top:14px;}
   @media (max-width:560px){ body{padding:16px;} .grid{grid-template-columns:1fr;} .brand{font-size:23px;} }
 </style>
 </head>
@@ -40,38 +41,41 @@
   <div class="tagline">Practice tools and interactive activities for social work training</div>
   <p class="lead">Pick a tool to get started. Each one runs right in your browser, nothing to install. Your work is private and is not saved unless you choose to download or share it.</p>
 
-  <div class="divider"></div>
+  <div class="section-title">Motivational Interviewing</div>
   <div class="grid">
-
     <a class="tool" href="/clientbot/">
-      <div class="tag">Motivational Interviewing</div>
+      <div class="tag">MI practice</div>
       <div class="nm">ClientBot</div>
       <div class="ds">Practice MI with a realistic AI client, ask CoachBot for help mid-session, and get a coding sheet on your skills at the end. Build your own client to match your caseload.</div>
       <span class="go">Open ClientBot &rarr;</span>
     </a>
-
-    <a class="tool" href="/empathy-screening/">
-      <div class="tag">Suicide prevention</div>
-      <div class="nm">Empathy as a Pathway to Screening</div>
-      <div class="ds">Practice reflecting on a client's pain, summarizing the meaning, and moving into a suicide screening question. Work as a group and get coaching feedback on each scenario.</div>
+    <a class="tool" href="/batting-practice/">
+      <div class="tag">Reflection drill</div>
+      <div class="nm">Reflection Batting Practice</div>
+      <div class="ds">A fast, playful game: one AI client with a change target pitches you ten statements, and your reflections are scored like baseball. Simple reflections are singles; reflections that grow change talk are home runs.</div>
       <span class="go">Open &rarr;</span>
     </a>
+  </div>
 
+  <div class="section-title">Suicide-Specific Skills</div>
+  <div class="grid">
+    <a class="tool" href="/empathy-screening/">
+      <div class="tag">Screening</div>
+      <div class="nm">Empathy as a Pathway to Screening</div>
+      <div class="ds">Practice reflecting on a client's pain, summarizing the meaning, and moving into a suicide screening question. Work as a group and get optional coaching feedback.</div>
+      <span class="go">Open &rarr;</span>
+    </a>
     <a class="tool" href="/treatment-planning/">
-      <div class="tag">Suicide prevention</div>
+      <div class="tag">Treatment planning</div>
       <div class="nm">Treatment Planning Practice</div>
       <div class="ds">Practice turning what a suicide risk assessment surfaces, especially the SSF Section A, into an initial treatment plan with clear problems, goals, objectives, and interventions. No AI; fill it in and save a PDF.</div>
       <span class="go">Open &rarr;</span>
     </a>
+  </div>
 
-    <a class="tool" href="/batting-practice/">
-      <div class="tag">Motivational Interviewing</div>
-      <div class="nm">Reflection Batting Practice</div>
-      <div class="ds">A fast, playful drill: a client statement is pitched, you reflect it back, and the swing is scored like baseball. Simple reflections are singles, complex ones triples, double-sided ones home runs. Ten pitches, then a box score.</div>
-      <span class="go">Open &rarr;</span>
-    </a>
-
-    <!-- To add another tool later: copy this block, change the path, name, and text.
+  <div class="section-title">Other</div>
+  <div class="grid">
+    <!-- To add another tool: copy a card above, change the path, tag, name, and text, and drop it in the right section.
     <a class="tool" href="/toolname/">
       <div class="tag">Category</div>
       <div class="nm">Tool name</div>
@@ -79,13 +83,11 @@
       <span class="go">Open &rarr;</span>
     </a>
     -->
-
     <div class="tool soon">
       <div class="tag">Coming soon</div>
       <div class="nm">More tools on the way</div>
-      <div class="ds">Additional practice chatbots and interactive activities will appear here as they are added.</div>
+      <div class="ds">Additional practice tools and interactive activities will appear here as they are added.</div>
     </div>
-
   </div>
 
   <div class="foot">A Socialworky training resource. Tools are practice simulations, not clinical advice. Please use only fictional or composite details, never real client information.</div>
