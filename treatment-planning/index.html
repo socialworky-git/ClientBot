@@ -70,11 +70,18 @@
   .btnout{background:#fff;border:1px solid var(--accentDeep);color:var(--accentDeep);border-radius:8px;
     padding:10px 16px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+  .aibox{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:24px;background:#fff;}
+  .aibox .lbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--muted);}
+  .aibox .note{font-size:13px;color:var(--muted);margin:6px 0 0;line-height:1.5;}
+  .feedback{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:13px 15px;margin-top:12px;font-size:14px;color:var(--ink);white-space:pre-wrap;line-height:1.55;}
+  .feedback .who{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);margin-bottom:6px;}
+  .status{font-size:13px;font-style:italic;color:var(--accentDeep);margin-top:8px;}
+  .err{color:var(--accentDeep);font-size:13px;margin-top:8px;}
   .foot{color:var(--muted);font-size:12px;margin-top:30px;border-top:1px solid var(--line);padding-top:14px;}
   @media (max-width:560px){ body{padding:14px;} h1{font-size:21px;} .btn,.btnout{width:100%;} }
   @media print{
     body{padding:0;color:#000;}
-    .hublink,.btn,.btnout,.row{display:none !important;}
+    .hublink,.btn,.btnout,.row,.aibox{display:none !important;}
     .print-date{display:block !important;font-size:12px;color:#444;margin-top:2px;}
     textarea,input[type=text]{display:none !important;}
     .pmirror{display:block !important;white-space:pre-wrap;border:1px solid #ccc;border-radius:6px;
@@ -116,10 +123,10 @@
     <dl class="def">
       <dt>Problem description</dt>
       <dd>The specific concern you are working on, stated plainly. It usually comes straight from what the assessment surfaced, a driver or a Section A area.</dd>
-      <dd class="ex">Example: Social isolation. Jamie has pulled away from the people who could support them.</dd>
+      <dd class="ex">Example: Social isolation. Jamie has pulled away from the people who could support her.</dd>
       <dt>Goal</dt>
       <dd>The broad outcome you are aiming for. Where you want things to land. A goal is usually not measurable on its own.</dd>
-      <dd class="ex">Example: Jamie no longer faces things alone and has people they can lean on.</dd>
+      <dd class="ex">Example: Jamie no longer faces things alone and has people she can lean on.</dd>
       <dt>Objective</dt>
       <dd>The concrete, measurable, time-bound step that shows you are moving toward the goal. How you will know it is working.</dd>
       <dd class="ex">Example: Within four weeks, Jamie reaches out to one trusted person at least once a week.</dd>
@@ -173,6 +180,15 @@
     <input type="text" id="p3dur" class="dur" /><div class="pmirror" data-for="p3dur"></div>
   </div>
 
+  <div class="aibox">
+    <div class="lbl">Optional: AI plan check</div>
+    <p class="note">When you have drafted your two problems, this sends what you wrote to an AI language model (OpenAI) and returns brief feedback on whether each piece is a problem, goal, objective, or intervention, and whether it connects to the driver. It does not write the plan for you. It is optional, your work is not saved, and you can skip it and still complete and save your plan.</p>
+    <div class="row"><button class="btn" id="checkbtn">Check my plan</button></div>
+    <div id="status"></div>
+    <div id="err"></div>
+    <div id="feedback"></div>
+  </div>
+
   <div class="row">
     <button class="btnout" id="savepdf">Save as PDF</button>
   </div>
@@ -187,6 +203,70 @@ function syncMirrors(){
   document.querySelectorAll(".pmirror").forEach(d=>{const f=document.getElementById(d.dataset.for);d.textContent=f?f.value:"";});
 }
 function printDoc(){syncMirrors();window.print();}
+
+const DRIVER2="Being on my own with all of it. I've stopped letting anyone in, and nobody really knows how bad it's gotten.";
+const DRIVER3="Feeling like I'm letting my kids down. They deserve better than what I can give them right now.";
+
+const PLAN_SYSTEM=`You are a clinical educator giving brief, matter-of-fact feedback on a learner's draft treatment plan. The learner is practicing turning a suicide risk assessment into a plan, and the specific skill is telling apart these four things:
+- Problem: the concern being addressed.
+- Goal: the broad outcome, not measurable on its own.
+- Objective: a concrete, measurable, time-bound step toward the goal.
+- Intervention: what the clinician and client actually do.
+
+You are given the driver each problem should address and what the learner wrote for two problems (problem description, goal, objective, intervention, duration). For each problem, give a few short, plain lines of feedback. Focus on:
+- Is each entry in the right category? Name it plainly when something is misplaced, for example an objective that is really a goal because it has no measure or timeframe, or an intervention that just restates the goal.
+- Does the objective include something measurable and a timeframe?
+- Does the plan connect to the driver it is meant to address?
+Be specific and concrete, not effusive. Do NOT rewrite their plan for them; point to what to fix so they can revise it themselves. If a piece is already solid, say so briefly. Keep the whole thing short and scannable, organized by problem, in plain text with no markdown headers.`;
+
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function showErr(msg){document.getElementById("err").innerHTML='<div class="err">'+esc(msg)+'</div>';}
+function clearErr(){document.getElementById("err").innerHTML="";}
+
+async function callChat(system,msgs,model,maxTokens){
+  const headers={"content-type":"application/json"};
+  const code=localStorage.getItem("clientbot_access_code");
+  if(code) headers["x-access-code"]=code;
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),45000);
+  let res;
+  try{
+    res=await fetch("/api/chat",{method:"POST",headers,signal:ctrl.signal,
+      body:JSON.stringify({system,messages:msgs,model,max_tokens:maxTokens})});
+  }catch(e){clearTimeout(timer);throw new Error(e.name==="AbortError"?"the request timed out":("network error - "+e.message));}
+  clearTimeout(timer);
+  if(res.status===401){
+    const entered=prompt("Enter the access code for this tool:");
+    if(entered){localStorage.setItem("clientbot_access_code",entered);return callChat(system,msgs,model,maxTokens);}
+    throw new Error("Access code required.");
+  }
+  let data;
+  try{data=await res.json();}catch(e){throw new Error("the server did not return readable data (status "+res.status+").");}
+  if(!res.ok) throw new Error((data&&data.error)||("status "+res.status));
+  return (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+}
+
+async function checkPlan(){
+  const f=id=>{const e=document.getElementById(id);return e?e.value.trim():"";};
+  const fields=["p2desc","p2goal","p2obj","p2int","p2dur","p3desc","p3goal","p3obj","p3int","p3dur"];
+  if(!fields.some(id=>f(id))){ showErr("Fill in some of your plan before checking it."); return; }
+  clearErr();
+  const btn=document.getElementById("checkbtn"), status=document.getElementById("status");
+  btn.disabled=true; status.innerHTML='<div class="status">Reviewing your plan...</div>';
+  const blank=s=>s?s:"(left blank)";
+  const ask="Driver for Problem 2: \""+DRIVER2+"\"\nLearner's Problem 2:\n"
+    +"- Problem description: "+blank(f("p2desc"))+"\n- Goal: "+blank(f("p2goal"))+"\n- Objective: "+blank(f("p2obj"))+"\n- Intervention: "+blank(f("p2int"))+"\n- Duration: "+blank(f("p2dur"))+"\n\n"
+    +"Driver for Problem 3: \""+DRIVER3+"\"\nLearner's Problem 3:\n"
+    +"- Problem description: "+blank(f("p3desc"))+"\n- Goal: "+blank(f("p3goal"))+"\n- Objective: "+blank(f("p3obj"))+"\n- Intervention: "+blank(f("p3int"))+"\n- Duration: "+blank(f("p3dur"))+"\n\nGive the feedback.";
+  try{
+    const fb=(await callChat(PLAN_SYSTEM,[{role:"user",content:ask}],"gpt-4.1",700)).trim();
+    document.getElementById("feedback").innerHTML='<div class="feedback"><div class="who">Plan check</div>'+esc(fb)+'</div>';
+    status.innerHTML="";
+  }catch(e){ status.innerHTML=""; showErr("Couldn't check the plan. Reason: "+e.message); }
+  btn.disabled=false;
+}
+
+document.getElementById("checkbtn").onclick=checkPlan;
 
 document.getElementById("vignette").innerHTML='<div class="who">Where things stand</div>'+VIGNETTE;
 document.getElementById("pdate").textContent=new Date().toLocaleDateString();
