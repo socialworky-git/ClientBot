@@ -90,11 +90,11 @@
   <a class="hublink" href="/">&larr; All tools</a>
   <div class="eyebrow">Motivational Interviewing</div>
   <h1>Reflection Batting Practice</h1>
-  <div class="tagline">Ten pitches</div>
+  <div class="tagline">Ten pitches, a new change focus each time</div>
 
   <!-- START -->
   <div id="start">
-    <p class="intro">You step up against one client who is working through a single change. They pitch you ten statements. Reflect each one back and swing. The more skillful the reflection, the bigger the hit.</p>
+    <p class="intro">Ten client statements get pitched to you, each with its own change focus shown above it. Reflect each one back and swing. The more skillful the reflection, the bigger the hit.</p>
     <div class="rules">
       <b>How the swings score:</b>
       <ul>
@@ -102,7 +102,7 @@
         <li><span class="pill p-double">Double</span> Complex reflection (you add meaning or emotion, including feeling and double-sided reflections)</li>
         <li><span class="pill p-triple">Triple</span> Affirmation (you name a real strength)</li>
         <li><span class="pill p-hr">Home run</span> A reflection that grows the client's change talk or softens their sustain talk</li>
-        <li><span class="pill p-k">Strikeout</span> A question, advice, or praise about you, not a reflection</li>
+        <li><span class="pill p-k">Strikeout</span> A question, advice, or praise, not a reflection</li>
       </ul>
       <div style="margin-top:8px">The baseball rolling toward home is your speed bonus. Swing while it lasts for extra points. A rushed weak reflection still only earns the weak score, so think first.</div>
     </div>
@@ -187,11 +187,17 @@ Respond with ONLY a JSON object, no code fences and no extra text:
 {"pitches":[{"changeTarget":"the behavior this client is ambivalent about, stated plainly","statement":"the client's words"}, ... ten total]}`;
 
 const EVAL_SYSTEM=`You are a Motivational Interviewing coach scoring a learner's reflection in a drill. You are given the client's change target, the client statement, and the learner's response. Classify the response into EXACTLY ONE category, in this order of priority:
-- other: not a reflection or affirmation. A question, advice, a judgment, or praise centered on the speaker ("I'm proud of you", "I think that's great"). Reflections are statements, not questions.
-- change_reflection: a reflection that strategically cultivates the client's change talk or softens their sustain talk in service of the change target. For example, selectively reflecting the change side, a double-sided reflection that lands on the change side, or an amplified or understated reflection that draws out reasons to change. This is the highest skill.
-- affirmation: names a genuine strength, effort, or positive quality of the client, focused on the client.
-- complex_reflection: adds meaning, emotion, or depth, including feeling reflections and double-sided reflections, but does not specifically steer toward change.
+- other: the response is not a reflection or an affirmation. This means an actual question (it seeks new information and takes interrogative form or ends with a question mark), direct advice or persuasion (the clinician introduces their OWN recommendation, opinion, or new information), or praise (a clinician-centered "I" statement or verbal gold star such as "I'm proud of you" or "I think that's great").
+- change_reflection: a reflection that strategically cultivates the client's change talk or softens their sustain talk in service of the change target (selectively reflecting the change side, a double-sided reflection that lands on the change side, or an amplified or understated reflection that draws out reasons to change). This is the highest skill.
+- affirmation: names a genuine strength, effort, or positive quality of the client. An affirmation focuses on the client and centers on "you," not on the clinician's own feelings.
+- complex_reflection: adds meaning, emotion, or depth, including feeling reflections, double-sided reflections, and reflecting back a consequence or meaning the client themselves implied.
 - simple_reflection: repeats or lightly rephrases the client's words with little added meaning.
+
+Important judging rules:
+- A reflection is still a reflection when it is phrased tentatively or as a hunch. Openers like "it sounds like," "so you feel," "you're not sure," or "part of you wants" are reflections, NOT questions, even when the tone is uncertain. Only treat a response as a question when it genuinely asks for new information.
+- Reflecting a consequence, fear, or meaning that the client themselves implied is a complex reflection, NOT advice. It is only advice or persuasion when the clinician adds their own recommendation or new information that did not come from the client.
+- When a response is borderline, lean toward the reflection categories rather than "other." Reserve "other" for responses that are clearly a question, advice, or praise.
+
 Pick the single best fit. Then write ONE short, encouraging sentence of feedback: for a simple reflection, nudge them to add meaning or to steer toward change; for other, briefly say why it does not count and how to make it a reflection.
 Respond with ONLY a JSON object, no code fences: {"category":"...","feedback":"..."}`;
 
