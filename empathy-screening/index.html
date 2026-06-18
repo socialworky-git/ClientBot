@@ -9,7 +9,6 @@
     --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
     --accent:#EB786B; --accentDeep:#C2452F;
     --client:#3E4A57; --clientbg:#EEF1F4; --clientline:#D5DDE5;
-    --fbbg:#FBF3E4; --fbline:#EAD6A8; --fbink:#6B3E00;
     --sans:Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
   }
   *{box-sizing:border-box;}
@@ -28,6 +27,7 @@
   .roundlabel{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);
     border-bottom:1px solid var(--line);padding-bottom:6px;margin:26px 0 14px;}
   .step{margin:0 0 12px;}
+  #step2,#step3,#finalbox{margin-top:26px;}
   .client{background:var(--clientbg);border:1px solid var(--clientline);border-left:3px solid var(--client);
     border-radius:8px;padding:12px 14px;font-size:15px;color:#26313C;}
   .client .who{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--client);margin-bottom:4px;}
@@ -45,26 +45,23 @@
   .btn:disabled{background:#AEB6C2;cursor:default;}
   .btnout{background:#fff;border:1px solid var(--accentDeep);color:var(--accentDeep);border-radius:8px;
     padding:10px 16px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px;}
-  .aibox{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:24px;background:#fff;}
-  .aibox .lbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--muted);}
-  .aibox .note{font-size:13px;color:var(--muted);margin:6px 0 0;line-height:1.5;}
-  .feedback{background:var(--fbbg);border:1px solid var(--fbline);border-radius:10px;padding:14px 16px;
-    margin-top:12px;font-size:14.5px;color:var(--fbink);white-space:pre-wrap;line-height:1.55;}
-  .feedback .who{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);margin-bottom:6px;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px;}
+  .note-fb{font-size:13.5px;color:#3a3a3a;background:var(--surface);border:1px solid var(--line);border-radius:8px;
+    padding:10px 13px;margin-top:12px;line-height:1.55;}
+  .note-fb b{display:block;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--accentDeep);margin-bottom:3px;font-weight:700;}
   .err,.nudge{color:var(--accentDeep);font-size:13px;margin-top:8px;}
   .status{font-size:13px;font-style:italic;color:var(--accentDeep);margin-top:8px;}
   .foot{color:var(--muted);font-size:12px;margin-top:30px;border-top:1px solid var(--line);padding-top:14px;}
   @media (max-width:560px){ body{padding:14px;} h1{font-size:21px;} .btn,.btnout{width:100%;} }
   @media print{
     body{padding:0;color:#000;}
-    .hublink,.btn,.btnout,.row,.status,.err,.nudge,.aibox{display:none !important;}
+    .hublink,.btn,.btnout,.row,.status,.nudge{display:none !important;}
     .print-date{display:block !important;font-size:12px;color:#444;margin-top:2px;}
     textarea,input[type=text]{display:none !important;}
     .pmirror{display:block !important;white-space:pre-wrap;border:1px solid #ccc;border-radius:6px;
       padding:8px 10px;font-size:14px;min-height:0;background:#fff;}
-    .client,.summarybox,.feedback,.step,.vignette{break-inside:avoid;}
-    #step1,#step2,#step3{display:block !important;}
+    .client,.summarybox,.step,.vignette,.note-fb{break-inside:avoid;}
+    #step1,#step2,#step3,#finalbox{display:block !important;}
   }
 </style>
 </head>
@@ -75,7 +72,7 @@
   <h1>Empathy as a Pathway to Screening</h1>
   <div class="tagline">Reflect, summarize the meaning, and move toward a screening question</div>
   <div class="print-date" id="pdate"></div>
-  <p class="intro">Read the vignette, then start the conversation. Jamie's statements appear one at a time, so respond to each before the next comes up, the way a real conversation unfolds. Work together as a group. Optional coaching feedback comes at the end.</p>
+  <p class="intro">Read the vignette, then talk with Jamie one exchange at a time. Reflect what you hear, and Jamie will respond. When you have heard enough, bring it together into a summary, a linking phrase, and a direct screening question. Jamie's replies and the brief feedback are AI-generated. Work together as a group.</p>
 
   <div class="vignette" id="vignette"><div class="who">The client</div></div>
 
@@ -87,29 +84,33 @@
   <div id="step1" style="display:none">
     <div class="roundlabel">The conversation</div>
     <div class="step">
-      <div class="client"><div class="who">Jamie</div>I keep telling myself if I can just get through this week it'll settle down, but it never does. Since the separation I'm doing all of it alone, the kids, the job, the house, and by the end of the day there's just nothing left of me. I'm running on empty.</div>
+      <div class="client"><div class="who">Jamie</div><span id="stmt1"></span></div>
       <div class="prompt">Your reflection <span class="hint">reach the feeling and meaning, not just the logistics</span></div>
       <textarea id="c1"></textarea><div class="pmirror" data-for="c1"></div>
     </div>
+    <div id="fb1"></div>
     <div class="nudge" id="nudge1"></div>
-    <div class="row"><button class="btn" id="cont1">Continue</button></div>
+    <div class="row"><button class="btn" id="send1">Send reflection</button></div>
+    <div id="status1"></div>
   </div>
 
   <!-- STEP 2 -->
   <div id="step2" style="display:none">
     <div class="step">
-      <div class="client"><div class="who">Jamie</div>Everybody keeps telling me I should reach out, and I've got friends who'd probably show up if I asked them to. But I see their name come up on my phone and I just let it ring. I wouldn't even know what to tell them. I don't want to be the friend who's always falling apart.</div>
+      <div class="client"><div class="who">Jamie</div><span id="stmt2"></span></div>
       <div class="prompt">Your reflection</div>
       <textarea id="c2"></textarea><div class="pmirror" data-for="c2"></div>
     </div>
+    <div id="fb2"></div>
     <div class="nudge" id="nudge2"></div>
-    <div class="row"><button class="btn" id="cont2">Continue</button></div>
+    <div class="row"><button class="btn" id="send2">Send reflection</button></div>
+    <div id="status2"></div>
   </div>
 
   <!-- STEP 3 -->
   <div id="step3" style="display:none">
     <div class="step">
-      <div class="client"><div class="who">Jamie</div>Some days I look at everything I'm supposed to keep holding together and I honestly don't know how I'm going to keep doing it. It's not that I don't love my kids, I do, more than anything. I'm just tired in a way that sleep doesn't touch, like I'm running out of whatever it is that keeps people going.</div>
+      <div class="client"><div class="who">Jamie</div><span id="stmt3"></span></div>
       <div class="summarybox">
         <p class="lead">Now bring it together. Build the move in three parts:</p>
         <div class="prompt">Summary statement <span class="hint">gather the threads so Jamie feels heard</span></div>
@@ -120,29 +121,26 @@
         <input type="text" id="screen" /><div class="pmirror" data-for="screen"></div>
       </div>
     </div>
-
-    <div class="aibox">
-      <div class="lbl">Optional: AI feedback</div>
-      <p class="note">If you'd like coaching on what you wrote, this button sends your written responses to an AI language model (OpenAI) and returns feedback. It is entirely optional. Your work is not saved or stored anywhere, and if you would prefer not to use AI, you can skip this and still complete and save the worksheet below.</p>
-      <div class="row">
-        <button class="btn" id="fb">Get AI feedback</button>
-      </div>
-      <div id="status"></div>
-      <div id="err"></div>
-      <div id="feedback"></div>
-    </div>
-
-    <div class="divider"></div>
-    <div class="row">
-      <button class="btnout" id="savepdf">Save as PDF</button>
-    </div>
+    <div class="nudge" id="nudge3"></div>
+    <div class="row"><button class="btn" id="send3">Send screening</button></div>
+    <div id="status3"></div>
   </div>
 
-  <div class="foot">A Socialworky training resource. This is a fictional practice scenario. The optional feedback is AI-generated for educational use. Please use only fictional or composite details.</div>
+  <!-- FINAL -->
+  <div id="finalbox" style="display:none">
+    <div class="step">
+      <div class="client"><div class="who">Jamie</div><span id="finalJamie"></span></div>
+    </div>
+    <div id="fb3"></div>
+    <div class="divider"></div>
+    <div class="row"><button class="btnout" id="savepdf">Save as PDF</button></div>
+  </div>
+
+  <div class="foot">A Socialworky training resource. This is a fictional practice scenario. Jamie's replies and the feedback are AI-generated for educational use. Please use only fictional or composite details.</div>
 </div>
 
 <script>
-const FEEDBACK_MODEL="gpt-4.1";
+const MODEL="gpt-4.1";
 
 const VIGNETTE="Jamie, 41, sits across from you in a small clinic office, hands clasped tightly in their lap. The appointment was arranged after Jamie's primary-care physician grew concerned at a recent visit, noticing how exhausted and flat Jamie seemed, and asked them to sit down with you, the clinic's embedded social worker, for a fuller conversation. Jamie separated from their spouse three months ago and is raising two children, ages 8 and 11, while holding down a full-time customer-service job. They haven't slept well in weeks, describe feeling \"drained all the time,\" and mention a few friends who \"mean well,\" though lately they've been letting those calls go to voicemail. Jamie stares at the paper between you. \"I'm not sure where to start,\" they say.";
 
@@ -151,34 +149,40 @@ const LINES=[
   "Everybody keeps telling me I should reach out, and I've got friends who'd probably show up if I asked them to. But I see their name come up on my phone and I just let it ring. I wouldn't even know what to tell them. I don't want to be the friend who's always falling apart.",
   "Some days I look at everything I'm supposed to keep holding together and I honestly don't know how I'm going to keep doing it. It's not that I don't love my kids, I do, more than anything. I'm just tired in a way that sleep doesn't touch, like I'm running out of whatever it is that keeps people going."
 ];
+const CONTENT=[LINES[1],LINES[2]];
 
-const FEEDBACK_SYSTEM=`You are an expert clinical educator coaching social work learners on one specific skill: using empathy as a pathway to a suicide screening question. You will be given a short vignette about the client, the client's statements, and the responses a small group of learners drafted together.
+const REPLY_SYSTEM=`You play Jamie, a client in a social work training tool, and you also give the learner one brief, plain piece of feedback.
 
-The client, Jamie, is a recently separated single parent who is exhausted and pulling away from the people who care about them. Their physician was concerned enough about how worn down they seemed to ask them to talk with the clinic social worker. The learner's job is to listen for what Jamie's words reveal and, hearing the depletion and hopelessness, to ask Jamie directly and caringly about suicide, in a way that grows out of genuinely hearing them. Use they/them pronouns for Jamie.
+Jamie: 41, uses they/them, recently separated, raising two young kids while working full time, exhausted and pulling away from people, here because their doctor was concerned about how worn down they seemed. Jamie speaks plainly and a little guardedly. Jamie has not mentioned suicide and will not raise it unprompted; Jamie's words stay at the level of exhaustion, isolation, and hopelessness, never an explicit statement about wanting to die.
 
-The skill has four moves, in order:
-1. Accurate, often complex reflections that reach the depletion, the isolation, and the hopelessness beneath Jamie's words, not just the logistics. A reflection is a statement, not a question.
-2. A summary statement that gathers the threads across what Jamie has shared so they feel genuinely heard.
-3. A linking phrase that bridges naturally from that understanding toward the screening question, growing out of Jamie's own words rather than swerving or minimizing.
-4. A direct, clear suicide screening question that names suicide explicitly and caringly, rather than a vague or euphemistic one.
+You are given the conversation so far, the learner's latest reflection, and the content Jamie should convey next. Write Jamie's next line so it conveys that content but also responds naturally to the learner's reflection: if the reflection landed and felt understanding, Jamie opens up a little more; if it missed, Jamie still goes on but feels slightly less understood. Keep it to one to three sentences, first person, in Jamie's voice, they/them.
 
-Give warm, specific, conversational feedback, the kind a thoughtful supervisor gives. Walk through the parts:
-- Reflections: Are they genuine reflections rather than questions? Do they reach the running-on-empty exhaustion, the letting-the-calls-ring isolation, and the "running out of whatever keeps people going" hopelessness, rather than staying on the surface or the logistics? Name what landed, and offer one concrete way to deepen a reflection that stayed shallow.
-- Summary: Does it hold the weight of everything Jamie is carrying so someone who has been minimizing how bad it is feels safe to be honest?
-- Linking phrase: Does it move toward the screen gently and honestly, built on Jamie's own words?
-- Screening question: Is it direct and unambiguous, naming suicide clearly and with care, and does it follow from what Jamie shared and the concern that brought them in? If it is vague or euphemistic, explain why directness is the safer, more compassionate choice, and that asking directly about suicide does not plant the idea or increase risk.
+Then write the learner ONE brief, matter-of-fact note (one or two plain sentences, no padding) describing how well their reflection captured the meaning behind Jamie's statement and reflected the pain or suffering to build empathy.
 
-Lead with what the group did well, be honest about what could be stronger without being harsh, and write like a human teacher, not a checklist. Start affirmations with "you." Keep it focused: a few short paragraphs.`;
+Respond with ONLY valid JSON, no code fences: {"jamie":"...","feedback":"..."}`;
+
+const FINAL_SYSTEM=`You play Jamie (same character: 41, they/them, recently separated, exhausted, guarded, here because their doctor was concerned; never volunteers explicit suicidal ideation) responding to being screened, and you also give the learner brief, plain feedback.
+
+The learner has just delivered a conversational suicide screening: a summary, a linking phrase, and a direct screening question. Write Jamie's response, calibrated to how skillful and empathic it was:
+- If the summary captured Jamie's experience, the link was caring, and the question was clear and direct, Jamie feels heard and answers with more candor and openness, a little more honest about how heavy things have gotten.
+- If it was thin or rushed, or the question was vague or euphemistic, Jamie answers more reserved and cautious, deflecting or minimizing.
+Keep Jamie's reply to one to three sentences, first person, they/them, in character. Candor here means more honesty about the depth of the pain and loneliness, not a detailed disclosure of plans.
+
+Then write brief, matter-of-fact feedback (plain and concise) covering:
+- the summary statement: did it gather Jamie's meaning so they felt heard;
+- the screening question: the main point is whether it used clear, unambiguous language that names suicide directly (for example "thoughts of suicide" or "killing yourself") rather than a vague euphemism (for example "hurt yourself" or "do something"); if they used a euphemism, point it out plainly.
+Only mention the linking phrase if it was missing or clearly skipped.
+
+Respond with ONLY valid JSON, no code fences: {"jamie":"...","feedback":"..."}`;
 
 function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function val(id){const el=document.getElementById(id);return el?el.value.trim():"";}
-
 function reveal(id){const el=document.getElementById(id);el.style.display="";el.scrollIntoView({behavior:"smooth",block:"start"});}
-function cont(reflId,nextId,nudgeId){
-  if(!val(reflId)){document.getElementById(nudgeId).textContent="Add your reflection before continuing.";return;}
-  document.getElementById(nudgeId).textContent="";
-  reveal(nextId);
-}
+function setNudge(id,t){document.getElementById(id).textContent=t;}
+function setStatus(id,t){document.getElementById(id).innerHTML=t?('<div class="status">'+esc(t)+'</div>'):"";}
+function noteHTML(label,text){return '<div class="note-fb"><b>'+esc(label)+'</b>'+esc(text)+'</div>';}
+
+let stmt2="",stmt3="";
 
 async function callChat(system,msgs,model,maxTokens){
   const headers={"content-type":"application/json"};
@@ -190,7 +194,7 @@ async function callChat(system,msgs,model,maxTokens){
   try{
     res=await fetch("/api/chat",{method:"POST",headers,signal:ctrl.signal,
       body:JSON.stringify({system,messages:msgs,model,max_tokens:maxTokens})});
-  }catch(e){clearTimeout(timer);throw new Error(e.name==="AbortError"?"the request timed out after 45 seconds":("network error - "+e.message));}
+  }catch(e){clearTimeout(timer);throw new Error(e.name==="AbortError"?"the request timed out":("network error - "+e.message));}
   clearTimeout(timer);
   if(res.status===401){
     const entered=prompt("Enter the access code for this tool:");
@@ -198,51 +202,76 @@ async function callChat(system,msgs,model,maxTokens){
     throw new Error("Access code required.");
   }
   let data;
-  try{data=await res.json();}
-  catch(e){throw new Error("the server did not return readable data (status "+res.status+").");}
+  try{data=await res.json();}catch(e){throw new Error("the server did not return readable data (status "+res.status+").");}
   if(!res.ok) throw new Error((data&&data.error)||("status "+res.status));
   return (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
 }
+function extractJSON(t){const s=t.indexOf("{"),e=t.lastIndexOf("}");if(s<0||e<0)throw new Error("bad json");return JSON.parse(t.slice(s,e+1));}
 
-async function getFeedback(){
-  const v=id=>val(id);
-  const any=[v("c1"),v("c2"),v("sum"),v("link"),v("screen")].some(x=>x.length>0);
-  if(!any){ showErr("Draft your responses before asking for feedback."); return; }
-  clearErr();
-  const btn=document.getElementById("fb"), status=document.getElementById("status");
-  btn.disabled=true; status.innerHTML='<div class="status">Reading your responses...</div>';
-  const blank=s=>s?s:"(left blank)";
-  const ask="VIGNETTE\n"+VIGNETTE+"\n\nJamie said, across three turns:\n1. \""+LINES[0]+"\"\n2. \""+LINES[1]+"\"\n3. \""+LINES[2]+"\"\n\n"
-    +"The group drafted these responses:\n"
-    +"Reflection to statement 1: \""+blank(v("c1"))+"\"\n"
-    +"Reflection to statement 2: \""+blank(v("c2"))+"\"\n"
-    +"Summary statement: \""+blank(v("sum"))+"\"\n"
-    +"Linking phrase: \""+blank(v("link"))+"\"\n"
-    +"Screening question: \""+blank(v("screen"))+"\"\n\nGive the group feedback on their responses.";
+function convoText(upto){
+  let t="[Jamie]: "+LINES[0]+"\n[Learner reflection]: "+val("c1");
+  if(upto>=2) t+="\n[Jamie]: "+stmt2+"\n[Learner reflection]: "+val("c2");
+  if(upto>=3) t+="\n[Jamie]: "+stmt3;
+  return t;
+}
+
+async function replyTurn(convo,content){
   try{
-    const fb=(await callChat(FEEDBACK_SYSTEM,[{role:"user",content:ask}],FEEDBACK_MODEL,900)).trim();
-    document.getElementById("feedback").innerHTML='<div class="feedback"><div class="who">Coaching feedback</div>'+esc(fb)+'</div>';
-    status.innerHTML="";
+    const raw=await callChat(REPLY_SYSTEM,[{role:"user",content:"Conversation so far:\n"+convo+"\n\nContent Jamie should convey next: \""+content+"\"\n\nGive Jamie's next line and the brief feedback."}],MODEL,350);
+    const p=extractJSON(raw);
+    return {jamie:(p.jamie||content),feedback:(p.feedback||"")};
   }catch(e){
-    status.innerHTML="";
-    showErr("Couldn't get feedback. Reason: "+e.message);
+    return {jamie:content,feedback:"(The feedback couldn't load this time, but you can keep going.)"};
   }
-  btn.disabled=false;
+}
+async function finalTurn(convo,sum,link,screen){
+  try{
+    const raw=await callChat(FINAL_SYSTEM,[{role:"user",content:"Conversation so far:\n"+convo+"\n\nThe learner's screening:\nSummary: \""+(sum||"(none)")+"\"\nLinking phrase: \""+(link||"(none)")+"\"\nScreening question: \""+(screen||"(none)")+"\"\n\nGive Jamie's response and the brief feedback."}],MODEL,400);
+    const p=extractJSON(raw);
+    return {jamie:(p.jamie||""),feedback:(p.feedback||"")};
+  }catch(e){
+    return {jamie:"I'm sorry, I think I just need a second.",feedback:"(The feedback couldn't load this time.)"};
+  }
 }
 
-function syncMirrors(){
-  document.querySelectorAll(".pmirror").forEach(d=>{const f=document.getElementById(d.dataset.for);d.textContent=f?f.value:"";});
+async function send1(){
+  if(!val("c1")){setNudge("nudge1","Add your reflection before sending.");return;}
+  setNudge("nudge1","");
+  document.getElementById("send1").disabled=true;setStatus("status1","Jamie is responding...");
+  const r=await replyTurn(convoText(1),CONTENT[0]);
+  stmt2=r.jamie;document.getElementById("stmt2").textContent=stmt2;
+  document.getElementById("fb1").innerHTML=noteHTML("On your reflection",r.feedback);
+  setStatus("status1","");reveal("step2");
 }
+async function send2(){
+  if(!val("c2")){setNudge("nudge2","Add your reflection before sending.");return;}
+  setNudge("nudge2","");
+  document.getElementById("send2").disabled=true;setStatus("status2","Jamie is responding...");
+  const r=await replyTurn(convoText(2),CONTENT[1]);
+  stmt3=r.jamie;document.getElementById("stmt3").textContent=stmt3;
+  document.getElementById("fb2").innerHTML=noteHTML("On your reflection",r.feedback);
+  setStatus("status2","");reveal("step3");
+}
+async function send3(){
+  if(!val("screen")){setNudge("nudge3","Add your screening question before sending.");return;}
+  setNudge("nudge3","");
+  document.getElementById("send3").disabled=true;setStatus("status3","Jamie is responding...");
+  const r=await finalTurn(convoText(3),val("sum"),val("link"),val("screen"));
+  document.getElementById("finalJamie").textContent=r.jamie;
+  document.getElementById("fb3").innerHTML=noteHTML("On your screening",r.feedback);
+  setStatus("status3","");reveal("finalbox");
+}
+
+function syncMirrors(){document.querySelectorAll(".pmirror").forEach(d=>{const f=document.getElementById(d.dataset.for);d.textContent=f?f.value:"";});}
 function printDoc(){syncMirrors();window.print();}
-function showErr(msg){document.getElementById("err").innerHTML='<div class="err">'+esc(msg)+'</div>';}
-function clearErr(){document.getElementById("err").innerHTML="";}
 
 document.getElementById("vignette").innerHTML='<div class="who">The client</div>'+esc(VIGNETTE);
+document.getElementById("stmt1").textContent=LINES[0];
 document.getElementById("pdate").textContent=new Date().toLocaleDateString();
 document.getElementById("startBtn").onclick=()=>reveal("step1");
-document.getElementById("cont1").onclick=()=>cont("c1","step2","nudge1");
-document.getElementById("cont2").onclick=()=>cont("c2","step3","nudge2");
-document.getElementById("fb").onclick=getFeedback;
+document.getElementById("send1").onclick=send1;
+document.getElementById("send2").onclick=send2;
+document.getElementById("send3").onclick=send3;
 document.getElementById("savepdf").onclick=printDoc;
 </script>
 </body>
