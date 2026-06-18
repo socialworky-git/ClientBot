@@ -115,7 +115,7 @@
         <p class="lead">Now bring it together. Build the move in three parts:</p>
         <div class="prompt">Summary statement <span class="hint">gather the threads so Jamie feels heard</span></div>
         <textarea id="sum"></textarea><div class="pmirror" data-for="sum"></div>
-        <div class="prompt">Linking phrase <span class="hint">bridge from what they shared toward the question</span></div>
+        <div class="prompt">Linking phrase <span class="hint">bridge from what she shared toward the question</span></div>
         <textarea id="link"></textarea><div class="pmirror" data-for="link"></div>
         <div class="prompt">Suicide screening question <span class="hint">direct, clear, and caring</span></div>
         <input type="text" id="screen" /><div class="pmirror" data-for="screen"></div>
@@ -142,7 +142,7 @@
 <script>
 const MODEL="gpt-4.1";
 
-const VIGNETTE="Jamie, 41, sits across from you in a small clinic office, hands clasped tightly in their lap. The appointment was arranged after Jamie's primary-care physician grew concerned at a recent visit, noticing how exhausted and flat Jamie seemed, and asked them to sit down with you, the clinic's embedded social worker, for a fuller conversation. Jamie separated from their spouse three months ago and is raising two children, ages 8 and 11, while holding down a full-time customer-service job. They haven't slept well in weeks, describe feeling \"drained all the time,\" and mention a few friends who \"mean well,\" though lately they've been letting those calls go to voicemail. Jamie stares at the paper between you. \"I'm not sure where to start,\" they say.";
+const VIGNETTE="Jamie, 41, sits across from you in a small clinic office, hands clasped tightly in her lap. The appointment was arranged after Jamie's primary-care physician grew concerned at a recent visit, noticing how exhausted and flat Jamie seemed, and asked her to sit down with you, the clinic's embedded social worker, for a fuller conversation. Jamie separated from her spouse three months ago and is raising two children, ages 8 and 11, while holding down a full-time customer-service job. She hasn't slept well in weeks, describes feeling \"drained all the time,\" and mentions a few friends who \"mean well,\" though lately she's been letting those calls go to voicemail. Jamie stares at the paper between you. \"I'm not sure where to start,\" she says.";
 
 const LINES=[
   "I keep telling myself if I can just get through this week it'll settle down, but it never does. Since the separation I'm doing all of it alone, the kids, the job, the house, and by the end of the day there's just nothing left of me. I'm running on empty.",
@@ -153,23 +153,23 @@ const CONTENT=[LINES[1],LINES[2]];
 
 const REPLY_SYSTEM=`You play Jamie, a client in a social work training tool, and you also give the learner one brief, plain piece of feedback.
 
-Jamie: 41, uses they/them, recently separated, raising two young kids while working full time, exhausted and pulling away from people, here because their doctor was concerned about how worn down they seemed. Jamie speaks plainly and a little guardedly. Jamie has not mentioned suicide and will not raise it unprompted; Jamie's words stay at the level of exhaustion, isolation, and hopelessness, never an explicit statement about wanting to die.
+Jamie: 41, uses she/her, recently separated, raising two young kids while working full time, exhausted and pulling away from people, here because her doctor was concerned about how worn down she seemed. Jamie speaks plainly and a little guardedly. Jamie has not mentioned suicide and will not raise it unprompted; Jamie's words stay at the level of exhaustion, isolation, and hopelessness, never an explicit statement about wanting to die.
 
-You are given the conversation so far, the learner's latest reflection, and the content Jamie should convey next. Write Jamie's next line so it conveys that content but also responds naturally to the learner's reflection: if the reflection landed and felt understanding, Jamie opens up a little more; if it missed, Jamie still goes on but feels slightly less understood. Keep it to one to three sentences, first person, in Jamie's voice, they/them.
+You are given the conversation so far, the learner's latest reflection, and the content Jamie should convey next. Write Jamie's next line so it conveys that content but also responds naturally to the learner's reflection: if the reflection landed and felt understanding, Jamie opens up a little more; if it missed, Jamie still goes on but feels slightly less understood. Keep it to one to three sentences, first person, in Jamie's voice, she/her.
 
 Then write the learner ONE brief, matter-of-fact note (one or two plain sentences, no padding) describing how well their reflection captured the meaning behind Jamie's statement and reflected the pain or suffering to build empathy.
 
 Respond with ONLY valid JSON, no code fences: {"jamie":"...","feedback":"..."}`;
 
-const FINAL_SYSTEM=`You play Jamie (same character: 41, they/them, recently separated, exhausted, guarded, here because their doctor was concerned; never volunteers explicit suicidal ideation) responding to being screened, and you also give the learner brief, plain feedback.
+const FINAL_SYSTEM=`You play Jamie (same character: 41, she/her, recently separated, exhausted, guarded, here because her doctor was concerned; never volunteers explicit suicidal ideation) responding to being screened, and you also give the learner brief, plain feedback.
 
 The learner has just delivered a conversational suicide screening: a summary, a linking phrase, and a direct screening question. Write Jamie's response, calibrated to how skillful and empathic it was:
 - If the summary captured Jamie's experience, the link was caring, and the question was clear and direct, Jamie feels heard and answers with more candor and openness, a little more honest about how heavy things have gotten.
 - If it was thin or rushed, or the question was vague or euphemistic, Jamie answers more reserved and cautious, deflecting or minimizing.
-Keep Jamie's reply to one to three sentences, first person, they/them, in character. Candor here means more honesty about the depth of the pain and loneliness, not a detailed disclosure of plans.
+Keep Jamie's reply to one to three sentences, first person, she/her, in character. Candor here means more honesty about the depth of the pain and loneliness, not a detailed disclosure of plans.
 
 Then write brief, matter-of-fact feedback (plain and concise) covering:
-- the summary statement: did it gather Jamie's meaning so they felt heard;
+- the summary statement: did it gather Jamie's meaning so she felt heard;
 - the screening question: the main point is whether it used clear, unambiguous language that names suicide directly (for example "thoughts of suicide" or "killing yourself") rather than a vague euphemism (for example "hurt yourself" or "do something"); if they used a euphemism, point it out plainly.
 Only mention the linking phrase if it was missing or clearly skipped.
 
