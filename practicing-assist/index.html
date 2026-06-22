@@ -17,12 +17,16 @@
     --amber-line: #f0e2bf;
     --amber-text: #9a5a2a;
 
-    --blue-bg: #f1f7fd;
-    --blue-line: #d4e6f6;
-    --blue-text: #2f6db0;
+    --accent: #eb786b;
+    --accentDeep: #c2452f;
 
-    --sel-bg: #eaf2fb;
-    --sel-line: #2f6db0;
+    /* accent role (was blue), now coral to match the hub */
+    --blue-bg: #fdeeeb;
+    --blue-line: #f6d4cd;
+    --blue-text: #c2452f;
+
+    --sel-bg: #fdeeeb;
+    --sel-line: #eb786b;
 
     --low: #2f8f5b;      --low-bg: #eaf6ee;   --low-line: #c7e7d2;
     --mod: #b5731f;      --mod-bg: #fbf1e0;   --mod-line: #efddbd;
@@ -30,7 +34,7 @@
 
     --radius: 16px;
     --radius-sm: 10px;
-    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --sans: Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -141,7 +145,7 @@
     font-family: var(--sans); font-size: 0.95rem; color: var(--ink);
     border: 1px solid var(--line); border-radius: 8px; padding: 0.45rem 0.7rem;
   }
-  .other-input:focus { outline: none; border-color: var(--sel-line); box-shadow: 0 0 0 3px rgba(47,109,176,0.12); }
+  .other-input:focus { outline: none; border-color: var(--sel-line); box-shadow: 0 0 0 3px rgba(235,120,107,0.20); }
 
   .q { padding: 0.85rem 0 0.2rem; border-top: 1px solid var(--line); margin-top: 0.9rem; }
   .q:first-of-type { border-top: none; }
@@ -291,8 +295,10 @@
   .chat-sub { font-size: 0.96rem; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .chat-msgs { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.7rem; min-height: 240px; }
   .msg { max-width: 86%; padding: 0.6rem 0.85rem; border-radius: 14px; font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
-  .msg.client { align-self: flex-start; background: var(--blue-bg); border: 1px solid var(--blue-line); color: var(--ink); border-bottom-left-radius: 4px; }
-  .msg.helper { align-self: flex-end; background: var(--sel-bg); border: 1px solid var(--sel-line); color: var(--blue-text); border-bottom-right-radius: 4px; }
+  .msg.client { align-self: flex-start; background: var(--shell); border: 1px solid var(--line); color: var(--ink); border-bottom-left-radius: 4px; }
+  .msg.helper { align-self: flex-end; background: var(--sel-bg); border: 1px solid var(--sel-line); color: var(--accentDeep); border-bottom-right-radius: 4px; }
+  .msg.coach { align-self: stretch; max-width: 100%; background: var(--amber-bg); border: 1px solid var(--amber-line); color: var(--amber-text); }
+  .msg.coach b { font-weight: 700; }
   .msg.scene { align-self: center; max-width: 100%; background: transparent; border: none; color: var(--muted-2); font-style: italic; font-size: 0.88rem; text-align: center; padding: 0.2rem 0.4rem; }
   .msg.typing { color: var(--muted-2); font-style: italic; }
   .chat-err { color: var(--high); font-size: 0.85rem; padding: 0 1rem 0.2rem; }
@@ -302,7 +308,7 @@
     flex: 1; resize: none; font-family: var(--sans); font-size: 0.95rem; color: var(--ink);
     border: 1px solid var(--line); border-radius: 10px; padding: 0.55rem 0.7rem; max-height: 120px; line-height: 1.4;
   }
-  .chat-input textarea:focus { outline: none; border-color: var(--sel-line); box-shadow: 0 0 0 3px rgba(47,109,176,0.12); }
+  .chat-input textarea:focus { outline: none; border-color: var(--sel-line); box-shadow: 0 0 0 3px rgba(235,120,107,0.20); }
   .send-btn {
     flex: none; width: 2.5rem; height: 2.5rem; border-radius: 10px; cursor: pointer;
     background: var(--blue-text); border: 1px solid var(--blue-text); color: #fff; display: grid; place-items: center;
@@ -332,6 +338,38 @@
   @media (max-width: 520px) {
     .mode-cards { grid-template-columns: 1fr; }
   }
+
+  /* ===== Hub-style header ===== */
+  .alltools { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.95rem; display: inline-block; }
+  .alltools:hover { text-decoration: underline; }
+  .tool-subtitle { font-size: 1rem; color: var(--muted); margin-top: 0.1rem; }
+  .tool-divider { border: none; border-top: 1px solid var(--line); margin: 1.3rem 0 0; }
+
+  /* ===== Brief intervention panel ===== */
+  .bi-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.3rem 1.4rem; margin-top: 1rem; }
+  .bi-intro { font-size: 0.92rem; color: var(--muted); margin-bottom: 0.9rem; }
+  .bi-row { padding: 0.75rem 0; border-top: 1px solid var(--line); }
+  .bi-row:first-child { border-top: none; }
+  .bi-row-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.3rem; flex-wrap: wrap; }
+  .bi-sub { font-weight: 600; }
+  .bi-row-body { font-size: 0.92rem; color: var(--muted); }
+  .bi-caution { margin-top: 1rem; padding: 0.85rem 1rem; border-radius: var(--radius-sm); font-size: 0.9rem; background: var(--high-bg); border: 1px solid var(--high-line); color: var(--high); }
+  .bi-caution b { font-weight: 700; }
+  .bi-resources { margin-top: 1.1rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: 0.92rem; color: var(--muted); }
+  .bi-resources b { color: var(--ink); font-weight: 600; }
+  .bi-link { display: inline-block; margin-top: 0.55rem; font-weight: 600; color: var(--accentDeep); text-decoration: none; }
+  .bi-link:hover { text-decoration: underline; }
+
+  /* ===== Chat action chips (sim) ===== */
+  .chat-actions { display: flex; gap: 0.4rem; flex-wrap: wrap; padding: 0.55rem 0.8rem; border-bottom: 1px solid var(--line); }
+  .chat-chip {
+    font-family: var(--sans); font-size: 0.8rem; font-weight: 600; color: var(--accentDeep);
+    background: var(--blue-bg); border: 1px solid var(--blue-line); border-radius: 999px;
+    padding: 0.35rem 0.8rem; cursor: pointer; transition: filter 0.12s;
+  }
+  .chat-chip:hover { filter: brightness(0.97); }
+  .chat-chip:disabled { opacity: 0.5; cursor: default; }
+  .chat-chip.on { background: var(--accentDeep); border-color: var(--accentDeep); color: #fff; }
 </style>
 </head>
 <body>
@@ -339,9 +377,11 @@
 
   <!-- MODE PICKER -->
   <div id="modeSelect">
-    <div class="eyebrow">Activity 8 &middot; Practicing ASSIST</div>
-    <h1>Practicing ASSIST</h1>
-    <p class="lede">How would you like to practice? Choose an option to begin. You can switch at any time.</p>
+    <a class="alltools" href="/">&larr; All tools</a>
+    <h1 style="margin-top:0.8rem;">Practicing ASSIST</h1>
+    <div class="tool-subtitle">Substance screening and brief intervention practice</div>
+    <hr class="tool-divider">
+    <p class="lede" style="margin-top:1.3rem;">How would you like to practice? Choose an option to begin. You can switch at any time.</p>
     <div class="mode-cards">
       <button class="mode-card" type="button" data-mode="roleplay">
         <span class="mc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
@@ -363,11 +403,7 @@
   <div id="stage" hidden>
 
   <div class="topbar">
-    <!-- REPLACE the href below with your Craft hub URL -->
-    <a class="back-link" href="https://socialworky.craft.me/OSU">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-      Back to OSU Training
-    </a>
+    <a class="alltools" href="/">&larr; All tools</a>
     <div class="toolbar">
       <button class="tool-btn" id="switchModeBtn" type="button" title="Choose a different practice mode">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
@@ -392,8 +428,9 @@
     </div>
   </div>
 
-  <div class="eyebrow">Activity 8 &middot; Practicing ASSIST</div>
-  <h1>Practicing ASSIST</h1>
+  <h1 style="margin-top:0.4rem;">Practicing ASSIST</h1>
+  <div class="tool-subtitle">Substance screening and brief intervention practice</div>
+  <hr class="tool-divider" style="margin-bottom:1.4rem;">
 
   <div id="introRoleplay" class="mode-intro">
     <p class="lede">Role play administering the ASSIST in pairs. One of you is the client, the other the helper. The screen branches and scores itself, so you can focus on the conversation.</p>
@@ -438,6 +475,10 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
           New client
         </button>
+      </div>
+      <div class="chat-actions">
+        <button class="chat-chip" id="biToggleBtn" type="button" disabled>Begin brief intervention</button>
+        <button class="chat-chip" id="coachBtn" type="button" disabled>Coach</button>
       </div>
       <div class="chat-msgs" id="chatMsgs"></div>
       <div class="chat-err" id="chatErr"></div>
@@ -506,6 +547,22 @@
     <div class="inj-banner" id="injBanner" style="display:none;"></div>
   </div>
 
+  <!-- Brief intervention -->
+  <div class="section-label" id="biLabel" style="display:none;">
+    <span class="num">4</span>
+    <span class="lbl">Brief intervention</span>
+  </div>
+  <div class="bi-card" id="biCard" style="display:none;">
+    <p class="bi-intro">Once the screen is done, move into a brief intervention. Use the client&rsquo;s scores to set the focus, then have a short, respectful conversation about their use.</p>
+    <div id="biFocus"></div>
+    <div class="bi-caution" id="biCaution" style="display:none;"></div>
+    <div class="bi-resources">
+      <b>Harm reduction handouts</b>
+      <p style="margin:0.3rem 0 0;">SBIRT.care has double-sided handouts you can give and talk through during the brief intervention, with one for alcohol, cannabis, opioids, methamphetamine, prescription stimulants, and prescription depressants. Each has practical tips on cutting back on one side and the effects on the body on the other.</p>
+      <a class="bi-link" href="https://www.sbirt.care/education.aspx" target="_blank" rel="noopener noreferrer">Open the SBIRT.care handouts &rarr;</a>
+    </div>
+  </div>
+
   <div class="export-footer">
     <div class="ef-text"><b>Capture the completed screen.</b> Copy it, download a text file, or print a clean copy for the debrief.</div>
     <div class="toolbar">
@@ -517,7 +574,7 @@
 
   <!-- Scoring reference -->
   <div class="section-label">
-    <span class="num">4</span>
+    <span class="num">5</span>
     <span class="lbl">Scoring and next steps</span>
   </div>
   <div class="key-card">
@@ -576,14 +633,14 @@
   const YESNO3 = [['No, never',0],['Yes, in the past 3 months',6],['Yes, but not in the past 3 months',3]];
 
   const RECENT_QS = [
-    {id:'q2', label:'Q2', text:'In the past three months, how often have you used the substances you mentioned?', opts:FREQ, recent:true, gate:true},
-    {id:'q3', label:'Q3', text:'During the past three months, how often have you had a strong desire or urge to use it?', opts:FREQ, recent:true},
-    {id:'q4', label:'Q4', text:'During the past three months, how often has your use led to health, social, legal or financial problems?', opts:FREQ, recent:true},
-    {id:'q5', label:'Q5', text:'During the past three months, how often have you failed to do what was normally expected of you because of your use?', opts:FREQ, recent:true}
+    {id:'q2', label:'Q2', text:'In the past three months, how often have you used [SUB]?', opts:FREQ, recent:true, gate:true},
+    {id:'q3', label:'Q3', text:'During the past three months, how often have you had a strong desire or urge to use [SUB]?', opts:FREQ, recent:true},
+    {id:'q4', label:'Q4', text:'During the past three months, how often has your use of [SUB] led to health, social, legal or financial problems?', opts:FREQ, recent:true},
+    {id:'q5', label:'Q5', text:'During the past three months, how often have you failed to do what was normally expected of you because of your use of [SUB]?', opts:FREQ, recent:true}
   ];
   const EVER_QS = [
-    {id:'q6', label:'Q6', text:'Has a friend or relative or anyone else ever expressed concern about your use?', opts:YESNO3},
-    {id:'q7', label:'Q7', text:'Have you ever tried to cut down on using it but failed?', opts:YESNO3}
+    {id:'q6', label:'Q6', text:'Has a friend or relative or anyone else ever expressed concern about your use of [SUB]?', opts:YESNO3},
+    {id:'q7', label:'Q7', text:'Have you ever tried to cut down on using [SUB] but failed?', opts:YESNO3}
   ];
   const ALL_QS = RECENT_QS.concat(EVER_QS);
 
@@ -620,19 +677,25 @@
     recompute();
   }
 
+  function subQName(s) {
+    const map = { tobacco:'tobacco', alcohol:'alcohol', other:(otherInput.value.trim() || 'the other drug') };
+    return map[s.id] || s.name.toLowerCase();
+  }
+
   function renderSubCards() {
     subCardsEl.innerHTML = '';
     SUBSTANCES.filter(s => active.has(s.id)).forEach(s => {
       const card = document.createElement('div');
       card.className = 'sub-card'; card.dataset.id = s.id;
+      const nm = subQName(s);
       let qsHtml = '';
       ALL_QS.forEach(q => {
         if (s.tobacco && q.id === 'q5') return; // Q5 is not coded for tobacco
         const optsHtml = q.opts.map(([lab,val]) =>
           '<button class="opt" type="button" data-q="'+q.id+'" data-val="'+val+'">' + lab + ' <span class="pt">'+val+'</span></button>'
         ).join('');
-        qsHtml += '<div class="q '+(q.recent?'recent-q':'')+'">' +
-          '<div class="q-text"><span class="qid">'+q.label+'</span>'+q.text+'</div>' +
+        qsHtml += '<div class="q '+(q.recent?'recent-q':'')+'" data-qid="'+q.id+'">' +
+          '<div class="q-text"><span class="qid">'+q.label+'</span>'+q.text.replace('[SUB]', nm)+'</div>' +
           '<div class="opts" data-group="'+q.id+'">'+optsHtml+'</div></div>';
       });
       const skipText = s.tobacco
@@ -763,6 +826,52 @@
     } else {
       banner.style.display = 'none';
     }
+    renderBI(list);
+  }
+
+  function renderBI(list) {
+    const label = document.getElementById('biLabel');
+    const card = document.getElementById('biCard');
+    if (!list || !list.length) { label.style.display = 'none'; card.style.display = 'none'; return; }
+    label.style.display = 'flex'; card.style.display = 'block';
+    const FOCUS = {
+      low:  'Brief education and positive feedback. Reinforce the lower-risk pattern. A full brief intervention is not indicated.',
+      mod:  'Brief intervention focused on harm reduction. Offer feedback, draw out the client\u2019s own reasons, share a few practical ways to reduce harm, and raise a referral as an option if they are interested.',
+      high: 'Brief intervention with referral to treatment as the main focus. Support the client in weighing and deciding whether to follow through on a referral. Harm reduction still helps, but the central task is the decision to engage with treatment.'
+    };
+    document.getElementById('biFocus').innerHTML = list.map(s => {
+      const score = subScore(s.id);
+      const t = tier(score, !!s.alcohol);
+      const nm = (s.id === 'other' && otherInput.value.trim()) ? otherInput.value.trim() : s.name;
+      return '<div class="bi-row"><div class="bi-row-head"><span class="bi-sub">'+nm+'</span>' +
+        '<span class="sum-pill '+t.cls+'">'+t.level+'</span></div>' +
+        '<div class="bi-row-body">'+FOCUS[t.cls]+'</div></div>';
+    }).join('');
+
+    // medical caution for alcohol / sedative (benzodiazepine) recent use
+    const cautionEl = document.getElementById('biCaution');
+    const nameMap = { alcohol:'alcohol', sedatives:'sedatives (benzodiazepines)' };
+    const risky = list.filter(s => (s.id === 'alcohol' || s.id === 'sedatives') &&
+      state[s.id] && state[s.id].q2 !== 0 && state[s.id].q2 !== null);
+    if (risky.length) {
+      const names = risky.map(s => nameMap[s.id]).join(' and ');
+      cautionEl.style.display = 'block';
+      cautionEl.innerHTML = '<b>Medical caution:</b> withdrawal from alcohol and benzodiazepines can be medically dangerous. Because this screen includes recent ' + names + ' use, do not advise stopping abruptly. For heavy or daily use, detox should be medically supervised, and any referral should reflect that.';
+    } else {
+      cautionEl.style.display = 'none';
+    }
+  }
+
+  function updateOtherName() {
+    if (!active.has('other')) return;
+    const card = subCardsEl.querySelector('.sub-card[data-id="other"]');
+    if (!card) return;
+    const nm = subQName(SUBSTANCES.find(x => x.id === 'other'));
+    card.querySelectorAll('.q').forEach(qdiv => {
+      const q = ALL_QS.find(x => x.id === qdiv.dataset.qid);
+      if (!q) return;
+      qdiv.querySelector('.q-text').innerHTML = '<span class="qid">'+q.label+'</span>'+q.text.replace('[SUB]', nm);
+    });
   }
 
   // Export
@@ -850,7 +959,7 @@
   document.getElementById('printBtn').addEventListener('click', ()=>window.print());
   document.getElementById('printBtn2').addEventListener('click', ()=>window.print());
   document.getElementById('resetBtn').addEventListener('click', doReset);
-  otherInput.addEventListener('input', renderSummary);
+  otherInput.addEventListener('input', () => { updateOtherName(); renderSummary(); });
 </script>
 
 <script>
@@ -896,7 +1005,9 @@
   const textEl = document.getElementById('chatText');
   const sendBtn = document.getElementById('chatSend');
   const clientLine = document.getElementById('clientLine');
-  let persona = null, sysPrompt = '', history = [], busy = false, started = false;
+  const biToggleBtn = document.getElementById('biToggleBtn');
+  const coachBtn = document.getElementById('coachBtn');
+  let persona = null, sysPrompt = '', history = [], busy = false, started = false, phase = 'screening';
 
   async function callChat(system, messages, model, maxTokens){
     const headers = {'content-type':'application/json'};
@@ -961,12 +1072,28 @@ Respond with ONLY a JSON object, no code fences and no extra text:
  "injection": "plain-words truth about injecting, usually that they have never injected"
 }`;
 
+  function screeningSummaryText(){
+    try {
+      const list = SUBSTANCES.filter(s => active.has(s.id));
+      if (!list.length) return '';
+      const parts = list.map(s => {
+        const sc = subScore(s.id);
+        const t = tier(sc, !!s.alcohol);
+        const nm = (s.id === 'other' && otherInput.value.trim()) ? otherInput.value.trim() : s.name;
+        return nm + ' at ' + t.level.toLowerCase() + ' (score ' + sc + ')';
+      });
+      let txt = parts.join('; ');
+      if (inj.main === 'Yes, in the past 3 months') txt += '; reports recent injection use';
+      return txt;
+    } catch(e){ return ''; }
+  }
+
   function buildSysPrompt(p){
     const subs = (p.substances||[]).map(s =>
       `- ${s.name}: used in your life. In the past 3 months: ${s.pastThreeMonths}. Urges to use: ${s.urge}. Problems it caused: ${s.problems}. Times it made you fall short of what was expected: ${s.roleFailures}. Whether others have voiced concern: ${s.othersConcerned}. Tried to cut down and failed: ${s.triedCutDown}.`
     ).join('\n');
     const other = (p.otherEverUsed && p.otherEverUsed.length) ? p.otherEverUsed.join(', ') : 'none worth mentioning';
-    return `You are role-playing a single client in a substance-use screening practice for social work learners. Stay fully in character, never break character, never say you are an AI, never coach the worker, and never recite these notes as a list.
+    let base = `You are role-playing a single client in a substance-use screening practice for social work learners. Stay fully in character, never break character, never say you are an AI, never coach the worker, and never recite these notes as a list.
 
 WHO YOU ARE
 Name: ${p.name}. Age: ${p.age}. Pronouns: ${p.pronouns}.
@@ -983,14 +1110,28 @@ HOW TO RESPOND
 - Give concrete but human answers ("most weekends", "almost every day", "maybe a couple times"), never score numbers or category labels.
 - Do not volunteer everything at once. Answer what is asked, the way a real person would.
 - It is fine to be ambivalent, tired, or a little guarded. Do not lecture or narrate stage directions.`;
+    if (phase === 'bi') {
+      const sumTxt = screeningSummaryText();
+      base += `
+
+BRIEF INTERVENTION
+The screening is finished. You are now in the brief-intervention part of the visit. The worker may give you feedback, share harm-reduction information, explore your options, and possibly raise a referral.
+- Respond like a real client would: a believable mix of openness and hesitation. React to what the worker actually says.
+- Ask questions, push back gently, or warm up if they earn it. Do not make it too easy or too hard.
+- Never coach the worker, switch roles, or narrate.${sumTxt ? '\nYour screening picture, for consistency: ' + sumTxt + '.' : ''}`;
+    }
+    return base;
   }
 
   async function ensureClient(force){
     if (started && !force) return;
     started = true;
     history = []; msgsEl.innerHTML = ''; errEl.textContent = '';
+    phase = 'screening';
+    biToggleBtn.textContent = 'Begin brief intervention';
+    biToggleBtn.classList.remove('on');
     clientLine.textContent = 'Preparing a client\u2026';
-    sendBtn.disabled = true; textEl.disabled = true;
+    sendBtn.disabled = true; textEl.disabled = true; biToggleBtn.disabled = true; coachBtn.disabled = true;
     addMsg('Setting up a new client\u2026', 'scene');
     try {
       const raw = await callChat(GEN_SYSTEM, [{role:'user', content:'Create one client persona.'}], GEN_MODEL, 700);
@@ -999,7 +1140,7 @@ HOW TO RESPOND
       msgsEl.innerHTML = '';
       clientLine.textContent = persona.name + ', ' + persona.age;
       addMsg(persona.name + ' has come in and sits down across from you. Read your opening script to begin.', 'scene');
-      sendBtn.disabled = false; textEl.disabled = false;
+      sendBtn.disabled = false; textEl.disabled = false; biToggleBtn.disabled = false; coachBtn.disabled = false;
     } catch(e){
       msgsEl.innerHTML = '';
       clientLine.textContent = 'Setup failed';
@@ -1013,6 +1154,55 @@ HOW TO RESPOND
     }
   }
 
+  const COACH_SYSTEM = `You are CoachBot, a warm, concise motivational interviewing coach for a social work learner practicing SBIRT. You are NOT the client and you never role-play the client.
+
+Give brief, specific, supportive coaching, at most 3 to 6 sentences. Focus on:
+- MI spirit: partnership, acceptance, compassion, evocation.
+- The Ask-Tell-Ask structure for sharing information: ask permission and what they already know, offer clear information in small chunks, then ask what they make of it.
+- Matching the brief intervention to risk level: lower risk gets brief education; moderate risk gets harm reduction with a possible referral; high risk centers on supporting a decision to follow through with a referral.
+- A safety note when relevant: alcohol and benzodiazepine withdrawal can be dangerous, so do not advise abrupt cessation; heavy use needs medically supervised detox.
+
+Name one thing the worker did well and one concrete next move. Speak to the worker, not the client. Do not use headers or bullet points.`;
+
+  function toggleBI(){
+    if (!persona || busy) return;
+    if (phase === 'screening') {
+      phase = 'bi';
+      biToggleBtn.textContent = 'In brief intervention';
+      biToggleBtn.classList.add('on');
+      sysPrompt = buildSysPrompt(persona);
+      addMsg('You move into the brief intervention. Let the client\u2019s scores set your focus, and try an ask, tell, ask approach when you share information.', 'scene');
+    } else {
+      phase = 'screening';
+      biToggleBtn.textContent = 'Begin brief intervention';
+      biToggleBtn.classList.remove('on');
+      sysPrompt = buildSysPrompt(persona);
+      addMsg('Back to the screening portion.', 'scene');
+    }
+  }
+
+  async function coach(){
+    if (busy || !persona) return;
+    errEl.textContent = '';
+    busy = true; sendBtn.disabled = true; biToggleBtn.disabled = true; coachBtn.disabled = true;
+    const typing = addMsg('CoachBot is looking at your session\u2026', 'coach');
+    try {
+      const sum = screeningSummaryText();
+      const recent = history.slice(-8).map(m => (m.role === 'user' ? 'Worker: ' : 'Client: ') + m.content).join('\n') || '(no exchange yet)';
+      const userMsg = 'Screening result: ' + (sum || 'not yet coded on the form') + '.\nCurrent phase: ' + (phase === 'bi' ? 'brief intervention' : 'screening') + '.\nRecent exchange:\n' + recent + '\n\nGive the worker brief coaching for what to do next.';
+      const reply = await callChat(COACH_SYSTEM, [{role:'user', content:userMsg}], CHAT_MODEL, 350);
+      typing.remove();
+      const m = addMsg('', 'coach');
+      m.innerHTML = '<b>CoachBot</b><br>' + reply.replace(/</g,'&lt;').replace(/\n/g,'<br>');
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+    } catch(e){
+      typing.remove();
+      errEl.textContent = 'Coaching did not load. ' + e.message;
+    } finally {
+      busy = false; sendBtn.disabled = false; biToggleBtn.disabled = !persona; coachBtn.disabled = !persona;
+    }
+  }
+
   async function send(){
     if (busy) return;
     const txt = textEl.value.trim();
@@ -1022,7 +1212,7 @@ HOW TO RESPOND
     addMsg(txt, 'helper');
     history.push({role:'user', content:txt});
     textEl.value = ''; autosize();
-    busy = true; sendBtn.disabled = true;
+    busy = true; sendBtn.disabled = true; biToggleBtn.disabled = true; coachBtn.disabled = true;
     const typing = addMsg(persona.name + ' is thinking\u2026', 'client typing');
     try {
       const reply = await callChat(sysPrompt, history, CHAT_MODEL, 400);
@@ -1035,7 +1225,7 @@ HOW TO RESPOND
       errEl.textContent = 'Message did not go through. ' + e.message + ' Try sending again.';
       textEl.value = txt; autosize();
     } finally {
-      busy = false; sendBtn.disabled = false; textEl.focus();
+      busy = false; sendBtn.disabled = false; biToggleBtn.disabled = !persona; coachBtn.disabled = !persona; textEl.focus();
     }
   }
   sendBtn.addEventListener('click', send);
@@ -1044,6 +1234,8 @@ HOW TO RESPOND
   textEl.addEventListener('input', autosize);
 
   document.getElementById('newClientBtn').addEventListener('click', () => ensureClient(true));
+  biToggleBtn.addEventListener('click', toggleBI);
+  coachBtn.addEventListener('click', coach);
 })();
 </script>
 </body>
