@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practicing ASSIST — MI Training</title>
+<style>
+  :root {
+    --ink: #1f2328;
+    --muted: #6b7280;
+    --muted-2: #9ca3af;
+    --card: #ffffff;
+    --line: #e6e7eb;
+    --shell: #f7f8f9;
+
+    --amber-bg: #fdf8ec;
+    --amber-line: #f0e2bf;
+    --amber-text: #9a5a2a;
+
+    --blue-bg: #f1f7fd;
+    --blue-line: #d4e6f6;
+    --blue-text: #2f6db0;
+
+    --sel-bg: #eaf2fb;
+    --sel-line: #2f6db0;
+
+    --low: #2f8f5b;      --low-bg: #eaf6ee;   --low-line: #c7e7d2;
+    --mod: #b5731f;      --mod-bg: #fbf1e0;   --mod-line: #efddbd;
+    --high: #c0392b;     --high-bg: #fbeae7;  --high-line: #f1cdc7;
+
+    --radius: 16px;
+    --radius-sm: 10px;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--shell);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    padding: clamp(1rem, 4vw, 2.5rem) 1rem 5rem;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+
+  /* Top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.8rem; }
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    font-size: 0.86rem; font-weight: 500; color: var(--muted);
+    text-decoration: none; padding: 0.4rem 0.8rem 0.4rem 0.6rem;
+    border: 1px solid var(--line); border-radius: 999px; background: var(--card);
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+  .back-link:hover { color: var(--ink); border-color: var(--muted-2); }
+  .back-link svg { width: 14px; height: 14px; }
+  .toolbar { display: inline-flex; gap: 0.5rem; flex-wrap: wrap; }
+  .tool-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-family: var(--sans); font-size: 0.82rem; font-weight: 500; color: var(--ink);
+    background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+    padding: 0.42rem 0.85rem; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+  }
+  .tool-btn:hover { border-color: var(--muted-2); background: #fbfbfc; }
+  .tool-btn svg { width: 14px; height: 14px; }
+  .tool-btn.copied { color: var(--low); border-color: var(--low-line); background: var(--low-bg); }
+  .tool-btn.reset { color: var(--muted); }
+
+  /* Header */
+  .eyebrow { font-size: 0.8rem; font-weight: 500; color: var(--muted-2); margin-bottom: 1.1rem; }
+  h1 { font-size: clamp(1.9rem, 6vw, 2.5rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; margin-bottom: 0.9rem; }
+  .lede { font-size: 1.1rem; color: var(--muted); max-width: 62ch; }
+
+  /* Boxes */
+  .box { border-radius: var(--radius-sm); padding: 1.05rem 1.2rem; font-size: 0.98rem; }
+  .box-amber { background: var(--amber-bg); border: 1px solid var(--amber-line); color: var(--amber-text); margin-top: 1.6rem; }
+  .box-amber b { font-weight: 600; }
+  .box-amber ul { margin: 0.5rem 0 0; padding-left: 1.2rem; }
+  .box-amber li { margin: 0.2rem 0; }
+
+  /* Script card */
+  .script {
+    margin-top: 1.4rem; background: var(--card); border: 1px solid var(--line);
+    border-left: 4px solid var(--blue-text); border-radius: var(--radius);
+    padding: 1.1rem 1.3rem;
+  }
+  .script .tag { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--blue-text); margin-bottom: 0.5rem; }
+  .script p { font-style: italic; color: var(--ink); }
+  .script p + p { margin-top: 0.7rem; }
+  .script .stage { font-style: normal; color: var(--muted-2); font-size: 0.88em; }
+
+  /* Section label */
+  .section-label { display: flex; align-items: baseline; gap: 0.6rem; margin: 2.6rem 0 0.9rem; }
+  .section-label .num {
+    width: 1.5rem; height: 1.5rem; border-radius: 7px; background: var(--shell);
+    border: 1px solid var(--line); color: var(--muted); font-size: 0.8rem; font-weight: 600;
+    display: grid; place-items: center;
+  }
+  .section-label .lbl { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .section-label .sub { margin-left: auto; font-size: 0.85rem; color: var(--muted-2); }
+
+  /* Substance chips (Q1) */
+  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chip {
+    font-family: var(--sans); font-size: 0.9rem; color: var(--ink);
+    background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+    padding: 0.5rem 0.95rem; cursor: pointer; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 0.45rem;
+  }
+  .chip:hover { border-color: var(--muted-2); }
+  .chip .tick { width: 1rem; height: 1rem; opacity: 0; transition: opacity 0.15s; }
+  .chip.active { background: var(--sel-bg); border-color: var(--sel-line); color: var(--blue-text); font-weight: 500; }
+  .chip.active .tick { opacity: 1; }
+
+  .empty-note { margin-top: 1rem; font-size: 0.92rem; color: var(--muted-2); font-style: italic; }
+
+  /* Substance card */
+  .sub-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.3rem 1.4rem; margin-top: 1rem; box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+  }
+  .sub-head { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+  .sub-name { font-size: 1.15rem; font-weight: 600; }
+  .sub-sub { font-size: 0.85rem; color: var(--muted-2); }
+  .score-badge {
+    margin-left: auto; display: inline-flex; align-items: center; gap: 0.5rem;
+    font-size: 0.82rem; font-weight: 600; padding: 0.3rem 0.7rem; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted); background: var(--shell);
+    white-space: nowrap;
+  }
+  .score-badge .pts { font-size: 1rem; }
+  .score-badge.low { color: var(--low); background: var(--low-bg); border-color: var(--low-line); }
+  .score-badge.mod { color: var(--mod); background: var(--mod-bg); border-color: var(--mod-line); }
+  .score-badge.high { color: var(--high); background: var(--high-bg); border-color: var(--high-line); }
+
+  .other-input {
+    margin: 0.4rem 0 0.2rem; width: 100%; max-width: 320px;
+    font-family: var(--sans); font-size: 0.95rem; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 8px; padding: 0.45rem 0.7rem;
+  }
+  .other-input:focus { outline: none; border-color: var(--sel-line); box-shadow: 0 0 0 3px rgba(47,109,176,0.12); }
+
+  .q { padding: 0.85rem 0 0.2rem; border-top: 1px solid var(--line); margin-top: 0.9rem; }
+  .q:first-of-type { border-top: none; }
+  .q-text { font-size: 0.96rem; color: var(--ink); margin-bottom: 0.55rem; }
+  .q-text .qid { color: var(--muted-2); font-weight: 600; font-size: 0.8rem; margin-right: 0.35rem; }
+  .opts { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .opt {
+    font-family: var(--sans); font-size: 0.86rem; color: var(--ink);
+    background: var(--card); border: 1px solid var(--line); border-radius: 8px;
+    padding: 0.4rem 0.7rem; cursor: pointer; transition: all 0.12s;
+    display: inline-flex; align-items: baseline; gap: 0.4rem;
+  }
+  .opt:hover { border-color: var(--muted-2); }
+  .opt .pt { font-size: 0.72rem; color: var(--muted-2); font-variant-numeric: tabular-nums; }
+  .opt.selected { background: var(--sel-bg); border-color: var(--sel-line); color: var(--blue-text); font-weight: 500; }
+  .opt.selected .pt { color: var(--blue-text); }
+
+  .skip-note {
+    font-size: 0.85rem; color: var(--muted-2); font-style: italic;
+    padding: 0.6rem 0 0.2rem; border-top: 1px solid var(--line); margin-top: 0.9rem; display: none;
+  }
+  .sub-card.no-recent .recent-q { display: none; }
+  .sub-card.no-recent .skip-note { display: block; }
+
+  /* Injection block */
+  .inj-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.3rem 1.4rem; margin-top: 1rem;
+  }
+  .inj-follow { display: none; padding-top: 0.3rem; }
+  .inj-card.recent .inj-follow { display: block; }
+
+  /* Summary */
+  .summary {
+    margin-top: 1.6rem; background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 1.4rem 1.5rem;
+  }
+  .summary h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .summary .sub-line { font-size: 0.9rem; color: var(--muted); margin-bottom: 1rem; }
+  .sum-row { display: flex; align-items: center; gap: 0.7rem; padding: 0.55rem 0; border-top: 1px solid var(--line); flex-wrap: wrap; }
+  .sum-row:first-of-type { border-top: none; }
+  .sum-name { font-weight: 600; flex: 1 1 140px; }
+  .sum-score { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.9rem; }
+  .sum-pill {
+    font-size: 0.78rem; font-weight: 600; padding: 0.22rem 0.6rem; border-radius: 999px;
+    border: 1px solid var(--line);
+  }
+  .sum-pill.low { color: var(--low); background: var(--low-bg); border-color: var(--low-line); }
+  .sum-pill.mod { color: var(--mod); background: var(--mod-bg); border-color: var(--mod-line); }
+  .sum-pill.high { color: var(--high); background: var(--high-bg); border-color: var(--high-line); }
+  .sum-resp { font-size: 0.85rem; color: var(--muted); flex-basis: 100%; }
+  .inj-banner {
+    margin-top: 1rem; padding: 0.8rem 1rem; border-radius: var(--radius-sm);
+    font-size: 0.9rem; background: var(--amber-bg); border: 1px solid var(--amber-line); color: var(--amber-text);
+  }
+
+  .export-footer {
+    margin-top: 1.6rem; padding: 1.3rem 1.4rem; background: var(--card);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  }
+  .export-footer .ef-text { font-size: 0.92rem; color: var(--muted); flex: 1 1 220px; }
+  .export-footer .ef-text b { color: var(--ink); font-weight: 600; }
+
+  .closing { margin-top: 1.6rem; font-size: 0.9rem; color: var(--muted-2); text-align: center; font-style: italic; }
+
+  .key-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.3rem 1.4rem; box-shadow: 0 1px 2px rgba(16,24,40,0.04);
+  }
+  .key-intro { font-size: 0.92rem; color: var(--muted); margin-bottom: 1rem; }
+  .key-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+  .key-table th {
+    text-align: left; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--muted); padding: 0 0.6rem 0.5rem 0; border-bottom: 1px solid var(--line);
+  }
+  .key-table td { padding: 0.7rem 0.6rem 0.7rem 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  .key-table tr:last-child td { border-bottom: none; }
+  .key-table .score-cell { font-variant-numeric: tabular-nums; font-weight: 600; color: var(--ink); white-space: nowrap; }
+  .key-table .alt { display: block; font-weight: 400; font-size: 0.8rem; color: var(--muted-2); }
+  .key-note {
+    margin-top: 1rem; padding: 0.8rem 1rem; border-radius: var(--radius-sm);
+    font-size: 0.88rem; background: var(--amber-bg); border: 1px solid var(--amber-line); color: var(--amber-text);
+  }
+  .key-note b { font-weight: 600; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 1.4rem; transform: translateX(-50%) translateY(140%);
+    background: var(--ink); color: #fff; font-size: 0.88rem; padding: 0.6rem 1.1rem;
+    border-radius: 999px; box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+    transition: transform 0.32s cubic-bezier(.2,.9,.3,1.2); z-index: 50;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media print {
+    body { background: #fff; padding: 0.5in; }
+    .topbar, .export-footer, .toast, .chips, .empty-note { display: none !important; }
+    .opt:not(.selected) { display: none; }
+    .opt.selected { background: transparent; border-color: #aaa; color: #000; }
+    .sub-card, .inj-card, .summary, .script, .box-amber { box-shadow: none; break-inside: avoid; border-color: #ccc; }
+    #chatPanel, #simTabs, #modeSelect, .mode-intro { display: none !important; }
+    #cols { display: block !important; }
+  }
+
+  /* ===== Mode picker ===== */
+  .mode-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.7rem; }
+  .mode-card {
+    text-align: left; font-family: var(--sans); cursor: pointer; color: var(--ink);
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 1.4rem; display: flex; flex-direction: column; gap: 0.5rem;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.05s;
+  }
+  .mode-card:hover { border-color: var(--blue-text); box-shadow: 0 2px 16px rgba(16,24,40,0.08); }
+  .mode-card:active { transform: translateY(1px); }
+  .mc-icon { width: 2.5rem; height: 2.5rem; border-radius: 12px; display: grid; place-items: center;
+    background: var(--blue-bg); color: var(--blue-text); border: 1px solid var(--blue-line); }
+  .mc-icon svg { width: 1.35rem; height: 1.35rem; }
+  .mc-name { font-size: 1.12rem; font-weight: 700; }
+  .mc-desc { font-size: 0.92rem; color: var(--muted); }
+  .mc-go { margin-top: 0.35rem; font-size: 0.86rem; font-weight: 600; color: var(--blue-text); }
+  .mode-foot { margin-top: 1.3rem; font-size: 0.88rem; color: var(--muted-2); font-style: italic; }
+
+  /* ===== Mode visibility ===== */
+  .mode-intro { display: none; }
+  body.mode-roleplay #introRoleplay { display: block; }
+  body.mode-sim #introSim { display: block; }
+  #simTabs { display: none; }
+  body.mode-sim #closingNote { display: none; }
+
+  /* ===== Two-column layout (sim) ===== */
+  #cols { margin-top: 1.4rem; }
+  body.mode-roleplay #cols { display: block; }
+  body.mode-roleplay #chatPanel { display: none; }
+  body.mode-sim .wrap { max-width: 1180px; }
+  body.mode-sim #cols { display: flex; gap: 1.3rem; align-items: flex-start; }
+  body.mode-sim #chatPanel { flex: 1 1 0; min-width: 0; position: sticky; top: 1rem; }
+  body.mode-sim #formPanel { flex: 1 1 0; min-width: 0; }
+
+  /* ===== Chat panel ===== */
+  #chatPanel {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    display: flex; flex-direction: column; max-height: calc(100vh - 2rem); overflow: hidden;
+  }
+  .chat-head { display: flex; align-items: center; gap: 0.7rem; padding: 0.85rem 1rem; border-bottom: 1px solid var(--line); }
+  .chat-id { flex: 1; min-width: 0; }
+  .chat-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted-2); }
+  .chat-sub { font-size: 0.96rem; font-weight: 600; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chat-msgs { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 0.7rem; min-height: 240px; }
+  .msg { max-width: 86%; padding: 0.6rem 0.85rem; border-radius: 14px; font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
+  .msg.client { align-self: flex-start; background: var(--blue-bg); border: 1px solid var(--blue-line); color: var(--ink); border-bottom-left-radius: 4px; }
+  .msg.helper { align-self: flex-end; background: var(--sel-bg); border: 1px solid var(--sel-line); color: var(--blue-text); border-bottom-right-radius: 4px; }
+  .msg.scene { align-self: center; max-width: 100%; background: transparent; border: none; color: var(--muted-2); font-style: italic; font-size: 0.88rem; text-align: center; padding: 0.2rem 0.4rem; }
+  .msg.typing { color: var(--muted-2); font-style: italic; }
+  .chat-err { color: var(--high); font-size: 0.85rem; padding: 0 1rem 0.2rem; }
+  .chat-err:empty { display: none; }
+  .chat-input { display: flex; gap: 0.5rem; padding: 0.75rem; border-top: 1px solid var(--line); align-items: flex-end; }
+  .chat-input textarea {
+    flex: 1; resize: none; font-family: var(--sans); font-size: 0.95rem; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 10px; padding: 0.55rem 0.7rem; max-height: 120px; line-height: 1.4;
+  }
+  .chat-input textarea:focus { outline: none; border-color: var(--sel-line); box-shadow: 0 0 0 3px rgba(47,109,176,0.12); }
+  .send-btn {
+    flex: none; width: 2.5rem; height: 2.5rem; border-radius: 10px; cursor: pointer;
+    background: var(--blue-text); border: 1px solid var(--blue-text); color: #fff; display: grid; place-items: center;
+  }
+  .send-btn:hover { filter: brightness(0.96); }
+  .send-btn:disabled { opacity: 0.5; cursor: default; }
+  .send-btn svg { width: 1.1rem; height: 1.1rem; }
+
+  /* ===== Mobile: tabbed single panel ===== */
+  @media (max-width: 860px) {
+    body.mode-sim .wrap { max-width: 760px; }
+    body.mode-sim #cols { display: block; }
+    body.mode-sim #simTabs {
+      display: flex; gap: 0.3rem; margin-top: 1.4rem; background: var(--shell);
+      border: 1px solid var(--line); border-radius: 999px; padding: 0.25rem;
+    }
+    body.mode-sim #simTabs button {
+      flex: 1; font-family: var(--sans); font-size: 0.9rem; font-weight: 600; color: var(--muted);
+      background: transparent; border: none; border-radius: 999px; padding: 0.5rem; cursor: pointer;
+    }
+    body.mode-sim #simTabs button.active { background: var(--card); color: var(--blue-text); box-shadow: 0 1px 3px rgba(16,24,40,0.1); }
+    body.mode-sim #chatPanel, body.mode-sim #formPanel { display: none; }
+    body.mode-sim #cols.tab-chat #chatPanel { display: flex; }
+    body.mode-sim #cols.tab-form #formPanel { display: block; }
+    body.mode-sim #chatPanel { position: static; max-height: 72vh; margin-top: 0.8rem; }
+  }
+  @media (max-width: 520px) {
+    .mode-cards { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- MODE PICKER -->
+  <div id="modeSelect">
+    <div class="eyebrow">Activity 8 &middot; Practicing ASSIST</div>
+    <h1>Practicing ASSIST</h1>
+    <p class="lede">How would you like to practice? Choose an option to begin. You can switch at any time.</p>
+    <div class="mode-cards">
+      <button class="mode-card" type="button" data-mode="roleplay">
+        <span class="mc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        <span class="mc-name">Role play with a partner</span>
+        <span class="mc-desc">Work in pairs, trading client and helper. One person administers the screen while the other answers as the client.</span>
+        <span class="mc-go">Start role play &rarr;</span>
+      </button>
+      <button class="mode-card" type="button" data-mode="sim">
+        <span class="mc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+        <span class="mc-name">Practice with an AI client</span>
+        <span class="mc-desc">Administer the screen one on one with an AI client. You ask the questions in your own words and code each answer as you go.</span>
+        <span class="mc-go">Start simulation &rarr;</span>
+      </button>
+    </div>
+    <p class="mode-foot">Either way, the screen branches and scores itself, so you can focus on the conversation.</p>
+  </div>
+
+  <!-- APP STAGE -->
+  <div id="stage" hidden>
+
+  <div class="topbar">
+    <!-- REPLACE the href below with your Craft hub URL -->
+    <a class="back-link" href="https://socialworky.craft.me/OSU">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to OSU Training
+    </a>
+    <div class="toolbar">
+      <button class="tool-btn" id="switchModeBtn" type="button" title="Choose a different practice mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>
+        Switch mode
+      </button>
+      <button class="tool-btn reset" id="resetBtn" type="button" title="Clear for the next round">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+        Reset
+      </button>
+      <button class="tool-btn" id="copyBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+      <button class="tool-btn" id="downloadBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Download
+      </button>
+      <button class="tool-btn" id="printBtn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+        Print
+      </button>
+    </div>
+  </div>
+
+  <div class="eyebrow">Activity 8 &middot; Practicing ASSIST</div>
+  <h1>Practicing ASSIST</h1>
+
+  <div id="introRoleplay" class="mode-intro">
+    <p class="lede">Role play administering the ASSIST in pairs. One of you is the client, the other the helper. The screen branches and scores itself, so you can focus on the conversation.</p>
+    <div class="box box-amber">
+      <b>Instructions:</b>
+      <ul>
+        <li>In pairs, trade turns as <b>client</b> and <b>helper</b>.</li>
+        <li>When you present as the client, indicate recent use of 1 to 2 substances so your partner can practice all 8 questions.</li>
+        <li>The helper works through the screen below. Scores and risk tiers update on their own.</li>
+        <li>When finished, review the result together, then use Reset and switch roles.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="introSim" class="mode-intro">
+    <p class="lede">Administer the ASSIST one on one with an AI client. Read the opening script, ask the eight questions in your own words, and code each answer on the screening form as the client responds.</p>
+    <div class="box box-amber">
+      <b>How this works:</b>
+      <ul>
+        <li>The AI plays the <b>client</b>; you are the <b>helper</b>.</li>
+        <li>Read the opening script, then ask the questions conversationally. The client answers in character.</li>
+        <li>You decide how to <b>code each answer</b> on the screening form. Scores and risk tiers update on their own.</li>
+        <li>Use <b>New client</b> for a fresh case, or <b>Reset</b> to clear the form.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="simTabs" role="tablist">
+    <button type="button" data-tab="chat" class="active">Conversation</button>
+    <button type="button" data-tab="form">Screening form</button>
+  </div>
+
+  <div id="cols" class="tab-chat">
+
+    <section id="chatPanel" aria-label="Conversation with the AI client">
+      <div class="chat-head">
+        <div class="chat-id">
+          <div class="chat-title">AI client</div>
+          <div class="chat-sub" id="clientLine">Preparing a client&hellip;</div>
+        </div>
+        <button class="tool-btn" id="newClientBtn" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+          New client
+        </button>
+      </div>
+      <div class="chat-msgs" id="chatMsgs"></div>
+      <div class="chat-err" id="chatErr"></div>
+      <div class="chat-input">
+        <textarea id="chatText" rows="1" placeholder="Type what you would say&hellip;"></textarea>
+        <button class="send-btn" id="chatSend" type="button" aria-label="Send">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section id="formPanel">
+
+  <div class="script">
+    <div class="tag">Helper opening script &middot; read to the client</div>
+    <p>&ldquo;The following questions ask about your experience of using alcohol, tobacco products and other drugs across your lifetime and in the past three months. These substances can be smoked, swallowed, snorted, inhaled or injected <span class="stage">(show response card)</span>.</p>
+    <p>Some of the substances listed may be prescribed by a doctor (like amphetamines, sedatives, pain medications). For this interview, we will not record medications that are used as prescribed by your doctor. However, if you have taken such medications for reasons other than prescription, or taken them more frequently, at higher doses than prescribed or in ways in which it wasn&rsquo;t intended, please let me know.</p>
+    <p>While we are also interested in knowing about your use of various illicit drugs, please be assured that information on such use will be treated as strictly confidential.&rdquo;</p>
+  </div>
+
+  <!-- Q1 -->
+  <div class="section-label">
+    <span class="num">1</span>
+    <span class="lbl">In your life, which of the following substances have you ever used? <span style="font-weight:600; color:var(--muted-2);">(non-medical use only)</span></span>
+    <span class="sub">tap all that apply</span>
+  </div>
+  <div class="chips" id="chips"></div>
+  <input class="other-input" id="otherSpecify" type="text" placeholder="Other &mdash; specify" style="display:none; margin-top:0.7rem;">
+  <p class="empty-note" id="emptyNote">No substances selected yet. If the client answers &ldquo;no&rdquo; to every substance, the screen is finished here.</p>
+
+  <!-- Per-substance questions -->
+  <div class="section-label" id="qsLabel" style="display:none;">
+    <span class="num">2</span>
+    <span class="lbl">Work through each substance</span>
+    <span class="sub" id="qsCount"></span>
+  </div>
+  <div id="subCards"></div>
+
+  <!-- Q8 injection -->
+  <div class="section-label" id="injLabel" style="display:none;">
+    <span class="num">3</span>
+    <span class="lbl">Injection (Question 8)</span>
+  </div>
+  <div class="inj-card" id="injCard" style="display:none;">
+    <div class="q" style="border-top:none;">
+      <div class="q-text"><span class="qid">Q8</span>Have you ever used any drug by injection? (non-medical use only)</div>
+      <div class="opts" id="injMain"></div>
+    </div>
+    <div class="inj-follow">
+      <div class="q">
+        <div class="q-text">In the past three months, how often have you injected?</div>
+        <div class="opts" id="injFreq"></div>
+      </div>
+      <div class="q">
+        <div class="q-text">In the past three months, have you injected three or more days in a row?</div>
+        <div class="opts" id="injRun"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary" id="summary" style="display:none;">
+    <h2>Result</h2>
+    <div class="sub-line">Specific substance involvement score is the sum of Questions 2 through 7.</div>
+    <div id="sumRows"></div>
+    <div class="inj-banner" id="injBanner" style="display:none;"></div>
+  </div>
+
+  <div class="export-footer">
+    <div class="ef-text"><b>Capture the completed screen.</b> Copy it, download a text file, or print a clean copy for the debrief.</div>
+    <div class="toolbar">
+      <button class="tool-btn" id="copyBtn2" type="button">Copy</button>
+      <button class="tool-btn" id="downloadBtn2" type="button">Download</button>
+      <button class="tool-btn" id="printBtn2" type="button">Print</button>
+    </div>
+  </div>
+
+  <!-- Scoring reference -->
+  <div class="section-label">
+    <span class="num">4</span>
+    <span class="lbl">Scoring and next steps</span>
+  </div>
+  <div class="key-card">
+    <p class="key-intro">A specific substance involvement score is the sum of Questions 2 through 7. For tobacco, Question 5 is not coded.</p>
+    <table class="key-table">
+      <thead>
+        <tr><th>Score</th><th>Risk level</th><th>Indicated response</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="score-cell">0&ndash;3 <span class="alt">(0&ndash;10 for alcohol)</span></td>
+          <td><span class="sum-pill low">Lower risk</span></td>
+          <td>Brief education</td>
+        </tr>
+        <tr>
+          <td class="score-cell">4&ndash;26 <span class="alt">(11&ndash;26 for alcohol)</span></td>
+          <td><span class="sum-pill mod">Moderate risk</span></td>
+          <td>Brief intervention</td>
+        </tr>
+        <tr>
+          <td class="score-cell">27+</td>
+          <td><span class="sum-pill high">High risk</span></td>
+          <td>Brief intervention, offer options that include treatment</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="key-note"><b>Injection note:</b> Patients who have injected drugs (non-medical use) in the last three months, but no more than once per week or never more than three days in a row, should receive a brief intervention. All other patients who have injected drugs in the last three months should receive a brief intervention that includes options for treatment.</p>
+  </div>
+
+  <p class="closing" id="closingNote">Return to the main room when you finish, or when you are called back.</p>
+
+    </section><!-- /#formPanel -->
+  </div><!-- /#cols -->
+  </div><!-- /#stage -->
+</div>
+
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<script>
+  const SUBSTANCES = [
+    {id:'tobacco', name:'Tobacco products', sub:'cigarettes, chewing tobacco, cigars', tobacco:true},
+    {id:'alcohol', name:'Alcoholic beverages', sub:'beer, wine, spirits', alcohol:true},
+    {id:'cannabis', name:'Cannabis', sub:'marijuana, pot, grass, hash'},
+    {id:'cocaine', name:'Cocaine', sub:'coke, crack'},
+    {id:'rxstim', name:'Prescription stimulants', sub:'Ritalin, Adderall, diet pills'},
+    {id:'meth', name:'Methamphetamine', sub:'meth, crystal, speed, ecstasy, molly'},
+    {id:'inhalants', name:'Inhalants', sub:'nitrous, glue, paint thinner, poppers, whippets'},
+    {id:'sedatives', name:'Sedatives', sub:'sleeping pills, Valium, Xanax, benzos'},
+    {id:'halluc', name:'Hallucinogens', sub:'LSD, acid, mushrooms, PCP, Special K'},
+    {id:'streetop', name:'Street opioids', sub:'heroin, opium'},
+    {id:'rxop', name:'Prescription opioids', sub:'Fentanyl, Oxycodone, Percocet, Vicodin, methadone'},
+    {id:'other', name:'Other drug', sub:'specify above'}
+  ];
+
+  const FREQ = [['Never',0],['Once or twice',2],['Monthly',3],['Weekly',4],['Daily or almost daily',6]];
+  const YESNO3 = [['No, never',0],['Yes, in the past 3 months',6],['Yes, but not in the past 3 months',3]];
+
+  const RECENT_QS = [
+    {id:'q2', label:'Q2', text:'In the past three months, how often have you used the substances you mentioned?', opts:FREQ, recent:true, gate:true},
+    {id:'q3', label:'Q3', text:'During the past three months, how often have you had a strong desire or urge to use it?', opts:FREQ, recent:true},
+    {id:'q4', label:'Q4', text:'During the past three months, how often has your use led to health, social, legal or financial problems?', opts:FREQ, recent:true},
+    {id:'q5', label:'Q5', text:'During the past three months, how often have you failed to do what was normally expected of you because of your use?', opts:FREQ, recent:true}
+  ];
+  const EVER_QS = [
+    {id:'q6', label:'Q6', text:'Has a friend or relative or anyone else ever expressed concern about your use?', opts:YESNO3},
+    {id:'q7', label:'Q7', text:'Have you ever tried to cut down on using it but failed?', opts:YESNO3}
+  ];
+  const ALL_QS = RECENT_QS.concat(EVER_QS);
+
+  const state = {};              // subId -> {q2:val,...}
+  const active = new Set();      // selected subIds
+  const inj = {main:null, freq:null, run:null};
+
+  const chipsEl = document.getElementById('chips');
+  const subCardsEl = document.getElementById('subCards');
+  const otherInput = document.getElementById('otherSpecify');
+
+  // Build Q1 chips
+  SUBSTANCES.forEach(s => {
+    const chip = document.createElement('button');
+    chip.className = 'chip'; chip.type = 'button'; chip.dataset.id = s.id;
+    chip.innerHTML = '<svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>' + s.name;
+    chip.addEventListener('click', () => toggleSub(s.id));
+    chipsEl.appendChild(chip);
+  });
+
+  function toggleSub(id) {
+    const chip = chipsEl.querySelector('[data-id="'+id+'"]');
+    if (active.has(id)) {
+      active.delete(id);
+      delete state[id];
+      chip.classList.remove('active');
+    } else {
+      active.add(id);
+      state[id] = {q2:null,q3:null,q4:null,q5:null,q6:null,q7:null};
+      chip.classList.add('active');
+    }
+    otherInput.style.display = active.has('other') ? 'block' : 'none';
+    renderSubCards();
+    recompute();
+  }
+
+  function renderSubCards() {
+    subCardsEl.innerHTML = '';
+    SUBSTANCES.filter(s => active.has(s.id)).forEach(s => {
+      const card = document.createElement('div');
+      card.className = 'sub-card'; card.dataset.id = s.id;
+      let qsHtml = '';
+      ALL_QS.forEach(q => {
+        if (s.tobacco && q.id === 'q5') return; // Q5 is not coded for tobacco
+        const optsHtml = q.opts.map(([lab,val]) =>
+          '<button class="opt" type="button" data-q="'+q.id+'" data-val="'+val+'">' + lab + ' <span class="pt">'+val+'</span></button>'
+        ).join('');
+        qsHtml += '<div class="q '+(q.recent?'recent-q':'')+'">' +
+          '<div class="q-text"><span class="qid">'+q.label+'</span>'+q.text+'</div>' +
+          '<div class="opts" data-group="'+q.id+'">'+optsHtml+'</div></div>';
+      });
+      const skipText = s.tobacco
+        ? 'No use in the past three months, so Questions 3 and 4 are skipped. Continue with Questions 6 and 7.'
+        : 'No use in the past three months, so Questions 3 to 5 are skipped. Continue with Questions 6 and 7.';
+      card.innerHTML =
+        '<div class="sub-head">' +
+          '<span class="sub-name">'+s.name+'</span>' +
+          '<span class="sub-sub">'+s.sub+'</span>' +
+          '<span class="score-badge" data-badge="'+s.id+'">Score <span class="pts">0</span></span>' +
+        '</div>' +
+        '<div class="skip-note">'+skipText+'</div>' +
+        qsHtml;
+      subCardsEl.appendChild(card);
+    });
+
+    // wire option clicks
+    subCardsEl.querySelectorAll('.opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const card = btn.closest('.sub-card');
+        const sid = card.dataset.id;
+        const q = btn.dataset.q;
+        const val = parseInt(btn.dataset.val, 10);
+        const group = btn.parentElement;
+        group.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+        btn.classList.add('selected');
+        state[sid][q] = val;
+        if (q === 'q2') {
+          if (val === 0) {
+            card.classList.add('no-recent');
+            ['q3','q4','q5'].forEach(qq => {
+              state[sid][qq] = null;
+              card.querySelectorAll('[data-q="'+qq+'"]').forEach(o => o.classList.remove('selected'));
+            });
+          } else {
+            card.classList.remove('no-recent');
+          }
+        }
+        recompute();
+      });
+    });
+
+    // labels visibility
+    document.getElementById('qsLabel').style.display = active.size ? 'flex' : 'none';
+    document.getElementById('qsCount').textContent = active.size + (active.size === 1 ? ' substance' : ' substances');
+    document.getElementById('injLabel').style.display = active.size ? 'flex' : 'none';
+    document.getElementById('injCard').style.display = active.size ? 'block' : 'none';
+    document.getElementById('emptyNote').style.display = active.size ? 'none' : 'block';
+  }
+
+  // Injection options
+  function buildInjOpts(elId, opts, key) {
+    const el = document.getElementById(elId);
+    el.innerHTML = opts.map(lab => '<button class="opt" type="button" data-val="'+lab+'">'+lab+'</button>').join('');
+    el.querySelectorAll('.opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        el.querySelectorAll('.opt').forEach(o => o.classList.remove('selected'));
+        btn.classList.add('selected');
+        inj[key] = btn.dataset.val;
+        if (key === 'main') {
+          const card = document.getElementById('injCard');
+          if (inj.main === 'Yes, in the past 3 months') card.classList.add('recent');
+          else { card.classList.remove('recent'); inj.freq = null; inj.run = null;
+            document.querySelectorAll('#injFreq .opt, #injRun .opt').forEach(o => o.classList.remove('selected')); }
+        }
+        recompute();
+      });
+    });
+  }
+  buildInjOpts('injMain', ['No, never','Yes, in the past 3 months','Yes, but not in the past 3 months'], 'main');
+  buildInjOpts('injFreq', ['Once per week or less','More than once per week'], 'freq');
+  buildInjOpts('injRun', ['Yes','No'], 'run');
+
+  // Scoring
+  function subScore(sid) {
+    const st = state[sid];
+    const isTob = !!(SUBSTANCES.find(x => x.id === sid) || {}).tobacco;
+    let s = (st.q2||0) + (st.q6||0) + (st.q7||0);
+    if (st.q2 !== 0) { s += (st.q3||0) + (st.q4||0); if (!isTob) s += (st.q5||0); }
+    return s;
+  }
+  function tier(score, isAlcohol) {
+    const lowMax = isAlcohol ? 10 : 3;
+    if (score <= lowMax) return {cls:'low', level:'Lower risk', resp:'Brief education'};
+    if (score <= 26) return {cls:'mod', level:'Moderate risk', resp:'Brief intervention'};
+    return {cls:'high', level:'High risk', resp:'Brief intervention, offer options that include treatment'};
+  }
+
+  function recompute() {
+    SUBSTANCES.filter(s => active.has(s.id)).forEach(s => {
+      const score = subScore(s.id);
+      const t = tier(score, !!s.alcohol);
+      const badge = document.querySelector('[data-badge="'+s.id+'"]');
+      if (badge) {
+        badge.className = 'score-badge ' + t.cls;
+        badge.innerHTML = t.level + ' &middot; <span class="pts">' + score + '</span>';
+      }
+    });
+    renderSummary();
+  }
+
+  function renderSummary() {
+    const summary = document.getElementById('summary');
+    const rows = document.getElementById('sumRows');
+    const banner = document.getElementById('injBanner');
+    const list = SUBSTANCES.filter(s => active.has(s.id));
+    if (!list.length) { summary.style.display = 'none'; return; }
+    summary.style.display = 'block';
+    rows.innerHTML = list.map(s => {
+      const score = subScore(s.id);
+      const t = tier(score, !!s.alcohol);
+      const nm = (s.id === 'other' && otherInput.value.trim()) ? otherInput.value.trim() : s.name;
+      return '<div class="sum-row">' +
+        '<span class="sum-name">'+nm+'</span>' +
+        '<span class="sum-score">score '+score+'</span>' +
+        '<span class="sum-pill '+t.cls+'">'+t.level+'</span>' +
+        '<span class="sum-resp">Indicated response: '+t.resp+'</span>' +
+      '</div>';
+    }).join('');
+
+    // injection escalation note
+    if (inj.main === 'Yes, in the past 3 months') {
+      const intensive = (inj.freq === 'More than once per week') || (inj.run === 'Yes');
+      banner.style.display = 'block';
+      banner.innerHTML = intensive
+        ? '<b>Injection note:</b> injected in the past 3 months, more than once per week or three or more days in a row. Indicated response is a brief intervention that includes options for treatment.'
+        : '<b>Injection note:</b> injected in the past 3 months. Provide a brief intervention, including the &ldquo;Risks of Injecting&rdquo; information.';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
+  // Export
+  function buildText() {
+    const lines = [];
+    lines.push('Practicing ASSIST \u2014 MI & SBIRT Training');
+    lines.push(new Date().toLocaleString());
+    lines.push('');
+    const list = SUBSTANCES.filter(s => active.has(s.id));
+    if (!list.length) { lines.push('No substances endorsed.'); return lines.join('\n'); }
+    list.forEach(s => {
+      const nm = (s.id === 'other' && otherInput.value.trim()) ? otherInput.value.trim() : s.name;
+      lines.push(nm.toUpperCase());
+      const st = state[s.id];
+      const label = (qid) => {
+        const q = ALL_QS.find(x => x.id === qid);
+        const found = q.opts.find(([l,v]) => v === st[qid]);
+        return found ? found[0] : '(not answered)';
+      };
+      lines.push('  Q2 past 3-month use: ' + label('q2'));
+      if (st.q2 !== 0) {
+        lines.push('  Q3 urge: ' + label('q3'));
+        lines.push('  Q4 problems: ' + label('q4'));
+        if (s.tobacco) lines.push('  Q5: not coded for tobacco');
+        else lines.push('  Q5 failed expectations: ' + label('q5'));
+      } else {
+        lines.push(s.tobacco ? '  Q3-Q4: skipped (no recent use); Q5 not coded for tobacco' : '  Q3-Q5: skipped (no recent use)');
+      }
+      lines.push('  Q6 concern from others: ' + label('q6'));
+      lines.push('  Q7 tried to cut down but failed: ' + label('q7'));
+      const score = subScore(s.id);
+      const t = tier(score, !!s.alcohol);
+      lines.push('  Score: ' + score + '  |  ' + t.level + '  |  ' + t.resp);
+      lines.push('');
+    });
+    lines.push('Q8 injection: ' + (inj.main || '(not answered)'));
+    if (inj.main === 'Yes, in the past 3 months') {
+      lines.push('  How often injected: ' + (inj.freq || '(not answered)'));
+      lines.push('  3+ days in a row: ' + (inj.run || '(not answered)'));
+      const intensive = (inj.freq === 'More than once per week') || (inj.run === 'Yes');
+      lines.push('  Injection note: ' + (intensive
+        ? 'brief intervention that includes options for treatment'
+        : 'brief intervention, including Risks of Injecting information'));
+    }
+    return lines.join('\n');
+  }
+
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  function showToast(msg) { toast.textContent = msg; toast.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(()=>toast.classList.remove('show'),1900); }
+
+  function doCopy(btn) {
+    const text = buildText();
+    const done = () => { showToast('Copied to clipboard'); if (btn){ btn.classList.add('copied'); const o=btn.textContent; btn.textContent='Copied'; setTimeout(()=>{btn.classList.remove('copied'); btn.textContent=o;},1500);} };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done).catch(()=>fallback(text,done));
+    else fallback(text,done);
+  }
+  function fallback(text, done) {
+    const ta=document.createElement('textarea'); ta.value=text; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch(e){ showToast('Copy not supported \u2014 use Download'); }
+    document.body.removeChild(ta);
+  }
+  function doDownload() {
+    const blob=new Blob([buildText()],{type:'text/plain;charset=utf-8'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    a.href=url; a.download='assist-screen.txt'; document.body.appendChild(a); a.click();
+    document.body.removeChild(a); URL.revokeObjectURL(url); showToast('Download started');
+  }
+  function doReset() {
+    active.clear(); for (const k in state) delete state[k];
+    inj.main=inj.freq=inj.run=null;
+    chipsEl.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    document.getElementById('injCard').classList.remove('recent');
+    document.querySelectorAll('#injMain .opt,#injFreq .opt,#injRun .opt').forEach(o=>o.classList.remove('selected'));
+    otherInput.value=''; otherInput.style.display='none';
+    renderSubCards(); recompute(); showToast('Cleared for the next round');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  document.getElementById('copyBtn').addEventListener('click', e=>doCopy(e.currentTarget));
+  document.getElementById('copyBtn2').addEventListener('click', e=>doCopy(e.currentTarget));
+  document.getElementById('downloadBtn').addEventListener('click', doDownload);
+  document.getElementById('downloadBtn2').addEventListener('click', doDownload);
+  document.getElementById('printBtn').addEventListener('click', ()=>window.print());
+  document.getElementById('printBtn2').addEventListener('click', ()=>window.print());
+  document.getElementById('resetBtn').addEventListener('click', doReset);
+  otherInput.addEventListener('input', renderSummary);
+</script>
+
+<script>
+(function(){
+  const body = document.body;
+  const stage = document.getElementById('stage');
+  const modeSelect = document.getElementById('modeSelect');
+  const cols = document.getElementById('cols');
+
+  function setMode(mode){
+    body.classList.remove('mode-roleplay','mode-sim');
+    body.classList.add('mode-' + mode);
+    modeSelect.style.display = 'none';
+    stage.hidden = false;
+    if (mode === 'sim') ensureClient(false);
+    window.scrollTo({top:0});
+  }
+  document.querySelectorAll('.mode-card').forEach(c => {
+    c.addEventListener('click', () => setMode(c.dataset.mode));
+  });
+  document.getElementById('switchModeBtn').addEventListener('click', () => {
+    stage.hidden = true;
+    modeSelect.style.display = 'block';
+    body.classList.remove('mode-roleplay','mode-sim');
+    window.scrollTo({top:0});
+  });
+
+  // Mobile tab toggle
+  document.querySelectorAll('#simTabs button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#simTabs button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      cols.classList.remove('tab-chat','tab-form');
+      cols.classList.add('tab-' + btn.dataset.tab);
+    });
+  });
+
+  // ===== AI client chat =====
+  const GEN_MODEL = 'gpt-4.1-mini';
+  const CHAT_MODEL = 'gpt-4.1-mini';
+  const msgsEl = document.getElementById('chatMsgs');
+  const errEl = document.getElementById('chatErr');
+  const textEl = document.getElementById('chatText');
+  const sendBtn = document.getElementById('chatSend');
+  const clientLine = document.getElementById('clientLine');
+  let persona = null, sysPrompt = '', history = [], busy = false, started = false;
+
+  async function callChat(system, messages, model, maxTokens){
+    const headers = {'content-type':'application/json'};
+    const code = localStorage.getItem('clientbot_access_code');
+    if (code) headers['x-access-code'] = code;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 45000);
+    let res;
+    try {
+      res = await fetch('/api/chat', {method:'POST', headers, signal:ctrl.signal,
+        body: JSON.stringify({system, messages, model, max_tokens:maxTokens})});
+    } catch(e){ clearTimeout(timer); throw new Error(e.name==='AbortError' ? 'the request timed out' : ('network error - '+e.message)); }
+    clearTimeout(timer);
+    if (res.status === 401){
+      const entered = prompt('Enter the access code for this tool:');
+      if (entered){ localStorage.setItem('clientbot_access_code', entered); return callChat(system, messages, model, maxTokens); }
+      throw new Error('Access code required.');
+    }
+    let data;
+    try { data = await res.json(); } catch(e){ throw new Error('the server did not return readable data (status '+res.status+').'); }
+    if (!res.ok) throw new Error((data && data.error) || ('status '+res.status));
+    return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+  }
+  function extractJSON(t){ const s=t.indexOf('{'), e=t.lastIndexOf('}'); if(s<0||e<0) throw new Error('bad json'); return JSON.parse(t.slice(s, e+1)); }
+
+  function addMsg(text, cls){
+    const d = document.createElement('div');
+    d.className = 'msg ' + cls;
+    d.textContent = text;
+    msgsEl.appendChild(d);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+    return d;
+  }
+
+  const GEN_SYSTEM = `You generate ONE hidden client persona for a WHO ASSIST substance-use screening role-play. A social work learner will administer the eight ASSIST questions and must discover the client's use through conversation, so the persona must be internally consistent and realistically codeable.
+
+Rules:
+- Choose 1 or 2 substances the client has used in the PAST 3 MONTHS, from: tobacco, alcohol, cannabis, cocaine, prescription stimulants, methamphetamine, inhalants, sedatives, hallucinogens, street opioids, prescription opioids. Vary the choice. Tobacco or alcohol are common but not required.
+- Give realistic, varied answers. Not everyone is high risk. Some are lower risk, some moderate, occasionally high.
+- MOST clients have NEVER injected. Include injection only rarely, and only when it fits the substance.
+- Make the person specific and human: a real situation, a reason they are here, a way of talking.
+
+Respond with ONLY a JSON object, no code fences and no extra text:
+{
+ "name": "first name",
+ "age": 18-70,
+ "pronouns": "she/her | he/him | they/them",
+ "context": "one or two sentences on who they are and why they are at this appointment. Do NOT state substance frequencies here.",
+ "voice": "a few words on how they talk",
+ "substances": [
+   {
+     "name": "substance label",
+     "pastThreeMonths": "how often, in plain words",
+     "urge": "strength of urges to use, in plain words",
+     "problems": "any health, social, legal or money problems, or none",
+     "roleFailures": "times use made them fall short of what was expected, or none",
+     "othersConcerned": "whether anyone has expressed concern, and when",
+     "triedCutDown": "whether they ever tried to cut down and failed"
+   }
+ ],
+ "otherEverUsed": ["substances used in their lifetime but NOT the past 3 months"],
+ "injection": "plain-words truth about injecting, usually that they have never injected"
+}`;
+
+  function buildSysPrompt(p){
+    const subs = (p.substances||[]).map(s =>
+      `- ${s.name}: used in your life. In the past 3 months: ${s.pastThreeMonths}. Urges to use: ${s.urge}. Problems it caused: ${s.problems}. Times it made you fall short of what was expected: ${s.roleFailures}. Whether others have voiced concern: ${s.othersConcerned}. Tried to cut down and failed: ${s.triedCutDown}.`
+    ).join('\n');
+    const other = (p.otherEverUsed && p.otherEverUsed.length) ? p.otherEverUsed.join(', ') : 'none worth mentioning';
+    return `You are role-playing a single client in a substance-use screening practice for social work learners. Stay fully in character, never break character, never say you are an AI, never coach the worker, and never recite these notes as a list.
+
+WHO YOU ARE
+Name: ${p.name}. Age: ${p.age}. Pronouns: ${p.pronouns}.
+Context: ${p.context}
+How you talk: ${p.voice}
+
+YOUR TRUTH (reveal only what is asked, in your own words)
+${subs}
+Used in your lifetime but NOT in the past 3 months: ${other}.
+Injection: ${p.injection}
+
+HOW TO RESPOND
+- A social worker is asking you the ASSIST questions. Answer naturally, in the first person, in 1 to 4 sentences.
+- Give concrete but human answers ("most weekends", "almost every day", "maybe a couple times"), never score numbers or category labels.
+- Do not volunteer everything at once. Answer what is asked, the way a real person would.
+- It is fine to be ambivalent, tired, or a little guarded. Do not lecture or narrate stage directions.`;
+  }
+
+  async function ensureClient(force){
+    if (started && !force) return;
+    started = true;
+    history = []; msgsEl.innerHTML = ''; errEl.textContent = '';
+    clientLine.textContent = 'Preparing a client\u2026';
+    sendBtn.disabled = true; textEl.disabled = true;
+    addMsg('Setting up a new client\u2026', 'scene');
+    try {
+      const raw = await callChat(GEN_SYSTEM, [{role:'user', content:'Create one client persona.'}], GEN_MODEL, 700);
+      persona = extractJSON(raw);
+      sysPrompt = buildSysPrompt(persona);
+      msgsEl.innerHTML = '';
+      clientLine.textContent = persona.name + ', ' + persona.age;
+      addMsg(persona.name + ' has come in and sits down across from you. Read your opening script to begin.', 'scene');
+      sendBtn.disabled = false; textEl.disabled = false;
+    } catch(e){
+      msgsEl.innerHTML = '';
+      clientLine.textContent = 'Setup failed';
+      errEl.textContent = 'Could not set up a client. ' + e.message;
+      const sc = addMsg('', 'scene');
+      const retry = document.createElement('button');
+      retry.className = 'tool-btn'; retry.type = 'button'; retry.textContent = 'Try again';
+      retry.addEventListener('click', () => ensureClient(true));
+      sc.appendChild(retry);
+      sendBtn.disabled = false; textEl.disabled = false;
+    }
+  }
+
+  async function send(){
+    if (busy) return;
+    const txt = textEl.value.trim();
+    if (!txt) return;
+    if (!persona){ ensureClient(false); return; }
+    errEl.textContent = '';
+    addMsg(txt, 'helper');
+    history.push({role:'user', content:txt});
+    textEl.value = ''; autosize();
+    busy = true; sendBtn.disabled = true;
+    const typing = addMsg(persona.name + ' is thinking\u2026', 'client typing');
+    try {
+      const reply = await callChat(sysPrompt, history, CHAT_MODEL, 400);
+      typing.remove();
+      addMsg(reply, 'client');
+      history.push({role:'assistant', content:reply});
+    } catch(e){
+      typing.remove();
+      history.pop(); // drop the unanswered turn so it can be retried
+      errEl.textContent = 'Message did not go through. ' + e.message + ' Try sending again.';
+      textEl.value = txt; autosize();
+    } finally {
+      busy = false; sendBtn.disabled = false; textEl.focus();
+    }
+  }
+  sendBtn.addEventListener('click', send);
+  textEl.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
+  function autosize(){ textEl.style.height = 'auto'; textEl.style.height = Math.min(textEl.scrollHeight, 120) + 'px'; }
+  textEl.addEventListener('input', autosize);
+
+  document.getElementById('newClientBtn').addEventListener('click', () => ensureClient(true));
+})();
+</script>
+</body>
+</html>
