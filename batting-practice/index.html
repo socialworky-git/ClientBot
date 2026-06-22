@@ -42,39 +42,6 @@
   .sb .n.score{color:var(--accent);}
   .sb .l{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9FB8A8;margin-top:3px;}
 
-  .field-wrap{display:flex;justify-content:center;margin-top:16px;}
-  .batfield{width:230px;height:230px;}
-  .batG{transform-box:view-box;transform-origin:96px 186px;transform:rotate(-24deg);}
-  .ballG{transform-box:view-box;transform-origin:118px 150px;opacity:0;}
-  /* hit swings */
-  .scene.go-single .batG,.scene.go-double .batG,.scene.go-triple .batG,.scene.go-hr .batG{animation:batswing .78s cubic-bezier(.2,.65,.3,1) both;}
-  .scene.go-k .batG{animation:batwhiff .62s ease both;}
-  .scene.go-single .ballG{animation:ballfly .85s ease-out .2s both;--bx:58px;--by:-26px;}
-  .scene.go-double .ballG{animation:ballfly .9s ease-out .2s both;--bx:88px;--by:-58px;}
-  .scene.go-triple .ballG{animation:ballfly .95s ease-out .2s both;--bx:108px;--by:-86px;}
-  .scene.go-hr .ballG{animation:ballHR 1.05s ease-out .2s both;}
-  @keyframes batswing{
-    0%{transform:rotate(-58deg);} 32%{transform:rotate(22deg);}
-    60%{transform:rotate(104deg);} 100%{transform:rotate(-24deg);}
-  }
-  @keyframes batwhiff{
-    0%{transform:rotate(-58deg);} 45%{transform:rotate(118deg);} 100%{transform:rotate(-24deg);}
-  }
-  @keyframes ballfly{
-    0%{opacity:0;transform:translate(0,0) scale(.55);}
-    14%{opacity:1;transform:translate(2px,1px) scale(1);}
-    100%{opacity:1;transform:translate(var(--bx),var(--by)) scale(.8);}
-  }
-  @keyframes ballHR{
-    0%{opacity:0;transform:translate(0,0) scale(.55);}
-    14%{opacity:1;transform:translate(2px,0) scale(1);}
-    55%{opacity:1;transform:translate(92px,-98px) scale(.78);}
-    100%{opacity:0;transform:translate(168px,-58px) scale(.5);}
-  }
-  @media (prefers-reduced-motion:reduce){
-    .scene .batG,.scene .ballG{animation-duration:.001s !important;}
-  }
-
   .pitch{background:#EEF1F4;border:1px solid #D5DDE5;border-left:3px solid #3E4A57;border-radius:10px;
     padding:14px 16px;font-size:16px;color:#26313C;margin-top:16px;}
   .pitch .who{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:#3E4A57;margin-bottom:4px;}
@@ -92,10 +59,10 @@
   textarea:focus{border-color:var(--accent);}
   .tip{font-size:11.5px;color:var(--muted);margin-top:5px;}
 
-  .call{text-align:center;font-size:30px;font-weight:800;letter-spacing:1px;margin:14px 0 4px;}
-  .call.show{animation:pop .6s ease;}
-  @keyframes pop{0%{transform:scale(.6);opacity:0}30%{transform:scale(1.18);opacity:1}100%{transform:scale(1);opacity:1}}
-  .call .gain{display:block;font-size:14px;font-weight:700;color:var(--muted);letter-spacing:0;margin-top:2px;}
+  .call{text-align:center;font-size:30px;font-weight:800;letter-spacing:1px;margin:30px 0 10px;}
+  .call.show{animation:pop .55s cubic-bezier(.2,.7,.3,1.2);}
+  @keyframes pop{0%{transform:scale(.5);opacity:0}40%{transform:scale(1.22);opacity:1}100%{transform:scale(1);opacity:1}}
+  .call .gain{display:block;font-size:14px;font-weight:700;color:var(--muted);letter-spacing:0;margin-top:8px;}
   .fb{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14.5px;margin-top:6px;}
   .err{color:var(--accentDeep);font-size:13px;margin-top:8px;}
   .status{font-size:13px;font-style:italic;color:var(--accentDeep);margin-top:8px;}
@@ -143,24 +110,7 @@
 
     <div class="scoreboard">
       <div class="sb"><div class="n score" id="scoreN">0</div><div class="l">Score</div></div>
-      <div class="sb"><div class="n" id="runsN">0</div><div class="l">Runs</div></div>
       <div class="sb"><div class="n" id="pitchN">1 / 10</div><div class="l">Pitch</div></div>
-    </div>
-
-    <div class="field-wrap">
-      <svg viewBox="0 0 240 240" class="batfield scene" id="scene" aria-hidden="true">
-        <rect x="0" y="0" width="240" height="240" rx="16" fill="var(--field)"/>
-        <path d="M0,198 Q120,172 240,198 L240,240 L0,240 Z" fill="var(--fielddk)"/>
-        <polygon points="78,194 110,194 110,204 94,212 78,204" fill="#fff" stroke="var(--fielddk)" stroke-width="2"/>
-        <g class="ballG" id="ballG">
-          <circle cx="118" cy="150" r="8" fill="#fff" stroke="var(--accentDeep)" stroke-width="1.5"/>
-          <path d="M114,145.5 Q117,150 114,154.5 M122,145.5 Q119,150 122,154.5" stroke="var(--accentDeep)" stroke-width="1" fill="none"/>
-        </g>
-        <g class="batG" id="batG">
-          <rect x="89" y="92" width="14" height="98" rx="7" fill="var(--dirt)" stroke="#9c7a44" stroke-width="1.5"/>
-          <rect x="91" y="172" width="10" height="20" rx="3" fill="#7a5a2e"/>
-        </g>
-      </svg>
     </div>
 
     <div id="atbat">
@@ -204,14 +154,14 @@ const EVAL_MODEL="gpt-4.1";
 const BONUS_MS=25000;
 
 const HIT={
-  simple_reflection:{call:"SINGLE",bases:1,pts:10,cls:"p-single",swing:"single"},
-  complex_reflection:{call:"DOUBLE",bases:2,pts:20,cls:"p-double",swing:"double"},
-  affirmation:{call:"TRIPLE",bases:3,pts:30,cls:"p-triple",swing:"triple"},
-  change_reflection:{call:"HOME RUN",bases:4,pts:50,cls:"p-hr",swing:"hr"},
-  other:{call:"STRIKEOUT",bases:0,pts:0,cls:"p-k",swing:"k"}
+  simple_reflection:{call:"SINGLE",bases:1,pts:10,cls:"p-single"},
+  complex_reflection:{call:"DOUBLE",bases:2,pts:20,cls:"p-double"},
+  affirmation:{call:"TRIPLE",bases:3,pts:30,cls:"p-triple"},
+  change_reflection:{call:"HOME RUN",bases:4,pts:50,cls:"p-hr"},
+  other:{call:"STRIKEOUT",bases:0,pts:0,cls:"p-k"}
 };
 
-let score,runs,pitchNum,totalPitches,bases,tally,history,pitchStart,client;
+let score,pitchNum,totalPitches,tally,history,pitchStart,client;
 
 const GEN_SYSTEM=`You are creating material for a Motivational Interviewing reflection drill. Create ten separate practice pitches. Each pitch is a different client with a different change focus, so the set stays varied: a specific behavior that client feels two ways about changing (for example, cutting back on drinking, starting to exercise, leaving an unhealthy relationship, taking medication, quitting vaping, setting boundaries with a parent). For each, write one short first-person client statement (one or two sentences) that gives a learner something to reflect, mixing change talk, sustain talk, ambivalence, and emotion across the ten. Vary the topics widely.
 Respond with ONLY a JSON object, no code fences and no extra text:
@@ -270,11 +220,11 @@ async function newClientAndStart(){
     if(!c.pitches||!c.pitches.length) throw new Error("no pitches returned");
     client=c;
     totalPitches=Math.min(10,c.pitches.length);
-    score=0;runs=0;pitchNum=1;bases=[false,false,false];
+    score=0;pitchNum=1;
     tally={simple_reflection:0,complex_reflection:0,affirmation:0,change_reflection:0,other:0};
     history=[];
     document.getElementById("setupMsg").innerHTML="";
-    renderScore();resetScene();
+    renderScore();
     document.getElementById("atbat").classList.remove("hidden");
     loadPitch();
   }catch(e){
@@ -285,27 +235,7 @@ async function newClientAndStart(){
 
 function renderScore(){
   document.getElementById("scoreN").textContent=score;
-  document.getElementById("runsN").textContent=runs;
   document.getElementById("pitchN").textContent=pitchNum+" / "+totalPitches;
-}
-function resetScene(){
-  const s=document.getElementById("scene");
-  if(s) s.className="batfield scene";
-}
-function playSwing(swingClass){
-  const s=document.getElementById("scene");
-  if(!s)return;
-  s.className="batfield scene"; void s.offsetWidth;
-  s.classList.add("go-"+swingClass);
-}
-function advance(v){
-  if(v<=0) return 0;
-  let runners=[];
-  if(bases[2])runners.push(3); if(bases[1])runners.push(2); if(bases[0])runners.push(1);
-  runners.push(0);
-  let nb=[false,false,false],r=0;
-  runners.forEach(p=>{const np=p+v; if(np>=4) r++; else nb[np-1]=true;});
-  bases=nb; return r;
 }
 function startCountdown(){
   const bar=document.getElementById("cdbar");
@@ -341,16 +271,14 @@ async function swing(){
     let parsed;try{parsed=extractJSON(raw);}catch(e){parsed={category:"other",feedback:"That one was hard to read. Try a clear reflection that hands the client's meaning back to them."};}
     let cat=parsed.category; if(!HIT[cat])cat="other";
     const hit=HIT[cat];
-    const bonus=hit.bases>0?Math.max(0,Math.round((1-elapsed/BONUS_MS)*10)):0;
+    const bonus=hit.pts>0?Math.max(0,Math.round((1-elapsed/BONUS_MS)*10)):0;
     const gained=hit.pts+bonus;
     score+=gained;tally[cat]++;history.push(cat);
-    const r=advance(hit.bases);runs+=r;
-    renderScore();playSwing(hit.swing);
+    renderScore();
     status.innerHTML="";
     const callEl=document.getElementById("call");
-    callEl.innerHTML='<span class="pill '+hit.cls+'" style="font-size:26px;padding:4px 16px">'+hit.call+'</span>'
-      +'<span class="gain">'+(hit.pts>0?("+"+hit.pts+" pts"+(bonus>0?(" and +"+bonus+" speed bonus"):"")):"no points, shake it off")
-      +(r>0?(" &middot; "+r+" run"+(r>1?"s":"")+" in!"):"")+'</span>';
+    callEl.innerHTML='<span class="pill '+hit.cls+'" style="font-size:34px;padding:6px 22px">'+hit.call+'</span>'
+      +'<span class="gain">'+(hit.pts>0?("+"+hit.pts+" pts"+(bonus>0?(" and +"+bonus+" speed bonus"):"")):"no points, shake it off")+'</span>';
     callEl.classList.remove("show");void callEl.offsetWidth;callEl.classList.add("show");
     document.getElementById("fb").textContent=parsed.feedback||"";
     hide("atbat");show("result");
@@ -369,7 +297,8 @@ function nextPitch(){
 function endGame(){
   hide("game");show("end");
   document.getElementById("finalScore").textContent=score;
-  document.getElementById("finalLine").textContent=runs+" run"+(runs===1?"":"s")+" batted in over "+totalPitches+" pitches.";
+  const hits=totalPitches-tally.other;
+  document.getElementById("finalLine").textContent=hits+" "+(hits===1?"hit":"hits")+" out of "+totalPitches+" pitches.";
   const order=[["change_reflection","Home runs (change talk)"],["affirmation","Triples (affirmations)"],["complex_reflection","Doubles (complex)"],["simple_reflection","Singles (simple)"],["other","Strikeouts"]];
   let html="";
   order.forEach(([k,lab])=>{
