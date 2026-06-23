@@ -280,7 +280,7 @@ Do NOT punish a brief empathic nod to sustain. Only sustain_heavy and missed_cha
 - "evoke_sustain_q": a question that pulls toward sustain (what they enjoy about using, what is hard about stopping, why they keep using).
 - "closed_or_off_q": a closed, leading, or off-target question.`}
 
-Return ONLY this JSON, no code fences:
+Return ONLY the JSON object below. Do not use code fences. Do not write anything before or after it. Keep clientLine to at most four sentences.
 { "assessment": "<one assessment from the list above>",
   "clientLine": "<Renee's next statement, in character, 1 to 4 sentences>",
   "rationale": "<one short sentence on what the worker did, for an end-of-session debrief>" }`;
@@ -314,9 +314,40 @@ Give 4 to 6 sentences of coaching. Name one or two things they did well, one or 
     let data;
     try { data = await res.json(); } catch (e) { throw new Error('the server did not return readable data (status ' + res.status + ').'); }
     if (!res.ok) throw new Error((data && data.error) || ('status ' + res.status));
-    return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+    if (Array.isArray(data.content)) return data.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
+    if (typeof data.content === 'string') return data.content;
+    if (data.choices && data.choices[0]) return (data.choices[0].message && data.choices[0].message.content) || data.choices[0].text || '';
+    return data.text || data.reply || data.completion || '';
   }
-  function extractJSON(t) { const s = t.indexOf('{'), e = t.lastIndexOf('}'); if (s < 0 || e < 0) throw new Error('the response was not readable'); return JSON.parse(t.slice(s, e + 1)); }
+  function extractJSON(t) {
+    if (!t) throw new Error('the reply was empty');
+    const s = t.replace(/```json/gi, '').replace(/```/g, '').trim();
+    const start = s.indexOf('{');
+    if (start < 0) throw new Error('no JSON in the reply');
+    let depth = 0, inStr = false, escd = false, end = -1;
+    for (let i = start; i < s.length; i++) {
+      const c = s[i];
+      if (inStr) {
+        if (escd) escd = false;
+        else if (c === '\\') escd = true;
+        else if (c === '"') inStr = false;
+      } else if (c === '"') inStr = true;
+      else if (c === '{') depth++;
+      else if (c === '}') { depth--; if (depth === 0) { end = i; break; } }
+    }
+    if (end < 0) throw new Error('the reply was cut off');
+    return JSON.parse(s.slice(start, end + 1));
+  }
+
+  async function getTurn(system, messages) {
+    let lastErr;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const raw = await callChat(system, messages, TURN_MODEL, 700);
+      try { return extractJSON(raw); }
+      catch (e) { lastErr = e; }
+    }
+    throw lastErr;
+  }
   function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
   const $ = id => document.getElementById(id);
@@ -375,8 +406,7 @@ Give 4 to 6 sentences of coaching. Name one or two things they did well, one or 
     const messages = history.concat([{ role: 'user', content: userContent }]);
 
     try {
-      const raw = await callChat(turnSystem(move), messages, TURN_MODEL, 400);
-      const data = extractJSON(raw);
+      const data = await getTurn(turnSystem(move), messages);
       const m = MOVES[data.assessment] || (move === 'reflection' ? MOVES.directional_change : MOVES.neutral_q);
       // record
       history.push({ role: 'user', content: userContent });
@@ -405,7 +435,7 @@ Give 4 to 6 sentences of coaching. Name one or two things they did well, one or 
       }, 1150);
     } catch (e) {
       if (move === 'reflection') reflections--; else questions--;
-      msg.className = 'turn-msg err'; msg.textContent = 'That did not go through. ' + e.message + ' Try sending again.';
+      msg.className = 'turn-msg err'; msg.textContent = 'That did not go through (' + e.message + '). Your turn was not used, so just send again.';
       $('btnReflect').disabled = false; $('btnQuestion').disabled = false; $('entry').disabled = false;
       $('clientCard').classList.remove('dim');
       busy = false;
