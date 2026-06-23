@@ -31,11 +31,12 @@
   .btn-primary:hover{ background:var(--accentDeep); border-color:var(--accentDeep); }
 
   /* Hero */
-  .hero{ padding:14px 0 8px; }
-  .eyebrow{ font-size:12px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--accentDeep); margin-bottom:14px; }
+  .hero{ display:flex; align-items:center; gap:36px; padding:18px 0 8px; }
+  .hero-text{ flex:1 1 auto; min-width:0; }
+  .hero-logo{ flex:0 0 auto; width:300px; max-width:38%; }
+  .hero-logo img{ width:100%; height:auto; display:block; }
   .hero h1{ font-size:clamp(30px,5vw,42px); line-height:1.12; font-weight:700; letter-spacing:-0.5px; margin:0 0 16px; }
-  .hero .sub{ color:var(--muted); font-size:17px; margin:0 0 24px; max-width:54ch; }
-  .hero-cta{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+  .hero .sub{ color:var(--muted); font-size:17px; margin:0; max-width:54ch; }
 
   /* Section heads */
   .section-title{ font-size:12px; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; color:var(--accentDeep); margin:52px 0 18px; padding-bottom:6px; border-bottom:1px solid var(--line); }
@@ -62,10 +63,11 @@
 
   @media (max-width:600px){
     body{ padding:16px; }
-    .panels, .offerings{ grid-template-columns:1fr; }
+    .offerings{ grid-template-columns:1fr; }
+    .hero{ flex-direction:column; align-items:flex-start; gap:20px; }
+    .hero-logo{ width:180px; max-width:60%; align-self:center; }
     .bio-container{ flex-direction:column; }
     nav{ gap:12px; }
-    .hero-cta .btn{ width:100%; text-align:center; }
   }
 </style>
 </head>
@@ -84,9 +86,15 @@
 
   <!-- Hero -->
   <section class="hero">
-    <h1>Motivational Interviewing,<br>learned by doing.</h1>
-    <p class="sub">Interactive workshops and free practice tools for social workers and other helpers who want MI skills that actually stick.</p>
+    <div class="hero-text">
+      <h1>Motivational Interviewing,<br>learned by doing.</h1>
+      <p class="sub">Interactive workshops and free practice tools for social workers and other helpers who want MI skills that actually stick.</p>
+    </div>
+    <div class="hero-logo">
+      <img src="/images/logo-animated.svg" alt="Socialworky" width="320" height="320">
+    </div>
   </section>
+
   <!-- Workshops -->
   <div id="workshops" class="section-title">Training &amp; workshops</div>
   <p class="lead">I offer customized training and consultation for organizations, built around your setting and the challenges your team is facing.</p>
