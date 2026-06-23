@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intentional Reflections</title>
+<style>
+  :root {
+    --ink: #1f2328;
+    --muted: #6b7280;
+    --muted-2: #9ca3af;
+    --bg: #ffffff;
+    --card: #ffffff;
+    --line: #e6e7eb;
+    --line-soft: #eef0f2;
+    --shell: #f7f8f9;
+
+    --amber-bg: #fdf8ec;
+    --amber-line: #f0e2bf;
+    --amber-text: #9a5a2a;
+
+    --blue-bg: #fdeeeb;
+    --blue-line: #f6d4cd;
+    --blue-text: #c2452f;
+    --accent: #eb786b;
+    --accentDeep: #c2452f;
+
+    --green: #2f8f5b;
+    --green-bg: #eaf6ee;
+    --green-line: #c7e7d2;
+
+    --rust: #b5531f;
+    --rust-bg: #fbeee5;
+
+    --radius: 16px;
+    --radius-sm: 10px;
+    --sans: Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    color: var(--ink);
+    background: var(--shell);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    padding: clamp(1rem, 4vw, 2.5rem) 1rem 5rem;
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  /* Top bar */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.8rem;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.86rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0.4rem 0.8rem 0.4rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--card);
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+  .back-link:hover { color: var(--ink); border-color: var(--muted-2); }
+  .back-link svg { width: 14px; height: 14px; }
+
+  .alltools { color: var(--accentDeep); text-decoration: none; font-weight: 600; font-size: 0.92rem; display: inline-block; }
+  .alltools:hover { text-decoration: underline; }
+  .tool-subtitle { font-size: 1rem; color: var(--muted); margin-top: 0.15rem; }
+  .tool-divider { border: none; border-top: 1px solid var(--line); margin: 1.2rem 0 1.5rem; }
+
+  .toolbar { display: inline-flex; gap: 0.5rem; flex-wrap: wrap; }
+
+  .tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--sans);
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--ink);
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.42rem 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  }
+  .tool-btn:hover { border-color: var(--muted-2); background: #fbfbfc; }
+  .tool-btn svg { width: 14px; height: 14px; }
+  .tool-btn.copied { color: var(--green); border-color: var(--green-line); background: var(--green-bg); }
+
+  /* Header */
+  .eyebrow {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--muted-2);
+    letter-spacing: 0.01em;
+    margin-bottom: 1.1rem;
+  }
+
+  h1 {
+    font-size: clamp(1.9rem, 6vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 0.9rem;
+  }
+
+  .lede {
+    font-size: 1.1rem;
+    color: var(--muted);
+    max-width: 60ch;
+  }
+
+  /* Callout boxes */
+  .box {
+    border-radius: var(--radius-sm);
+    padding: 1.05rem 1.2rem;
+    font-size: 0.98rem;
+  }
+
+  .box-amber {
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-line);
+    color: var(--amber-text);
+    margin-top: 1.6rem;
+  }
+  .box-amber b { font-weight: 600; }
+  .box-amber ol { margin: 0.5rem 0 0; padding-left: 1.2rem; }
+  .box-amber li { margin: 0.2rem 0; }
+
+  .box-blue {
+    background: var(--blue-bg);
+    border: 1px solid var(--blue-line);
+    color: var(--blue-text);
+    margin-top: 0.9rem;
+    font-weight: 500;
+  }
+
+  /* Section label */
+  .section-label {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    margin: 2.6rem 0 1rem;
+  }
+  .section-label .lbl {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .section-label .count {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: var(--muted-2);
+  }
+
+  /* Statement item card */
+  .item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 1.3rem 1.4rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  }
+
+  .item-head {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-bottom: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .badge {
+    width: 1.6rem; height: 1.6rem;
+    flex: 0 0 auto;
+    border-radius: 7px;
+    background: var(--shell);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: grid;
+    place-items: center;
+  }
+
+  .item-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .toggle-btn {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--sans);
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.32rem 0.7rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .toggle-btn:hover { color: var(--ink); border-color: var(--muted-2); }
+  .toggle-btn[aria-pressed="true"] {
+    color: var(--green);
+    border-color: var(--green-line);
+    background: var(--green-bg);
+  }
+
+  .statement-text {
+    font-size: 1.08rem;
+    line-height: 1.62;
+    color: var(--ink);
+    font-style: italic;
+    padding: 0.2rem 0 0.3rem;
+  }
+
+  .change, .sustain {
+    border-radius: 4px;
+    padding: 0.02em 0.1em;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  .item.reveal .change {
+    background: var(--green-bg);
+    box-shadow: inset 0 -2px 0 var(--green);
+  }
+  .item.reveal .sustain {
+    background: var(--rust-bg);
+    box-shadow: inset 0 -2px 0 rgba(181, 83, 31, 0.45);
+  }
+
+  .legend {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--muted);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+  }
+  .item.reveal .legend { max-height: 40px; opacity: 1; margin-top: 0.7rem; }
+  .legend span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .swatch { width: 0.8rem; height: 0.8rem; border-radius: 3px; }
+  .swatch.c { background: var(--green); }
+  .swatch.s { background: rgba(181, 83, 31, 0.55); }
+
+  .field-label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--muted);
+    margin: 1.1rem 0 0.45rem;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 84px;
+    resize: vertical;
+    font-family: var(--sans);
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 0.85rem;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  textarea::placeholder { color: var(--muted-2); font-style: italic; }
+  textarea:focus {
+    outline: none;
+    border-color: var(--blue-text);
+    box-shadow: 0 0 0 3px rgba(235, 120, 107, 0.18);
+  }
+
+  /* Footer export */
+  .export-footer {
+    margin-top: 2rem;
+    padding: 1.3rem 1.4rem;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .export-footer .ef-text { font-size: 0.92rem; color: var(--muted); flex: 1 1 220px; }
+  .export-footer .ef-text b { color: var(--ink); font-weight: 600; }
+
+  .closing {
+    margin-top: 1.6rem;
+    font-size: 0.9rem;
+    color: var(--muted-2);
+    text-align: center;
+    font-style: italic;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 1.4rem;
+    transform: translateX(-50%) translateY(140%);
+    background: var(--ink);
+    color: #fff;
+    font-size: 0.88rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: 999px;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+    transition: transform 0.32s cubic-bezier(.2,.9,.3,1.2);
+    z-index: 50;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Print */
+  @media print {
+    body { background: #fff; padding: 0.5in; }
+    .topbar, .toggle-btn, .export-footer, .toast, .legend, .check-row { display: none !important; }
+    .item, .box-amber, .box-blue {
+      box-shadow: none;
+      break-inside: avoid;
+      border-color: #ccc;
+    }
+    .item.reveal .change, .item.reveal .sustain { background: transparent; box-shadow: none; }
+    textarea {
+      border: none;
+      border-bottom: 1px solid #bbb;
+      border-radius: 0;
+      min-height: auto;
+      padding: 0.2rem 0;
+    }
+    h1 { font-size: 1.6rem; }
+  }
+  /* Check my reflection */
+  .check-row { display: flex; align-items: center; gap: 0.7rem; margin-top: 0.8rem; flex-wrap: wrap; }
+  .btn-check {
+    display: inline-flex; align-items: center; gap: 0.45rem; font-family: var(--sans);
+    font-size: 0.86rem; font-weight: 600; color: #fff; background: var(--accent);
+    border: 1px solid var(--accent); border-radius: 999px; padding: 0.5rem 1rem; cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .btn-check:hover { background: var(--accentDeep); border-color: var(--accentDeep); }
+  .btn-check:disabled { opacity: 0.6; cursor: default; }
+  .btn-check svg { width: 15px; height: 15px; }
+  .check-msg { font-size: 0.85rem; color: var(--muted); }
+  .check-msg.err { color: var(--rust); }
+  .ir-spinner {
+    display: inline-block; width: 13px; height: 13px; border: 2px solid var(--blue-line);
+    border-top-color: var(--accentDeep); border-radius: 50%; animation: irspin 0.7s linear infinite;
+    vertical-align: -2px; margin-right: 6px;
+  }
+  @keyframes irspin { to { transform: rotate(360deg); } }
+
+  .reflect-fb { display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--line); }
+  .reflect-fb.show { display: block; }
+  .fb-top { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.7rem; }
+  .tier-pill {
+    display: inline-flex; align-items: center; font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.05em; border-radius: 999px; padding: 0.18rem 0.7rem; border: 1px solid;
+  }
+  .tier-tip { color: var(--green); background: var(--green-bg); border-color: var(--green-line); }
+  .tier-level { color: var(--accentDeep); background: var(--blue-bg); border-color: var(--blue-line); }
+  .tier-barely { color: var(--amber-text); background: var(--amber-bg); border-color: var(--amber-line); }
+  .tier-tilt { color: var(--rust); background: var(--rust-bg); border-color: rgba(181,83,31,0.3); }
+  .fb-text { font-size: 0.95rem; color: var(--ink); line-height: 1.6; }
+  .fb-rewrite {
+    margin-top: 0.8rem; background: var(--green-bg); border: 1px solid var(--green-line);
+    border-radius: var(--radius-sm); padding: 0.7rem 0.9rem; font-size: 0.92rem; color: #1c6b43; line-height: 1.55;
+  }
+  .fb-rewrite .rw-label { display: block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--green); margin-bottom: 0.2rem; }
+  .rw-use { margin-top: 0.5rem; background: none; border: none; padding: 0; color: var(--accentDeep); font-family: var(--sans); font-size: 0.84rem; font-weight: 600; cursor: pointer; text-decoration: underline; }
+  .rw-use:disabled { color: var(--muted-2); text-decoration: none; cursor: default; }
+
+  /* Tilt gauge */
+  .gauge-wrap { display: flex; justify-content: center; margin: 0.4rem 0 1rem; }
+  .tilt-gauge { width: 300px; max-width: 100%; height: auto; }
+  .tilt-beam { transition: transform 1s cubic-bezier(0.34, 1.1, 0.5, 1); }
+  .gauge-cap { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: -0.3rem; margin-bottom: 0.8rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <a class="alltools" href="/">&larr; All tools</a>
+    <div class="toolbar">
+      <button class="tool-btn" id="copyBtn" type="button" aria-label="Copy your work">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+      <button class="tool-btn" id="downloadBtn" type="button" aria-label="Download your work">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Download
+      </button>
+      <button class="tool-btn" id="printBtn" type="button" aria-label="Print your work">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+        Print
+      </button>
+    </div>
+  </div>
+
+  <h1>Intentional Reflections</h1>
+  <div class="tool-subtitle">Motivational interviewing practice</div>
+  <hr class="tool-divider">
+  <p class="lede">Every statement below mixes sustain talk with change talk. Find the change talk and craft a reflection that highlights or deepens it.</p>
+
+  <div class="box box-amber">
+    <b>How it works:</b>
+    <ol>
+      <li>Read the statement and notice the change talk mixed in with the sustain talk.</li>
+      <li>Write a reflection that highlights or deepens that change talk. A reflection is a statement, not a question.</li>
+      <li>Check your reflection to see how it moved the field. Tap &ldquo;Show change talk&rdquo; if you get stuck.</li>
+    </ol>
+  </div>
+
+  <div class="box box-blue">Sustain talk has gravity on its side. When someone is ambivalent, the status quo gets a head start, so they tend to drift toward staying the same. An intentional reflection levels the field by giving the change talk weight and a fair chance.</div>
+
+  <div class="section-label">
+    <span class="lbl">Statements</span>
+    <span class="count">5 items</span>
+  </div>
+
+  <div id="items"></div>
+
+  <div class="export-footer">
+    <div class="ef-text"><b>Capture your work.</b> Copy it to paste elsewhere, download a text file, or print a clean copy for your records.</div>
+    <div class="toolbar">
+      <button class="tool-btn" id="copyBtn2" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        Copy
+      </button>
+      <button class="tool-btn" id="downloadBtn2" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+        Download
+      </button>
+      <button class="tool-btn" id="printBtn2" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+        Print
+      </button>
+    </div>
+  </div>
+
+  </div>
+
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<script>
+  const statements = [
+    [
+      {t: "I know my drinking has caused some problems, ", k: "change"},
+      {t: "but it's also the only way I can unwind and forget about my stress for a while. ", k: "sustain"},
+      {t: "Maybe I should cut back a bit, ", k: "change"},
+      {t: "but it's hard to imagine life without it.", k: "sustain"}
+    ],
+    [
+      {t: "I've been using for a long time, and yeah, I guess it has led to some bad situations. ", k: "change"},
+      {t: "Still, it gives me this sense of confidence and connection with others that I've never felt before.", k: "sustain"}
+    ],
+    [
+      {t: "Sure, I've seen media scare tactics about heroin on the news and Facebook. ", k: "sustain"},
+      {t: "I guess it has its risks, ", k: "change"},
+      {t: "but I've been using it for a long time and I'm still fine. Everyone always obsesses on the worst case scenario where people are OD'ing. I can manage my use, and I'm not causing any harm to others, so why should I change?", k: "sustain"}
+    ],
+    [
+      {t: "Part of me knows I should quit, ", k: "change"},
+      {t: "but it's like an old friend that I can't seem to let go of. ", k: "sustain"},
+      {t: "I've had moments when I thought about seeking help, ", k: "change"},
+      {t: "but then fear creeps in, and I worry about failing or feeling even worse without it.", k: "sustain"}
+    ],
+    [
+      {t: "I've been using Percocet on and off since the car accident last year. My doctor cut me off, but I can usually find more. ", k: "sustain"},
+      {t: "I guess it might be harmful in the long run, ", k: "change"},
+      {t: "but right now, it's the only thing that gives me a sense of relief and escape from my problems. Life can be so overwhelming, and it helps me forget about everything for a little while.", k: "sustain"}
+    ]
+  ];
+
+  const plain = segs => '\u201c' + segs.map(s => s.t).join('') + '\u201d';
+
+  const itemsWrap = document.getElementById('items');
+  const resultTiers = {};
+
+  statements.forEach((segs, i) => {
+    const item = document.createElement('div');
+    item.className = 'item';
+
+    const inner = segs.map(s => {
+      if (s.k === 'change') return '<span class="change">' + s.t + '</span>';
+      if (s.k === 'sustain') return '<span class="sustain">' + s.t + '</span>';
+      return s.t;
+    }).join('');
+
+    item.innerHTML =
+      '<div class="item-head">' +
+        '<span class="badge">' + (i + 1) + '</span>' +
+        '<span class="item-title">Statement ' + (i + 1) + '</span>' +
+        '<button class="toggle-btn" type="button" aria-pressed="false" data-i="' + i + '">' +
+          '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>' +
+          'Show change talk' +
+        '</button>' +
+      '</div>' +
+      '<p class="statement-text">\u201c' + inner + '\u201d</p>' +
+      '<div class="legend">' +
+        '<span><span class="swatch c"></span> Change talk</span>' +
+        '<span><span class="swatch s"></span> Sustain talk</span>' +
+      '</div>' +
+      '<label class="field-label" for="r' + i + '">Your reflection</label>' +
+      '<textarea id="r' + i + '" placeholder="It sounds like\u2026"></textarea>' +
+      '<div class="check-row">' +
+        '<button class="btn-check" type="button" data-check="' + i + '">' +
+          '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>' +
+          'Check my reflection' +
+        '</button>' +
+        '<span class="check-msg" data-msg="' + i + '"></span>' +
+      '</div>' +
+      '<div class="reflect-fb" data-fb="' + i + '"></div>';
+
+    itemsWrap.appendChild(item);
+  });
+
+  // Toggle highlights
+  document.querySelectorAll('.toggle-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.item');
+      const on = item.classList.toggle('reveal');
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.lastChild.textContent = on ? 'Hide change talk' : 'Show change talk';
+    });
+  });
+
+  // Build export text
+  function buildText() {
+    const lines = [];
+    lines.push('Intentional Reflections');
+    lines.push('A Socialworky training resource');
+    lines.push(new Date().toLocaleDateString());
+    lines.push('');
+    statements.forEach((segs, i) => {
+      lines.push('Statement ' + (i + 1) + ':');
+      lines.push(plain(segs));
+      const r = (document.getElementById('r' + i).value || '').trim();
+      lines.push('Reflection: ' + (r || '(left blank)'));
+      if (resultTiers[i]) lines.push('Result: ' + resultTiers[i]);
+      lines.push('');
+    });
+    return lines.join('\n');
+  }
+
+  // Toast
+  const toast = document.getElementById('toast');
+  let toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 1900);
+  }
+
+  // Copy
+  function doCopy(btn) {
+    const text = buildText();
+    const done = () => {
+      showToast('Copied to clipboard');
+      if (btn) {
+        const orig = btn.lastChild.textContent;
+        btn.classList.add('copied');
+        btn.lastChild.textContent = 'Copied';
+        setTimeout(() => { btn.classList.remove('copied'); btn.lastChild.textContent = orig; }, 1600);
+      }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+  function fallbackCopy(text, done) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) { showToast('Copy not supported \u2014 use Download'); }
+    document.body.removeChild(ta);
+  }
+
+  // Download
+  function doDownload() {
+    const blob = new Blob([buildText()], {type: 'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'intentional-reflections.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('Download started');
+  }
+
+  document.getElementById('copyBtn').addEventListener('click', e => doCopy(e.currentTarget));
+  document.getElementById('copyBtn2').addEventListener('click', e => doCopy(e.currentTarget));
+  document.getElementById('downloadBtn').addEventListener('click', doDownload);
+  document.getElementById('downloadBtn2').addEventListener('click', doDownload);
+  document.getElementById('printBtn').addEventListener('click', () => window.print());
+  document.getElementById('printBtn2').addEventListener('click', () => window.print());
+  // ===== Check my reflection (AI feedback + tilt gauge) =====
+  const CHECK_MODEL = 'gpt-4.1';
+
+  const SYSTEM_CHECK = `You are an experienced motivational interviewing (MI) trainer giving feedback on one intentional reflection.
+
+The learner sees a client statement that mixes CHANGE talk (movement toward change) with SUSTAIN talk (arguments for the status quo). The skill is the intentional reflection: selectively reflect and deepen the CHANGE talk, and avoid reflecting or reinforcing the SUSTAIN talk. A reflection is a statement, not a question.
+
+Picture a tilted field. Sustain talk has gravity on its side, so the field starts tilted toward staying the same. A good intentional reflection levels the field, or tips it toward change.
+
+Judge the learner's reflection and assign a tier:
+- "tip": reflects AND deepens the change talk, adding meaning, momentum, or values. Tips the field toward change.
+- "level": cleanly reflects the change talk as a statement. Levels the field.
+- "barely": on the right track but thin or generic, or only lightly touches the change talk. Barely moves the field.
+- "tilt": reflects the sustain talk, asks a question, or misses the change talk. Leaves the field tilted toward staying the same.
+
+Respond with ONLY a JSON object, no code fences and no extra text:
+{ "tier": "tip" | "level" | "barely" | "tilt",
+  "feedback": "1 to 3 sentences, warm and specific. Name the change talk and what the reflection did with it.",
+  "rewrite": "a stronger intentional reflection they could say, or an empty string if it is already strong" }
+
+Do not invent client details. Be encouraging and concrete.`;
+
+  async function callChat(system, messages, model, maxTokens) {
+    const headers = { 'content-type': 'application/json' };
+    const code = localStorage.getItem('clientbot_access_code');
+    if (code) headers['x-access-code'] = code;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 45000);
+    let res;
+    try {
+      res = await fetch('/api/chat', { method: 'POST', headers, signal: ctrl.signal,
+        body: JSON.stringify({ system, messages, model, max_tokens: maxTokens }) });
+    } catch (e) { clearTimeout(timer); throw new Error(e.name === 'AbortError' ? 'the request timed out' : ('network error - ' + e.message)); }
+    clearTimeout(timer);
+    if (res.status === 401) {
+      const entered = prompt('Enter the access code for this tool:');
+      if (entered) { localStorage.setItem('clientbot_access_code', entered); return callChat(system, messages, model, maxTokens); }
+      throw new Error('an access code is required.');
+    }
+    let data;
+    try { data = await res.json(); } catch (e) { throw new Error('the server did not return readable data (status ' + res.status + ').'); }
+    if (!res.ok) throw new Error((data && data.error) || ('status ' + res.status));
+    return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+  }
+
+  function extractJSON(t) {
+    const s = t.indexOf('{'), e = t.lastIndexOf('}');
+    if (s < 0 || e < 0) throw new Error('the response was not in the expected format');
+    return JSON.parse(t.slice(s, e + 1));
+  }
+
+  function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  const TIERS = {
+    tip:    { cls: 'tier-tip',    label: 'Tipped toward change',    angle: -15, cap: 'Change now has the advantage.' },
+    level:  { cls: 'tier-level',  label: 'Field leveled',           angle: 0,   cap: 'You leveled the field. Change has a fair chance.' },
+    barely: { cls: 'tier-barely', label: 'Barely moved',            angle: 9,   cap: 'The field is still leaning toward staying the same.' },
+    tilt:   { cls: 'tier-tilt',   label: 'Tilted to staying',       angle: 18,  cap: 'The field stayed tilted toward the status quo.' }
+  };
+
+  function gaugeSVG() {
+    return '<div class="gauge-wrap"><svg class="tilt-gauge" viewBox="0 0 300 150" aria-hidden="true">' +
+      '<line x1="34" y1="130" x2="266" y2="130" stroke="var(--line)" stroke-width="2"/>' +
+      '<path d="M150 94 L136 128 L164 128 Z" fill="var(--muted-2)"/>' +
+      '<g class="tilt-beam" style="transform-box:view-box; transform-origin:150px 94px; transform:rotate(18deg);">' +
+        '<rect x="46" y="89" width="208" height="10" rx="5" fill="var(--ink)"/>' +
+        '<rect x="52" y="70" width="42" height="20" rx="6" fill="var(--green-bg)" stroke="var(--green-line)" stroke-width="1.5"/>' +
+        '<rect x="206" y="70" width="42" height="20" rx="6" fill="var(--rust-bg)" stroke="rgba(181,83,31,0.35)" stroke-width="1.5"/>' +
+      '</g>' +
+      '<text x="55" y="146" text-anchor="middle" font-size="11" fill="var(--green)" font-weight="600">Change</text>' +
+      '<text x="245" y="146" text-anchor="middle" font-size="11" fill="var(--rust)" font-weight="600">Status quo</text>' +
+    '</svg></div>';
+  }
+
+  function renderFeedback(i, item) {
+    const fb = document.querySelector('[data-fb="' + i + '"]');
+    const t = TIERS[item.tier] || TIERS.barely;
+    resultTiers[i] = t.label;
+    let html = '<div class="fb-top"><span class="tier-pill ' + t.cls + '">' + t.label + '</span></div>';
+    html += gaugeSVG();
+    html += '<div class="gauge-cap">' + t.cap + '</div>';
+    html += '<div class="fb-text">' + esc(item.feedback) + '</div>';
+    const rw = (item.rewrite || '').trim();
+    if (rw) {
+      html += '<div class="fb-rewrite"><span class="rw-label">Try saying</span>' + esc(rw) +
+        '<div><button class="rw-use" type="button">Use this wording</button></div></div>';
+    }
+    fb.innerHTML = html;
+    fb.classList.add('show');
+    const useBtn = fb.querySelector('.rw-use');
+    if (useBtn) useBtn.addEventListener('click', () => {
+      document.getElementById('r' + i).value = rw;
+      useBtn.textContent = 'Added to your reflection';
+      useBtn.disabled = true;
+    });
+    // animate the beam from its tilted start to the result angle
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const beam = fb.querySelector('.tilt-beam');
+      if (beam) beam.style.transform = 'rotate(' + t.angle + 'deg)';
+    }));
+  }
+
+  async function checkReflection(i) {
+    const btn = document.querySelector('[data-check="' + i + '"]');
+    const msg = document.querySelector('[data-msg="' + i + '"]');
+    const fb = document.querySelector('[data-fb="' + i + '"]');
+    const reflection = (document.getElementById('r' + i).value || '').trim();
+    if (!reflection) {
+      msg.className = 'check-msg err';
+      msg.textContent = 'Write a reflection first.';
+      return;
+    }
+    const segs = statements[i];
+    const change = segs.filter(s => s.k === 'change').map(s => s.t.trim()).join(' / ');
+    const sustain = segs.filter(s => s.k === 'sustain').map(s => s.t.trim()).join(' / ');
+    const userMsg = 'Client statement: ' + plain(segs) + '\n' +
+      'Change talk in it: ' + (change || '(none)') + '\n' +
+      'Sustain talk in it: ' + (sustain || '(none)') + '\n' +
+      'Learner\u2019s reflection: ' + reflection;
+
+    fb.classList.remove('show'); fb.innerHTML = '';
+    msg.className = 'check-msg';
+    msg.innerHTML = '<span class="ir-spinner"></span>Weighing your reflection\u2026';
+    btn.disabled = true;
+    try {
+      const raw = await callChat(SYSTEM_CHECK, [{ role: 'user', content: userMsg }], CHECK_MODEL, 500);
+      const data = extractJSON(raw);
+      msg.textContent = '';
+      renderFeedback(i, data);
+    } catch (e) {
+      msg.className = 'check-msg err';
+      msg.textContent = 'Could not get feedback. ' + e.message;
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  document.querySelectorAll('[data-check]').forEach(btn => {
+    btn.addEventListener('click', () => checkReflection(parseInt(btn.dataset.check, 10)));
+  });
+  // editing a reflection clears its stale feedback
+  document.querySelectorAll('textarea[id^="r"]').forEach(ta => {
+    ta.addEventListener('input', () => {
+      const i = ta.id.slice(1);
+      const fb = document.querySelector('[data-fb="' + i + '"]');
+      const msg = document.querySelector('[data-msg="' + i + '"]');
+      if (fb && fb.classList.contains('show')) { fb.classList.remove('show'); fb.innerHTML = ''; delete resultTiers[i]; }
+      if (msg) { msg.textContent = ''; msg.className = 'check-msg'; }
+    });
+  });
+</script>
+</body>
+</html>
