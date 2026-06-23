@@ -231,7 +231,8 @@ Speak in the first person, like a real person, 1 to 4 sentences. Be guarded some
     empathic_sustain_ok:       { side:'sustain', bricks:1, dm:0,   label:'Acknowledged the sustain side' },
     sustain_heavy:             { side:'sustain', bricks:3, dm:-8,  label:'Mostly reflected sustain talk' },
     missed_change:             { side:'sustain', bricks:3, dm:-10, label:'Missed the change talk that was there' },
-    not_a_reflection:          { side:'none',    bricks:0, dm:-2,  label:'That was not a reflection' },
+    mi_nonadherent:            { side:'sustain', bricks:3, dm:-13, label:'Confrontational, created discord' },
+    not_a_reflection:          { side:'none',    bricks:0, dm:-2,  label:'Not a reflection' },
     directional_change_q:      { side:'change',  bricks:2, dm:7,   label:'Question evoked change talk' },
     neutral_q:                 { side:'none',    bricks:0, dm:0,   label:'Neutral question' },
     evoke_sustain_q:           { side:'sustain', bricks:2, dm:-8,  label:'Question pulled toward sustain' },
@@ -262,6 +263,9 @@ STAY AMBIVALENT THE WHOLE WAY:
 - Never fully commit to quitting and never fully refuse. No landslides either way.
 - Your current openness: ${openness(momentum)}. Calibrate how much change talk you volunteer to this.
 - If the worker reflected or evoked your change talk well, open up a little more on the change side. If they leaned into your sustain side, give more sustain and less change.
+- If the worker is confrontational, judgmental, shaming, preachy, sarcastic, or pushes you to change, get defensive and dig in. Voice more sustain talk, pull back the change talk, and show some discord, the way a real person would when they feel pushed.
+
+Be honest and discerning when you score. Do not award change weight unless the move genuinely leaned toward change. When unsure, do not give credit. Confrontation, lecturing, warning, shaming, sarcasm, arguing, or telling the client what to do are MI-non-adherent: they create discord and pull for sustain.
 
 SCORE THE WORKER'S MOVE. They used: ${move === 'reflection' ? 'a REFLECTION' : 'an OPEN QUESTION'}.
 ${move === 'reflection'
@@ -272,13 +276,15 @@ ${move === 'reflection'
 - "empathic_sustain_ok": a brief, warm acknowledgment of the sustain side that builds rapport and is not overdone. This is fine, not a mistake.
 - "sustain_heavy": almost entirely reflects the sustain talk.
 - "missed_change": reflects sustain while there was clear change talk right there to catch.
-- "not_a_reflection": this was actually a question or not a reflection at all.
-Do NOT punish a brief empathic nod to sustain. Only sustain_heavy and missed_change are real mistakes.`
+- "mi_nonadherent": confrontational, judgmental, shaming, preachy, sarcastic, arguing, warning, or telling the client what to do. This is harmful and creates discord. Use this for rude or pushy responses even though the worker pressed the reflection button.
+- "not_a_reflection": a benign non-reflection, such as a stray question or a neutral comment, that is not harmful.
+Do NOT punish a brief empathic nod to sustain. The real mistakes are sustain_heavy, missed_change, and especially mi_nonadherent.`
   : `Pick exactly one assessment:
 - "directional_change_q": an open question that evokes change (advantages of change, downsides of staying the same, importance, confidence, hopes, looking forward).
 - "neutral_q": a neutral, exploratory open question.
 - "evoke_sustain_q": a question that pulls toward sustain (what they enjoy about using, what is hard about stopping, why they keep using).
-- "closed_or_off_q": a closed, leading, or off-target question.`}
+- "mi_nonadherent": a confrontational, leading, shaming, or judgmental question (for example "Don't you care about your kid?" or "Why would you keep doing something so stupid?"). This is harmful and creates discord.
+- "closed_or_off_q": a benign closed or off-target question that is not harmful.`}
 
 Return ONLY the JSON object below, exactly like your previous replies in this conversation. Do not use code fences. Do not write anything before or after it. Do not reply as Renee in plain text. Keep clientLine to at most four sentences.
 { "assessment": "<one assessment from the list above>",
@@ -386,6 +392,13 @@ Give 4 to 6 sentences of coaching. Name one or two things they did well, one or 
     $('clientLine').textContent = OPENING;
     $('exLabel').textContent = 'Exchange 1 of ' + TOTAL;
     $('entry').value = '';
+    $('stackChange').innerHTML = '';
+    $('stackSustain').innerHTML = '';
+    for (let i = 0; i < sustainW; i++) {
+      const b = document.createElement('div');
+      b.className = 'brick sustain';
+      $('stackSustain').appendChild(b);
+    }
     setField();
   }
 
