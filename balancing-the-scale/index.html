@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Balancing the Scale</title>
+<style>
+  :root {
+    --ink: #1f2328; --muted: #6b7280; --muted-2: #9ca3af;
+    --card: #ffffff; --line: #e6e7eb; --shell: #f7f8f9;
+    --accent: #eb786b; --accentDeep: #c2452f;
+    --coral-bg: #fdeeeb; --coral-line: #f6d4cd;
+    --amber-bg: #fdf8ec; --amber-line: #f0e2bf; --amber-text: #9a5a2a;
+    --green: #2f8f5b; --green-bg: #eaf6ee; --green-line: #c7e7d2;
+    --rust: #b5531f; --rust-bg: #fbeee5; --rust-line: #eccdb4;
+    --radius: 16px; --radius-sm: 10px;
+    --sans: Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); color: var(--ink); background: var(--shell); line-height: 1.6; padding: clamp(1rem, 4vw, 2.5rem) 1rem 4rem; }
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  .alltools { color: var(--accentDeep); text-decoration: none; font-weight: 600; font-size: 0.92rem; display: inline-block; }
+  .alltools:hover { text-decoration: underline; }
+  h1 { font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; margin-top: 0.8rem; }
+  .tool-subtitle { font-size: 1rem; color: var(--muted); margin-top: 0.2rem; }
+  .tool-divider { border: none; border-top: 1px solid var(--line); margin: 1.2rem 0 1.5rem; }
+
+  .box { border-radius: var(--radius-sm); padding: 1.05rem 1.2rem; font-size: 0.98rem; }
+  .box-amber { background: var(--amber-bg); border: 1px solid var(--amber-line); color: var(--amber-text); }
+  .box-amber b { font-weight: 700; }
+
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.3rem 1.4rem; box-shadow: 0 1px 2px rgba(16,24,40,0.04); }
+
+  .vignette .who { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accentDeep); margin-bottom: 0.5rem; }
+  .vignette p { font-size: 1.02rem; margin-bottom: 0.7rem; }
+  .vignette p:last-of-type { margin-bottom: 0; }
+  .focus { margin-top: 0.9rem; padding: 0.7rem 0.9rem; background: var(--coral-bg); border: 1px solid var(--coral-line); border-radius: var(--radius-sm); font-size: 0.92rem; color: var(--accentDeep); }
+  .focus b { font-weight: 700; }
+
+  .btn-primary { display: inline-flex; align-items: center; gap: 0.45rem; font-family: var(--sans); font-size: 0.95rem; font-weight: 700; color: #fff; background: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 0.6rem 1.3rem; cursor: pointer; transition: background 0.15s; }
+  .btn-primary:hover { background: var(--accentDeep); border-color: var(--accentDeep); }
+  .btn-ghost { font-family: var(--sans); font-size: 0.86rem; font-weight: 600; color: var(--ink); background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 0.5rem 1rem; cursor: pointer; }
+  .btn-ghost:hover { border-color: var(--muted-2); }
+  .center { text-align: center; margin-top: 1.4rem; }
+
+  /* Play area */
+  .meta { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
+  .ex-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .field-chip { margin-left: auto; font-size: 0.78rem; font-weight: 700; border-radius: 999px; padding: 0.2rem 0.75rem; border: 1px solid; }
+  .field-tilt { color: var(--rust); background: var(--rust-bg); border-color: var(--rust-line); }
+  .field-near { color: var(--amber-text); background: var(--amber-bg); border-color: var(--amber-line); }
+  .field-good { color: var(--green); background: var(--green-bg); border-color: var(--green-line); }
+
+  .turn { transition: opacity 0.45s ease, transform 0.45s ease; }
+  .turn.fading { opacity: 0; transform: translateY(8px); }
+
+  .client-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.2rem 1.3rem; box-shadow: 0 1px 2px rgba(16,24,40,0.04); }
+  .client-card.dim { opacity: 0.55; }
+  .client-who { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accentDeep); margin-bottom: 0.4rem; }
+  .client-line { font-size: 1.12rem; line-height: 1.6; font-style: italic; }
+
+  .respond { margin-top: 1rem; }
+  textarea { width: 100%; min-height: 76px; resize: vertical; font-family: var(--sans); font-size: 1rem; line-height: 1.55; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.7rem 0.85rem; }
+  textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(235,120,107,0.18); }
+  textarea::placeholder { color: var(--muted-2); font-style: italic; }
+  textarea:disabled { background: var(--shell); }
+
+  .moves { display: flex; gap: 0.6rem; margin-top: 0.7rem; flex-wrap: wrap; }
+  .move-btn { display: inline-flex; align-items: center; gap: 0.4rem; font-family: var(--sans); font-size: 0.9rem; font-weight: 700; cursor: pointer; border-radius: 999px; padding: 0.55rem 1.1rem; border: 1px solid; transition: background 0.12s, color 0.12s; }
+  .move-reflect { color: var(--green); background: var(--green-bg); border-color: var(--green-line); }
+  .move-reflect:hover { background: #def0e4; }
+  .move-question { color: var(--accentDeep); background: var(--coral-bg); border-color: var(--coral-line); }
+  .move-question:hover { background: #fbe0da; }
+  .move-btn:disabled { opacity: 0.5; cursor: default; }
+  .move-btn svg { width: 15px; height: 15px; }
+  .move-hint { font-size: 0.82rem; color: var(--muted-2); margin-top: 0.6rem; }
+  .turn-msg { font-size: 0.86rem; margin-top: 0.6rem; min-height: 1.1rem; color: var(--muted); }
+  .turn-msg.err { color: var(--rust); }
+  .ir-spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid var(--coral-line); border-top-color: var(--accentDeep); border-radius: 50%; animation: irspin 0.7s linear infinite; vertical-align: -2px; margin-right: 6px; }
+  @keyframes irspin { to { transform: rotate(360deg); } }
+
+  /* Scale */
+  .scale-card { margin-top: 1.6rem; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1rem 1.2rem 1.3rem; }
+  .scale-cap { display: flex; justify-content: space-between; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted-2); margin-bottom: 0.2rem; }
+  .scale { position: relative; height: 232px; }
+  .beam { position: absolute; left: 50%; top: 58px; width: 380px; height: 12px; margin-left: -190px; background: var(--ink); border-radius: 6px; transform-origin: center; transform: rotate(var(--deg, 9deg)); transition: transform 0.85s cubic-bezier(0.34, 1.06, 0.5, 1); }
+  .knob { position: absolute; top: -5px; left: 50%; width: 22px; height: 22px; margin-left: -11px; background: var(--accentDeep); border-radius: 50%; }
+  .pan { position: absolute; top: 8px; width: 132px; margin-left: -66px; transform: rotate(calc(-1 * var(--deg, 9deg))); transition: transform 0.85s cubic-bezier(0.34, 1.06, 0.5, 1); }
+  .pan.left { left: 0; }
+  .pan.right { left: 380px; }
+  .wire { width: 1px; height: 26px; background: var(--muted-2); margin: 0 auto; }
+  .pan-stack { display: flex; flex-direction: column-reverse; align-items: center; min-height: 18px; padding-bottom: 2px; }
+  .pan-plate { width: 118px; height: 8px; border-radius: 0 0 8px 8px; background: var(--muted-2); margin: 0 auto; }
+  .pan-label { text-align: center; font-size: 0.78rem; font-weight: 700; margin-top: 5px; }
+  .pan.left .pan-label { color: var(--green); }
+  .pan.right .pan-label { color: var(--rust); }
+  .post { position: absolute; left: 50%; top: 64px; width: 10px; height: 150px; margin-left: -5px; background: var(--line); border-radius: 4px; }
+  .base { position: absolute; left: 50%; top: 210px; width: 150px; height: 12px; margin-left: -75px; background: var(--muted-2); border-radius: 6px; }
+  .fulcrum { position: absolute; left: 50%; top: 44px; width: 0; height: 0; margin-left: -13px; border-left: 13px solid transparent; border-right: 13px solid transparent; border-bottom: 22px solid var(--muted-2); }
+
+  .brick { width: 40px; height: 15px; border-radius: 3px; margin-top: 3px; }
+  .brick.change { background: var(--green); border: 1px solid #277a4c; }
+  .brick.sustain { background: var(--rust); border: 1px solid #93410f; }
+  .brick.drop { animation: drop 0.62s cubic-bezier(0.5, 0, 0.7, 0.35) both; }
+  @keyframes drop { 0% { transform: translateY(-170px); opacity: 0; } 12% { opacity: 1; } 72% { transform: translateY(7px); } 88% { transform: translateY(-2px); } 100% { transform: translateY(0); } }
+
+  /* Debrief */
+  .debrief h2 { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.3rem; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin: 1.1rem 0; }
+  .stat { background: var(--shell); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 0.9rem 1rem; }
+  .stat .k { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted-2); }
+  .stat .v { font-size: 1.05rem; font-weight: 700; margin-top: 0.2rem; }
+  .stat .v.good { color: var(--green); } .stat .v.warn { color: var(--amber-text); } .stat .v.bad { color: var(--rust); }
+  .coach-box { background: var(--coral-bg); border: 1px solid var(--coral-line); border-radius: var(--radius-sm); padding: 1.1rem 1.2rem; font-size: 0.98rem; line-height: 1.6; margin-top: 1rem; }
+  .coach-box b { font-weight: 700; }
+  .actions { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.3rem; }
+
+  .toast { position: fixed; left: 50%; bottom: 1.4rem; transform: translateX(-50%) translateY(140%); background: var(--ink); color: #fff; font-size: 0.88rem; padding: 0.6rem 1.1rem; border-radius: 999px; transition: transform 0.32s cubic-bezier(.2,.9,.3,1.2); z-index: 50; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 560px) {
+    .beam { width: 280px; margin-left: -140px; }
+    .pan.right { left: 280px; }
+    .pan { width: 110px; margin-left: -55px; }
+    .grid2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="alltools" href="/">&larr; All tools</a>
+  <h1>Balancing the Scale</h1>
+  <div class="tool-subtitle">Evocation practice: intentional reflections and directional questions</div>
+  <hr class="tool-divider">
+
+  <!-- SETUP -->
+  <div id="setup">
+    <div class="card vignette">
+      <div class="who">The client</div>
+      <p>Renee is 34. She has been using heroin for about six years. Three months ago a friend found her unresponsive and used naloxone, and she has not been able to shake the memory of it. She is behind on rent, sees her son less than she wants to, and is tired in a way that sleep does not fix.</p>
+      <p>She also cannot picture getting through a day without using. It is the one thing that quiets what she carries, the withdrawal frightens her, and she has tried to stop before and it did not hold. She is genuinely torn.</p>
+      <div class="focus"><b>Today's focus:</b> whether to do something about her heroin use. Your job is evocation. Reflect and ask in the direction of change, and help her own ambivalence settle toward change without pushing her.</div>
+    </div>
+
+    <div class="box box-amber" style="margin-top:1rem;">
+      <b>How it works:</b> Renee starts tilted toward the status quo, because for someone who is ambivalent, staying the same has gravity on its side. Each turn, write a response and send it as a <b>Reflection</b> or an <b>Open question</b>. Bricks drop onto the scale based on how well your move leaned toward change. You have eight exchanges. Aim to land the scale near balanced with a slight lean to change, and reflect at least twice for every question you ask.
+    </div>
+
+    <div class="center"><button class="btn-primary" id="beginBtn">Begin the session</button></div>
+  </div>
+
+  <!-- PLAY -->
+  <div id="play" hidden>
+    <div class="meta">
+      <span class="ex-label" id="exLabel">Exchange 1 of 8</span>
+      <span class="field-chip field-tilt" id="fieldChip">Tilted to the status quo</span>
+    </div>
+
+    <div class="turn" id="turn">
+      <div class="client-card" id="clientCard">
+        <div class="client-who">Renee</div>
+        <p class="client-line" id="clientLine"></p>
+      </div>
+      <div class="respond">
+        <textarea id="entry" placeholder="Write your reflection or open question&hellip;"></textarea>
+        <div class="moves">
+          <button class="move-btn move-reflect" id="btnReflect" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+            Reflection
+          </button>
+          <button class="move-btn move-question" id="btnQuestion" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+            Open question
+          </button>
+        </div>
+        <div class="move-hint">Send your response as the skill you are using. Reflect at least twice for every question.</div>
+        <div class="turn-msg" id="turnMsg"></div>
+      </div>
+    </div>
+
+    <div class="scale-card">
+      <div class="scale-cap"><span>Change</span><span>Status quo</span></div>
+      <div class="scale">
+        <div class="post"></div>
+        <div class="fulcrum"></div>
+        <div class="base"></div>
+        <div class="beam" id="beam">
+          <div class="knob"></div>
+          <div class="pan left">
+            <div class="wire"></div>
+            <div class="pan-stack" id="stackChange"></div>
+            <div class="pan-plate"></div>
+            <div class="pan-label">Change</div>
+          </div>
+          <div class="pan right">
+            <div class="wire"></div>
+            <div class="pan-stack" id="stackSustain"></div>
+            <div class="pan-plate"></div>
+            <div class="pan-label">Status quo</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEBRIEF -->
+  <div id="debrief" class="debrief" hidden></div>
+
+</div>
+
+<div class="toast" id="toast">Copied</div>
+
+<script>
+  const TOTAL = 8;
+  const TURN_MODEL = 'gpt-4.1-mini';
+  const COACH_MODEL = 'gpt-4.1';
+
+  const OPENING = "I don't know what you want me to say. The thing with the naloxone scared me, and I know I can't keep going like this forever. But it's also the only thing that gets me through the day, and every time I've tried to quit it's been a nightmare. So I'm kind of stuck.";
+
+  const PERSONA = `You are Renee, 34, who has used heroin for about six years. You are GENUINELY and deeply ambivalent and you stay that way the whole conversation.
+Real reasons you want to change: a recent overdose where a friend used naloxone on you; falling behind on rent; seeing your son less than you want; exhaustion; shame; you know you can't keep going forever.
+Real reasons you keep using: it's the only thing that quiets what you carry; withdrawal terrifies you; using is tied to the few people around you; you've tried to quit before and it didn't hold, so you're afraid to fail again.
+Speak in the first person, like a real person, 1 to 4 sentences. Be guarded sometimes, tired, honest. Do not lecture or narrate.`;
+
+  const MOVES = {
+    directional_change:        { side:'change',  bricks:2, dm:7,   label:'Reflected change talk' },
+    deepened_change:           { side:'change',  bricks:3, dm:10,  label:'Deepened the change talk' },
+    double_sided_lands_change: { side:'change',  bricks:2, dm:6,   label:'Double-sided, landed on change' },
+    empathic_sustain_ok:       { side:'sustain', bricks:1, dm:0,   label:'Acknowledged the sustain side' },
+    sustain_heavy:             { side:'sustain', bricks:3, dm:-8,  label:'Mostly reflected sustain talk' },
+    missed_change:             { side:'sustain', bricks:3, dm:-10, label:'Missed the change talk that was there' },
+    not_a_reflection:          { side:'none',    bricks:0, dm:-2,  label:'That was not a reflection' },
+    directional_change_q:      { side:'change',  bricks:2, dm:7,   label:'Question evoked change talk' },
+    neutral_q:                 { side:'none',    bricks:0, dm:0,   label:'Neutral question' },
+    evoke_sustain_q:           { side:'sustain', bricks:2, dm:-8,  label:'Question pulled toward sustain' },
+    closed_or_off_q:           { side:'none',    bricks:0, dm:-2,  label:'Closed or off-target question' }
+  };
+
+  let exchange, changeW, sustainW, momentum, reflections, questions, history, log, started, busy, lastLine;
+
+  function reset() {
+    exchange = 1; changeW = 0; sustainW = 4; momentum = 35;
+    reflections = 0; questions = 0; history = []; log = []; busy = false; lastLine = OPENING;
+  }
+
+  function openness(m) {
+    if (m < 32) return 'guarded and mostly defending your use; offer only a thin thread of change talk';
+    if (m < 46) return 'ambivalent; offer some change talk alongside strong sustain talk';
+    if (m < 60) return 'warming up; voice a bit more change talk but stay clearly ambivalent';
+    return 'engaged and leading with change talk, but not ready to commit; keep real sustain present';
+  }
+
+  function turnSystem(move) {
+    return `You run a motivational interviewing practice game. You play ONE client, Renee, and you also score the worker's most recent move. Reply with ONLY JSON.
+
+${PERSONA}
+
+STAY AMBIVALENT THE WHOLE WAY:
+- Always keep BOTH some change talk and some sustain talk alive in what you say.
+- Never fully commit to quitting and never fully refuse. No landslides either way.
+- Your current openness: ${openness(momentum)}. Calibrate how much change talk you volunteer to this.
+- If the worker reflected or evoked your change talk well, open up a little more on the change side. If they leaned into your sustain side, give more sustain and less change.
+
+SCORE THE WORKER'S MOVE. They used: ${move === 'reflection' ? 'a REFLECTION' : 'an OPEN QUESTION'}.
+${move === 'reflection'
+  ? `Pick exactly one assessment:
+- "directional_change": a reflection (a statement) that catches the change talk.
+- "deepened_change": a complex reflection that deepens the change talk with meaning, feeling, or values.
+- "double_sided_lands_change": names the sustain side but lands on the change side. This is skillful; reward it.
+- "empathic_sustain_ok": a brief, warm acknowledgment of the sustain side that builds rapport and is not overdone. This is fine, not a mistake.
+- "sustain_heavy": almost entirely reflects the sustain talk.
+- "missed_change": reflects sustain while there was clear change talk right there to catch.
+- "not_a_reflection": this was actually a question or not a reflection at all.
+Do NOT punish a brief empathic nod to sustain. Only sustain_heavy and missed_change are real mistakes.`
+  : `Pick exactly one assessment:
+- "directional_change_q": an open question that evokes change (advantages of change, downsides of staying the same, importance, confidence, hopes, looking forward).
+- "neutral_q": a neutral, exploratory open question.
+- "evoke_sustain_q": a question that pulls toward sustain (what they enjoy about using, what is hard about stopping, why they keep using).
+- "closed_or_off_q": a closed, leading, or off-target question.`}
+
+Return ONLY this JSON, no code fences:
+{ "assessment": "<one assessment from the list above>",
+  "clientLine": "<Renee's next statement, in character, 1 to 4 sentences>",
+  "rationale": "<one short sentence on what the worker did, for an end-of-session debrief>" }`;
+  }
+
+  const COACH_SYSTEM = `You are a warm, specific motivational interviewing coach giving an end-of-session debrief to a social work learner who practiced evocation with an ambivalent client.
+
+Evocation means using intentional reflections and directional open questions to strengthen and grow the client's own change talk, while staying respectful and non-coercive. The goal is to level the field and let a slight lean toward change emerge, never to push or manipulate the client into quitting.
+
+You will get the session: each turn with the move type, what the learner said, how it was scored, and the client's reply, plus the final scale and the reflection-to-question ratio.
+
+Give 4 to 6 sentences of coaching. Name one or two things they did well, one or two things to work on, and speak to the ratio (MI suggests at least two reflections for every question). Be candid but encouraging. Do not use headers or lists. Speak to the learner, not the client.`;
+
+  async function callChat(system, messages, model, maxTokens) {
+    const headers = { 'content-type': 'application/json' };
+    const code = localStorage.getItem('clientbot_access_code');
+    if (code) headers['x-access-code'] = code;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 45000);
+    let res;
+    try {
+      res = await fetch('/api/chat', { method: 'POST', headers, signal: ctrl.signal,
+        body: JSON.stringify({ system, messages, model, max_tokens: maxTokens }) });
+    } catch (e) { clearTimeout(timer); throw new Error(e.name === 'AbortError' ? 'the request timed out' : ('network error - ' + e.message)); }
+    clearTimeout(timer);
+    if (res.status === 401) {
+      const entered = prompt('Enter the access code for this tool:');
+      if (entered) { localStorage.setItem('clientbot_access_code', entered); return callChat(system, messages, model, maxTokens); }
+      throw new Error('an access code is required.');
+    }
+    let data;
+    try { data = await res.json(); } catch (e) { throw new Error('the server did not return readable data (status ' + res.status + ').'); }
+    if (!res.ok) throw new Error((data && data.error) || ('status ' + res.status));
+    return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+  }
+  function extractJSON(t) { const s = t.indexOf('{'), e = t.lastIndexOf('}'); if (s < 0 || e < 0) throw new Error('the response was not readable'); return JSON.parse(t.slice(s, e + 1)); }
+  function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  const $ = id => document.getElementById(id);
+
+  function setField() {
+    const net = changeW - sustainW;
+    let deg = -net * 2.1;
+    deg = Math.max(-16, Math.min(16, deg));
+    $('beam').style.setProperty('--deg', deg + 'deg');
+    document.querySelectorAll('.pan').forEach(p => p.style.setProperty('--deg', deg + 'deg'));
+    const chip = $('fieldChip');
+    if (net <= -2) { chip.className = 'field-chip field-tilt'; chip.textContent = 'Tilted to the status quo'; }
+    else if (net < 1) { chip.className = 'field-chip field-near'; chip.textContent = 'Close to balanced'; }
+    else if (net <= 6) { chip.className = 'field-chip field-good'; chip.textContent = 'Balanced, leaning to change'; }
+    else { chip.className = 'field-chip field-good'; chip.textContent = 'Tipped toward change'; }
+  }
+
+  function dropBricks(side, n) {
+    if (side === 'none' || n <= 0) return;
+    const stack = side === 'change' ? $('stackChange') : $('stackSustain');
+    if (stack.children.length >= 9) return;
+    for (let i = 0; i < n && stack.children.length < 9; i++) {
+      const b = document.createElement('div');
+      b.className = 'brick ' + side + ' drop';
+      b.style.animationDelay = (i * 0.13) + 's';
+      stack.appendChild(b);
+      setTimeout(() => b.classList.remove('drop'), 700 + i * 130);
+    }
+  }
+
+  function begin() {
+    reset();
+    $('setup').hidden = true;
+    $('debrief').hidden = true;
+    $('play').hidden = false;
+    $('clientLine').textContent = OPENING;
+    $('exLabel').textContent = 'Exchange 1 of ' + TOTAL;
+    $('entry').value = '';
+    setField();
+  }
+
+  async function submitMove(move) {
+    if (busy) return;
+    const text = $('entry').value.trim();
+    const msg = $('turnMsg');
+    if (!text) { msg.className = 'turn-msg err'; msg.textContent = 'Write a response first.'; return; }
+    busy = true;
+    if (move === 'reflection') reflections++; else questions++;
+    $('btnReflect').disabled = true; $('btnQuestion').disabled = true; $('entry').disabled = true;
+    $('clientCard').classList.add('dim');
+    msg.className = 'turn-msg'; msg.innerHTML = '<span class="ir-spinner"></span>Renee is taking it in&hellip;';
+
+    const isFirst = history.length === 0;
+    const userContent = (isFirst ? ('Renee\u2019s opening statement was: "' + OPENING + '"\n\n') : '') +
+      '[Worker\u2019s move: ' + (move === 'reflection' ? 'REFLECTION' : 'OPEN QUESTION') + ']\n"' + text + '"';
+    const messages = history.concat([{ role: 'user', content: userContent }]);
+
+    try {
+      const raw = await callChat(turnSystem(move), messages, TURN_MODEL, 400);
+      const data = extractJSON(raw);
+      const m = MOVES[data.assessment] || (move === 'reflection' ? MOVES.directional_change : MOVES.neutral_q);
+      // record
+      history.push({ role: 'user', content: userContent });
+      history.push({ role: 'assistant', content: data.clientLine });
+      log.push({ n: exchange, move, text, assessment: data.assessment, label: m.label, side: m.side, bricks: m.bricks, clientBefore: lastLine, clientLine: data.clientLine, rationale: data.rationale || '' });
+      // apply effects
+      momentum = Math.max(22, Math.min(80, momentum + m.dm));
+      if (m.side === 'change') changeW += m.bricks; else if (m.side === 'sustain') sustainW += m.bricks;
+      lastLine = data.clientLine;
+
+      msg.textContent = '';
+      $('turn').classList.add('fading');
+      dropBricks(m.side, m.bricks);
+      setTimeout(setField, 120);
+
+      setTimeout(() => {
+        exchange++;
+        if (exchange > TOTAL) { endSession(); return; }
+        $('clientLine').textContent = data.clientLine;
+        $('exLabel').textContent = 'Exchange ' + exchange + ' of ' + TOTAL;
+        $('entry').value = ''; $('entry').disabled = false;
+        $('clientCard').classList.remove('dim');
+        $('btnReflect').disabled = false; $('btnQuestion').disabled = false;
+        $('turn').classList.remove('fading');
+        busy = false;
+      }, 1150);
+    } catch (e) {
+      if (move === 'reflection') reflections--; else questions--;
+      msg.className = 'turn-msg err'; msg.textContent = 'That did not go through. ' + e.message + ' Try sending again.';
+      $('btnReflect').disabled = false; $('btnQuestion').disabled = false; $('entry').disabled = false;
+      $('clientCard').classList.remove('dim');
+      busy = false;
+    }
+  }
+
+  function ratioText() {
+    if (questions === 0) return reflections + ' reflections and 0 questions';
+    const r = (reflections / questions);
+    return reflections + ' reflections to ' + questions + ' question' + (questions === 1 ? '' : 's') + ' (' + r.toFixed(1) + ':1)';
+  }
+
+  async function endSession() {
+    $('play').hidden = true;
+    const net = changeW - sustainW;
+    let fieldV, fieldCls;
+    if (net <= -2) { fieldV = 'Still tilted to the status quo'; fieldCls = 'bad'; }
+    else if (net < 1) { fieldV = 'Close to balanced'; fieldCls = 'warn'; }
+    else if (net <= 6) { fieldV = 'Balanced, leaning to change'; fieldCls = 'good'; }
+    else { fieldV = 'Tipped toward change'; fieldCls = 'good'; }
+
+    const ratioOk = questions === 0 ? (reflections > 0) : (reflections / questions >= 2);
+    const growth = momentum >= 58 ? 'Renee was voicing noticeably more change talk by the end.'
+      : momentum >= 44 ? 'Renee opened up some, but stayed firmly ambivalent.'
+      : 'Renee stayed guarded, with change talk hard to come by.';
+
+    const d = $('debrief');
+    d.hidden = false;
+    d.innerHTML =
+      '<h2>Session debrief</h2>' +
+      '<p style="color:var(--muted);">Eight exchanges with Renee. Here is where things landed.</p>' +
+      '<div class="grid2">' +
+        '<div class="stat"><div class="k">Where the field landed</div><div class="v ' + fieldCls + '">' + fieldV + '</div></div>' +
+        '<div class="stat"><div class="k">Reflection to question ratio</div><div class="v ' + (ratioOk ? 'good' : 'warn') + '">' + ratioText() + '</div></div>' +
+        '<div class="stat"><div class="k">Change talk</div><div class="v">' + growth + '</div></div>' +
+        '<div class="stat"><div class="k">Bricks on the scale</div><div class="v">' + changeW + ' change &middot; ' + sustainW + ' status quo</div></div>' +
+      '</div>' +
+      '<div class="coach-box" id="coachBox"><span class="ir-spinner"></span>Pulling together your coaching&hellip;</div>' +
+      '<div class="actions">' +
+        '<button class="btn-ghost" id="copyBtn">Copy session</button>' +
+        '<button class="btn-ghost" id="downloadBtn">Download</button>' +
+        '<button class="btn-primary" id="againBtn">Play again</button>' +
+      '</div>';
+
+    $('copyBtn').addEventListener('click', () => doCopy());
+    $('downloadBtn').addEventListener('click', () => doDownload());
+    $('againBtn').addEventListener('click', begin);
+
+    // coaching call
+    try {
+      const summary = log.map(l => 'Exchange ' + l.n + ' [' + (l.move === 'reflection' ? 'Reflection' : 'Open question') + ' -> ' + l.label + ']: "' + l.text + '"  | Renee: "' + l.clientLine + '"').join('\n');
+      const userMsg = 'Session focus: Renee, ambivalent about her heroin use.\n\n' + summary +
+        '\n\nFinal field: ' + fieldV + '. Ratio: ' + ratioText() + '. ' + growth +
+        '\n\nGive the end-of-session coaching.';
+      const reply = await callChat(COACH_SYSTEM, [{ role: 'user', content: userMsg }], COACH_MODEL, 450);
+      $('coachBox').innerHTML = '<b>Coaching</b><br>' + esc(reply).replace(/\n/g, '<br>');
+      window.__coachText = reply;
+    } catch (e) {
+      $('coachBox').innerHTML = 'Coaching could not load (' + esc(e.message) + '). Your session results above are still complete.';
+    }
+  }
+
+  function buildText() {
+    const lines = [];
+    lines.push('Balancing the Scale');
+    lines.push('A Socialworky evocation practice session');
+    lines.push(new Date().toLocaleString());
+    lines.push('');
+    lines.push('Client: Renee, ambivalent about her heroin use.');
+    lines.push('Opening: "' + OPENING + '"');
+    lines.push('');
+    log.forEach(l => {
+      lines.push('Exchange ' + l.n + ' (' + (l.move === 'reflection' ? 'Reflection' : 'Open question') + '): ' + l.label);
+      lines.push('  You: "' + l.text + '"');
+      lines.push('  Renee: "' + l.clientLine + '"');
+      lines.push('');
+    });
+    const net = changeW - sustainW;
+    lines.push('Final scale: ' + changeW + ' change bricks, ' + sustainW + ' status-quo bricks (net ' + (net >= 0 ? '+' : '') + net + ' toward change).');
+    lines.push('Ratio: ' + ratioText() + '.');
+    if (window.__coachText) { lines.push(''); lines.push('Coaching:'); lines.push(window.__coachText); }
+    return lines.join('\n');
+  }
+
+  const toast = $('toast'); let toastTimer;
+  function showToast(t) { toast.textContent = t; toast.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('show'), 1800); }
+  function doCopy() {
+    const text = buildText();
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => showToast('Copied')).catch(() => fb(text));
+    else fb(text);
+    function fb(t) { const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); showToast('Copied'); } catch (e) {} document.body.removeChild(ta); }
+  }
+  function doDownload() {
+    const blob = new Blob([buildText()], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob); const a = document.createElement('a');
+    a.href = url; a.download = 'balancing-the-scale.txt'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    showToast('Download started');
+  }
+
+  $('beginBtn').addEventListener('click', begin);
+  $('btnReflect').addEventListener('click', () => submitMove('reflection'));
+  $('btnQuestion').addEventListener('click', () => submitMove('question'));
+  $('entry').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submitMove('reflection'); });
+</script>
+</body>
+</html>
