@@ -280,7 +280,7 @@ Do NOT punish a brief empathic nod to sustain. Only sustain_heavy and missed_cha
 - "evoke_sustain_q": a question that pulls toward sustain (what they enjoy about using, what is hard about stopping, why they keep using).
 - "closed_or_off_q": a closed, leading, or off-target question.`}
 
-Return ONLY the JSON object below. Do not use code fences. Do not write anything before or after it. Keep clientLine to at most four sentences.
+Return ONLY the JSON object below, exactly like your previous replies in this conversation. Do not use code fences. Do not write anything before or after it. Do not reply as Renee in plain text. Keep clientLine to at most four sentences.
 { "assessment": "<one assessment from the list above>",
   "clientLine": "<Renee's next statement, in character, 1 to 4 sentences>",
   "rationale": "<one short sentence on what the worker did, for an end-of-session debrief>" }`;
@@ -410,7 +410,7 @@ Give 4 to 6 sentences of coaching. Name one or two things they did well, one or 
       const m = MOVES[data.assessment] || (move === 'reflection' ? MOVES.directional_change : MOVES.neutral_q);
       // record
       history.push({ role: 'user', content: userContent });
-      history.push({ role: 'assistant', content: data.clientLine });
+      history.push({ role: 'assistant', content: JSON.stringify({ assessment: data.assessment, clientLine: data.clientLine, rationale: data.rationale || '' }) });
       log.push({ n: exchange, move, text, assessment: data.assessment, label: m.label, side: m.side, bricks: m.bricks, clientBefore: lastLine, clientLine: data.clientLine, rationale: data.rationale || '' });
       // apply effects
       momentum = Math.max(22, Math.min(80, momentum + m.dm));
