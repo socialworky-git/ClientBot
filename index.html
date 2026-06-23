@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Socialworky | Motivational Interviewing Training</title>
+<style>
+  /* Core variables matching the Tools page */
+  :root{
+    --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
+    --accent:#EB786B; --accentDeep:#C2452F;
+    --sans:Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
+  }
+  
+  *{box-sizing:border-box;}
+  
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    padding:24px;
+    line-height:1.6;
+  }
+  
+  .wrap{max-width:780px;margin:0 auto;}
+  
+  /* Navigation */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+    border-bottom: 1px solid var(--line);
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .brand{font-weight:700;font-size:26px;letter-spacing:-0.3px; text-decoration: none; color: var(--ink);}
+  .brand .acc{color:var(--accent);}
+  
+  nav {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .nav-link {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .nav-link:hover { color: var(--accentDeep); }
+
+  .nav-cta {
+    color: var(--accentDeep);
+    border: 1px solid var(--line);
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--surface);
+  }
+
+  .nav-cta:hover {
+    border-color: var(--accent);
+    box-shadow: 0 1px 10px rgba(0,0,0,.06);
+  }
+
+  /* Typography & Sections */
+  .tagline{color:var(--ink);font-size:32px;font-weight:700; letter-spacing:-0.5px; margin-bottom: 16px;}
+  .lead{color:var(--muted);font-size:16px;margin:0 0 24px;max-width:680px;}
+  
+  .section-title{
+    font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;
+    color:var(--accentDeep);
+    margin:60px 0 20px;padding-bottom:6px;border-bottom:1px solid var(--line);
+  }
+
+  .text-block h3 { margin-top: 0; margin-bottom: 8px; font-size: 20px; }
+  .text-block p { color: var(--muted); margin-top: 0; margin-bottom: 24px; }
+
+  /* Reused Grid & Card styles for Workshops */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .card{
+    display:block;text-decoration:none;color:inherit;background:var(--surface);
+    border:1px solid var(--line);border-radius:12px;padding:24px;
+    transition:border-color .12s,box-shadow .12s;
+  }
+  .card:hover{border-color:var(--accent);box-shadow:0 1px 10px rgba(0,0,0,.06);}
+  .card .nm{font-size:19px;font-weight:700;margin:0 0 8px;}
+  .card .ds{font-size:14px;color:var(--muted); margin-bottom: 16px;}
+  
+  .inline-link {
+    display:inline-block; font-size:14px; font-weight:700; color:var(--accentDeep); text-decoration: none; margin-top: 12px;
+  }
+  .inline-link:hover { text-decoration: underline; }
+
+  /* Bio Section Specifics */
+  .bio-container {
+    display: flex; gap: 30px; align-items: flex-start;
+  }
+  .bio-pic {
+    width: 150px; height: 150px; border-radius: 12px; object-fit: cover; border: 1px solid var(--line); flex-shrink: 0;
+  }
+
+  .foot{color:var(--muted);font-size:12.5px;margin-top:60px;border-top:1px solid var(--line);padding-top:14px;}
+
+  @media (max-width:600px){ 
+    body{padding:16px;} 
+    .grid{grid-template-columns:1fr;} 
+    .bio-container { flex-direction: column; }
+    nav { gap: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  
+  <!-- Navigation -->
+  <header>
+    <a href="/" class="brand">Social<span class="acc">worky</span></a>
+    <nav>
+      <a class="nav-link" href="#workshops">Workshops</a>
+      <a class="nav-link" href="#about">About</a>
+      <a class="nav-link" href="/tools/">Tools</a>
+      <a class="nav-link nav-cta" href="https://fantastical.app/kratz9-JnQj/my-template" target="_blank">Book Consultation</a>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <div class="tagline">Transform Your Practice with Motivational Interviewing</div>
+  
+  <div class="text-block">
+    <h3>What is Motivational Interviewing?</h3>
+    <p>Motivational Interviewing (MI) is a powerful, evidence-based approach that helps clients find their own motivations for change. It enhances communication, builds trust, and facilitates lasting change.</p>
+    
+    <h3>Why Choose MI Training?</h3>
+    <p>MI is best learned through active engagement and practice. My training approach emphasizes interactive exercises, role plays, and real-play scenarios that reflect the specific challenges faced by your team. This hands-on approach ensures participants can effectively integrate MI techniques into their practice.</p>
+  </div>
+
+  <!-- Workshops Section -->
+  <div id="workshops" class="section-title">Training & Workshops</div>
+  <p class="lead">Select a training format that best fits the needs of your organization or practice.</p>
+  
+  <div class="grid">
+    <!-- Using the card style from the Tools page to display workshops -->
+    <div class="card">
+      <div class="nm">Foundational MI</div>
+      <div class="ds">A comprehensive introduction to the core skills, spirit, and processes of Motivational Interviewing for new practitioners.</div>
+      <a href="#" class="inline-link">Contact to schedule &rarr;</a>
+    </div>
+    <div class="card">
+      <div class="nm">Advanced Practice</div>
+      <div class="ds">Deepen your existing MI skills through rigorous coding feedback, complex role plays, and specific clinical application.</div>
+      <a href="#" class="inline-link">Contact to schedule &rarr;</a>
+    </div>
+  </div>
+  
+  <!-- Workbook Resource positioned right inside the Workshop section -->
+  <div style="margin-top: 20px;">
+    <a href="/pdfs/workbook-sample.pdf" target="_blank" class="inline-link">📄 Download a Free Workbook Sample</a>
+  </div>
+
+  <!-- About Section -->
+  <div id="about" class="section-title">About Kratz</div>
+  <div class="bio-container">
+    <!-- Placeholder for your headshot -->
+    <img src="https://via.placeholder.com/150" alt="Jonathan Kratz" class="bio-pic">
+    
+    <div class="text-block" style="margin-top: 0;">
+      <p>As the MSW Director at the Anne and Henry Zarrow School of Social Work at the University of Oklahoma and a Licensed Clinical Social Worker based in Tulsa, I bring a wealth of academic leadership and clinical experience to my training.</p>
+      <p>I am a member of the Motivational Interviewing Network of Trainers (MINT) and am dedicated to providing high-quality, hands-on training that fosters empathy, respect, and collaboration across helping professions.</p>
+      
+      <!-- CV Resource positioned right inside the About section -->
+      <a href="/pdfs/kratz-cv.pdf" target="_blank" class="inline-link">📄 View Full Curriculum Vitae</a>
+    </div>
+  </div>
+
+  <!-- Philosophy Section -->
+  <div class="section-title">What is Socialworky?</div>
+  <div class="text-block">
+    <p>For years, I’ve used the word "socialworky" to describe people who embody the core values of social work: empathy, respect, and partnership. Though it's a made-up term, social workers instantly understand its meaning: it's always a compliment, highlighting someone's positive impact and effectiveness as a helper.</p>
+    <p>Motivational Interviewing, with its emphasis on partnership, acceptance, empowerment, and compassion, perfectly captures the essence of being "socialworky." Whether you're in social work or any other helping profession, MI training can help you embody these qualities and be more effective in your practice.</p>
+  </div>
+
+  <!-- Footer -->
+  <div class="foot">© 2026 Socialworky. Motivational Interviewing training and resources.</div>
+</div>
+</body>
+</html>
