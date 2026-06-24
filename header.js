@@ -19,8 +19,8 @@
   var style = document.createElement('style');
   style.textContent = css;
   document.head.appendChild(style);
-  var wrap = document.querySelector('.wrap');
-  if (wrap) {
-    wrap.insertAdjacentHTML('afterbegin', html);
+  var target = document.querySelector('.wrap') || document.querySelector('.page') || document.querySelector('.top-bar');
+  if (target) {
+    target.insertAdjacentHTML('afterbegin', html);
   }
 })();

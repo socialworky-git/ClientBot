@@ -130,7 +130,7 @@
 <body>
 <div class="wrap">
 
-  <a class="alltools" href="/">&larr; All tools</a>
+  <script src="/header.js"></script>
   <h1>Balancing the Scale</h1>
   <div class="tool-subtitle">Evocation practice: intentional reflections and directional questions</div>
   <hr class="tool-divider">
@@ -414,8 +414,8 @@ Give 4 to 6 sentences of coaching. Name one or two things they did well, one or 
     msg.className = 'turn-msg'; msg.innerHTML = '<span class="ir-spinner"></span>Renee is taking it in&hellip;';
 
     const isFirst = history.length === 0;
-    const userContent = (isFirst ? ('Renee\u2019s opening statement was: "' + OPENING + '"\n\n') : '') +
-      '[Worker\u2019s move: ' + (move === 'reflection' ? 'REFLECTION' : 'OPEN QUESTION') + ']\n"' + text + '"';
+    const userContent = (isFirst ? ('Renee’s opening statement was: "' + OPENING + '"\n\n') : '') +
+      '[Worker’s move: ' + (move === 'reflection' ? 'REFLECTION' : 'OPEN QUESTION') + ']\n"' + text + '"';
     const messages = history.concat([{ role: 'user', content: userContent }]);
 
     try {
