@@ -411,8 +411,8 @@
 <body>
 <div class="wrap">
 
+  <script src="/header.js"></script>
   <div class="topbar">
-    <a class="alltools" href="/">&larr; All tools</a>
     <div class="toolbar">
       <button class="tool-btn" id="copyBtn" type="button" aria-label="Copy your work">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -504,7 +504,7 @@
     ]
   ];
 
-  const plain = segs => '\u201c' + segs.map(s => s.t).join('') + '\u201d';
+  const plain = segs => '“' + segs.map(s => s.t).join('') + '”';
 
   const itemsWrap = document.getElementById('items');
   const resultTiers = {};
@@ -528,13 +528,13 @@
           'Show change talk' +
         '</button>' +
       '</div>' +
-      '<p class="statement-text">\u201c' + inner + '\u201d</p>' +
+      '<p class="statement-text">“' + inner + '”</p>' +
       '<div class="legend">' +
         '<span><span class="swatch c"></span> Change talk</span>' +
         '<span><span class="swatch s"></span> Sustain talk</span>' +
       '</div>' +
       '<label class="field-label" for="r' + i + '">Your reflection</label>' +
-      '<textarea id="r' + i + '" placeholder="It sounds like\u2026"></textarea>' +
+      '<textarea id="r' + i + '" placeholder="It sounds like…"></textarea>' +
       '<div class="check-row">' +
         '<button class="btn-check" type="button" data-check="' + i + '">' +
           '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>' +
@@ -610,7 +610,7 @@
     ta.style.opacity = '0';
     document.body.appendChild(ta);
     ta.select();
-    try { document.execCommand('copy'); done(); } catch (e) { showToast('Copy not supported \u2014 use Download'); }
+    try { document.execCommand('copy'); done(); } catch (e) { showToast('Copy not supported — use Download'); }
     document.body.removeChild(ta);
   }
 
@@ -752,11 +752,11 @@ Do not invent client details. Be encouraging and concrete.`;
     const userMsg = 'Client statement: ' + plain(segs) + '\n' +
       'Change talk in it: ' + (change || '(none)') + '\n' +
       'Sustain talk in it: ' + (sustain || '(none)') + '\n' +
-      'Learner\u2019s reflection: ' + reflection;
+      'Learner’s reflection: ' + reflection;
 
     fb.classList.remove('show'); fb.innerHTML = '';
     msg.className = 'check-msg';
-    msg.innerHTML = '<span class="ir-spinner"></span>Weighing your reflection\u2026';
+    msg.innerHTML = '<span class="ir-spinner"></span>Weighing your reflection…';
     btn.disabled = true;
     try {
       const raw = await callChat(SYSTEM_CHECK, [{ role: 'user', content: userMsg }], CHECK_MODEL, 500);
