@@ -67,7 +67,7 @@
 </head>
 <body>
 <div class="wrap">
-  <a class="hublink" href="/">&larr; All tools</a>
+  <script src="/header.js"></script>
   <div class="eyebrow">Suicide-specific clinical skills</div>
   <h1>Empathy as a Pathway to Screening</h1>
   <div class="tagline">Reflect, summarize the meaning, and move toward a screening question</div>
@@ -179,7 +179,8 @@ function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">"
 function val(id){const el=document.getElementById(id);return el?el.value.trim():"";}
 function reveal(id){const el=document.getElementById(id);el.style.display="";el.scrollIntoView({behavior:"smooth",block:"start"});}
 function setNudge(id,t){document.getElementById(id).textContent=t;}
-function setStatus(id,t){document.getElementById(id).innerHTML=t?('<div class="status">'+esc(t)+'</div>'):"";}
+function setStatus(id,t){document.getElementById(id).innerHTML=t?('<div class="status">'+esc(t)+'</div>'):"";
+}
 function noteHTML(label,text){return '<div class="note-fb"><b>'+esc(label)+'</b>'+esc(text)+'</div>';}
 
 let stmt2="",stmt3="";
