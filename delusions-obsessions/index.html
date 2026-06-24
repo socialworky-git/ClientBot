@@ -275,8 +275,7 @@
 
 <!-- Top bar -->
 <div class="top-bar">
-  <a class="back-link" href="https://client-bot-mocha.vercel.app/tools/">← All tools</a>
-  <span class="wordmark">Socialworky Tools</span>
+  <script src="/header.js"></script>
 </div>
 
 <!-- Page header -->
@@ -329,20 +328,20 @@ const CARDS = [
   { id: 3,  text: "I believe I'm immortal and will never die.",                                      category: "delusion",  color: "#c0392b" },
   { id: 4,  text: "God gave me a mission to warn people about the coming flood.",                    category: "delusion",  color: "#b7770d" },
   { id: 5,  text: "I am being monitored by the government through my shower drain.",                 category: "delusion",  color: "#922b21" },
-  { id: 6,  text: "I am certain my food is being poisoned, even though tests show it's safe.",      category: "delusion",  color: "#d35400" },
+  { id: 6,  text: "I am certain my food is being poisoned, even though tests show it’s safe.",      category: "delusion",  color: "#d35400" },
   { id: 7,  text: "The television is giving me coded instructions for how to live my life.",         category: "delusion",  color: "#6e2f7a" },
   // Obsessions
-  { id: 8,  text: "I can't stop thinking that I might have run someone over on my way here.",       category: "obsession", color: "#1a6fb5" },
-  { id: 9,  text: "I feel like I'll cause harm if I don't tap things in a certain order.",          category: "obsession", color: "#1e8449" },
-  { id: 10, text: "I can't stop counting how many steps I take. It has to be in multiples of four.", category: "obsession", color: "#5b3a8e" },
-  { id: 11, text: "I know these thoughts are irrational, but they won't stop coming.",              category: "obsession", color: "#1a7a45" },
-  { id: 12, text: "These thoughts feel intrusive. I know they're not true, but I can't stop them.", category: "obsession", color: "#1f618d" },
-  { id: 13, text: "I replay conversations in my head obsessively to make sure I didn't say something wrong.", category: "obsession", color: "#7d3c98" },
+  { id: 8,  text: "I can’t stop thinking that I might have run someone over on my way here.",       category: "obsession", color: "#1a6fb5" },
+  { id: 9,  text: "I feel like I’ll cause harm if I don’t tap things in a certain order.",          category: "obsession", color: "#1e8449" },
+  { id: 10, text: "I can’t stop counting how many steps I take. It has to be in multiples of four.", category: "obsession", color: "#5b3a8e" },
+  { id: 11, text: "I know these thoughts are irrational, but they won’t stop coming.",              category: "obsession", color: "#1a7a45" },
+  { id: 12, text: "These thoughts feel intrusive. I know they’re not true, but I can’t stop them.", category: "obsession", color: "#1f618d" },
+  { id: 13, text: "I replay conversations in my head obsessively to make sure I didn’t say something wrong.", category: "obsession", color: "#7d3c98" },
   { id: 14, text: "I check the stove 12 times before leaving because I keep imagining a fire.",     category: "obsession", color: "#1e6b3a" },
-  { id: 15, text: "I'm scared I might blurt out something offensive during church even though I never would.", category: "obsession", color: "#2471a3" },
+  { id: 15, text: "I’m scared I might blurt out something offensive during church even though I never would.", category: "obsession", color: "#2471a3" },
 ];
 
-// ── Audio (Web Audio API, no external files) ───────────────────────────────
+// ── Audio (Web Audio API, no external files) ───────────────────────────────────────
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null;
 function getCtx() { return audioCtx || (audioCtx = new AudioCtx()); }
@@ -377,7 +376,7 @@ function chimePerfect() {
 // ── State ─────────────────────────────────────────────────────────────────
 let draggedCard = null, timerInterval = null, secondsElapsed = 0, submitted = false;
 
-// ── Build a card element ───────────────────────────────────────────────────
+// ── Build a card element ─────────────────────────────────────────────────────
 function buildCard(card) {
   const el = document.createElement('div');
   el.className = 'card';
@@ -413,7 +412,7 @@ function populateBank() {
   shuffle(CARDS).forEach(c => bank.appendChild(buildCard(c)));
 }
 
-// ── Drop zones ────────────────────────────────────────────────────────────
+// ── Drop zones ──────────────────────────────────────────────────────────
 document.querySelectorAll('.drop-zone, #card-bank').forEach(zone => {
   zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
   zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
@@ -441,7 +440,7 @@ function restorePH() {
   });
 }
 
-// ── Touch drag ────────────────────────────────────────────────────────────
+// ── Touch drag ──────────────────────────────────────────────────────────
 let touchClone = null, touchOX = 0, touchOY = 0;
 
 function onTouchStart(e) {
@@ -480,7 +479,7 @@ function onTouchEnd(e) {
   draggedCard = null;
 }
 
-// ── Timer ─────────────────────────────────────────────────────────────────
+// ── Timer ───────────────────────────────────────────────────────────────
 function startTimer() {
   timerInterval = setInterval(() => {
     secondsElapsed++;
@@ -489,7 +488,7 @@ function startTimer() {
   }, 1000);
 }
 
-// ── Submit ────────────────────────────────────────────────────────────────
+// ── Submit ──────────────────────────────────────────────────────────────
 document.getElementById('btn-check').addEventListener('click', () => {
   if (submitted) return;
   if (document.querySelectorAll('#card-bank .card').length > 0) {
@@ -527,7 +526,7 @@ document.getElementById('btn-check').addEventListener('click', () => {
   document.getElementById('score-display').textContent = `Score: ${correct} / ${total}`;
 });
 
-// ── Reset ─────────────────────────────────────────────────────────────────
+// ── Reset ───────────────────────────────────────────────────────────────
 document.getElementById('btn-reset').addEventListener('click', () => {
   clearInterval(timerInterval);
   secondsElapsed = 0; submitted = false;
@@ -542,7 +541,7 @@ document.getElementById('btn-reset').addEventListener('click', () => {
   startTimer();
 });
 
-// ── Init ──────────────────────────────────────────────────────────────────
+// ── Init ────────────────────────────────────────────────────────────────
 populateBank();
 startTimer();
 </script>

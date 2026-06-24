@@ -15,15 +15,7 @@
   .wrap{max-width:820px;margin:0 auto;}
   a{color:var(--accentDeep);}
 
-  /* Nav */
-  header{ display:flex; justify-content:space-between; align-items:center; padding-bottom:20px; margin-bottom:28px; border-bottom:1px solid var(--line); flex-wrap:wrap; gap:18px; }
-  .brand{ font-weight:700; font-size:24px; letter-spacing:-0.3px; text-decoration:none; color:var(--ink); }
-  .brand .acc{color:var(--accent);}
-  nav{ display:flex; gap:20px; align-items:center; flex-wrap:wrap; }
-  .nav-link{ font-size:12.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:1px; text-decoration:none; transition:color .15s; }
-  .nav-link:hover{ color:var(--accentDeep); }
-  .nav-cta{ color:var(--accentDeep); border:1px solid var(--line); padding:8px 15px; border-radius:8px; background:var(--surface); }
-  .nav-cta:hover{ border-color:var(--accent); box-shadow:0 1px 10px rgba(0,0,0,.06); }
+  /* Nav styles provided by /header.js */
 
   /* Shared buttons */
   .btn{ display:inline-block; font-size:15px; font-weight:700; text-decoration:none; padding:11px 20px; border-radius:9px; border:1px solid transparent; transition:background .15s,border-color .15s,box-shadow .15s; }
@@ -74,15 +66,7 @@
 <body>
 <div class="wrap">
 
-  <header>
-    <a href="/" class="brand">Social<span class="acc">worky</span></a>
-    <nav>
-      <a class="nav-link" href="#workshops">Workshops</a>
-      <a class="nav-link" href="#about">About</a>
-      <a class="nav-link" href="/tools/">Tools</a>
-      <a class="nav-link nav-cta" href="https://fantastical.app/kratz9-JnQj/my-template" target="_blank">Book Consultation</a>
-    </nav>
-  </header>
+  <script src="/header.js"></script>
 
   <!-- Hero -->
   <section class="hero">
@@ -127,7 +111,7 @@
   <!-- Philosophy -->
   <div class="section-title">What is Socialworky?</div>
   <div class="story">
-    <p>For years I have used the word "socialworky" to describe people who embody the core values of social work: empathy, respect, and partnership. It is a made-up term, but social workers understand it instantly, and it is always a compliment, naming someone's positive impact and effectiveness as a helper.</p>
+    <p>For years I have used the word “socialworky” to describe people who embody the core values of social work: empathy, respect, and partnership. It is a made-up term, but social workers understand it instantly, and it is always a compliment, naming someone’s positive impact and effectiveness as a helper.</p>
     <p>Motivational Interviewing, with its emphasis on partnership, acceptance, empowerment, and compassion, captures the essence of being socialworky. Whether you are in social work or any other helping profession, MI training can help you embody these qualities and be more effective in your practice.</p>
   </div>
 
