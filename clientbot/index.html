@@ -142,6 +142,7 @@
 </head>
 <body>
 <div class="wrap" id="app"></div>
+<script src="/header.js"></script>
 
 <script>
 const T={accent:"#EB786B",accentDeep:"#C2452F",coach:"#B26A00",adherent:"#2E7D54",
@@ -297,8 +298,7 @@ const clientHistory=ms=>ms.filter(m=>m.role==="client"||m.role==="counselor")
   .map(m=>({role:m.role==="counselor"?"user":"assistant",content:m.text}));
 
 function headerHtml(){
-  return `<a class="hublink" href="/">\u2190 All tools</a>
-    <div class="head"><div><div class="brand">Client<span class="bot">Bot</span></div>
+  return `<div class="head"><div><div class="brand">Client<span class="bot">Bot</span></div>
     <div class="tagline">Motivational Interviewing practice</div>
     <div class="print-date">${new Date().toLocaleDateString()}</div></div></div>`;
 }

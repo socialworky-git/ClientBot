@@ -80,7 +80,7 @@
 </head>
 <body>
 <div class="wrap">
-  <a class="hublink" href="/">&larr; All tools</a>
+  <script src="/header.js"></script>
   <div class="eyebrow">Motivational Interviewing</div>
   <h1>Reflection Batting Practice</h1>
   <div class="tagline">Ten pitches, a new change focus each time</div>
@@ -141,7 +141,7 @@
     <div class="obs" id="observations"></div>
     <div class="row">
       <button class="btn" id="again">Face a new client</button>
-      <a class="btnout" href="/" style="text-decoration:none;display:inline-block">All tools</a>
+      <a class="btnout" href="/tools/" style="text-decoration:none;display:inline-block">All tools</a>
     </div>
   </div>
 
@@ -278,7 +278,7 @@ async function swing(){
     status.innerHTML="";
     const callEl=document.getElementById("call");
     callEl.innerHTML='<span class="pill '+hit.cls+'" style="font-size:34px;padding:6px 22px">'+hit.call+'</span>'
-      +'<span class="gain">'+(hit.pts>0?("+"+hit.pts+" pts"+(bonus>0?(" and +"+bonus+" speed bonus"):"")):"no points, shake it off")+'</span>';
+      +'<span class="gain">'+(hit.pts>0?("+"+hit.pts+" pts"+(bonus>0?(" and +"+bonus+" speed bonus"):""):"no points, shake it off"))+'</span>';
     callEl.classList.remove("show");void callEl.offsetWidth;callEl.classList.add("show");
     document.getElementById("fb").textContent=parsed.feedback||"";
     hide("atbat");show("result");
