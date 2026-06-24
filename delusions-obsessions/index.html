@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Delusions vs. Obsessions — Socialworky Tools</title>
+<style>
+  :root {
+    --accent:     #EB786B;
+    --accentDeep: #C2452F;
+    --bg:         #ffffff;
+    --surface:    #f8f8f8;
+    --border:     #e0e0e0;
+    --text:       #1a1a1a;
+    --muted:      #666;
+    --radius:     8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Arial, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Top bar ── */
+  .top-bar {
+    border-top: 4px solid var(--accent);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .back-link {
+    font-size: 0.85rem;
+    color: var(--accentDeep);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .back-link:hover { text-decoration: underline; }
+
+  .wordmark {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.01em;
+  }
+
+  /* ── Page header ── */
+  .page-header {
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tool-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .page-header p {
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  /* ── Timer / status strip ── */
+  .status-strip {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+
+  #timer { font-weight: 700; color: var(--text); }
+
+  /* ── Main layout ── */
+  .main {
+    display: flex;
+    flex: 1;
+    gap: 16px;
+    padding: 16px 24px;
+    min-height: 0;
+  }
+
+  /* ── Card bank ── */
+  #card-bank {
+    width: 270px;
+    flex-shrink: 0;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    background: var(--surface);
+    min-height: 200px;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  #card-bank.drag-over {
+    background: #fdf0ee;
+    border-color: var(--accent);
+  }
+
+  /* ── Cards ── */
+  .card {
+    border-radius: 6px;
+    padding: 9px 11px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+    cursor: grab;
+    user-select: none;
+    line-height: 1.35;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.18);
+    transition: transform 0.12s, opacity 0.12s;
+  }
+
+  .card:active { cursor: grabbing; }
+  .card.dragging { opacity: 0.35; transform: scale(0.96); }
+
+  .card.correct {
+    outline: 4px solid #27ae60;
+    box-shadow: 0 0 0 7px rgba(39,174,96,0.15), 0 2px 5px rgba(0,0,0,0.15);
+  }
+  .card.incorrect {
+    outline: 4px solid #c0392b;
+    box-shadow: 0 0 0 7px rgba(192,57,43,0.15), 0 2px 5px rgba(0,0,0,0.15);
+    animation: shake 0.35s;
+  }
+
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-6px); }
+    75%      { transform: translateX(6px); }
+  }
+
+  /* ── Drop zones ── */
+  .zones {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  .zone-section { flex: 1; display: flex; flex-direction: column; }
+
+  .zone-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 8px;
+    padding-left: 2px;
+    border-left: 4px solid var(--accent);
+    padding-left: 10px;
+  }
+
+  .drop-zone {
+    flex: 1;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    align-content: flex-start;
+    min-height: 100px;
+    background: #fff;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .drop-zone.drag-over {
+    background: #fdf0ee;
+    border-color: var(--accent);
+  }
+
+  .drop-zone .card { width: calc(33.33% - 5px); cursor: grab; }
+
+  .placeholder-text {
+    color: #ccc;
+    font-size: 0.82rem;
+    width: 100%;
+    text-align: center;
+    padding: 16px 0;
+    pointer-events: none;
+    font-style: italic;
+  }
+
+  /* ── Result banner ── */
+  #result-banner {
+    display: none;
+    text-align: center;
+    padding: 11px 24px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  /* ── Footer ── */
+  footer {
+    padding: 14px 24px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  button {
+    padding: 10px 28px;
+    border: none;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+  button:active { transform: scale(0.97); }
+
+  #btn-check {
+    background: var(--accentDeep);
+    color: #fff;
+  }
+  #btn-check:hover:not(:disabled) { background: #a83828; }
+  #btn-check:disabled { background: #bbb; cursor: default; }
+
+  #btn-reset {
+    background: #fff;
+    color: var(--text);
+    border: 1.5px solid var(--border);
+  }
+  #btn-reset:hover { background: var(--surface); }
+
+  /* ── Footer credit ── */
+  .site-footer {
+    text-align: center;
+    padding: 10px 24px;
+    font-size: 0.75rem;
+    color: #aaa;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .main { flex-direction: column; padding: 12px; }
+    #card-bank { width: 100%; }
+    .drop-zone .card { width: calc(50% - 4px); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="top-bar">
+  <a class="back-link" href="https://client-bot-mocha.vercel.app/tools/">← All tools</a>
+  <span class="wordmark">Socialworky Tools</span>
+</div>
+
+<!-- Page header -->
+<div class="page-header">
+  <div class="tool-label">Sorting Activity</div>
+  <h1>Delusions vs. Obsessions</h1>
+  <p>Drag each card to the correct category, then submit to check your answers.</p>
+</div>
+
+<!-- Status strip -->
+<div class="status-strip">
+  <span id="timer">0:00</span>
+  <span id="score-display">Sort all the cards, then submit.</span>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <div id="card-bank"></div>
+
+  <div class="zones">
+    <div class="zone-section">
+      <div class="zone-title">Delusions</div>
+      <div class="drop-zone" id="zone-delusion" data-zone="delusion">
+        <span class="placeholder-text">Drop cards here</span>
+      </div>
+    </div>
+    <div class="zone-section">
+      <div class="zone-title">Obsessions</div>
+      <div class="drop-zone" id="zone-obsession" data-zone="obsession">
+        <span class="placeholder-text">Drop cards here</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="result-banner"></div>
+
+<footer>
+  <button id="btn-check">Submit Answers</button>
+  <button id="btn-reset">Reset</button>
+</footer>
+
+<div class="site-footer">A Socialworky training resource. For practice only — please use fictional details, not real client information.</div>
+
+<script>
+const CARDS = [
+  // Delusions
+  { id: 1,  text: "My neighbors are sending me messages through the radio.",                         category: "delusion",  color: "#7b2d8b" },
+  { id: 2,  text: "The CIA implanted a chip in my brain last year while I was sleeping.",            category: "delusion",  color: "#1565c0" },
+  { id: 3,  text: "I believe I'm immortal and will never die.",                                      category: "delusion",  color: "#c0392b" },
+  { id: 4,  text: "God gave me a mission to warn people about the coming flood.",                    category: "delusion",  color: "#b7770d" },
+  { id: 5,  text: "I am being monitored by the government through my shower drain.",                 category: "delusion",  color: "#922b21" },
+  { id: 6,  text: "I am certain my food is being poisoned, even though tests show it's safe.",      category: "delusion",  color: "#d35400" },
+  { id: 7,  text: "The television is giving me coded instructions for how to live my life.",         category: "delusion",  color: "#6e2f7a" },
+  // Obsessions
+  { id: 8,  text: "I can't stop thinking that I might have run someone over on my way here.",       category: "obsession", color: "#1a6fb5" },
+  { id: 9,  text: "I feel like I'll cause harm if I don't tap things in a certain order.",          category: "obsession", color: "#1e8449" },
+  { id: 10, text: "I can't stop counting how many steps I take. It has to be in multiples of four.", category: "obsession", color: "#5b3a8e" },
+  { id: 11, text: "I know these thoughts are irrational, but they won't stop coming.",              category: "obsession", color: "#1a7a45" },
+  { id: 12, text: "These thoughts feel intrusive. I know they're not true, but I can't stop them.", category: "obsession", color: "#1f618d" },
+  { id: 13, text: "I replay conversations in my head obsessively to make sure I didn't say something wrong.", category: "obsession", color: "#7d3c98" },
+  { id: 14, text: "I check the stove 12 times before leaving because I keep imagining a fire.",     category: "obsession", color: "#1e6b3a" },
+  { id: 15, text: "I'm scared I might blurt out something offensive during church even though I never would.", category: "obsession", color: "#2471a3" },
+];
+
+// ── Audio (Web Audio API, no external files) ───────────────────────────────
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function getCtx() { return audioCtx || (audioCtx = new AudioCtx()); }
+
+function tone(freq, type, start, dur, vol, ctx) {
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.connect(g); g.connect(ctx.destination);
+  o.type = type;
+  o.frequency.setValueAtTime(freq, start);
+  g.gain.setValueAtTime(vol, start);
+  g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+  o.start(start); o.stop(start + dur);
+}
+
+function chimePlace() {
+  const ctx = getCtx(), t = ctx.currentTime;
+  tone(880, 'sine', t, 0.07, 0.08, ctx);
+}
+function chimeCorrect() {
+  const ctx = getCtx(), t = ctx.currentTime;
+  [[523.25,0],[659.25,0.08],[783.99,0.16]].forEach(([f,d]) => tone(f,'sine',t+d,0.45,0.22,ctx));
+}
+function chimeIncorrect() {
+  const ctx = getCtx(), t = ctx.currentTime;
+  [[320,0],[240,0.12]].forEach(([f,d]) => tone(f,'sawtooth',t+d,0.28,0.12,ctx));
+}
+function chimePerfect() {
+  const ctx = getCtx(), t = ctx.currentTime;
+  [[523.25,0],[659.25,0.1],[783.99,0.2],[1046.5,0.32],[1318.5,0.46]].forEach(([f,d]) => tone(f,'sine',t+d,0.55,0.2,ctx));
+}
+
+// ── State ─────────────────────────────────────────────────────────────────
+let draggedCard = null, timerInterval = null, secondsElapsed = 0, submitted = false;
+
+// ── Build a card element ───────────────────────────────────────────────────
+function buildCard(card) {
+  const el = document.createElement('div');
+  el.className = 'card';
+  el.id = 'card-' + card.id;
+  el.dataset.category = card.category;
+  el.textContent = card.text;
+  el.style.background = card.color;
+  el.draggable = true;
+  el.addEventListener('dragstart', e => {
+    draggedCard = el;
+    setTimeout(() => el.classList.add('dragging'), 0);
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  el.addEventListener('dragend', () => { el.classList.remove('dragging'); draggedCard = null; });
+  el.addEventListener('touchstart', onTouchStart, { passive: true });
+  el.addEventListener('touchmove',  onTouchMove,  { passive: false });
+  el.addEventListener('touchend',   onTouchEnd);
+  return el;
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function populateBank() {
+  const bank = document.getElementById('card-bank');
+  bank.innerHTML = '';
+  shuffle(CARDS).forEach(c => bank.appendChild(buildCard(c)));
+}
+
+// ── Drop zones ────────────────────────────────────────────────────────────
+document.querySelectorAll('.drop-zone, #card-bank').forEach(zone => {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    if (draggedCard && !submitted) {
+      removePH(zone);
+      zone.appendChild(draggedCard);
+      draggedCard.classList.remove('correct','incorrect');
+      restorePH();
+      chimePlace();
+    }
+  });
+});
+
+function removePH(zone) { const p = zone.querySelector('.placeholder-text'); if (p) p.remove(); }
+function restorePH() {
+  document.querySelectorAll('.drop-zone').forEach(z => {
+    if (!z.querySelector('.card') && !z.querySelector('.placeholder-text')) {
+      const p = document.createElement('span');
+      p.className = 'placeholder-text'; p.textContent = 'Drop cards here';
+      z.appendChild(p);
+    }
+  });
+}
+
+// ── Touch drag ────────────────────────────────────────────────────────────
+let touchClone = null, touchOX = 0, touchOY = 0;
+
+function onTouchStart(e) {
+  if (submitted) return;
+  const touch = e.touches[0], el = e.currentTarget, rect = el.getBoundingClientRect();
+  touchOX = touch.clientX - rect.left; touchOY = touch.clientY - rect.top;
+  touchClone = el.cloneNode(true);
+  Object.assign(touchClone.style, {
+    position: 'fixed', zIndex: 1000, pointerEvents: 'none',
+    width: rect.width + 'px', opacity: '0.85',
+    left: rect.left + 'px', top: rect.top + 'px'
+  });
+  document.body.appendChild(touchClone);
+  draggedCard = el;
+  el.classList.add('dragging');
+}
+function onTouchMove(e) {
+  e.preventDefault();
+  if (!touchClone) return;
+  const t = e.touches[0];
+  touchClone.style.left = (t.clientX - touchOX) + 'px';
+  touchClone.style.top  = (t.clientY - touchOY) + 'px';
+}
+function onTouchEnd(e) {
+  if (!touchClone || !draggedCard) return;
+  const t = e.changedTouches[0];
+  touchClone.remove(); touchClone = null;
+  draggedCard.classList.remove('dragging');
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  const zone = el ? el.closest('.drop-zone, #card-bank') : null;
+  if (zone) {
+    removePH(zone); zone.appendChild(draggedCard);
+    draggedCard.classList.remove('correct','incorrect');
+    restorePH(); chimePlace();
+  }
+  draggedCard = null;
+}
+
+// ── Timer ─────────────────────────────────────────────────────────────────
+function startTimer() {
+  timerInterval = setInterval(() => {
+    secondsElapsed++;
+    const m = Math.floor(secondsElapsed / 60), s = secondsElapsed % 60;
+    document.getElementById('timer').textContent = m + ':' + String(s).padStart(2,'0');
+  }, 1000);
+}
+
+// ── Submit ────────────────────────────────────────────────────────────────
+document.getElementById('btn-check').addEventListener('click', () => {
+  if (submitted) return;
+  if (document.querySelectorAll('#card-bank .card').length > 0) {
+    document.getElementById('score-display').textContent = 'Place all cards before submitting.';
+    return;
+  }
+  clearInterval(timerInterval);
+  submitted = true;
+  document.getElementById('btn-check').disabled = true;
+
+  let correct = 0;
+  document.querySelectorAll('.drop-zone .card').forEach(card => {
+    const inZone = card.closest('.drop-zone').dataset.zone;
+    if (inZone === card.dataset.category) { card.classList.add('correct'); correct++; }
+    else card.classList.add('incorrect');
+  });
+
+  const total = CARDS.length, pct = Math.round(correct / total * 100);
+  const banner = document.getElementById('result-banner');
+  banner.style.display = 'block';
+
+  if (pct === 100) {
+    banner.style.background = '#27ae60';
+    banner.textContent = `Perfect score! ${correct}/${total} correct`;
+    chimePerfect();
+  } else if (pct >= 70) {
+    banner.style.background = '#b7770d';
+    banner.textContent = `Good effort — ${correct}/${total} correct (${pct}%). Green = correct, red = incorrect.`;
+    chimeCorrect();
+  } else {
+    banner.style.background = '#c0392b';
+    banner.textContent = `${correct}/${total} correct (${pct}%). Green = correct, red = incorrect.`;
+    chimeIncorrect();
+  }
+  document.getElementById('score-display').textContent = `Score: ${correct} / ${total}`;
+});
+
+// ── Reset ─────────────────────────────────────────────────────────────────
+document.getElementById('btn-reset').addEventListener('click', () => {
+  clearInterval(timerInterval);
+  secondsElapsed = 0; submitted = false;
+  document.getElementById('timer').textContent = '0:00';
+  document.getElementById('score-display').textContent = 'Sort all the cards, then submit.';
+  document.getElementById('result-banner').style.display = 'none';
+  document.getElementById('btn-check').disabled = false;
+  document.querySelectorAll('.drop-zone').forEach(z => {
+    z.innerHTML = '<span class="placeholder-text">Drop cards here</span>';
+  });
+  populateBank();
+  startTimer();
+});
+
+// ── Init ──────────────────────────────────────────────────────────────────
+populateBank();
+startTimer();
+</script>
+</body>
+</html>
