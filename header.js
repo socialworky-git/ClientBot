@@ -29,7 +29,7 @@
       { name: "Treatment Planning Practice",       href: "/treatment-planning/" }
     ]},
     { category: "Other Tools", items: [
-      { name: "Practicing ASSIST",       href: "/practicing-assist/" },
+      { name: "Practicing ASSIST",        href: "/practicing-assist/" },
       { name: "Delusions vs. Obsessions", href: "/delusions-obsessions/" }
     ]}
   ];
@@ -68,16 +68,18 @@
     ".sw-dd{position:relative;}" +
     ".sw-dd__btn{font-family:inherit;font-size:15px;font-weight:600;color:#5B5B5B;background:none;" +
       "border:0;padding:0;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}" +
-    ".sw-dd__btn:hover{color:#C2452F;}" +
+    ".sw-dd__btn:hover,.sw-dd.open .sw-dd__btn{color:#C2452F;}" +
     ".sw-dd__caret{font-size:10px;transition:transform .15s;}" +
     ".sw-dd.open .sw-dd__caret{transform:rotate(180deg);}" +
     ".sw-dd__panel{position:absolute;top:calc(100% + 10px);right:0;min-width:248px;max-height:72vh;overflow:auto;" +
       "background:#fff;border:1px solid #E4E4E7;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);" +
       "padding:8px;display:none;z-index:1000;}" +
     ".sw-dd.open .sw-dd__panel{display:block;}" +
+    /* invisible bridge so the mouse can cross the gap to the panel */
+    ".sw-dd__panel::before{content:'';position:absolute;top:-10px;left:0;right:0;height:10px;}" +
     ".sw-dd__panel a{display:block;text-decoration:none;color:#1A1A1A;font-size:14px;font-weight:500;" +
       "padding:8px 10px;border-radius:8px;white-space:nowrap;}" +
-    ".sw-dd__panel a:hover{background:#FBF5F1;color:#C2452F;}" +
+    ".sw-dd__panel a:hover,.sw-dd__panel a:focus{background:#FBF5F1;color:#C2452F;outline:none;}" +
     ".sw-dd__all{font-weight:700;}" +
     ".sw-dd__group{margin-top:4px;padding-top:6px;border-top:1px solid #F0F0F2;}" +
     ".sw-dd__label{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;" +
@@ -127,21 +129,50 @@
     document.body.insertBefore(nav, document.body.firstChild);
   }
 
-  /* --- Dropdown open/close behavior (tap, click, keyboard) --- */
-  var dd    = nav.querySelector(".sw-dd");
-  var btn   = nav.querySelector(".sw-dd__btn");
+  /* --- Open / close: hover on a mouse, focus for keyboard, tap on touch --- */
+  var dd  = nav.querySelector(".sw-dd");
+  var btn = nav.querySelector(".sw-dd__btn");
+  var closeTimer;
+
   function setOpen(open){
+    clearTimeout(closeTimer);
     dd.classList.toggle("open", open);
     btn.setAttribute("aria-expanded", open ? "true" : "false");
   }
-  btn.addEventListener("click", function (e) {
-    e.preventDefault();
-    setOpen(!dd.classList.contains("open"));
+  function scheduleClose(){
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(function(){ setOpen(false); }, 150);
+  }
+
+  var canHover = window.matchMedia &&
+    window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+
+  /* Keyboard works on every device: focus opens it, leaving it closes it. */
+  dd.addEventListener("focusin", function(){ setOpen(true); });
+  dd.addEventListener("focusout", function(e){
+    if (!dd.contains(e.relatedTarget)) scheduleClose();
   });
-  document.addEventListener("click", function (e) {
+
+  if (canHover) {
+    /* Mouse: hover reveals the menu. The brief close delay plus the
+       invisible bridge let the pointer travel to the panel without flicker. */
+    dd.addEventListener("mouseenter", function(){ setOpen(true); });
+    dd.addEventListener("mouseleave", scheduleClose);
+    /* On a mouse, clicking "Tools" jumps to the full hub; hovering shows the menu. */
+    btn.addEventListener("click", function(){ window.location.href = LINKS.tools; });
+  } else {
+    /* Touch: tap toggles the menu open and closed. */
+    btn.addEventListener("click", function(e){
+      e.preventDefault();
+      setOpen(!dd.classList.contains("open"));
+    });
+  }
+
+  /* Close on outside tap/click or Escape. */
+  document.addEventListener("click", function(e){
     if (!dd.contains(e.target)) setOpen(false);
   });
-  document.addEventListener("keydown", function (e) {
+  document.addEventListener("keydown", function(e){
     if (e.key === "Escape") setOpen(false);
   });
 })();
