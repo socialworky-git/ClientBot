@@ -29,18 +29,10 @@
   .hero .trust{margin-top:20px;font-size:14px;color:#9A8C84;display:flex;align-items:center;gap:10px;}
   .hero .trust b{color:#6E625C;font-weight:600;}
   .hero .art{display:flex;align-items:center;justify-content:center;min-height:300px;}
-  .hero .stage{position:relative;width:300px;height:300px;perspective:1000px;}
-  .hero .float{position:absolute;inset:0;animation:bob 6s ease-in-out infinite;}
-  .hero .tilt{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(-20deg) rotateZ(-6deg) scale(.8);}
-  .hero .knot{position:absolute;inset:0;transform-style:preserve-3d;animation:spin 18s linear infinite;}
-  .hero .dot{position:absolute;top:50%;left:50%;border-radius:50%;will-change:transform;}
-  .hero .halo{position:absolute;top:50%;left:50%;width:220px;height:220px;transform:translate(-50%,-50%);
-    border-radius:50%;background:radial-gradient(circle,rgba(255,160,120,.35) 0%,rgba(255,160,120,0) 65%);filter:blur(6px);}
-  .hero .shadow{position:absolute;left:50%;bottom:30px;width:190px;height:32px;transform:translateX(-50%);
-    border-radius:50%;background:radial-gradient(ellipse,rgba(150,70,40,.22) 0%,rgba(150,70,40,0) 70%);animation:shpulse 6s ease-in-out infinite;}
-  @keyframes spin{from{transform:rotateY(0)}to{transform:rotateY(360deg)}}
-  @keyframes bob{0%,100%{transform:translateY(-10px)}50%{transform:translateY(10px)}}
-  @keyframes shpulse{0%,100%{transform:translateX(-50%) scale(.92);opacity:.7}50%{transform:translateX(-50%) scale(1.05);opacity:1}}
+  .hero .stage{position:relative;width:300px;height:320px;}
+  .hero .glow{position:absolute;top:50%;left:50%;width:240px;height:240px;transform:translate(-50%,-50%);
+    border-radius:50%;background:radial-gradient(circle,rgba(255,160,120,.32) 0%,rgba(255,160,120,0) 68%);filter:blur(8px);pointer-events:none;}
+  .hero canvas{position:absolute;inset:0;width:100%;height:100%;}
 
   .section-title{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);
     margin:30px 0 0;padding-bottom:6px;border-bottom:1px solid var(--line);}
@@ -60,7 +52,7 @@
     .wrap{padding:16px;}
     .hero{grid-template-columns:1fr;padding:28px 24px;}
     .hero .art{order:-1;min-height:240px;}
-    .hero .stage{width:240px;height:240px;}
+    .hero .stage{width:240px;height:260px;}
     .grid{grid-template-columns:1fr;}
   }
 </style>
@@ -74,17 +66,12 @@
     <div class="copy">
       <h1>Rehearse the hard conversations <span class="accent">before they're real.</span></h1>
       <p class="sub">Practice motivational interviewing, suicide-risk screening, and substance-use assessments through realistic, judgment-free simulations. Everything runs in your browser, nothing to install, nothing saved.</p>
-      <div class="trust"><b>Built by clinicians</b> · for clinicians (and students)</div>
+      <div class="trust"><b>Built by clinicians, for clinicians</b></div>
     </div>
     <div class="art">
       <div class="stage">
-        <div class="shadow"></div>
-        <div class="float">
-          <div class="tilt">
-            <div class="halo"></div>
-            <div class="knot" id="knot"></div>
-          </div>
-        </div>
+        <div class="glow"></div>
+        <canvas id="chevrons"></canvas>
       </div>
     </div>
   </div>
@@ -173,26 +160,182 @@
 
 <script>
 (function(){
-  var N=220,R=120,r=52,p=2,q=3,size=16;
-  var stops=[[255,157,92],[255,111,97],[249,78,132]];
-  function lerp(a,b,t){return Math.round(a+(b-a)*t);}
-  function color(f){
-    var x=f*stops.length,i=Math.floor(x)%stops.length,j=(i+1)%stops.length,t=x-Math.floor(x);
-    return 'rgb('+lerp(stops[i][0],stops[j][0],t)+','+lerp(stops[i][1],stops[j][1],t)+','+lerp(stops[i][2],stops[j][2],t)+')';
+  var canvas = document.getElementById('chevrons');
+  var ctx = canvas.getContext('2d');
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  // Config (ported from the Claude Design "Hero Chevrons" piece)
+  var PERIOD = 13;          // seconds per full gather/hold/disperse cycle
+  var DENSITY = 'Balanced'; // 'Sparse' | 'Balanced' | 'Dense'
+  var COOL_ACCENT = true;   // sprinkle a few teal chevrons
+
+  var ACCENT = '#2FB7C3';
+  var R = 110;
+  var COL = ['#F5A95E', '#EF7E6B', '#EC5A57'];
+  var hexA = function(hex, a){ var n = parseInt(hex.slice(1), 16); return 'rgba(' + ((n>>16)&255) + ',' + ((n>>8)&255) + ',' + (n&255) + ',' + a + ')'; };
+  var lerp = function(a, b, t){ return a + (b - a) * t; };
+  var clamp = function(x, a, b){ return Math.max(a, Math.min(b, x)); };
+  var eOut = function(t){ return 1 - Math.pow(1 - t, 3); };
+  var eIn  = function(t){ return t * t * t; };
+
+  var W = 0, H = 0, parts = [], box = null, nc = 0, nr = 0;
+  var pointer = { x: 0, y: 0, active: false };
+
+  function computeBox(){
+    var bh = H * 0.86;
+    var bw = bh * 0.60;
+    box = { x: W * 0.5 - bw / 2, y: H * 0.5 - bh / 2, w: bw, h: bh };
   }
-  var knot=document.getElementById('knot');
-  for(var k=0;k<N;k++){
-    var t=k/N*Math.PI*2;
-    var ringR=R+r*Math.cos(q*t);
-    var x=ringR*Math.cos(p*t);
-    var y=ringR*Math.sin(p*t);
-    var z=r*Math.sin(q*t)*1.6;
-    var c=color(k/N);
-    var d=document.createElement('span');
-    d.className='dot';
-    d.style.cssText='width:'+size+'px;height:'+size+'px;transform:translate(-50%,-50%) translate3d('+x.toFixed(1)+'px,'+y.toFixed(1)+'px,'+z.toFixed(1)+'px);background:radial-gradient(circle at 34% 30%,rgba(255,255,255,.85),'+c+' 62%);box-shadow:0 3px 7px rgba(170,70,40,.28);';
-    knot.appendChild(d);
+
+  function layout(){
+    computeBox();
+    var pitch = Math.min(box.w / nc, box.h / nr);
+    var gridW = pitch * nc, gridH = pitch * nr;
+    var ox = box.x + (box.w - gridW) / 2;
+    var oy = box.y + (box.h - gridH) / 2;
+    var cs = pitch * 0.44;
+    var D = H * 0.46;
+    var UP = H * 0.86;
+    for (var i = 0; i < parts.length; i++){
+      var p = parts[i];
+      if (p.type === 'fly'){
+        p.x = lerp(W * 0.06, W * 0.95, p.r1);
+        p.baseY = H + 24 + p.r2 * H * 0.5;
+        p.sp = lerp(14, 36, p.r3);
+        p.size = cs * p.szf;
+        continue;
+      }
+      p.sx = ox + (p.gi + 0.5) * pitch;
+      p.sy = oy + (p.gj + 0.5) * pitch;
+      p.byy = p.sy + D;
+      p.uy = p.sy - UP;
+      p.size = cs * p.szf;
+    }
   }
+
+  function seed(){
+    var cfgMap = {
+      Sparse:   { headRows: 5, shaftW: 3, shaftRows: 6 },
+      Balanced: { headRows: 6, shaftW: 3, shaftRows: 8 },
+      Dense:    { headRows: 7, shaftW: 5, shaftRows: 9 }
+    };
+    var C = cfgMap[DENSITY] || cfgMap.Balanced;
+    nc = 2 * C.headRows - 1;
+    nr = C.headRows + C.shaftRows;
+    var center = C.headRows - 1;
+    var halfShaft = Math.floor(C.shaftW / 2);
+    var cells = [], r, gi, s, gj;
+    for (r = 0; r < C.headRows; r++){
+      for (gi = center - r; gi <= center + r; gi++) cells.push({ gi: gi, gj: r });
+    }
+    for (s = 0; s < C.shaftRows; s++){
+      gj = C.headRows + s;
+      for (gi = center - halfShaft; gi <= center + halfShaft; gi++) cells.push({ gi: gi, gj: gj });
+    }
+    parts = [];
+    for (var i = 0; i < cells.length; i++){
+      var c = cells[i];
+      var v = (c.gj + 0.5) / nr;
+      parts.push({
+        type: 'join', gi: c.gi, gj: c.gj, vNorm: v,
+        isAccent: Math.random() < 0.08,
+        baseCol: v < 0.40 ? COL[0] : (v < 0.74 ? COL[1] : COL[2]),
+        szf: 0.86 + Math.random() * 0.2,
+        shim: Math.random() * 6.28,
+        shimAmp: 0.5 + Math.random() * 0.8
+      });
+    }
+    var flyN = Math.round(cells.length * 0.16);
+    for (var k = 0; k < flyN; k++){
+      parts.push({
+        type: 'fly', baseCol: COL[k % 3], isAccent: Math.random() < 0.05,
+        r1: Math.random(), r2: Math.random(), r3: Math.random(),
+        szf: 0.5 + Math.random() * 0.4
+      });
+    }
+    layout();
+  }
+
+  function chevron(x, y, sz, col, a, weight){
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.strokeStyle = hexA(col, a);
+    ctx.lineWidth = weight; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(-sz, sz * 0.5); ctx.lineTo(0, -sz * 0.5); ctx.lineTo(sz, sz * 0.5);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  var SG = 0.10, GD = 0.34, HOLD_END = 0.54, SD = 0.10, DD = 0.30;
+
+  function tick(now){
+    if (W && H){
+      ctx.clearRect(0, 0, W, H);
+      var period = Math.max(4, PERIOD);
+      var t = now / 1000;
+      var ph0 = (t / period) % 1;
+      for (var i = 0; i < parts.length; i++){
+        var p = parts[i];
+        var x, y, a, sc = 1;
+        if (p.type === 'fly'){
+          var drift = (t * p.sp) % (H + 220);
+          x = p.x; y = p.baseY - drift;
+          var prog = (H - y) / H;
+          a = clamp(prog / 0.16, 0, 1) * clamp((1 - prog) / 0.20, 0, 1) * 0.32;
+        } else {
+          var o = p.vNorm;
+          var gStart = o * SG, gEnd = gStart + GD;
+          var dStart = HOLD_END + o * SD, dEnd = dStart + DD;
+          x = p.sx;
+          if (ph0 < gStart){ a = 0; y = p.byy; }
+          else if (ph0 < gEnd){
+            var k = eOut((ph0 - gStart) / GD);
+            y = p.byy + (p.sy - p.byy) * k;
+            a = clamp(k * 1.5, 0, 1) * 0.94;
+            sc = 0.84 + 0.16 * k;
+          } else if (ph0 < dStart){
+            y = p.sy + Math.sin(t * 1.5 + p.shim) * p.shimAmp;
+            a = 0.94;
+          } else if (ph0 < dEnd){
+            var k2 = eIn((ph0 - dStart) / DD);
+            y = p.sy + (p.uy - p.sy) * k2;
+            a = 0.94 * (1 - k2);
+            sc = 1 - 0.18 * k2;
+          } else { a = 0; y = p.uy; }
+        }
+        if (a <= 0.01) continue;
+        if (pointer.active){
+          var bo = Math.max(0, 1 - Math.hypot(x - pointer.x, y - pointer.y) / R);
+          sc += bo * 0.16;
+          a = Math.min(1, a + bo * 0.25);
+        }
+        var col = (p.isAccent && COOL_ACCENT) ? ACCENT : p.baseCol;
+        chevron(x, y, p.size * sc, col, a, Math.max(1.4, p.size * 0.34 * sc));
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  function resize(){
+    var r = canvas.getBoundingClientRect();
+    W = r.width; H = r.height;
+    if (!W || !H) return;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (!parts.length) seed(); else layout();
+  }
+
+  canvas.addEventListener('pointermove', function(e){
+    var r = canvas.getBoundingClientRect();
+    pointer.x = e.clientX - r.left; pointer.y = e.clientY - r.top; pointer.active = true;
+  });
+  canvas.addEventListener('pointerleave', function(){ pointer.active = false; });
+
+  if (window.ResizeObserver) new ResizeObserver(resize).observe(canvas);
+  resize();
+  requestAnimationFrame(tick);
 })();
 </script>
 </body>
