@@ -1,19 +1,40 @@
 (function () {
   /* =========================================================
      EDIT YOUR HEADER IN ONE PLACE
-     Change the text or the three links here and it updates
-     across the whole site. Nothing else needs editing.
+     Brand text and the two non-tool links live here.
      ========================================================= */
   var BRAND_DARK   = "Social";   // dark part of the wordmark
   var BRAND_ACCENT = "worky";    // coral part of the wordmark
   var LINKS = {
-    home:      "/",            // brand (top left) goes here
+    home:      "/",            // brand (top left)
     workshops: "/#workshops",  // Workshops link
-    tools:     "/tools/"       // Tools link  (set to your real tools path)
+    tools:     "/tools/"       // "All Tools" hub (set to your real tools path)
   };
 
-  /* Capture the script tag now, while it is the current script,
-     so we can drop the header exactly where you placed it. */
+  /* =========================================================
+     ADD NEW TOOLS HERE  ->  the dropdown builds itself.
+     Drop a new line under the right category and it appears
+     in the menu automatically. Empty categories are hidden.
+     ========================================================= */
+  var TOOLS = [
+    { category: "MI Tools", items: [
+      { name: "ClientBot",                    href: "/clientbot/" },
+      { name: "Reflection Batting Practice",  href: "/batting-practice/" },
+      { name: "Mining for Affirmations",      href: "/affirmations/" },
+      { name: "Intentional Reflections",      href: "/intentional-reflections/" },
+      { name: "Balancing the Scale",          href: "/balancing-the-scale/" }
+    ]},
+    { category: "SRA Tools", items: [
+      { name: "Empathy as a Pathway to Screening", href: "/empathy-screening/" },
+      { name: "Treatment Planning Practice",       href: "/treatment-planning/" }
+    ]},
+    { category: "Other Tools", items: [
+      { name: "Practicing ASSIST",       href: "/practicing-assist/" },
+      { name: "Delusions vs. Obsessions", href: "/delusions-obsessions/" }
+    ]}
+  ];
+
+  /* Capture the script tag now so the header drops where you placed it. */
   var here = document.currentScript;
 
   /* --- Ship the font with the header so it never depends on the page --- */
@@ -35,7 +56,7 @@
     ".sw-nav,.sw-nav *{box-sizing:border-box;}" +
     ".sw-nav{font-family:'Hanken Grotesk',Arial,Helvetica,system-ui,sans-serif;" +
       "display:flex;align-items:center;justify-content:space-between;gap:16px;" +
-      "padding:14px 0;margin:0 0 8px;}" +
+      "padding:14px 0;margin:0 0 8px;position:relative;}" +
     ".sw-nav__brand{font-size:20px;font-weight:800;letter-spacing:-.02em;" +
       "color:#1A1A1A;text-decoration:none;line-height:1;}" +
     ".sw-nav__brand-accent{color:#EB786B;}" +
@@ -43,11 +64,47 @@
     ".sw-nav__links{display:flex;align-items:center;gap:22px;}" +
     ".sw-nav__links a{font-size:15px;font-weight:600;color:#5B5B5B;text-decoration:none;}" +
     ".sw-nav__links a:hover{color:#C2452F;}" +
-    "@media (max-width:640px){.sw-nav{padding:12px 0;}.sw-nav__links{gap:16px;}}";
+    /* dropdown */
+    ".sw-dd{position:relative;}" +
+    ".sw-dd__btn{font-family:inherit;font-size:15px;font-weight:600;color:#5B5B5B;background:none;" +
+      "border:0;padding:0;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}" +
+    ".sw-dd__btn:hover{color:#C2452F;}" +
+    ".sw-dd__caret{font-size:10px;transition:transform .15s;}" +
+    ".sw-dd.open .sw-dd__caret{transform:rotate(180deg);}" +
+    ".sw-dd__panel{position:absolute;top:calc(100% + 10px);right:0;min-width:248px;max-height:72vh;overflow:auto;" +
+      "background:#fff;border:1px solid #E4E4E7;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);" +
+      "padding:8px;display:none;z-index:1000;}" +
+    ".sw-dd.open .sw-dd__panel{display:block;}" +
+    ".sw-dd__panel a{display:block;text-decoration:none;color:#1A1A1A;font-size:14px;font-weight:500;" +
+      "padding:8px 10px;border-radius:8px;white-space:nowrap;}" +
+    ".sw-dd__panel a:hover{background:#FBF5F1;color:#C2452F;}" +
+    ".sw-dd__all{font-weight:700;}" +
+    ".sw-dd__group{margin-top:4px;padding-top:6px;border-top:1px solid #F0F0F2;}" +
+    ".sw-dd__label{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;" +
+      "color:#C2452F;padding:6px 10px 2px;}" +
+    "@media (max-width:640px){.sw-nav{padding:12px 0;}.sw-nav__links{gap:16px;}.sw-dd__panel{min-width:210px;}}";
 
   var style = document.createElement("style");
   style.textContent = css;
   document.head.appendChild(style);
+
+  /* --- Build the Tools dropdown contents from the TOOLS list --- */
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+
+  function buildMenu(){
+    var html = '<a class="sw-dd__all" href="' + esc(LINKS.tools) + '">All Tools</a>';
+    for (var i = 0; i < TOOLS.length; i++) {
+      var cat = TOOLS[i];
+      if (!cat.items || !cat.items.length) continue;        // skip empty categories
+      html += '<div class="sw-dd__group"><div class="sw-dd__label">' + esc(cat.category) + '</div>';
+      for (var j = 0; j < cat.items.length; j++) {
+        html += '<a href="' + esc(cat.items[j].href) + '">' + esc(cat.items[j].name) + '</a>';
+      }
+      html += '</div>';
+    }
+    return html;
+  }
 
   /* --- The header markup --- */
   var nav = document.createElement("nav");
@@ -57,12 +114,34 @@
       BRAND_DARK + '<span class="sw-nav__brand-accent">' + BRAND_ACCENT + "</span></a>" +
     '<div class="sw-nav__links">' +
       '<a href="' + LINKS.workshops + '">Workshops</a>' +
-      '<a href="' + LINKS.tools + '">Tools</a>' +
-    "</div>";
+      '<div class="sw-dd">' +
+        '<button class="sw-dd__btn" type="button" aria-haspopup="true" aria-expanded="false">' +
+          'Tools <span class="sw-dd__caret" aria-hidden="true">&#9662;</span></button>' +
+        '<div class="sw-dd__panel" role="menu">' + buildMenu() + '</div>' +
+      '</div>' +
+    '</div>';
 
   if (here && here.parentNode) {
     here.parentNode.insertBefore(nav, here);
   } else {
     document.body.insertBefore(nav, document.body.firstChild);
   }
+
+  /* --- Dropdown open/close behavior (tap, click, keyboard) --- */
+  var dd    = nav.querySelector(".sw-dd");
+  var btn   = nav.querySelector(".sw-dd__btn");
+  function setOpen(open){
+    dd.classList.toggle("open", open);
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+  btn.addEventListener("click", function (e) {
+    e.preventDefault();
+    setOpen(!dd.classList.contains("open"));
+  });
+  document.addEventListener("click", function (e) {
+    if (!dd.contains(e.target)) setOpen(false);
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") setOpen(false);
+  });
 })();
