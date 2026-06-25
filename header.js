@@ -4,7 +4,8 @@
      Change the text or the three links here and it updates
      across the whole site. Nothing else needs editing.
      ========================================================= */
-  var BRAND = "Socialworky";
+  var BRAND_DARK   = "Social";   // dark part of the wordmark
+  var BRAND_ACCENT = "worky";    // coral part of the wordmark
   var LINKS = {
     home:      "/",            // brand (top left) goes here
     workshops: "/#workshops",  // Workshops link
@@ -37,7 +38,8 @@
       "padding:14px 0;margin:0 0 8px;}" +
     ".sw-nav__brand{font-size:20px;font-weight:800;letter-spacing:-.02em;" +
       "color:#1A1A1A;text-decoration:none;line-height:1;}" +
-    ".sw-nav__brand:hover{color:#C2452F;}" +
+    ".sw-nav__brand-accent{color:#EB786B;}" +
+    ".sw-nav__brand:hover{opacity:.85;}" +
     ".sw-nav__links{display:flex;align-items:center;gap:22px;}" +
     ".sw-nav__links a{font-size:15px;font-weight:600;color:#5B5B5B;text-decoration:none;}" +
     ".sw-nav__links a:hover{color:#C2452F;}" +
@@ -51,7 +53,8 @@
   var nav = document.createElement("nav");
   nav.className = "sw-nav";
   nav.innerHTML =
-    '<a class="sw-nav__brand" href="' + LINKS.home + '">' + BRAND + "</a>" +
+    '<a class="sw-nav__brand" href="' + LINKS.home + '">' +
+      BRAND_DARK + '<span class="sw-nav__brand-accent">' + BRAND_ACCENT + "</span></a>" +
     '<div class="sw-nav__links">' +
       '<a href="' + LINKS.workshops + '">Workshops</a>' +
       '<a href="' + LINKS.tools + '">Tools</a>' +
