@@ -1,26 +1,65 @@
-(function(){
-  var isHome = location.pathname === '/' || location.pathname === '/index.html';
-  var workshopsHref = isHome ? '#workshops' : '/';
-  var html =
-    '<header class="sw-header">' +
-      '<a href="/" class="brand">Social<span class="acc">worky</span></a>' +
-      '<nav>' +
-        '<a class="nav-link" href="' + workshopsHref + '">Workshops</a>' +
-        '<a class="nav-link" href="/tools/">Tools</a>' +
-      '</nav>' +
-    '</header>';
+(function () {
+  /* =========================================================
+     EDIT YOUR HEADER IN ONE PLACE
+     Change the text or the three links here and it updates
+     across the whole site. Nothing else needs editing.
+     ========================================================= */
+  var BRAND = "Socialworky";
+  var LINKS = {
+    home:      "/",            // brand (top left) goes here
+    workshops: "/#workshops",  // Workshops link
+    tools:     "/tools/"       // Tools link  (set to your real tools path)
+  };
+
+  /* Capture the script tag now, while it is the current script,
+     so we can drop the header exactly where you placed it. */
+  var here = document.currentScript;
+
+  /* --- Ship the font with the header so it never depends on the page --- */
+  if (!document.getElementById("sw-font-hanken")) {
+    var pc1 = document.createElement("link");
+    pc1.rel = "preconnect"; pc1.href = "https://fonts.googleapis.com";
+    var pc2 = document.createElement("link");
+    pc2.rel = "preconnect"; pc2.href = "https://fonts.gstatic.com"; pc2.crossOrigin = "";
+    var font = document.createElement("link");
+    font.id = "sw-font-hanken"; font.rel = "stylesheet";
+    font.href = "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap";
+    document.head.appendChild(pc1);
+    document.head.appendChild(pc2);
+    document.head.appendChild(font);
+  }
+
+  /* --- The header owns its own styles, scoped to .sw-nav --- */
   var css =
-    '.sw-header{display:flex;justify-content:space-between;align-items:center;padding-bottom:20px;margin-bottom:28px;border-bottom:1px solid var(--line,#E4E4E7);flex-wrap:wrap;gap:18px;}' +
-    '.sw-header .brand{font-weight:700;font-size:24px;letter-spacing:-0.3px;text-decoration:none;color:var(--ink,#1A1A1A);}' +
-    '.sw-header .brand .acc{color:var(--accent,#EB786B);}' +
-    '.sw-header nav{display:flex;gap:20px;align-items:center;flex-wrap:wrap;}' +
-    '.sw-header .nav-link{font-size:12.5px;font-weight:700;color:var(--muted,#5B5B5B);text-transform:uppercase;letter-spacing:1px;text-decoration:none;transition:color .15s;}' +
-    '.sw-header .nav-link:hover{color:var(--accentDeep,#C2452F);}';
-  var style = document.createElement('style');
+    ".sw-nav,.sw-nav *{box-sizing:border-box;}" +
+    ".sw-nav{font-family:'Hanken Grotesk',Arial,Helvetica,system-ui,sans-serif;" +
+      "display:flex;align-items:center;justify-content:space-between;gap:16px;" +
+      "padding:14px 0;margin:0 0 8px;}" +
+    ".sw-nav__brand{font-size:20px;font-weight:800;letter-spacing:-.02em;" +
+      "color:#1A1A1A;text-decoration:none;line-height:1;}" +
+    ".sw-nav__brand:hover{color:#C2452F;}" +
+    ".sw-nav__links{display:flex;align-items:center;gap:22px;}" +
+    ".sw-nav__links a{font-size:15px;font-weight:600;color:#5B5B5B;text-decoration:none;}" +
+    ".sw-nav__links a:hover{color:#C2452F;}" +
+    "@media (max-width:640px){.sw-nav{padding:12px 0;}.sw-nav__links{gap:16px;}}";
+
+  var style = document.createElement("style");
   style.textContent = css;
   document.head.appendChild(style);
-  var target = document.querySelector('.wrap') || document.querySelector('.page') || document.querySelector('.top-bar');
-  if (target) {
-    target.insertAdjacentHTML('afterbegin', html);
+
+  /* --- The header markup --- */
+  var nav = document.createElement("nav");
+  nav.className = "sw-nav";
+  nav.innerHTML =
+    '<a class="sw-nav__brand" href="' + LINKS.home + '">' + BRAND + "</a>" +
+    '<div class="sw-nav__links">' +
+      '<a href="' + LINKS.workshops + '">Workshops</a>' +
+      '<a href="' + LINKS.tools + '">Tools</a>' +
+    "</div>";
+
+  if (here && here.parentNode) {
+    here.parentNode.insertBefore(nav, here);
+  } else {
+    document.body.insertBefore(nav, document.body.firstChild);
   }
 })();
