@@ -23,18 +23,26 @@
   .btn-primary{ background:var(--accent); color:#fff; border-color:var(--accent); }
   .btn-primary:hover{ background:var(--accentDeep); border-color:var(--accentDeep); }
 
-  /* Hero (mirrors the Tools page) */
+  /* Hero */
   .hero{ background:radial-gradient(120% 120% at 85% 10%,#FFF1E9 0%,#FBF5F1 45%,#FBF6F2 100%);
-    border-radius:20px; display:grid; grid-template-columns:1.05fr 1fr; align-items:center; gap:32px;
+    border-radius:20px; display:grid; grid-template-columns:1.3fr 1fr; align-items:center; gap:28px;
     padding:36px 40px; margin-top:16px; }
   .hero .copy{ max-width:540px; }
-  .hero h1{ font-size:clamp(26px,3.4vw,40px); line-height:1.1; letter-spacing:-.02em; font-weight:800; margin:0; }
-  .hero h1 .accent{ color:#F4623A; }
+  .hero h1{ font-size:clamp(34px,5vw,54px); line-height:1.05; letter-spacing:-.02em; font-weight:800; margin:0; }
+  .hero h1 .accent{ color:#F4623A; display:block; font-size:.52em; margin-top:10px; letter-spacing:-.01em; }
   .hero .sub{ font-size:16px; line-height:1.55; color:#6E625C; margin:16px 0 0; font-weight:400; }
-  .hero .trust{ margin-top:20px; font-size:14px; color:#9A8C84; display:flex; align-items:center; gap:10px; }
-  .hero .trust b{ color:#6E625C; font-weight:600; }
   .hero .art{ display:flex; align-items:center; justify-content:center; min-height:300px; }
-  .hero .art img{ width:100%; max-width:320px; height:auto; display:block; }
+  .hero .art img{ width:100%; max-width:290px; height:auto; display:block; }
+
+  /* Pathway cards (home middle section) */
+  .paths{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:8px; }
+  .path{ background:var(--coral-bg); border:1px solid var(--coral-line); border-radius:14px; padding:24px; display:flex; flex-direction:column; }
+  .path h3{ margin:0 0 8px; font-size:18px; }
+  .path p{ margin:0 0 18px; color:#6E625C; font-size:14.5px; line-height:1.55; flex:1; }
+  .path .btn{ align-self:flex-start; }
+
+  /* Highlight callout */
+  .callout{ background:var(--coral-bg); border:1px solid var(--coral-line); border-radius:12px; padding:16px 20px; margin:0 0 24px; color:#6E625C; font-size:15px; line-height:1.55; }
 
   /* Section heads */
   .section-title{ font-size:12px; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; color:var(--accentDeep); margin:52px 0 18px; padding-bottom:6px; border-bottom:1px solid var(--line); }
@@ -45,6 +53,7 @@
   .offer{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px; }
   .offer h4{ margin:0 0 7px; font-size:16px; }
   .offer p{ margin:0; color:var(--muted); font-size:14px; }
+  .offer .inline-link{ margin-top:10px; }
 
   /* About */
   .bio-container{ display:flex; gap:28px; align-items:flex-start; }
@@ -63,6 +72,7 @@
     .wrap{ padding:16px; }
     .hero{ grid-template-columns:1fr; padding:28px 24px; }
     .hero .art{ order:-1; min-height:240px; }
+    .paths{ grid-template-columns:1fr; }
     .offerings{ grid-template-columns:1fr; }
     .bio-container{ flex-direction:column; }
   }
@@ -77,40 +87,25 @@
   <section class="hero">
     <div class="copy">
       <h1>Motivational Interviewing, <span class="accent">learned by doing.</span></h1>
-      <p class="sub">Interactive workshops and free practice tools for social workers and other helpers who want MI skills that actually stick.</p>
-      <div class="trust"><b>Led by a MINT trainer</b> · workshops &amp; free practice tools</div>
+      <p class="sub">Interactive workshops and practice tools for helping clients change and grow.</p>
     </div>
     <div class="art">
       <img src="/images/logo-animated.svg" alt="Socialworky" width="320" height="320">
     </div>
   </section>
 
-  <!-- Workshops -->
-  <div id="workshops" class="section-title">Training &amp; workshops</div>
-  <p class="lead">I offer customized training and consultation for organizations, built around your setting and the challenges your team is facing.</p>
-  <div class="offerings">
-    <div class="offer">
-      <h4>Custom team workshops</h4>
-      <p>Tailored to your setting and caseload, shaped by the situations your staff meet every day.</p>
+  <!-- Where to begin -->
+  <div class="section-title">Where to begin</div>
+  <div class="paths">
+    <div class="path">
+      <h3>Training &amp; consultation</h3>
+      <p>Custom workshops, consultation, and coaching for teams, on Zoom or in person. See the training philosophy, watch recordings of past sessions, and find what you need to schedule a consultation or book a live training.</p>
+      <a class="btn btn-primary" href="/training">Explore training &rarr;</a>
     </div>
-    <div class="offer">
-      <h4>Interactive and hands-on</h4>
-      <p>Role play, real play, and live practice, so the skills transfer into real sessions.</p>
-    </div>
-    <div class="offer">
-      <h4>Consultation and coaching</h4>
-      <p>Ongoing support that helps MI take root and keep growing in everyday practice.</p>
-    </div>
-  </div>
-  <a class="btn btn-primary" href="https://fantastical.app/kratz9-JnQj/my-template" target="_blank">Book a consultation</a>
-
-  <!-- About -->
-  <div id="about" class="section-title">About Jon</div>
-  <div class="bio-container">
-    <img src="/images/headshot.webp" alt="Jon Kratz" class="bio-pic">
-    <div class="bio-body">
-      <p>As a Licensed Clinical Social Worker and MI trainer, I bring a wealth of experience and a deep commitment to helping professionals strengthen their practice. I am a member of the Motivational Interviewing Network of Trainers (MINT) and focus on training that fosters empathy, respect, and collaboration.</p>
-      <a href="/pdfs/JK_CV.pages.pdf" target="_blank" class="inline-link">View full CV &rarr;</a>
+    <div class="path">
+      <h3>Socialworky Tools</h3>
+      <p>A growing set of browser-based tools for independent practice: client simulations, skill-building games, and guided drills you can work through on your own or with a group.</p>
+      <a class="btn btn-primary" href="/tools">Open the tools &rarr;</a>
     </div>
   </div>
 
@@ -119,6 +114,7 @@
   <div class="story">
     <p>For years I have used the word “socialworky” to describe people who embody the core values of social work: empathy, respect, and partnership. It is a made-up term, but social workers understand it instantly, and it is always a compliment, naming someone’s positive impact and effectiveness as a helper.</p>
     <p>Motivational Interviewing, with its emphasis on partnership, acceptance, empowerment, and compassion, captures the essence of being socialworky. Whether you are in social work or any other helping profession, MI training can help you embody these qualities and be more effective in your practice.</p>
+    <p style="margin-top:4px;color:var(--ink);font-weight:600;">Jon Kratz, LCSW</p>
   </div>
 
   <div class="foot">&copy; 2026 Socialworky. Motivational Interviewing training and resources.</div>
