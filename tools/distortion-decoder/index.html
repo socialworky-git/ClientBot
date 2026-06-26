@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Socialworky | Distortion Decoder</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap');
+  :root{
+    --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
+    --accent:#EB786B; --accentDeep:#C2452F; --coral-bg:#FDEEEB; --coral-line:#F6D4CD;
+    --ok:#2E7D54; --ok-bg:#E9F3EC; --ok-line:#BFE0CB;
+    --no:#B23A2E; --no-bg:#FBEAE8; --no-line:#F1C9C2;
+    --sans:'Hanken Grotesk',Arial,Helvetica,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.55; padding:24px; -webkit-font-smoothing:antialiased; }
+  .wrap{ max-width:720px; margin:0 auto; }
+  a{ color:var(--accentDeep); }
+  .hublink{ display:inline-block; margin-bottom:12px; font-size:13px; color:var(--accent); text-decoration:none; font-weight:600; }
+  .hublink:hover{ text-decoration:underline; }
+
+  /* header (the wordmark matches /header.js but this is the tool title block) */
+  .head{ border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:22px; }
+  .brand{ font-weight:800; font-size:21px; letter-spacing:-.02em; }
+  .brand .b{ color:var(--accent); }
+  .tagline{ color:var(--muted); font-size:13px; margin-top:2px; }
+
+  .btn{ font-family:var(--sans); font-size:15px; font-weight:700; border:1px solid transparent; border-radius:10px; padding:12px 22px; cursor:pointer; transition:background .15s,border-color .15s,transform .05s; }
+  .btn-primary{ background:var(--accent); color:#fff; }
+  .btn-primary:hover{ background:var(--accentDeep); }
+  .btn-primary:active{ transform:translateY(1px); }
+  .btn-ghost{ background:#fff; color:var(--accentDeep); border-color:var(--coral-line); }
+  .btn-ghost:hover{ background:var(--coral-bg); border-color:var(--accent); }
+
+  /* start screen */
+  .intro h1{ font-size:30px; font-weight:800; letter-spacing:-.02em; margin:6px 0 8px; }
+  .intro .lead{ color:var(--muted); font-size:16px; margin:0 0 18px; max-width:60ch; }
+  .how{ background:var(--coral-bg); border:1px solid var(--coral-line); border-radius:14px; padding:16px 18px; margin:0 0 22px; }
+  .how b{ color:var(--accentDeep); }
+  .how p{ margin:0; color:#6E625C; font-size:14.5px; }
+
+  /* loading */
+  .loading{ text-align:center; padding:60px 0; color:var(--muted); }
+  .dots{ display:inline-flex; gap:7px; margin-bottom:14px; }
+  .dots i{ width:9px; height:9px; border-radius:50%; background:var(--accent); display:block; animation:bounce 1s ease-in-out infinite; }
+  .dots i:nth-child(2){ animation-delay:.15s; } .dots i:nth-child(3){ animation-delay:.3s; }
+  @keyframes bounce{ 0%,80%,100%{ transform:translateY(0); opacity:.5; } 40%{ transform:translateY(-7px); opacity:1; } }
+
+  /* play: top bar */
+  .topbar{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .count{ font-size:13px; font-weight:700; color:var(--muted); }
+  .pill{ margin-left:auto; font-size:12.5px; font-weight:700; padding:4px 11px; border-radius:20px; background:var(--surface); border:1px solid var(--line); }
+  .pill.streak{ color:var(--accentDeep); background:var(--coral-bg); border-color:var(--coral-line); opacity:0; transition:opacity .2s; }
+  .pill.streak.on{ opacity:1; }
+  .progress{ height:7px; border-radius:20px; background:var(--line); overflow:hidden; margin-bottom:20px; }
+  .progress i{ display:block; height:100%; background:var(--accent); border-radius:20px; transition:width .35s ease; }
+
+  /* play: question card */
+  .qcard{ background:var(--coral-bg); border:1px solid var(--coral-line); border-radius:16px; padding:26px 24px; margin-bottom:18px; animation:cardin .3s ease both; }
+  .qcard .eyebrow{ font-size:11px; letter-spacing:1.4px; text-transform:uppercase; font-weight:700; color:var(--accentDeep); margin-bottom:10px; }
+  .qcard .said{ font-size:21px; line-height:1.4; font-weight:600; font-style:italic; color:var(--ink); }
+  @keyframes cardin{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+
+  /* play: options */
+  .opts{ display:grid; gap:10px; }
+  .opt{ font-family:var(--sans); text-align:left; font-size:15.5px; font-weight:600; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px 16px; cursor:pointer; transition:border-color .12s,background .12s,box-shadow .12s; }
+  .opt:hover:not(:disabled){ border-color:var(--accent); box-shadow:0 1px 8px rgba(0,0,0,.05); }
+  .opt:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .opt:disabled{ cursor:default; }
+  .opt.correct{ background:var(--ok-bg); border-color:var(--ok-line); color:var(--ok); }
+  .opt.wrong{ background:var(--no-bg); border-color:var(--no-line); color:var(--no); }
+  .opt.dim{ opacity:.5; }
+  .opt .mark{ float:right; font-weight:800; }
+
+  /* play: feedback */
+  .fb{ border-radius:14px; padding:16px 18px; margin-top:16px; font-size:14.5px; animation:cardin .25s ease both; }
+  .fb.good{ background:var(--ok-bg); border:1px solid var(--ok-line); }
+  .fb.bad{ background:var(--no-bg); border:1px solid var(--no-line); }
+  .fb .verdict{ font-weight:800; font-size:15px; margin-bottom:6px; }
+  .fb.good .verdict{ color:var(--ok); } .fb.bad .verdict{ color:var(--no); }
+  .fb p{ margin:0 0 8px; color:#3a3a3a; } .fb p:last-of-type{ margin-bottom:0; }
+  .fb .lab{ font-weight:700; color:var(--ink); }
+  .fb .next{ margin-top:14px; }
+  .fb .ex{ color:var(--muted); font-style:italic; }
+
+  /* results */
+  .verdict-big{ text-align:center; padding:14px 0 6px; }
+  .verdict-big .score{ font-size:54px; font-weight:800; letter-spacing:-.02em; line-height:1; }
+  .verdict-big .pct{ color:var(--muted); font-size:15px; margin-top:6px; }
+  .verdict-big .tier{ display:inline-block; margin-top:14px; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accentDeep); background:var(--coral-bg); border:1px solid var(--coral-line); padding:6px 14px; border-radius:20px; }
+  .blurb{ text-align:center; color:var(--muted); font-size:15px; margin:14px auto 24px; max-width:54ch; }
+  .seclabel{ font-size:11px; letter-spacing:1px; text-transform:uppercase; font-weight:700; color:var(--ink); border-bottom:1px solid var(--line); padding-bottom:6px; margin:26px 0 12px; }
+  .focus{ background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:10px; padding:12px 16px; margin-bottom:10px; font-size:14.5px; }
+  .focus b{ color:var(--ink); }
+  .review .r{ display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--line); font-size:14px; }
+  .review .r:last-child{ border-bottom:0; }
+  .review .ic{ flex-shrink:0; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; margin-top:2px; }
+  .review .ic.y{ background:var(--ok); } .review .ic.n{ background:var(--no); }
+  .review .said{ font-style:italic; color:var(--ink); }
+  .review .lab{ color:var(--muted); font-size:13px; margin-top:2px; }
+  .review .lab b{ color:var(--accentDeep); }
+  .center{ text-align:center; margin-top:26px; }
+  .err{ color:var(--no); background:var(--no-bg); border:1px solid var(--no-line); border-radius:10px; padding:12px 14px; font-size:14px; margin-top:14px; }
+
+  @media (max-width:560px){
+    body{ padding:16px; }
+    .qcard .said{ font-size:19px; }
+    .verdict-big .score{ font-size:44px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .qcard,.fb{ animation:none; }
+    .dots i{ animation:none; opacity:.7; }
+    .progress i{ transition:none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="hublink" href="/tools/">&larr; All Socialworky Tools</a>
+  <script src="/header.js"></script>
+  <div id="app"></div>
+</div>
+
+<script>
+/* ---- backend plumbing: identical pattern to your other tools ---- */
+const GEN_MODEL = "gpt-4.1"; // sharper model for accurate labeling; "gpt-4.1-mini" is cheaper
+
+async function callChat(system, msgs, model, maxTokens){
+  const headers = {"content-type":"application/json"};
+  const code = localStorage.getItem("clientbot_access_code");
+  if(code) headers["x-access-code"] = code;
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), 60000);
+  let res;
+  try{
+    res = await fetch("/api/chat", {method:"POST", headers, signal:ctrl.signal,
+      body: JSON.stringify({system, messages:msgs, model, max_tokens:maxTokens})});
+  }catch(e){ clearTimeout(timer); throw new Error(e.name==="AbortError" ? "the request timed out" : ("network error - "+e.message)); }
+  clearTimeout(timer);
+  if(res.status === 401){
+    const entered = prompt("Enter the access code for this tool:");
+    if(entered){ localStorage.setItem("clientbot_access_code", entered); return callChat(system, msgs, model, maxTokens); }
+    throw new Error("Access code required.");
+  }
+  let data;
+  try{ data = await res.json(); }
+  catch(e){ throw new Error("the server did not return readable data (status "+res.status+"). The /api function may not be deployed."); }
+  if(!res.ok) throw new Error((data && data.error) || ("status "+res.status));
+  return (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+}
+function extractJSON(text){
+  let t = text.replace(/```json/gi,"").replace(/```/g,"").trim();
+  const s = t.indexOf("{"), e = t.lastIndexOf("}");
+  if(s!==-1 && e!==-1) t = t.slice(s, e+1);
+  return JSON.parse(t);
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---- the distortion glossary (used for "why your pick was off" feedback) ---- */
+const LABELS = [
+  "All-or-Nothing Thinking","Disqualifying the Positive","Mind Reading","Jumping to Conclusions",
+  "Catastrophizing","Minimization","Emotional Reasoning","Should Statements",
+  "Labeling and Mislabeling","Personalization","Not a Distortion"
+];
+const GLOSSARY = {
+  "All-or-Nothing Thinking": { def:"seeing only the extremes, perfect or total failure, with no middle ground", ex:"If I'm not the best parent on the block, I'm a terrible one." },
+  "Disqualifying the Positive": { def:"noticing something good and then waving it away so it doesn't count", ex:"Sure they thanked me, but they were just being polite." },
+  "Mind Reading": { def:"assuming you know what someone is thinking right now, usually something negative", ex:"She didn't text back, so she's obviously annoyed with me." },
+  "Jumping to Conclusions": { def:"treating a guess or prediction as settled fact on little or no evidence", ex:"There's no point applying. I already know I won't get it." },
+  "Catastrophizing": { def:"blowing the size or likelihood of something straight up to the worst case", ex:"If I stumble in this talk, my whole career is over." },
+  "Minimization": { def:"shrinking something down so it barely counts, often to let yourself off the hook", ex:"It's just one drink. Everybody does it. It's no big deal." },
+  "Emotional Reasoning": { def:"taking a feeling as proof: I feel it, so it must be true", ex:"I feel like a fraud, so I must actually be one." },
+  "Should Statements": { def:"holding yourself or others to rigid shoulds, oughts, and musts", ex:"I should be over this by now." },
+  "Labeling and Mislabeling": { def:"pinning a sweeping, loaded label on a whole person from one moment", ex:"I forgot the deadline. I'm such an idiot." },
+  "Personalization": { def:"taking the blame for something that wasn't really yours to own", ex:"The team missed the goal, and it's all my fault." },
+  "Not a Distortion": { def:"a thought that is painful or heavy but logically sound, with no thinking trap underneath", ex:"I lost my job last week and I've been really down about it." }
+};
+
+/* ---- ask the backend for a fresh round ---- */
+const DECK_SYSTEM = `You are the content engine for "Distortion Decoder," a cognitive distortion practice game for clinicians and students. Generate one fresh round.
+
+Return ONLY valid JSON. No prose, no markdown fences. Shape:
+{"deck":[{"text":"...","answer":"...","why":"...","options":["...","...","...","..."]}, ... exactly 20 items ...]}
+
+LABEL SET (use these EXACT strings for "answer" and inside "options"):
+"All-or-Nothing Thinking", "Disqualifying the Positive", "Mind Reading", "Jumping to Conclusions", "Catastrophizing", "Minimization", "Emotional Reasoning", "Should Statements", "Labeling and Mislabeling", "Personalization", "Not a Distortion"
+
+COMPOSITION (exactly 20 items):
+- Exactly 5 items with answer "Not a Distortion".
+- At least 2 items with answer "Minimization".
+- Spread the remaining items across the other distortion types with variety; no single type should dominate.
+- Every distortion item must be a CLEAR, unambiguous example of its label.
+
+WRITING THE STATEMENTS ("text"):
+- A realistic, first-person client quote, the kind of thing a real person actually says out loud. Conversational, specific, a little messy. 8 to 30 words.
+- Vary the life context across items: work, money, parenting, relationships, health, recovery, school, faith, friendship.
+- Do not start multiple statements the same way, and do not sound like canned textbook examples.
+- "Not a Distortion" items are genuinely painful or heavy but logically sound, with no thinking trap (real grief, real disappointment, a fair self-observation).
+
+"why": one or two plain sentences, spoken to the player, naming why the statement fits the label. Warm and clear, no jargon dump.
+
+"options": exactly 4 labels from the set, including the correct "answer" plus 3 plausible distractors a thoughtful learner might confuse it with. Put "Not a Distortion" among the options on some distortion items, and put real distortions among the options on the "Not a Distortion" items.
+
+Make this round feel different from previous ones. Return only the JSON object.`;
+
+/* ---- state ---- */
+let deck = [], idx = 0, score = 0, streak = 0, answered = false, results = [];
+const app = document.getElementById("app");
+
+function headEl(){
+  return `<div class="head"><div class="brand">Distortion <span class="b">Decoder</span></div>
+    <div class="tagline">Spot the thinking trap, or call it clean.</div></div>`;
+}
+
+/* ---- screens ---- */
+function renderStart(){
+  app.innerHTML = headEl() + `
+    <div class="intro">
+      <h1>Can you decode the distortion?</h1>
+      <p class="lead">Twenty client statements, one at a time. Some are classic cognitive distortions, some are just honest, hard feelings. Your job is to tell which is which.</p>
+      <div class="how"><p><b>How it works:</b> read the statement, pick the label you think fits, and you'll find out right away whether you nailed it. Not every statement is a distortion, so watch for the ones that are simply painful and true.</p></div>
+      <button class="btn btn-primary" id="start">Deal me in</button>
+    </div>`;
+  document.getElementById("start").onclick = startRound;
+}
+
+function renderLoading(){
+  app.innerHTML = headEl() + `<div class="loading"><div class="dots"><i></i><i></i><i></i></div>
+    <div>Shuffling a fresh round...</div></div>`;
+}
+
+function renderError(msg){
+  app.innerHTML = headEl() + `<div class="err">Something went sideways: ${esc(msg)}</div>
+    <div class="center"><button class="btn btn-primary" id="retry">Try again</button></div>`;
+  document.getElementById("retry").onclick = startRound;
+}
+
+function renderQuestion(){
+  const q = deck[idx];
+  const pct = Math.round((idx/deck.length)*100);
+  const opts = q.options.map(o=>`<button class="opt" data-label="${esc(o)}">${esc(o)}</button>`).join("");
+  app.innerHTML = headEl() + `
+    <div class="topbar">
+      <span class="count">Statement ${idx+1} of ${deck.length}</span>
+      <span class="pill">Score ${score}</span>
+      <span class="pill streak ${streak>=2?'on':''}">${streak>=2?streak+' in a row':''}</span>
+    </div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div class="qcard">
+      <div class="eyebrow">What's going on in this thought?</div>
+      <div class="said">&ldquo;${esc(q.said || q.text)}&rdquo;</div>
+    </div>
+    <div class="opts" id="opts">${opts}</div>
+    <div id="fbslot"></div>`;
+  answered = false;
+  document.querySelectorAll(".opt").forEach(b=>{
+    b.onclick = ()=>choose(b.getAttribute("data-label"), b);
+  });
+}
+
+function choose(label, btn){
+  if(answered) return;
+  answered = true;
+  const q = deck[idx];
+  const correct = (label === q.answer);
+  results.push({ text:q.said||q.text, answer:q.answer, chosen:label, correct });
+
+  if(correct){ score++; streak++; } else { streak = 0; }
+
+  document.querySelectorAll(".opt").forEach(b=>{
+    const l = b.getAttribute("data-label");
+    b.disabled = true;
+    if(l === q.answer) b.classList.add("correct");
+    if(l === label && !correct) b.classList.add("wrong");
+    if(l !== q.answer && l !== label) b.classList.add("dim");
+    if(l === q.answer) b.insertAdjacentHTML("beforeend", '<span class="mark">&#10003;</span>');
+    if(l === label && !correct) b.insertAdjacentHTML("beforeend", '<span class="mark">&#10007;</span>');
+  });
+
+  const fb = document.getElementById("fbslot");
+  let html;
+  if(correct){
+    html = `<div class="fb good"><div class="verdict">Decoded.</div>
+      <p>${esc(q.why || ("That's "+q.answer+".") )}</p>
+      <button class="btn btn-primary next" id="next">${idx+1<deck.length?'Next statement':'See results'}</button></div>`;
+  }else{
+    const g = GLOSSARY[label] || {def:"a different pattern", ex:""};
+    html = `<div class="fb bad"><div class="verdict">Not quite.</div>
+      <p><span class="lab">${esc(label)}</span> is about ${esc(g.def)}. A clearer example would be: <span class="ex">&ldquo;${esc(g.ex)}&rdquo;</span></p>
+      <p>This one is <span class="lab">${esc(q.answer)}</span>. ${esc(q.why||"")}</p>
+      <button class="btn btn-primary next" id="next">${idx+1<deck.length?'Next statement':'See results'}</button></div>`;
+  }
+  fb.innerHTML = html;
+  document.getElementById("next").onclick = ()=>{
+    idx++;
+    if(idx < deck.length) renderQuestion(); else renderResults();
+  };
+  fb.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function renderResults(){
+  const total = deck.length, pct = Math.round((score/total)*100);
+  let tier, blurb;
+  if(pct>=90){ tier="Sharp eye"; blurb="You read these like an open book. The subtle ones barely slowed you down."; }
+  else if(pct>=75){ tier="Getting fluent"; blurb="Strong round. A few of the trickier traps slipped past, but your instincts are solid."; }
+  else if(pct>=55){ tier="Warming up"; blurb="A fair start. The patterns below are the ones worth a second look."; }
+  else { tier="Just getting started"; blurb="Distortions take reps to spot. Run it again and watch the patterns below."; }
+
+  // tally misses by the correct label
+  const miss = {};
+  results.filter(r=>!r.correct).forEach(r=>{ miss[r.answer] = (miss[r.answer]||0)+1; });
+  const ranked = Object.keys(miss).sort((a,b)=>miss[b]-miss[a]);
+  let focusHtml;
+  if(ranked.length===0){
+    focusHtml = `<div class="focus">Clean sweep. You did not miss a single one. Try a fresh round to keep the eye sharp.</div>`;
+  }else{
+    focusHtml = ranked.slice(0,2).map(l=>`<div class="focus"><b>${esc(l)}</b> tripped you up ${miss[l]} time${miss[l]>1?'s':''}. ${esc(GLOSSARY[l] ? "Remember: it's "+GLOSSARY[l].def+"." : "")}</div>`).join("");
+  }
+
+  const review = results.map(r=>`
+    <div class="r">
+      <span class="ic ${r.correct?'y':'n'}">${r.correct?'&#10003;':'&#10007;'}</span>
+      <div>
+        <div class="said">&ldquo;${esc(r.text)}&rdquo;</div>
+        <div class="lab">Answer: <b>${esc(r.answer)}</b>${r.correct?'':' &nbsp;&middot;&nbsp; you said '+esc(r.chosen)}</div>
+      </div>
+    </div>`).join("");
+
+  app.innerHTML = headEl() + `
+    <div class="verdict-big">
+      <div class="score">${score}<span style="font-size:24px;color:var(--muted);font-weight:700;"> / ${total}</span></div>
+      <div class="pct">${pct}% decoded</div>
+      <div class="tier">${esc(tier)}</div>
+    </div>
+    <p class="blurb">${esc(blurb)}</p>
+    <div class="seclabel">Where to look next</div>
+    ${focusHtml}
+    <div class="seclabel">Your round</div>
+    <div class="review">${review}</div>
+    <div class="center"><button class="btn btn-primary" id="again">Play a new round</button></div>`;
+  document.getElementById("again").onclick = startRound;
+}
+
+/* ---- round lifecycle ---- */
+function normalize(item){
+  let opts = Array.isArray(item.options) ? item.options.filter(o=>LABELS.includes(o)) : [];
+  if(!opts.includes(item.answer)) opts.unshift(item.answer);
+  opts = [...new Set(opts)];
+  const pool = LABELS.filter(l=>!opts.includes(l));
+  while(opts.length < 4 && pool.length){ opts.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]); }
+  opts = opts.slice(0,4);
+  if(!opts.includes(item.answer)) opts[opts.length-1] = item.answer;
+  // shuffle
+  for(let i=opts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [opts[i],opts[j]]=[opts[j],opts[i]]; }
+  return { text:String(item.text||"").trim(), said:String(item.text||"").trim(), answer:item.answer, why:String(item.why||"").trim(), options:opts };
+}
+
+async function startRound(){
+  renderLoading();
+  try{
+    const raw = await callChat(DECK_SYSTEM, [{role:"user", content:"Generate a new round."}], GEN_MODEL, 3500);
+    const parsed = extractJSON(raw);
+    const list = Array.isArray(parsed.deck) ? parsed.deck : [];
+    deck = list.filter(it=>it && it.text && LABELS.includes(it.answer)).map(normalize);
+    if(deck.length < 10) throw new Error("the round came back incomplete. Give it another go.");
+    idx = 0; score = 0; streak = 0; results = [];
+    renderQuestion();
+  }catch(e){
+    renderError(e.message || "could not load a round.");
+  }
+}
+
+renderStart();
+</script>
+</body>
+</html>
