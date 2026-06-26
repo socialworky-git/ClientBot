@@ -58,7 +58,7 @@
     /* the bar fades and settles in on load instead of popping */
     ".sw-nav{font-family:'Hanken Grotesk',Arial,Helvetica,system-ui,sans-serif;" +
       "display:flex;align-items:center;justify-content:space-between;gap:16px;" +
-      "padding:14px 0;margin:0 0 8px;position:relative;" +
+      "padding:14px 0;margin:0 0 8px;position:relative;z-index:1000;" +
       "animation:sw-nav-in .42s ease both;}" +
     ".sw-nav__brand{font-size:20px;font-weight:800;letter-spacing:-.02em;" +
       "color:#1A1A1A;text-decoration:none;line-height:1;}" +
