@@ -31,7 +31,8 @@
     ]},
     { category: "Other Tools", items: [
       { name: "Practicing ASSIST",        href: "/practicing-assist/" },
-      { name: "Delusions vs. Obsessions", href: "/delusions-obsessions/" }
+      { name: "Delusions vs. Obsessions", href: "/delusions-obsessions/" },
+      { name: "Distortion Decoder",       href: "/distortion-decoder/" }
     ]}
   ];
 
