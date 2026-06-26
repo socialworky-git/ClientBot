@@ -6,10 +6,11 @@
   var BRAND_DARK   = "Social";   // dark part of the wordmark
   var BRAND_ACCENT = "worky";    // coral part of the wordmark
   var LINKS = {
-    home:      "/",            // brand (top left)
-    workshops: "/#workshops",  // Workshops link
-    tools:     "/tools/"       // "All Tools" hub (set to your real tools path)
+    home:     "/",            // brand (top left)
+    training: "/training",    // Training & consultation page
+    tools:    "/tools/"       // "All Tools" hub (set to your real tools path)
   };
+  var TRAINING_LABEL = "Training";   // the nav label for the training link
 
   /* =========================================================
      ADD NEW TOOLS HERE  ->  the dropdown builds itself.
@@ -54,9 +55,11 @@
   /* --- The header owns its own styles, scoped to .sw-nav --- */
   var css =
     ".sw-nav,.sw-nav *{box-sizing:border-box;}" +
+    /* the bar fades and settles in on load instead of popping */
     ".sw-nav{font-family:'Hanken Grotesk',Arial,Helvetica,system-ui,sans-serif;" +
       "display:flex;align-items:center;justify-content:space-between;gap:16px;" +
-      "padding:14px 0;margin:0 0 8px;position:relative;}" +
+      "padding:14px 0;margin:0 0 8px;position:relative;" +
+      "animation:sw-nav-in .42s ease both;}" +
     ".sw-nav__brand{font-size:20px;font-weight:800;letter-spacing:-.02em;" +
       "color:#1A1A1A;text-decoration:none;line-height:1;}" +
     ".sw-nav__brand-accent{color:#EB786B;}" +
@@ -69,22 +72,33 @@
     ".sw-dd__btn{font-family:inherit;font-size:15px;font-weight:600;color:#5B5B5B;background:none;" +
       "border:0;padding:0;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}" +
     ".sw-dd__btn:hover,.sw-dd.open .sw-dd__btn{color:#C2452F;}" +
-    ".sw-dd__caret{font-size:10px;transition:transform .15s;}" +
+    ".sw-dd__caret{font-size:10px;transition:transform .18s ease;}" +
     ".sw-dd.open .sw-dd__caret{transform:rotate(180deg);}" +
+    /* panel: animated open/close (fade + slight slide + scale from the corner) */
     ".sw-dd__panel{position:absolute;top:calc(100% + 10px);right:0;min-width:248px;max-height:72vh;overflow:auto;" +
       "background:#fff;border:1px solid #E4E4E7;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);" +
-      "padding:8px;display:none;z-index:1000;}" +
-    ".sw-dd.open .sw-dd__panel{display:block;}" +
+      "padding:8px;z-index:1000;" +
+      "opacity:0;visibility:hidden;transform:translateY(-6px) scale(.985);transform-origin:top right;" +
+      "transition:opacity .18s ease,transform .18s ease,visibility 0s linear .18s;pointer-events:none;}" +
+    ".sw-dd.open .sw-dd__panel{opacity:1;visibility:visible;transform:none;pointer-events:auto;" +
+      "transition:opacity .18s ease,transform .18s ease,visibility 0s;}" +
     /* invisible bridge so the mouse can cross the gap to the panel */
     ".sw-dd__panel::before{content:'';position:absolute;top:-10px;left:0;right:0;height:10px;}" +
     ".sw-dd__panel a{display:block;text-decoration:none;color:#1A1A1A;font-size:14px;font-weight:500;" +
-      "padding:8px 10px;border-radius:8px;white-space:nowrap;}" +
+      "padding:8px 10px;border-radius:8px;white-space:nowrap;transition:background .12s ease,color .12s ease;}" +
     ".sw-dd__panel a:hover,.sw-dd__panel a:focus{background:#FBF5F1;color:#C2452F;outline:none;}" +
     ".sw-dd__all{font-weight:700;}" +
     ".sw-dd__group{margin-top:4px;padding-top:6px;border-top:1px solid #F0F0F2;}" +
     ".sw-dd__label{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;" +
       "color:#C2452F;padding:6px 10px 2px;}" +
-    "@media (max-width:640px){.sw-nav{padding:12px 0;}.sw-nav__links{gap:16px;}.sw-dd__panel{min-width:210px;}}";
+    "@keyframes sw-nav-in{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}" +
+    "@media (max-width:640px){.sw-nav{padding:12px 0;}.sw-nav__links{gap:16px;}.sw-dd__panel{min-width:210px;}}" +
+    /* respect reduced-motion: show instantly, no slide or fade */
+    "@media (prefers-reduced-motion: reduce){" +
+      ".sw-nav{animation:none;}" +
+      ".sw-dd__panel{transform:none;transition:visibility 0s linear .001s,opacity .001s;}" +
+      ".sw-dd.open .sw-dd__panel{transform:none;transition:none;}" +
+      ".sw-dd__caret{transition:none;}}";
 
   var style = document.createElement("style");
   style.textContent = css;
@@ -115,7 +129,7 @@
     '<a class="sw-nav__brand" href="' + LINKS.home + '">' +
       BRAND_DARK + '<span class="sw-nav__brand-accent">' + BRAND_ACCENT + "</span></a>" +
     '<div class="sw-nav__links">' +
-      '<a href="' + LINKS.workshops + '">Workshops</a>' +
+      '<a href="' + LINKS.training + '">' + esc(TRAINING_LABEL) + '</a>' +
       '<div class="sw-dd">' +
         '<button class="sw-dd__btn" type="button" aria-haspopup="true" aria-expanded="false">' +
           'Tools <span class="sw-dd__caret" aria-hidden="true">&#9662;</span></button>' +
