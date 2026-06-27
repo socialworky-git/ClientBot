@@ -30,6 +30,7 @@
     --radius-sm: 8px;
     --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
     --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+    --heroMuted: #7A5048;
     --font: Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
   }
 
@@ -461,11 +462,11 @@
   .btn-ghost:hover { background: var(--border-light); color: var(--text); border-color: #d1d5db; }
 
   .btn-primary {
-    background: var(--accentDeep);
-    border-color: var(--accentDeep);
+    background: var(--accent);
+    border-color: var(--accent);
     color: #fff;
   }
-  .btn-primary:hover { background: #a83a26; }
+  .btn-primary:hover { background: var(--accentDeep); border-color: var(--accentDeep); }
 
   .btn-danger {
     background: transparent;
@@ -481,6 +482,37 @@
     .section-card, .hero-card { box-shadow: none; border: 1px solid var(--border); }
     .hero-img-inner { height: 80px; }
   }
+
+  /* ---- Standardized Socialworky tool hero (Worksheet / pencil icon) ---- */
+  .toolhero {
+    display: flex; align-items: center; gap: 16px;
+    background: var(--blue-light); border: 1px solid var(--blue-border);
+    border-radius: var(--radius); box-shadow: inset 4px 0 0 var(--accent);
+    padding: 18px 22px 18px 24px; margin-bottom: 24px;
+  }
+  .toolhero .ico {
+    width: 52px; height: 52px; border-radius: 12px; background: var(--card);
+    border: 1px solid var(--blue-border); display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; color: var(--accentDeep);
+  }
+  .toolhero .ico svg { width: 26px; height: 26px; display: block; }
+  .toolhero .brand { font-weight: 700; font-size: 24px; letter-spacing: -0.02em; color: var(--text); line-height: 1.1; }
+  .toolhero .brand .bot { color: var(--accentDeep); }
+  .toolhero .tagline { color: var(--heroMuted); font-size: 14px; margin-top: 3px; }
+
+  /* ---- Standardized orientation panel ("Instructions") ---- */
+  .orient {
+    background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 20px 24px; margin-bottom: 14px;
+  }
+  .orient .ohd { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; margin-bottom: 14px; }
+  .orient .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .orient .step { display: flex; gap: 10px; }
+  .orient .step .n {
+    width: 24px; height: 24px; border-radius: 50%; background: var(--blue-light); color: var(--accentDeep);
+    font-weight: 600; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .orient .step .tx { font-size: 13.5px; color: var(--text-secondary); line-height: 1.5; }
 
   /* HUB-STYLE HEADER */
   .tool-header { margin-bottom: 24px; }
@@ -566,23 +598,25 @@
   <script src="/header.js"></script>
 
   <!-- HEADER -->
-  <div class="tool-header">
-    <h1>Mining for Affirmations</h1>
-    <div class="tool-subtitle">Motivational interviewing practice</div>
-    <hr class="tool-divider">
+  <div class="toolhero">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/><path d="M13.5 6.5l4 4"/></svg></div>
+    <div>
+      <div class="brand">Mining for <span class="bot">Affirmations</span></div>
+      <div class="tagline">Motivational Interviewing practice</div>
+    </div>
   </div>
 
   <!-- INTRO -->
-  <div class="section-card">
-    <div class="section-card-body">
-      <p class="intro-desc">Affirmations are more than compliments. They are observations of a client's genuine strengths, values, and efforts. This activity builds the habit of noticing what is already there.</p>
-      <div class="callout callout-amber">
-        <strong>Instructions:</strong> Think about a current or recent client. In Part 1, identify as many strengths as you can observe. Look for effort, values, resilience, insight, relationships, and past successes. In Part 2, practice converting each one into a genuine affirmation you could say directly to that client.
-      </div>
-      <div class="callout callout-blue" style="margin-top:10px;">
-        Affirmations center the client and their strengths, not the clinician's reaction to them.
-      </div>
+  <div class="orient">
+    <div class="ohd">Instructions</div>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div class="tx">Bring a current or recent client to mind. Use fictional or composite details only.</div></div>
+      <div class="step"><div class="n">2</div><div class="tx">Part 1 &mdash; list the genuine strengths, values, and efforts you notice in them.</div></div>
+      <div class="step"><div class="n">3</div><div class="tx">Part 2 &mdash; turn each strength into an affirmation you could say to the client, then check your work.</div></div>
     </div>
+  </div>
+  <div class="callout callout-blue" style="margin-bottom:24px;">
+    Affirmations are observations of genuine strengths, not compliments, and they center the client, not the clinician's reaction to them.
   </div>
 
   <!-- PART 1 -->
