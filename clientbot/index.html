@@ -98,7 +98,7 @@
   .row.you{justify-content:flex-end;}
   .bubble{max-width:80%;border-radius:12px;padding:10px 14px;font-size:15px;white-space:pre-wrap;}
   .bubble .who{font-size:11px;opacity:.75;margin-bottom:3px;letter-spacing:.3px;}
-  .bubble.you{background:var(--accentDeep);color:var(--white);border-bottom-right-radius:3px;}
+  .bubble.you{background:var(--coral-bg);color:var(--ink);border:1px solid var(--coral-line);border-bottom-right-radius:3px;}
   .bubble.client{background:var(--white);color:var(--ink);border:1px solid var(--line);border-bottom-left-radius:3px;}
   .coachnote{background:var(--coachSoft);border:1px solid var(--coachLine);border-radius:10px;
     padding:12px 14px;margin:12px 0;font-size:14.5px;color:#6B3E00;white-space:pre-wrap;}
@@ -110,8 +110,10 @@
     padding:10px 12px;font-size:15px;font-family:var(--sans);outline:none;}
   textarea#input:focus{border-color:var(--accent);}
   button{font-family:var(--sans);font-weight:700;border-radius:8px;cursor:pointer;}
-  .btn{background:var(--accentDeep);color:var(--white);border:none;padding:11px 18px;font-size:14px;}
+  .btn{background:var(--accent);color:var(--white);border:none;padding:11px 18px;font-size:14px;transition:background .15s;}
+  .btn:hover{background:var(--accentDeep);}
   .btn:disabled{background:#AEB6C2;cursor:default;}
+  .btn:disabled:hover{background:#AEB6C2;}
   .btnout{background:var(--white);border:1px solid var(--coach);color:var(--coach);padding:10px 16px;font-size:14px;}
   .btnout.accent{border-color:var(--accentDeep);color:var(--accentDeep);}
   .btnout.plain{border-color:var(--line);color:var(--muted);}
