@@ -8,7 +8,7 @@
   @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap');
   :root{
     --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
-    --accent:#EB786B; --accentDeep:#C2452F;
+    --accent:#EB786B; --accentDeep:#C2452F; --coral-bg:#FDEEEB; --coral-line:#F6D4CD;
     --sans:'Hanken Grotesk',Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
   }
   *{box-sizing:border-box;}
@@ -41,8 +41,14 @@
     border-radius:12px;padding:18px;transition:border-color .12s,box-shadow .12s;}
   .tool:hover{border-color:var(--accent);box-shadow:0 1px 10px rgba(0,0,0,.06);}
   .tool .tag{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);}
-  .tool .nm{font-size:19px;font-weight:700;margin:7px 0 5px;}
+  /* activity-type icon + title row */
+  .tool-head{display:flex;align-items:center;gap:12px;margin-bottom:9px;}
+  .tool-ico{width:40px;height:40px;border-radius:10px;background:var(--coral-bg);border:1px solid var(--coral-line);
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;color:var(--accentDeep);}
+  .tool-ico svg{width:21px;height:21px;display:block;}
+  .tool .nm{font-size:18px;font-weight:700;margin:0;line-height:1.2;}
   .tool .ds{font-size:14px;color:var(--muted);}
+  .tool.soon .tool-ico{background:var(--surface);border-color:var(--line);color:var(--muted);}
   .tool .go{display:inline-block;margin-top:12px;font-size:13.5px;font-weight:700;color:var(--accentDeep);}
   .soon{opacity:.6;cursor:default;border-style:dashed;}
   .soon:hover{border-color:var(--line);box-shadow:none;}
@@ -65,7 +71,7 @@
   <div class="hero">
     <div class="copy">
       <h1>Rehearse the hard conversations <span class="accent">before they're real.</span></h1>
-      <p class="sub">Practice motivational interviewing, suicide-risk screening, and substance-use assessments through realistic, judgment-free simulations. Everything runs in your browser, nothing to install, nothing saved.</p>
+      <p class="sub">Practice motivational interviewing, suicide-risk screening, and substance-use assessments through judgment-free sims, games, and practice sheets. Everything runs in your browser, nothing to install, nothing saved.</p>
       <div class="trust"><b>Built by clinicians, for clinicians</b></div>
     </div>
     <div class="art">
@@ -79,33 +85,43 @@
   <div class="section-title">Motivational Interviewing</div>
   <div class="grid">
     <a class="tool" href="/clientbot/">
-      <div class="tag">MI practice</div>
-      <div class="nm">ClientBot</div>
-      <div class="ds">Practice MI with a realistic AI client, ask CoachBot for help mid-session, and get a coding sheet on your skills at the end. Build your own client to match your caseload.</div>
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg></span>
+        <div class="nm">ClientBot</div>
+      </div>
+      <div class="ds">A simulation to practice a full MI conversation with a realistic AI client, with coaching on the side and a coding sheet at the end.</div>
       <span class="go">Open ClientBot &rarr;</span>
     </a>
     <a class="tool" href="/batting-practice/">
-      <div class="tag">Reflection drill</div>
-      <div class="nm">Reflection Batting Practice</div>
-      <div class="ds">A fast, playful game: ten client statements get pitched to you, each with its own change focus, and your reflections are scored like baseball. Simple reflections are singles; reflections that grow change talk are home runs.</div>
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/></svg></span>
+        <div class="nm">Reflection Batting Practice</div>
+      </div>
+      <div class="ds">A game to practice reflective listening, earning a higher score the stronger your reflections get.</div>
       <span class="go">Open &rarr;</span>
     </a>
     <a class="tool" href="/affirmations/">
-      <div class="tag">Affirmation practice</div>
-      <div class="nm">Mining for Affirmations</div>
-      <div class="ds">Spot a client's real strengths, then turn each one into an affirmation that centers the client rather than your reaction. Optional AI feedback flags what reads as praise and suggests stronger wording.</div>
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/><path d="M13.5 6.5l4 4"/></svg></span>
+        <div class="nm">Mining for Affirmations</div>
+      </div>
+      <div class="ds">A practice sheet to turn a client's real strengths into genuine affirmations.</div>
       <span class="go">Open &rarr;</span>
     </a>
     <a class="tool" href="/intentional-reflections/">
-      <div class="tag">Reflection practice</div>
-      <div class="nm">Intentional Reflections</div>
-      <div class="ds">Each statement mixes change talk with sustain talk. Reflect the change talk, then check your work: AI feedback shows whether your reflection leveled the field toward change or left it tilted to the status quo.</div>
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/><path d="M13.5 6.5l4 4"/></svg></span>
+        <div class="nm">Intentional Reflections</div>
+      </div>
+      <div class="ds">A practice sheet to reflect the change talk hidden inside ambivalent statements.</div>
       <span class="go">Open &rarr;</span>
     </a>
      <a class="tool" href="/balancing-the-scale/">
-      <div class="tag">Evocation practice</div>
-      <div class="nm">Balancing the Scale</div>
-      <div class="ds">Practice evocation with one deeply ambivalent client across eight exchanges. Send each response as an intentional reflection or a directional question, and watch the scale tip as you grow change talk and level the field toward change.</div>
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/></svg></span>
+        <div class="nm">Balancing the Scale</div>
+      </div>
+      <div class="ds">A game to practice evocation, tipping an ambivalent client's scale toward change across eight exchanges.</div>
       <span class="go">Open &rarr;</span>
     </a>
   </div>
@@ -113,51 +129,71 @@
   <div class="section-title">Suicide-Specific Skills</div>
   <div class="grid">
     <a class="tool" href="/empathy-screening/">
-      <div class="tag">Screening</div>
-      <div class="nm">Empathy as a Pathway to Screening</div>
-      <div class="ds">Practice reflecting on a client's pain, summarizing the meaning, and moving into a suicide screening question. Work as a group and get optional coaching feedback.</div>
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg></span>
+        <div class="nm">Empathy as a Pathway to Screening</div>
+      </div>
+      <div class="ds">A simulation to practice moving from empathy to a direct suicide screening question.</div>
       <span class="go">Open &rarr;</span>
     </a>
     <a class="tool" href="/treatment-planning/">
-      <div class="tag">Treatment planning</div>
-      <div class="nm">Treatment Planning Practice</div>
-      <div class="ds">Practice translating risk assessment data into a clear treatment plan: problems, goals, objectives, and interventions. Optional AI feedback checks your draft.</div>
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/><path d="M13.5 6.5l4 4"/></svg></span>
+        <div class="nm">Treatment Planning Practice</div>
+      </div>
+      <div class="ds">A practice sheet to turn a risk assessment into clear goals, objectives, and interventions.</div>
       <span class="go">Open &rarr;</span>
     </a>
   </div>
 
   <div class="section-title">Other</div>
   <div class="grid">
-    <!-- To add another tool: copy a card above, change the path, tag, name, and text, and drop it in the right section.
+    <!-- To add another tool: copy a card above, swap the icon, name, and description, and drop it in the right section.
+         Icon by activity type (the <path> set inside .tool-ico):
+           Simulation (speech):  <path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/>
+           Game (controller):    <path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/>
+           Practice sheet (pencil): <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/><path d="M13.5 6.5l4 4"/>
+           Quiz (brain):         <path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/><path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/><path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/><path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/><path d="M12 5a3 3 0 0 0 -6 0v.5"/><path d="M12 5a3 3 0 0 1 6 0v.5"/><path d="M12 5v14"/>
+         Keep descriptions in the form: "A [sim / game / practice sheet / quiz] to practice [goal]."
     <a class="tool" href="/toolname/">
-      <div class="tag">Category</div>
-      <div class="nm">Tool name</div>
-      <div class="ds">Short description.</div>
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg></span>
+        <div class="nm">Tool name</div>
+      </div>
+      <div class="ds">A sim to practice the goal.</div>
       <span class="go">Open &rarr;</span>
     </a>
     -->
     <a class="tool" href="/practicing-assist/">
-      <div class="tag">Substance screening</div>
-      <div class="nm">Practicing ASSIST</div>
-      <div class="ds">Administer the WHO ASSIST substance use screen, either by role play with a partner or one on one with an AI client. The screen branches and scores itself as you go, so you can focus on the conversation.</div>
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg></span>
+        <div class="nm">Practicing ASSIST</div>
+      </div>
+      <div class="ds">A simulation to practice the ASSIST substance screen, solo with an AI client or in pairs.</div>
       <span class="go">Open &rarr;</span>
     </a>
     <a class="tool" href="/delusions-obsessions/">
-      <div class="tag">Differential diagnosis</div>
-      <div class="nm">Delusions vs. Obsessions</div>
-      <div class="ds">Drag and drop client statements into the correct category. Builds recognition of the key differences between delusional thinking and obsessive thought patterns.</div>
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/></svg></span>
+        <div class="nm">Delusions vs. Obsessions</div>
+      </div>
+      <div class="ds">A sorting game to practice telling delusional thinking apart from obsessive thoughts.</div>
       <span class="go">Open &rarr;</span>
     </a>
     <a class="tool" href="/distortion-decoder/">
-      <div class="tag">CBT practice</div>
-      <div class="nm">Distortion Decoder</div>
-      <div class="ds">Twenty client statements, one at a time. Call each one as a specific cognitive distortion or as an honest, undistorted thought, get instant feedback on every pick, and see which patterns tripped you up at the end.</div>
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/><path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/><path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/><path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/><path d="M12 5a3 3 0 0 0 -6 0v.5"/><path d="M12 5a3 3 0 0 1 6 0v.5"/><path d="M12 5v14"/></svg></span>
+        <div class="nm">Distortion Decoder</div>
+      </div>
+      <div class="ds">A quiz to practice spotting cognitive distortions, one client statement at a time.</div>
       <span class="go">Open &rarr;</span>
     </a>
     <div class="tool soon">
-      <div class="tag">Coming soon</div>
-      <div class="nm">More tools on the way</div>
-      <div class="ds">Additional practice tools and interactive activities will appear here as they are added.</div>
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg></span>
+        <div class="nm">More tools on the way</div>
+      </div>
+      <div class="ds">New sims, games, and practice sheets will land here as they're built.</div>
     </div>
   </div>
 
