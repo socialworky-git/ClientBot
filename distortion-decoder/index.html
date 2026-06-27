@@ -8,7 +8,7 @@
   @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap');
   :root{
     --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
-    --accent:#EB786B; --accentDeep:#C2452F; --coral-bg:#FDEEEB; --coral-line:#F6D4CD;
+    --accent:#EB786B; --accentDeep:#C2452F; --coral-bg:#FDEEEB; --coral-line:#F6D4CD; --heroMuted:#7A5048;
     --ok:#2E7D54; --ok-bg:#E9F3EC; --ok-line:#BFE0CB;
     --no:#B23A2E; --no-bg:#FBEAE8; --no-line:#F1C9C2;
     --sans:'Hanken Grotesk',Arial,Helvetica,system-ui,sans-serif;
@@ -39,6 +39,25 @@
   .how{ background:var(--coral-bg); border:1px solid var(--coral-line); border-radius:14px; padding:16px 18px; margin:0 0 22px; }
   .how b{ color:var(--accentDeep); }
   .how p{ margin:0; color:#6E625C; font-size:14.5px; }
+
+  /* ---- Standardized Socialworky tool hero (knowledge / brain icon) ---- */
+  .toolhero{ display:flex; align-items:center; gap:16px; background:var(--coral-bg); border:1px solid var(--coral-line);
+    border-radius:12px; box-shadow:inset 4px 0 0 var(--accent); padding:18px 22px 18px 24px; margin-bottom:22px; }
+  .toolhero .ico{ width:52px; height:52px; border-radius:12px; background:#fff; border:1px solid var(--coral-line);
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto; color:var(--accentDeep); }
+  .toolhero .ico svg{ width:26px; height:26px; display:block; }
+  .toolhero .brand{ font-weight:800; font-size:24px; letter-spacing:-.02em; color:var(--ink); line-height:1.1; }
+  .toolhero .brand .bot{ color:var(--accentDeep); }
+  .toolhero .tagline{ color:var(--heroMuted); font-size:14px; margin-top:3px; }
+  /* ---- Standardized orientation panel ("Instructions") ---- */
+  .orient{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin:0 0 18px; }
+  .orient .ohd{ font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:10px; }
+  .orient .lead{ font-size:13.5px; color:var(--ink); line-height:1.55; margin-bottom:16px; max-width:none; }
+  .orient .steps{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; }
+  .orient .step{ display:flex; gap:10px; }
+  .orient .step .n{ width:24px; height:24px; border-radius:50%; background:var(--coral-bg); color:var(--accentDeep);
+    font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .orient .step .tx{ font-size:13.5px; color:var(--muted); line-height:1.45; }
 
   /* loading */
   .loading{ text-align:center; padding:60px 0; color:var(--muted); }
@@ -208,8 +227,13 @@ let deck = [], idx = 0, score = 0, streak = 0, answered = false, results = [];
 const app = document.getElementById("app");
 
 function headEl(){
-  return `<div class="head"><div class="brand">Distortion <span class="b">Decoder</span></div>
-    <div class="tagline">Spot the thinking trap, or call it clean.</div></div>`;
+  return `<div class="toolhero">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/><path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/><path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/><path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/><path d="M12 5a3 3 0 0 0 -6 0v.5"/><path d="M12 5a3 3 0 0 1 6 0v.5"/><path d="M12 5v14"/></svg></div>
+    <div>
+      <div class="brand">Distortion <span class="bot">Decoder</span></div>
+      <div class="tagline">Spot the thinking trap, or call it clean.</div>
+    </div>
+  </div>`;
 }
 
 /* ---- screens ---- */
@@ -217,8 +241,15 @@ function renderStart(){
   app.innerHTML = headEl() + `
     <div class="intro">
       <h1>Can you decode the distortion?</h1>
-      <p class="lead">Twenty client statements, one at a time. Some are classic cognitive distortions, some are just honest, hard feelings. Your job is to tell which is which.</p>
-      <div class="how"><p><b>How it works:</b> read the statement, pick the label you think fits, and you'll find out right away whether you nailed it. Not every statement is a distortion, so watch for the ones that are simply painful and true.</p></div>
+      <div class="orient">
+        <div class="ohd">Instructions</div>
+        <p class="lead">Twenty client statements, one at a time. Some are classic cognitive distortions, some are just honest, hard feelings, and your job is to tell which is which.</p>
+        <div class="steps">
+          <div class="step"><div class="n">1</div><div class="tx">Read each statement and pick the label you think fits.</div></div>
+          <div class="step"><div class="n">2</div><div class="tx">You'll find out right away whether you nailed it.</div></div>
+          <div class="step"><div class="n">3</div><div class="tx">Not every statement is a distortion, so watch for the ones that are simply painful and true.</div></div>
+        </div>
+      </div>
       <button class="btn btn-primary" id="start">Deal me in</button>
     </div>`;
   document.getElementById("start").onclick = startRound;
