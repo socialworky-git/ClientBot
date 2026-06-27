@@ -8,9 +8,28 @@
   :root{
     --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
     --accent:#EB786B; --accentDeep:#C2452F;
+    --coral-bg:#FDEEEB; --coral-line:#F6D4CD; --heroMuted:#7A5048; --white:#FFFFFF;
     --client:#3E4A57; --clientbg:#EEF1F4; --clientline:#D5DDE5;
     --sans:Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
   }
+  /* ---- Standardized Socialworky tool hero (simulation / speech-bubble icon) ---- */
+  .toolhero{display:flex;align-items:center;gap:16px;background:var(--coral-bg);border:1px solid var(--coral-line);
+    border-radius:12px;box-shadow:inset 4px 0 0 var(--accent);padding:18px 22px 18px 24px;margin-bottom:18px;}
+  .toolhero .ico{width:52px;height:52px;border-radius:12px;background:var(--white);border:1px solid var(--coral-line);
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;color:var(--accentDeep);}
+  .toolhero .ico svg{width:26px;height:26px;display:block;}
+  .toolhero .brand{font-weight:700;font-size:24px;letter-spacing:-0.4px;color:var(--ink);line-height:1.1;}
+  .toolhero .brand .bot{color:var(--accentDeep);}
+  .toolhero .tagline{color:var(--heroMuted);font-size:14px;margin-top:3px;}
+  /* ---- Standardized orientation panel ("Instructions") ---- */
+  .orient{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:16px 0 0;}
+  .orient .ohd{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:10px;}
+  .orient .lead{font-size:13.5px;color:var(--ink);line-height:1.55;margin-bottom:16px;}
+  .orient .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;}
+  .orient .step{display:flex;gap:10px;}
+  .orient .step .n{width:24px;height:24px;border-radius:50%;background:var(--coral-bg);color:var(--accentDeep);
+    font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .orient .step .tx{font-size:13.5px;color:var(--muted);line-height:1.45;}
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:22px;line-height:1.5;}
   .wrap{max-width:760px;margin:0 auto;}
@@ -40,9 +59,10 @@
   .summarybox{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:6px;}
   .summarybox .lead{font-size:13.5px;color:var(--muted);margin:0 0 10px;}
   .pmirror{display:none;}
-  .btn{background:var(--accentDeep);color:#fff;border:none;border-radius:8px;padding:11px 18px;font-size:14px;
-    font-weight:700;font-family:var(--sans);cursor:pointer;}
-  .btn:disabled{background:#AEB6C2;cursor:default;}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:11px 18px;font-size:14px;
+    font-weight:700;font-family:var(--sans);cursor:pointer;transition:background .15s;}
+  .btn:hover{background:var(--accentDeep);}
+  .btn:disabled,.btn:disabled:hover{background:#AEB6C2;cursor:default;}
   .btnout{background:#fff;border:1px solid var(--accentDeep);color:var(--accentDeep);border-radius:8px;
     padding:10px 16px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px;}
@@ -68,11 +88,24 @@
 <body>
 <div class="wrap">
   <script src="/header.js"></script>
-  <div class="eyebrow">Suicide-specific clinical skills</div>
-  <h1>Empathy as a Pathway to Screening</h1>
-  <div class="tagline">Reflect, summarize the meaning, and move toward a screening question</div>
+  <div class="toolhero">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg></div>
+    <div>
+      <div class="brand">Empathy as a Pathway to <span class="bot">Screening</span></div>
+      <div class="tagline">Reflect, summarize the meaning, and move toward a screening question</div>
+    </div>
+  </div>
   <div class="print-date" id="pdate"></div>
-  <p class="intro">Read the vignette, then talk with Jamie one exchange at a time. Reflect what you hear, and Jamie will respond. When you have heard enough, bring it together into a summary, a linking phrase, and a direct screening question. Jamie's replies and the brief feedback are AI-generated. Work together as a group.</p>
+
+  <div class="orient">
+    <div class="ohd">Instructions</div>
+    <p class="lead">Read the vignette, then practice moving from empathy toward a screening question. Jamie's replies and the brief feedback are AI-generated; work through it together as a group.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div class="tx">Talk with Jamie one exchange at a time, reflecting the feeling and meaning you hear.</div></div>
+      <div class="step"><div class="n">2</div><div class="tx">Keep going until you have heard enough of what matters.</div></div>
+      <div class="step"><div class="n">3</div><div class="tx">Bring it together into a summary, a linking phrase, and a direct screening question.</div></div>
+    </div>
+  </div>
 
   <div class="vignette" id="vignette"><div class="who">The client</div></div>
 
