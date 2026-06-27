@@ -13,7 +13,7 @@
     --amber-bg: #fdf8ec; --amber-line: #f0e2bf; --amber-text: #9a5a2a;
     --green: #2f8f5b; --green-bg: #eaf6ee; --green-line: #c7e7d2;
     --rust: #b5531f; --rust-bg: #fbeee5; --rust-line: #eccdb4;
-    --radius: 16px; --radius-sm: 10px;
+    --radius: 16px; --radius-sm: 10px; --heroMuted: #7A5048;
     --sans: Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,6 +25,27 @@
   h1 { font-size: clamp(1.8rem, 5vw, 2.4rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; margin-top: 0.8rem; }
   .tool-subtitle { font-size: 1rem; color: var(--muted); margin-top: 0.2rem; }
   .tool-divider { border: none; border-top: 1px solid var(--line); margin: 1.2rem 0 1.5rem; }
+
+  /* ---- Standardized Socialworky tool hero (gamified / controller icon) ---- */
+  .toolhero { display: flex; align-items: center; gap: 16px; background: var(--coral-bg);
+    border: 1px solid var(--coral-line); border-radius: 12px; box-shadow: inset 4px 0 0 var(--accent);
+    padding: 18px 22px 18px 24px; margin-bottom: 18px; }
+  .toolhero .ico { width: 52px; height: 52px; border-radius: 12px; background: var(--card);
+    border: 1px solid var(--coral-line); display: flex; align-items: center; justify-content: center;
+    flex: 0 0 auto; color: var(--accentDeep); }
+  .toolhero .ico svg { width: 26px; height: 26px; display: block; }
+  .toolhero .brand { font-weight: 700; font-size: 24px; letter-spacing: -0.02em; color: var(--ink); line-height: 1.1; }
+  .toolhero .brand .bot { color: var(--accentDeep); }
+  .toolhero .tagline { color: var(--heroMuted); font-size: 14px; margin-top: 3px; }
+
+  /* ---- Standardized orientation panel ("Instructions") ---- */
+  .orient { background: #eceef1; border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-bottom: 18px; }
+  .orient .ohd { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 14px; }
+  .orient .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .orient .step { display: flex; gap: 10px; }
+  .orient .step .n { width: 24px; height: 24px; border-radius: 50%; background: var(--coral-bg); color: var(--accentDeep);
+    font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .orient .step .tx { font-size: 13.5px; color: var(--muted); line-height: 1.5; }
 
   .box { border-radius: var(--radius-sm); padding: 1.05rem 1.2rem; font-size: 0.98rem; }
   .box-amber { background: var(--amber-bg); border: 1px solid var(--amber-line); color: var(--amber-text); }
@@ -131,9 +152,13 @@
 <div class="wrap">
 
   <script src="/header.js"></script>
-  <h1>Balancing the Scale</h1>
-  <div class="tool-subtitle">Evocation practice: intentional reflections and directional questions</div>
-  <hr class="tool-divider">
+  <div class="toolhero">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/></svg></div>
+    <div>
+      <div class="brand">Balancing the <span class="bot">Scale</span></div>
+      <div class="tagline">Evocation practice: intentional reflections and directional questions</div>
+    </div>
+  </div>
 
   <!-- SETUP -->
   <div id="setup">
@@ -144,8 +169,13 @@
       <div class="focus"><b>Today's focus:</b> whether to do something about her heroin use. Your job is evocation. Reflect and ask in the direction of change, and help her own ambivalence settle toward change without pushing her.</div>
     </div>
 
-    <div class="box box-amber" style="margin-top:1rem;">
-      <b>How it works:</b> Renee starts tilted toward the status quo, because for someone who is ambivalent, staying the same has gravity on its side. Each turn, write a response and send it as a <b>Reflection</b> or an <b>Open question</b>. Bricks drop onto the scale based on how well your move leaned toward change. You have eight exchanges. Aim to land the scale near balanced with a slight lean to change, and reflect at least twice for every question you ask.
+    <div class="orient" style="margin-top:1rem;">
+      <div class="ohd">Instructions</div>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div class="tx">Renee starts tilted toward the status quo. Each turn, send your response as a Reflection or an Open question.</div></div>
+        <div class="step"><div class="n">2</div><div class="tx">Bricks drop on the scale based on how far your move leaned toward change. You get eight exchanges.</div></div>
+        <div class="step"><div class="n">3</div><div class="tx">Aim to land near balanced with a slight lean to change, and reflect at least twice for every question.</div></div>
+      </div>
     </div>
 
     <div class="center"><button class="btn-primary" id="beginBtn">Begin the session</button></div>
