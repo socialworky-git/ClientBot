@@ -14,9 +14,33 @@
     --text:       #1a1a1a;
     --muted:      #666;
     --radius:     8px;
+    --coral-bg:   #FDEEEB;
+    --coral-line: #F6D4CD;
+    --heroMuted:  #7A5048;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ---- Standardized Socialworky tool hero (gamified / controller icon) ---- */
+  .toolhero { display: flex; align-items: center; gap: 16px; background: var(--coral-bg);
+    border: 1px solid var(--coral-line); border-radius: 12px; box-shadow: inset 4px 0 0 var(--accent);
+    padding: 18px 22px 18px 24px; margin-bottom: 16px; }
+  .toolhero .ico { width: 52px; height: 52px; border-radius: 12px; background: #fff;
+    border: 1px solid var(--coral-line); display: flex; align-items: center; justify-content: center;
+    flex: 0 0 auto; color: var(--accentDeep); }
+  .toolhero .ico svg { width: 26px; height: 26px; display: block; }
+  .toolhero .brand { font-weight: 700; font-size: 24px; letter-spacing: -0.02em; color: var(--text); line-height: 1.1; }
+  .toolhero .brand .bot { color: var(--accentDeep); }
+  .toolhero .tagline { color: var(--heroMuted); font-size: 14px; margin-top: 3px; }
+  /* ---- Standardized orientation panel ("Instructions") ---- */
+  .orient { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
+  .orient .ohd { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 10px; }
+  .orient .lead { font-size: 13.5px; color: var(--text); line-height: 1.55; margin-bottom: 16px; }
+  .orient .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .orient .step { display: flex; gap: 10px; }
+  .orient .step .n { width: 24px; height: 24px; border-radius: 50%; background: var(--coral-bg); color: var(--accentDeep);
+    font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .orient .step .tx { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
 
   body {
     font-family: Arial, system-ui, sans-serif;
@@ -241,10 +265,10 @@
   button:active { transform: scale(0.97); }
 
   #btn-check {
-    background: var(--accentDeep);
+    background: var(--accent);
     color: #fff;
   }
-  #btn-check:hover:not(:disabled) { background: #a83828; }
+  #btn-check:hover:not(:disabled) { background: var(--accentDeep); }
   #btn-check:disabled { background: #bbb; cursor: default; }
 
   #btn-reset {
@@ -273,16 +297,27 @@
 </head>
 <body>
 
-<!-- Top bar -->
-<div class="top-bar">
-  <script src="/header.js"></script>
-</div>
+<!-- Site header (rendered by header.js, same as the other tools) -->
+<script src="/header.js"></script>
 
 <!-- Page header -->
 <div class="page-header">
-  <div class="tool-label">Sorting Activity</div>
-  <h1>Delusions vs. Obsessions</h1>
-  <p>Drag each card to the correct category, then submit to check your answers.</p>
+  <div class="toolhero">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/></svg></div>
+    <div>
+      <div class="brand">Delusions vs. <span class="bot">Obsessions</span></div>
+      <div class="tagline">Tell the two apart, one card at a time</div>
+    </div>
+  </div>
+  <div class="orient">
+    <div class="ohd">Instructions</div>
+    <p class="lead">Each card is a client statement. Decide whether it describes a delusion or an obsession, and sort them all.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div class="tx">Drag each card from the bank into Delusions or Obsessions.</div></div>
+      <div class="step"><div class="n">2</div><div class="tx">Sort every card. The timer tracks how long you take.</div></div>
+      <div class="step"><div class="n">3</div><div class="tx">Submit to check your answers, then reset to try again.</div></div>
+    </div>
+  </div>
 </div>
 
 <!-- Status strip -->
