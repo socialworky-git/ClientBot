@@ -8,6 +8,7 @@
   :root{
     --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
     --accent:#EB786B; --accentDeep:#C2452F;
+    --coral-bg:#FDEEEB; --coral-line:#F6D4CD; --heroMuted:#7A5048; --white:#FFFFFF;
     --field:#3F7D4E; --fielddk:#2B5D38; --dirt:#C8A06A;
     --sans:Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
   }
@@ -18,6 +19,27 @@
   .eyebrow{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);}
   h1{font-size:25px;font-weight:700;margin:4px 0 0;}
   .tagline{color:var(--muted);font-size:13.5px;margin-top:3px;}
+
+  /* ---- Standardized Socialworky tool hero (gamified icon) ---- */
+  .toolhero{display:flex;align-items:center;gap:16px;background:var(--coral-bg);
+    border:1px solid var(--coral-line);border-radius:12px;box-shadow:inset 4px 0 0 var(--accent);
+    padding:18px 22px 18px 24px;margin-bottom:18px;}
+  .toolhero .ico{width:52px;height:52px;border-radius:12px;background:var(--white);
+    border:1px solid var(--coral-line);display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;color:var(--accentDeep);}
+  .toolhero .ico svg{width:26px;height:26px;display:block;}
+  .toolhero .brand{font-weight:700;font-size:24px;letter-spacing:-0.4px;color:var(--ink);line-height:1.1;}
+  .toolhero .brand .bot{color:var(--accentDeep);}
+  .toolhero .tagline{color:var(--heroMuted);font-size:14px;margin-top:3px;}
+
+  /* ---- Standardized orientation panel ("Instructions") ---- */
+  .orient{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:16px 0 0;}
+  .orient .ohd{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:14px;}
+  .orient .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;}
+  .orient .step{display:flex;gap:10px;}
+  .orient .step .n{width:24px;height:24px;border-radius:50%;background:var(--coral-bg);color:var(--accentDeep);
+    font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .orient .step .tx{font-size:13.5px;color:var(--ink);line-height:1.45;}
   .intro{color:var(--muted);font-size:15px;margin:14px 0 0;}
   .hidden{display:none;}
 
@@ -26,9 +48,10 @@
   .pill{display:inline-block;font-weight:700;border-radius:20px;padding:1px 9px;font-size:12px;color:#fff;}
   .p-single{background:#6B8E9E;} .p-double{background:#2E7D54;} .p-triple{background:#4E86A0;} .p-hr{background:var(--accentDeep);} .p-k{background:#9aa0a6;}
 
-  .btn{background:var(--accentDeep);color:#fff;border:none;border-radius:8px;padding:12px 20px;font-size:15px;
-    font-weight:700;font-family:var(--sans);cursor:pointer;}
-  .btn:disabled{background:#AEB6C2;cursor:default;}
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px 20px;font-size:15px;
+    font-weight:700;font-family:var(--sans);cursor:pointer;transition:background .15s;}
+  .btn:hover{background:var(--accentDeep);}
+  .btn:disabled,.btn:disabled:hover{background:#AEB6C2;cursor:default;}
   .btnout{background:#fff;border:1px solid var(--accentDeep);color:var(--accentDeep);border-radius:8px;
     padding:10px 16px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px;}
@@ -81,13 +104,24 @@
 <body>
 <div class="wrap">
   <script src="/header.js"></script>
-  <div class="eyebrow">Motivational Interviewing</div>
-  <h1>Reflection Batting Practice</h1>
-  <div class="tagline">Ten pitches, a new change focus each time</div>
+  <div class="toolhero">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/></svg></div>
+    <div>
+      <div class="brand">Reflection <span class="bot">Batting Practice</span></div>
+      <div class="tagline">Ten pitches, a new change focus each time</div>
+    </div>
+  </div>
 
   <!-- START -->
   <div id="start">
-    <p class="intro">Ten client statements get pitched to you, each with its own change focus shown above it. Reflect each one back and swing. The more skillful the reflection, the bigger the hit.</p>
+    <div class="orient">
+      <div class="ohd">Instructions</div>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div class="tx">Each pitch is a client statement with its own change focus shown above it.</div></div>
+        <div class="step"><div class="n">2</div><div class="tx">Reflect it back and swing before the speed bonus runs out.</div></div>
+        <div class="step"><div class="n">3</div><div class="tx">The more skillful the reflection, the bigger the hit. Ten pitches, then your box score.</div></div>
+      </div>
+    </div>
     <div class="rules">
       <b>How the swings score:</b>
       <ul>
