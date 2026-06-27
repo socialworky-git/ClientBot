@@ -27,6 +27,7 @@
   :root{
     --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
     --accent:#EB786B; --accentDeep:#C2452F;
+    --coral-bg:#FDEEEB; --coral-line:#F6D4CD; --heroMuted:#7A5048;
     --coach:#B26A00; --coachSoft:#FBF3E4; --coachLine:#EAD6A8;
     --adherent:#2E7D54; --neutral:#5B5B5B; --nonadherent:#B23A2E; --white:#FFFFFF;
     --sans:Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
@@ -34,10 +35,20 @@
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:20px;line-height:1.5;}
   .wrap{max-width:760px;margin:0 auto;}
-  .head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:18px;}
-  .brand{font-weight:700;font-size:20px;letter-spacing:-0.2px;}
-  .brand .bot{color:var(--accent);}
-  .tagline{color:var(--muted);font-size:12.5px;margin-top:2px;}
+  /* ---- Standardized Socialworky tool hero ----
+     Reuse across tools: change the TOOL config in the script below
+     (name1, name2, tagline, icon). Everything else stays identical.
+     Available icons: "simulation" (speech), "gamified" (controller), "knowledge" (brain). */
+  .toolhero{display:flex;align-items:center;gap:16px;background:var(--coral-bg);
+    border:1px solid var(--coral-line);border-radius:12px;box-shadow:inset 4px 0 0 var(--accent);
+    padding:18px 22px 18px 24px;margin-bottom:18px;}
+  .toolhero .ico{width:52px;height:52px;border-radius:12px;background:var(--white);
+    border:1px solid var(--coral-line);display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;color:var(--accentDeep);}
+  .toolhero .ico svg{width:26px;height:26px;display:block;}
+  .toolhero .brand{font-weight:700;font-size:24px;letter-spacing:-0.4px;color:var(--ink);line-height:1.1;}
+  .toolhero .brand .bot{color:var(--accentDeep);}
+  .toolhero .tagline{color:var(--heroMuted);font-size:14px;margin-top:3px;}
   h1{font-size:23px;font-weight:700;margin:0 0 6px;}
   .lead{color:var(--muted);font-size:15px;margin:8px 0 0;max-width:600px;}
   .persona{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
@@ -47,16 +58,30 @@
   .tgt span{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);
     font-weight:700;display:block;margin-bottom:2px;}
   /* home */
-  .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;}
+  /* ---- Standardized orientation panel ("how this works") ----
+     Reuse on any tool: same markup, swap the three step strings. */
+  .orient{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:18px 0 24px;}
+  .orient .ohd{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:14px;}
+  .orient .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;}
+  .orient .step{display:flex;gap:10px;}
+  .orient .step .n{width:24px;height:24px;border-radius:50%;background:var(--coral-bg);color:var(--accentDeep);
+    font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .orient .step .tx{font-size:13.5px;color:var(--ink);line-height:1.45;}
+  /* ---- Activity launch cards ---- */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
   .pick{text-align:left;background:var(--white);border:1px solid var(--line);border-radius:10px;
-    padding:16px;cursor:pointer;font-family:var(--sans);transition:border-color .12s,box-shadow .12s;}
-  .pick:hover{border-color:var(--accent);box-shadow:0 1px 8px rgba(0,0,0,.06);}
+    padding:16px;font-family:var(--sans);display:flex;flex-direction:column;}
   .pick .tag{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accent);}
   .pick .nm{font-size:17px;font-weight:700;margin:6px 0 4px;}
-  .pick .ds{font-size:13.5px;color:var(--muted);}
-  .pick.build{grid-column:1 / -1;border-style:dashed;border-color:var(--coach);}
-  .pick.build .tag{color:var(--coach);}
-  .pick.build .nm{color:var(--coach);}
+  .pick .ds{font-size:13.5px;color:var(--muted);flex:1;}
+  /* primary launch button: this is the element that draws the eye */
+  .launch{background:var(--accent);color:var(--white);border:none;border-radius:9px;padding:11px 16px;
+    font-size:14.5px;font-weight:700;font-family:var(--sans);cursor:pointer;width:100%;margin-top:14px;
+    transition:background .15s;}
+  .launch:hover{background:var(--accentDeep);}
+  /* build-your-own: mirrors the prepared cards, spans full width,
+     dashed orange border keeps the "create new" cue */
+  .pick.build{grid-column:1 / -1;border-style:dashed;border-color:var(--accent);}
   /* form */
   .field{margin:14px 0;}
   .field label{display:block;font-size:14px;font-weight:700;margin-bottom:5px;}
@@ -145,7 +170,7 @@
   }
   @media print{
     body{padding:0;color:#000;background:#fff;}
-    .head{border:none;}
+    .toolhero{background:#fff !important;box-shadow:none !important;border:1px solid #ccc !important;padding-left:22px;}
     .hublink,.inrow,.actions,.sharerow,.back,.placeholder,#err,.consent,.seclabel-share{display:none !important;}
     .print-only{display:block !important;}
     .print-date{display:block !important;font-size:12px;color:#444;margin-top:2px;}
@@ -167,6 +192,17 @@
 <script>
 const T={accent:"#EB786B",accentDeep:"#C2452F",coach:"#B26A00",adherent:"#2E7D54",
   neutral:"#5B5B5B",nonadherent:"#B23A2E",muted:"#5B5B5B",line:"#E4E4E7"};
+
+/* ===== Standardized Socialworky tool hero =====
+   To reuse this hero on another tool, copy the .toolhero CSS, the ICONS map,
+   the TOOL config, and headerHtml(). Then edit just the TOOL object below.
+   icon options: "simulation" | "gamified" | "knowledge" */
+const TOOL={name1:"Client",name2:"Bot",tagline:"Motivational Interviewing practice",icon:"simulation"};
+const ICONS={
+  simulation:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>`,
+  gamified:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/></svg>`,
+  knowledge:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/><path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/><path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/><path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/><path d="M12 5a3 3 0 0 0 -6 0v.5"/><path d="M12 5a3 3 0 0 1 6 0v.5"/><path d="M12 5v14"/></svg>`
+};
 
 const CLIENT_MODEL="gpt-4.1-mini"; // role-play + coach; move up to "gpt-5.4-mini" for more nuance
 const CODER_MODEL ="gpt-4.1";      // MITI coding; move up to "gpt-5.4" for sharper judgment
@@ -318,9 +354,14 @@ const clientHistory=ms=>ms.filter(m=>m.role==="client"||m.role==="counselor")
   .map(m=>({role:m.role==="counselor"?"user":"assistant",content:m.text}));
 
 function headerHtml(){
-  return `<div class="head"><div><div class="brand">Client<span class="bot">Bot</span></div>
-    <div class="tagline">Motivational Interviewing practice</div>
-    <div class="print-date">${new Date().toLocaleDateString()}</div></div></div>`;
+  return `<div class="toolhero">
+    <div class="ico">${ICONS[TOOL.icon]||ICONS.simulation}</div>
+    <div>
+      <div class="brand">${esc(TOOL.name1)}<span class="bot">${esc(TOOL.name2)}</span></div>
+      <div class="tagline">${esc(TOOL.tagline)}</div>
+      <div class="print-date">${new Date().toLocaleDateString()}</div>
+    </div>
+  </div>`;
 }
 function render(){
   if(view==="home")return renderHome();
@@ -329,25 +370,39 @@ function render(){
   return renderChat();
 }
 
+/* Orientation steps for this tool. Swap these three strings per activity. */
+const ORIENT_STEPS=[
+  "Pick a client below, or build one to match your caseload.",
+  "Open the conversation like a real session. Ask CoachBot anytime.",
+  "End the session to get your MITI coding sheet."
+];
+function orientHtml(steps){
+  return `<div class="orient"><div class="ohd">Instructions</div>
+    <div class="steps">${steps.map((s,i)=>`
+      <div class="step"><div class="n">${i+1}</div><div class="tx">${esc(s)}</div></div>`).join("")}
+    </div></div>`;
+}
 function renderHome(){
   const app=document.getElementById("app");
   const coreCards=CORE.map((c,i)=>`
-    <button class="pick" data-core="${i}">
+    <div class="pick">
       <div class="tag">${esc(c.tag)}</div>
       <div class="nm">${esc(c.name)}</div>
       <div class="ds">${esc(c.card)}</div>
       <div class="tgt"><span>Change target</span>${esc(c.target)}</div>
-    </button>`).join("");
+      <button class="launch" data-core="${i}">Start simulation &nbsp;&rarr;</button>
+    </div>`).join("");
   app.innerHTML=headerHtml()+`
-    <h1>Choose who you'll work with</h1>
-    <p class="lead">Practice with a prepared client, or build one that matches the people you actually see. Either way you'll get a coding sheet at the end, and you can ask CoachBot for help any time.</p>
+    ${orientHtml(ORIENT_STEPS)}
+    <div class="seclabel">Choose a client</div>
     <div class="cards">
       ${coreCards}
-      <button class="pick build" data-build="1">
+      <div class="pick build">
         <div class="tag">Build my own client</div>
         <div class="nm">Make it look like your caseload</div>
         <div class="ds">Answer a few quick questions about your setting and the kind of client you want, and ClientBot will generate a fitting client for you.</div>
-      </button>
+        <button class="launch" data-build="1">Build a client &nbsp;&rarr;</button>
+      </div>
     </div>`;
   app.querySelectorAll("[data-core]").forEach(b=>b.onclick=()=>startCore(+b.dataset.core));
   app.querySelector("[data-build]").onclick=()=>{view="build";render();};
