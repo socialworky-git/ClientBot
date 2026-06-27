@@ -34,10 +34,32 @@
 
     --radius: 16px;
     --radius-sm: 10px;
+    --heroMuted: #7A5048;
     --sans: Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* ---- Standardized Socialworky tool hero (simulation / speech-bubble icon) ---- */
+  .toolhero { display: flex; align-items: center; gap: 16px; background: var(--blue-bg);
+    border: 1px solid var(--blue-line); border-radius: 12px; box-shadow: inset 4px 0 0 var(--accent);
+    padding: 18px 22px 18px 24px; margin-bottom: 18px; }
+  .toolhero .ico { width: 52px; height: 52px; border-radius: 12px; background: var(--card);
+    border: 1px solid var(--blue-line); display: flex; align-items: center; justify-content: center;
+    flex: 0 0 auto; color: var(--accentDeep); }
+  .toolhero .ico svg { width: 26px; height: 26px; display: block; }
+  .toolhero .brand { font-weight: 700; font-size: 24px; letter-spacing: -0.02em; color: var(--ink); line-height: 1.1; }
+  .toolhero .brand .bot { color: var(--accentDeep); }
+  .toolhero .tagline { color: var(--heroMuted); font-size: 14px; margin-top: 3px; }
+  /* ---- Standardized orientation panel ("Instructions") ---- */
+  .orient { background: #eceef1; border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-top: 1.2rem; }
+  .orient .ohd { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 10px; }
+  .orient .lead { font-size: 13.5px; color: var(--ink); line-height: 1.55; margin-bottom: 16px; }
+  .orient .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .orient .step { display: flex; gap: 10px; }
+  .orient .step .n { width: 24px; height: 24px; border-radius: 50%; background: var(--blue-bg); color: var(--accentDeep);
+    font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .orient .step .tx { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
 
   body {
     font-family: var(--sans);
@@ -379,9 +401,13 @@
 
   <!-- MODE PICKER -->
   <div id="modeSelect">
-    <h1 style="margin-top:0.8rem;">Practicing ASSIST</h1>
-    <div class="tool-subtitle">Substance screening and brief intervention practice</div>
-    <hr class="tool-divider">
+    <div class="toolhero">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg></div>
+      <div>
+        <div class="brand">Practicing <span class="bot">ASSIST</span></div>
+        <div class="tagline">Substance screening and brief intervention practice</div>
+      </div>
+    </div>
     <p class="lede" style="margin-top:1.3rem;">How would you like to practice? Choose an option to begin. You can switch at any time.</p>
     <div class="mode-cards">
       <button class="mode-card" type="button" data-mode="roleplay">
@@ -428,33 +454,37 @@
     </div>
   </div>
 
-  <h1 style="margin-top:0.4rem;">Practicing ASSIST</h1>
-  <div class="tool-subtitle">Substance screening and brief intervention practice</div>
-  <hr class="tool-divider" style="margin-bottom:1.4rem;">
+  <div class="toolhero">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg></div>
+    <div>
+      <div class="brand">Practicing <span class="bot">ASSIST</span></div>
+      <div class="tagline">Substance screening and brief intervention practice</div>
+    </div>
+  </div>
 
   <div id="introRoleplay" class="mode-intro">
-    <p class="lede">Role play administering the ASSIST in pairs. One of you is the client, the other the helper. The screen branches and scores itself, so you can focus on the conversation.</p>
-    <div class="box box-amber">
-      <b>Instructions:</b>
-      <ul>
-        <li>In pairs, trade turns as <b>client</b> and <b>helper</b>.</li>
-        <li>When you present as the client, indicate recent use of 1 to 2 substances so your partner can practice all 8 questions.</li>
-        <li>The helper works through the screen below. Scores and risk tiers update on their own.</li>
-        <li>When finished, review the result together, then use Reset and switch roles.</li>
-      </ul>
+    <div class="orient">
+      <div class="ohd">Instructions</div>
+      <p class="lead">Role play administering the ASSIST in pairs. One of you is the client, the other the helper. The screen branches and scores itself, so you can focus on the conversation.</p>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div class="tx">In pairs, trade turns as client and helper.</div></div>
+        <div class="step"><div class="n">2</div><div class="tx">As the client, indicate recent use of 1 to 2 substances so your partner can practice all 8 questions.</div></div>
+        <div class="step"><div class="n">3</div><div class="tx">The helper works through the screen below. Scores and risk tiers update on their own.</div></div>
+        <div class="step"><div class="n">4</div><div class="tx">When finished, review the result together, then use Reset and switch roles.</div></div>
+      </div>
     </div>
   </div>
 
   <div id="introSim" class="mode-intro">
-    <p class="lede">Administer the ASSIST one on one with an AI client. Read the opening script, ask the eight questions in your own words, and code each answer on the screening form as the client responds.</p>
-    <div class="box box-amber">
-      <b>How this works:</b>
-      <ul>
-        <li>The AI plays the <b>client</b>; you are the <b>helper</b>.</li>
-        <li>Read the opening script, then ask the questions conversationally. The client answers in character.</li>
-        <li>You decide how to <b>code each answer</b> on the screening form. Scores and risk tiers update on their own.</li>
-        <li>Use <b>New client</b> for a fresh case, or <b>Reset</b> to clear the form.</li>
-      </ul>
+    <div class="orient">
+      <div class="ohd">Instructions</div>
+      <p class="lead">Administer the ASSIST one on one with an AI client. Read the opening script, ask the eight questions in your own words, and code each answer on the screening form as the client responds.</p>
+      <div class="steps">
+        <div class="step"><div class="n">1</div><div class="tx">The AI plays the client; you are the helper.</div></div>
+        <div class="step"><div class="n">2</div><div class="tx">Read the opening script, then ask the questions conversationally. The client answers in character.</div></div>
+        <div class="step"><div class="n">3</div><div class="tx">Decide how to code each answer on the screening form. Scores and risk tiers update on their own.</div></div>
+        <div class="step"><div class="n">4</div><div class="tx">Use New client for a fresh case, or Reset to clear the form.</div></div>
+      </div>
     </div>
   </div>
 
