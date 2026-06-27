@@ -1,586 +1,407 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Delusions vs. Obsessions — Socialworky Tools</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Socialworky | Distortion Decoder</title>
 <style>
-  :root {
-    --accent:     #EB786B;
-    --accentDeep: #C2452F;
-    --bg:         #ffffff;
-    --surface:    #f8f8f8;
-    --border:     #e0e0e0;
-    --text:       #1a1a1a;
-    --muted:      #666;
-    --radius:     8px;
-    --coral-bg:   #FDEEEB;
-    --coral-line: #F6D4CD;
-    --heroMuted:  #7A5048;
+  @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap');
+  :root{
+    --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
+    --accent:#EB786B; --accentDeep:#C2452F; --coral-bg:#FDEEEB; --coral-line:#F6D4CD; --heroMuted:#7A5048;
+    --ok:#2E7D54; --ok-bg:#E9F3EC; --ok-line:#BFE0CB;
+    --no:#B23A2E; --no-bg:#FBEAE8; --no-line:#F1C9C2;
+    --sans:'Hanken Grotesk',Arial,Helvetica,system-ui,sans-serif;
   }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.55; padding:24px; -webkit-font-smoothing:antialiased; }
+  .wrap{ max-width:720px; margin:0 auto; }
+  a{ color:var(--accentDeep); }
+  .hublink{ display:inline-block; margin-bottom:12px; font-size:13px; color:var(--accent); text-decoration:none; font-weight:600; }
+  .hublink:hover{ text-decoration:underline; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  /* header (the wordmark matches /header.js but this is the tool title block) */
+  .head{ border-bottom:1px solid var(--line); padding-bottom:12px; margin-bottom:22px; }
+  .brand{ font-weight:800; font-size:21px; letter-spacing:-.02em; }
+  .brand .b{ color:var(--accent); }
+  .tagline{ color:var(--muted); font-size:13px; margin-top:2px; }
 
-  /* ---- Standardized Socialworky tool hero (gamified / controller icon) ---- */
-  .toolhero { display: flex; align-items: center; gap: 16px; background: var(--coral-bg);
-    border: 1px solid var(--coral-line); border-radius: 12px; box-shadow: inset 4px 0 0 var(--accent);
-    padding: 18px 22px 18px 24px; margin-bottom: 16px; }
-  .toolhero .ico { width: 52px; height: 52px; border-radius: 12px; background: #fff;
-    border: 1px solid var(--coral-line); display: flex; align-items: center; justify-content: center;
-    flex: 0 0 auto; color: var(--accentDeep); }
-  .toolhero .ico svg { width: 26px; height: 26px; display: block; }
-  .toolhero .brand { font-weight: 700; font-size: 24px; letter-spacing: -0.02em; color: var(--text); line-height: 1.1; }
-  .toolhero .brand .bot { color: var(--accentDeep); }
-  .toolhero .tagline { color: var(--heroMuted); font-size: 14px; margin-top: 3px; }
+  .btn{ font-family:var(--sans); font-size:15px; font-weight:700; border:1px solid transparent; border-radius:10px; padding:12px 22px; cursor:pointer; transition:background .15s,border-color .15s,transform .05s; }
+  .btn-primary{ background:var(--accent); color:#fff; }
+  .btn-primary:hover{ background:var(--accentDeep); }
+  .btn-primary:active{ transform:translateY(1px); }
+  .btn-ghost{ background:#fff; color:var(--accentDeep); border-color:var(--coral-line); }
+  .btn-ghost:hover{ background:var(--coral-bg); border-color:var(--accent); }
+
+  /* start screen */
+  .intro h1{ font-size:30px; font-weight:800; letter-spacing:-.02em; margin:6px 0 8px; }
+  .intro .lead{ color:var(--muted); font-size:16px; margin:0 0 18px; max-width:60ch; }
+  .how{ background:var(--coral-bg); border:1px solid var(--coral-line); border-radius:14px; padding:16px 18px; margin:0 0 22px; }
+  .how b{ color:var(--accentDeep); }
+  .how p{ margin:0; color:#6E625C; font-size:14.5px; }
+
+  /* ---- Standardized Socialworky tool hero (knowledge / brain icon) ---- */
+  .toolhero{ display:flex; align-items:center; gap:16px; background:var(--coral-bg); border:1px solid var(--coral-line);
+    border-radius:12px; box-shadow:inset 4px 0 0 var(--accent); padding:18px 22px 18px 24px; margin-bottom:22px; }
+  .toolhero .ico{ width:52px; height:52px; border-radius:12px; background:#fff; border:1px solid var(--coral-line);
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto; color:var(--accentDeep); }
+  .toolhero .ico svg{ width:26px; height:26px; display:block; }
+  .toolhero .brand{ font-weight:800; font-size:24px; letter-spacing:-.02em; color:var(--ink); line-height:1.1; }
+  .toolhero .brand .bot{ color:var(--accentDeep); }
+  .toolhero .tagline{ color:var(--heroMuted); font-size:14px; margin-top:3px; }
   /* ---- Standardized orientation panel ("Instructions") ---- */
-  .orient { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; }
-  .orient .ohd { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 10px; }
-  .orient .lead { font-size: 13.5px; color: var(--text); line-height: 1.55; margin-bottom: 16px; }
-  .orient .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
-  .orient .step { display: flex; gap: 10px; }
-  .orient .step .n { width: 24px; height: 24px; border-radius: 50%; background: var(--coral-bg); color: var(--accentDeep);
-    font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
-  .orient .step .tx { font-size: 13.5px; color: var(--muted); line-height: 1.45; }
+  .orient{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin:0 0 18px; }
+  .orient .ohd{ font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:10px; }
+  .orient .lead{ font-size:13.5px; color:var(--ink); line-height:1.55; margin-bottom:16px; max-width:none; }
+  .orient .steps{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; }
+  .orient .step{ display:flex; gap:10px; }
+  .orient .step .n{ width:24px; height:24px; border-radius:50%; background:var(--coral-bg); color:var(--accentDeep);
+    font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .orient .step .tx{ font-size:13.5px; color:var(--muted); line-height:1.45; }
 
-  body {
-    font-family: Arial, system-ui, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    max-width: 760px;   /* match the other activities so it never stretches full width */
-    margin: 0 auto;
+  /* loading */
+  .loading{ text-align:center; padding:60px 0; color:var(--muted); }
+  .dots{ display:inline-flex; gap:7px; margin-bottom:14px; }
+  .dots i{ width:9px; height:9px; border-radius:50%; background:var(--accent); display:block; animation:bounce 1s ease-in-out infinite; }
+  .dots i:nth-child(2){ animation-delay:.15s; } .dots i:nth-child(3){ animation-delay:.3s; }
+  @keyframes bounce{ 0%,80%,100%{ transform:translateY(0); opacity:.5; } 40%{ transform:translateY(-7px); opacity:1; } }
+
+  /* play: top bar */
+  .topbar{ display:flex; align-items:center; gap:12px; margin-bottom:10px; }
+  .count{ font-size:13px; font-weight:700; color:var(--muted); }
+  .pill{ margin-left:auto; font-size:12.5px; font-weight:700; padding:4px 11px; border-radius:20px; background:var(--surface); border:1px solid var(--line); }
+  .pill.streak{ color:var(--accentDeep); background:var(--coral-bg); border-color:var(--coral-line); opacity:0; transition:opacity .2s; }
+  .pill.streak.on{ opacity:1; }
+  .progress{ height:7px; border-radius:20px; background:var(--line); overflow:hidden; margin-bottom:20px; }
+  .progress i{ display:block; height:100%; background:var(--accent); border-radius:20px; transition:width .35s ease; }
+
+  /* play: question card */
+  .qcard{ background:var(--coral-bg); border:1px solid var(--coral-line); border-radius:16px; padding:26px 24px; margin-bottom:18px; animation:cardin .3s ease both; }
+  .qcard .eyebrow{ font-size:11px; letter-spacing:1.4px; text-transform:uppercase; font-weight:700; color:var(--accentDeep); margin-bottom:10px; }
+  .qcard .said{ font-size:21px; line-height:1.4; font-weight:600; font-style:italic; color:var(--ink); }
+  @keyframes cardin{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+
+  /* play: options */
+  .opts{ display:grid; gap:10px; }
+  .opt{ font-family:var(--sans); text-align:left; font-size:15.5px; font-weight:600; color:var(--ink); background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px 16px; cursor:pointer; transition:border-color .12s,background .12s,box-shadow .12s; }
+  .opt:hover:not(:disabled){ border-color:var(--accent); box-shadow:0 1px 8px rgba(0,0,0,.05); }
+  .opt:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .opt:disabled{ cursor:default; }
+  .opt.correct{ background:var(--ok-bg); border-color:var(--ok-line); color:var(--ok); }
+  .opt.wrong{ background:var(--no-bg); border-color:var(--no-line); color:var(--no); }
+  .opt.dim{ opacity:.5; }
+  .opt .mark{ float:right; font-weight:800; }
+
+  /* play: feedback */
+  .fb{ border-radius:14px; padding:16px 18px; margin-top:16px; font-size:14.5px; animation:cardin .25s ease both; }
+  .fb.good{ background:var(--ok-bg); border:1px solid var(--ok-line); }
+  .fb.bad{ background:var(--no-bg); border:1px solid var(--no-line); }
+  .fb .verdict{ font-weight:800; font-size:15px; margin-bottom:6px; }
+  .fb.good .verdict{ color:var(--ok); } .fb.bad .verdict{ color:var(--no); }
+  .fb p{ margin:0 0 8px; color:#3a3a3a; } .fb p:last-of-type{ margin-bottom:0; }
+  .fb .lab{ font-weight:700; color:var(--ink); }
+  .fb .next{ margin-top:14px; }
+  .fb .ex{ color:var(--muted); font-style:italic; }
+
+  /* results */
+  .verdict-big{ text-align:center; padding:14px 0 6px; }
+  .verdict-big .score{ font-size:54px; font-weight:800; letter-spacing:-.02em; line-height:1; }
+  .verdict-big .pct{ color:var(--muted); font-size:15px; margin-top:6px; }
+  .verdict-big .tier{ display:inline-block; margin-top:14px; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accentDeep); background:var(--coral-bg); border:1px solid var(--coral-line); padding:6px 14px; border-radius:20px; }
+  .blurb{ text-align:center; color:var(--muted); font-size:15px; margin:14px auto 24px; max-width:54ch; }
+  .seclabel{ font-size:11px; letter-spacing:1px; text-transform:uppercase; font-weight:700; color:var(--ink); border-bottom:1px solid var(--line); padding-bottom:6px; margin:26px 0 12px; }
+  .focus{ background:var(--surface); border:1px solid var(--line); border-left:3px solid var(--accent); border-radius:10px; padding:12px 16px; margin-bottom:10px; font-size:14.5px; }
+  .focus b{ color:var(--ink); }
+  .review .r{ display:flex; gap:12px; align-items:flex-start; padding:10px 0; border-bottom:1px solid var(--line); font-size:14px; }
+  .review .r:last-child{ border-bottom:0; }
+  .review .ic{ flex-shrink:0; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; margin-top:2px; }
+  .review .ic.y{ background:var(--ok); } .review .ic.n{ background:var(--no); }
+  .review .said{ font-style:italic; color:var(--ink); }
+  .review .lab{ color:var(--muted); font-size:13px; margin-top:2px; }
+  .review .lab b{ color:var(--accentDeep); }
+  .center{ text-align:center; margin-top:26px; }
+  .err{ color:var(--no); background:var(--no-bg); border:1px solid var(--no-line); border-radius:10px; padding:12px 14px; font-size:14px; margin-top:14px; }
+
+  @media (max-width:560px){
+    body{ padding:16px; }
+    .qcard .said{ font-size:19px; }
+    .verdict-big .score{ font-size:44px; }
   }
-
-  /* ── Top bar ── */
-  .top-bar {
-    border-top: 4px solid var(--accent);
-    padding: 12px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .back-link {
-    font-size: 0.85rem;
-    color: var(--accentDeep);
-    text-decoration: none;
-    font-weight: 600;
-  }
-  .back-link:hover { text-decoration: underline; }
-
-  .wordmark {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--accent);
-    letter-spacing: 0.01em;
-  }
-
-  /* ── Page header ── */
-  .page-header {
-    padding: 20px 24px 16px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .tool-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--accent);
-    margin-bottom: 6px;
-  }
-
-  .page-header h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-
-  .page-header p {
-    font-size: 0.9rem;
-    color: var(--muted);
-  }
-
-  /* ── Timer / status strip ── */
-  .status-strip {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 8px 24px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    font-size: 0.88rem;
-    color: var(--muted);
-  }
-
-  #timer { font-weight: 700; color: var(--text); }
-
-  /* ── Main layout ── */
-  .main {
-    display: flex;
-    flex: 1;
-    gap: 16px;
-    padding: 16px 24px;
-    min-height: 0;
-  }
-
-  /* ── Card bank ── */
-  #card-bank {
-    width: 270px;
-    flex-shrink: 0;
-    border: 2px dashed var(--border);
-    border-radius: var(--radius);
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-    background: var(--surface);
-    min-height: 200px;
-    transition: background 0.15s, border-color 0.15s;
-  }
-
-  #card-bank.drag-over {
-    background: #fdf0ee;
-    border-color: var(--accent);
-  }
-
-  /* ── Cards ── */
-  .card {
-    border-radius: 6px;
-    padding: 9px 11px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: #fff;
-    text-align: center;
-    cursor: grab;
-    user-select: none;
-    line-height: 1.35;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.18);
-    transition: transform 0.12s, opacity 0.12s;
-  }
-
-  .card:active { cursor: grabbing; }
-  .card.dragging { opacity: 0.35; transform: scale(0.96); }
-
-  .card.correct {
-    outline: 4px solid #27ae60;
-    box-shadow: 0 0 0 7px rgba(39,174,96,0.15), 0 2px 5px rgba(0,0,0,0.15);
-  }
-  .card.incorrect {
-    outline: 4px solid #c0392b;
-    box-shadow: 0 0 0 7px rgba(192,57,43,0.15), 0 2px 5px rgba(0,0,0,0.15);
-    animation: shake 0.35s;
-  }
-
-  @keyframes shake {
-    0%,100% { transform: translateX(0); }
-    25%      { transform: translateX(-6px); }
-    75%      { transform: translateX(6px); }
-  }
-
-  /* ── Drop zones ── */
-  .zones {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    min-width: 0;
-  }
-
-  .zone-section { flex: 1; display: flex; flex-direction: column; }
-
-  .zone-title {
-    font-size: 1.3rem;
-    font-weight: 800;
-    color: var(--text);
-    margin-bottom: 8px;
-    padding-left: 2px;
-    border-left: 4px solid var(--accent);
-    padding-left: 10px;
-  }
-
-  .drop-zone {
-    flex: 1;
-    border: 2px dashed var(--border);
-    border-radius: var(--radius);
-    padding: 10px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    align-content: flex-start;
-    min-height: 100px;
-    background: #fff;
-    transition: background 0.15s, border-color 0.15s;
-  }
-
-  .drop-zone.drag-over {
-    background: #fdf0ee;
-    border-color: var(--accent);
-  }
-
-  .drop-zone .card { width: calc(33.33% - 5px); cursor: grab; }
-
-  .placeholder-text {
-    color: #ccc;
-    font-size: 0.82rem;
-    width: 100%;
-    text-align: center;
-    padding: 16px 0;
-    pointer-events: none;
-    font-style: italic;
-  }
-
-  /* ── Result banner ── */
-  #result-banner {
-    display: none;
-    text-align: center;
-    padding: 11px 24px;
-    font-size: 1rem;
-    font-weight: 700;
-    color: #fff;
-  }
-
-  /* ── Footer ── */
-  footer {
-    padding: 14px 24px;
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-  }
-
-  button {
-    padding: 10px 28px;
-    border: none;
-    border-radius: var(--radius);
-    font-family: inherit;
-    font-size: 0.95rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.15s, transform 0.1s;
-  }
-  button:active { transform: scale(0.97); }
-
-  #btn-check {
-    background: var(--accent);
-    color: #fff;
-  }
-  #btn-check:hover:not(:disabled) { background: var(--accentDeep); }
-  #btn-check:disabled { background: #bbb; cursor: default; }
-
-  #btn-reset {
-    background: #fff;
-    color: var(--text);
-    border: 1.5px solid var(--border);
-  }
-  #btn-reset:hover { background: var(--surface); }
-
-  /* ── Footer credit ── */
-  .site-footer {
-    text-align: center;
-    padding: 10px 24px;
-    font-size: 0.75rem;
-    color: #aaa;
-    border-top: 1px solid var(--border);
-  }
-
-  /* ── Responsive ── */
-  @media (max-width: 640px) {
-    .main { flex-direction: column; padding: 12px; }
-    #card-bank { width: 100%; }
-    .drop-zone .card { width: calc(50% - 4px); }
+  @media (prefers-reduced-motion: reduce){
+    .qcard,.fb{ animation:none; }
+    .dots i{ animation:none; opacity:.7; }
+    .progress i{ transition:none; }
   }
 </style>
 </head>
 <body>
-
-<!-- Site header (rendered by header.js, same as the other tools) -->
-<script src="/header.js"></script>
-
-<!-- Page header -->
-<div class="page-header">
-  <div class="toolhero">
-    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/></svg></div>
-    <div>
-      <div class="brand">Delusions vs. <span class="bot">Obsessions</span></div>
-      <div class="tagline">Tell the two apart, one card at a time</div>
-    </div>
-  </div>
-  <div class="orient">
-    <div class="ohd">Instructions</div>
-    <p class="lead">Each card is a client statement. Decide whether it describes a delusion or an obsession, and sort them all.</p>
-    <div class="steps">
-      <div class="step"><div class="n">1</div><div class="tx">Drag each card from the bank into Delusions or Obsessions.</div></div>
-      <div class="step"><div class="n">2</div><div class="tx">Sort every card. The timer tracks how long you take.</div></div>
-      <div class="step"><div class="n">3</div><div class="tx">Submit to check your answers, then reset to try again.</div></div>
-    </div>
-  </div>
+<div class="wrap">
+  <script src="/header.js"></script>
+  <div id="app"></div>
 </div>
-
-<!-- Status strip -->
-<div class="status-strip">
-  <span id="timer">0:00</span>
-  <span id="score-display">Sort all the cards, then submit.</span>
-</div>
-
-<!-- Main -->
-<div class="main">
-  <div id="card-bank"></div>
-
-  <div class="zones">
-    <div class="zone-section">
-      <div class="zone-title">Delusions</div>
-      <div class="drop-zone" id="zone-delusion" data-zone="delusion">
-        <span class="placeholder-text">Drop cards here</span>
-      </div>
-    </div>
-    <div class="zone-section">
-      <div class="zone-title">Obsessions</div>
-      <div class="drop-zone" id="zone-obsession" data-zone="obsession">
-        <span class="placeholder-text">Drop cards here</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div id="result-banner"></div>
-
-<footer>
-  <button id="btn-check">Submit Answers</button>
-  <button id="btn-reset">Reset</button>
-</footer>
-
-<div class="site-footer">A Socialworky training resource. For practice only — please use fictional details, not real client information.</div>
 
 <script>
-const CARDS = [
-  // Delusions
-  { id: 1,  text: "My neighbors are sending me messages through the radio.",                         category: "delusion",  color: "#7b2d8b" },
-  { id: 2,  text: "The CIA implanted a chip in my brain last year while I was sleeping.",            category: "delusion",  color: "#1565c0" },
-  { id: 3,  text: "I believe I'm immortal and will never die.",                                      category: "delusion",  color: "#c0392b" },
-  { id: 4,  text: "God gave me a mission to warn people about the coming flood.",                    category: "delusion",  color: "#b7770d" },
-  { id: 5,  text: "I am being monitored by the government through my shower drain.",                 category: "delusion",  color: "#922b21" },
-  { id: 6,  text: "I am certain my food is being poisoned, even though tests show it’s safe.",      category: "delusion",  color: "#d35400" },
-  { id: 7,  text: "The television is giving me coded instructions for how to live my life.",         category: "delusion",  color: "#6e2f7a" },
-  // Obsessions
-  { id: 8,  text: "I can’t stop thinking that I might have run someone over on my way here.",       category: "obsession", color: "#1a6fb5" },
-  { id: 9,  text: "I feel like I’ll cause harm if I don’t tap things in a certain order.",          category: "obsession", color: "#1e8449" },
-  { id: 10, text: "I can’t stop counting how many steps I take. It has to be in multiples of four.", category: "obsession", color: "#5b3a8e" },
-  { id: 11, text: "I know these thoughts are irrational, but they won’t stop coming.",              category: "obsession", color: "#1a7a45" },
-  { id: 12, text: "These thoughts feel intrusive. I know they’re not true, but I can’t stop them.", category: "obsession", color: "#1f618d" },
-  { id: 13, text: "I replay conversations in my head obsessively to make sure I didn’t say something wrong.", category: "obsession", color: "#7d3c98" },
-  { id: 14, text: "I check the stove 12 times before leaving because I keep imagining a fire.",     category: "obsession", color: "#1e6b3a" },
-  { id: 15, text: "I’m scared I might blurt out something offensive during church even though I never would.", category: "obsession", color: "#2471a3" },
+/* ---- backend plumbing: identical pattern to your other tools ---- */
+const GEN_MODEL = "gpt-4.1"; // sharper model for accurate labeling; "gpt-4.1-mini" is cheaper
+
+async function callChat(system, msgs, model, maxTokens){
+  const headers = {"content-type":"application/json"};
+  const code = localStorage.getItem("clientbot_access_code");
+  if(code) headers["x-access-code"] = code;
+  const ctrl = new AbortController();
+  const timer = setTimeout(()=>ctrl.abort(), 60000);
+  let res;
+  try{
+    res = await fetch("/api/chat", {method:"POST", headers, signal:ctrl.signal,
+      body: JSON.stringify({system, messages:msgs, model, max_tokens:maxTokens})});
+  }catch(e){ clearTimeout(timer); throw new Error(e.name==="AbortError" ? "the request timed out" : ("network error - "+e.message)); }
+  clearTimeout(timer);
+  if(res.status === 401){
+    const entered = prompt("Enter the access code for this tool:");
+    if(entered){ localStorage.setItem("clientbot_access_code", entered); return callChat(system, msgs, model, maxTokens); }
+    throw new Error("Access code required.");
+  }
+  let data;
+  try{ data = await res.json(); }
+  catch(e){ throw new Error("the server did not return readable data (status "+res.status+"). The /api function may not be deployed."); }
+  if(!res.ok) throw new Error((data && data.error) || ("status "+res.status));
+  return (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+}
+function extractJSON(text){
+  let t = text.replace(/```json/gi,"").replace(/```/g,"").trim();
+  const s = t.indexOf("{"), e = t.lastIndexOf("}");
+  if(s!==-1 && e!==-1) t = t.slice(s, e+1);
+  return JSON.parse(t);
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ---- the distortion glossary (used for "why your pick was off" feedback) ---- */
+const LABELS = [
+  "All-or-Nothing Thinking","Disqualifying the Positive","Mind Reading","Jumping to Conclusions",
+  "Catastrophizing","Minimization","Emotional Reasoning","Should Statements",
+  "Labeling and Mislabeling","Personalization","Not a Distortion"
 ];
+const GLOSSARY = {
+  "All-or-Nothing Thinking": { def:"seeing only the extremes, perfect or total failure, with no middle ground", ex:"If I'm not the best parent on the block, I'm a terrible one." },
+  "Disqualifying the Positive": { def:"noticing something good and then waving it away so it doesn't count", ex:"Sure they thanked me, but they were just being polite." },
+  "Mind Reading": { def:"assuming you know what someone is thinking right now, usually something negative", ex:"She didn't text back, so she's obviously annoyed with me." },
+  "Jumping to Conclusions": { def:"treating a guess or prediction as settled fact on little or no evidence", ex:"There's no point applying. I already know I won't get it." },
+  "Catastrophizing": { def:"blowing the size or likelihood of something straight up to the worst case", ex:"If I stumble in this talk, my whole career is over." },
+  "Minimization": { def:"shrinking something down so it barely counts, often to let yourself off the hook", ex:"It's just one drink. Everybody does it. It's no big deal." },
+  "Emotional Reasoning": { def:"taking a feeling as proof: I feel it, so it must be true", ex:"I feel like a fraud, so I must actually be one." },
+  "Should Statements": { def:"holding yourself or others to rigid shoulds, oughts, and musts", ex:"I should be over this by now." },
+  "Labeling and Mislabeling": { def:"pinning a sweeping, loaded label on a whole person from one moment", ex:"I forgot the deadline. I'm such an idiot." },
+  "Personalization": { def:"taking the blame for something that wasn't really yours to own", ex:"The team missed the goal, and it's all my fault." },
+  "Not a Distortion": { def:"a thought that is painful or heavy but logically sound, with no thinking trap underneath", ex:"I lost my job last week and I've been really down about it." }
+};
 
-// ── Audio (Web Audio API, no external files) ───────────────────────────────────────
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let audioCtx = null;
-function getCtx() { return audioCtx || (audioCtx = new AudioCtx()); }
+/* ---- ask the backend for a fresh round ---- */
+const DECK_SYSTEM = `You are the content engine for "Distortion Decoder," a cognitive distortion practice game for clinicians and students. Generate one fresh round.
 
-function tone(freq, type, start, dur, vol, ctx) {
-  const o = ctx.createOscillator(), g = ctx.createGain();
-  o.connect(g); g.connect(ctx.destination);
-  o.type = type;
-  o.frequency.setValueAtTime(freq, start);
-  g.gain.setValueAtTime(vol, start);
-  g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
-  o.start(start); o.stop(start + dur);
+Return ONLY valid JSON. No prose, no markdown fences. Shape:
+{"deck":[{"text":"...","answer":"...","why":"...","options":["...","...","...","..."]}, ... exactly 20 items ...]}
+
+LABEL SET (use these EXACT strings for "answer" and inside "options"):
+"All-or-Nothing Thinking", "Disqualifying the Positive", "Mind Reading", "Jumping to Conclusions", "Catastrophizing", "Minimization", "Emotional Reasoning", "Should Statements", "Labeling and Mislabeling", "Personalization", "Not a Distortion"
+
+COMPOSITION (exactly 20 items):
+- Exactly 5 items with answer "Not a Distortion".
+- At least 2 items with answer "Minimization".
+- Spread the remaining items across the other distortion types with variety; no single type should dominate.
+- Every distortion item must be a CLEAR, unambiguous example of its label.
+
+WRITING THE STATEMENTS ("text"):
+- A realistic, first-person client quote, the kind of thing a real person actually says out loud. Conversational, specific, a little messy. 8 to 30 words.
+- Vary the life context across items: work, money, parenting, relationships, health, recovery, school, faith, friendship.
+- Do not start multiple statements the same way, and do not sound like canned textbook examples.
+- "Not a Distortion" items are genuinely painful or heavy but logically sound, with no thinking trap (real grief, real disappointment, a fair self-observation).
+
+"why": one or two plain sentences, spoken to the player, naming why the statement fits the label. Warm and clear, no jargon dump.
+
+"options": exactly 4 labels from the set, including the correct "answer" plus 3 plausible distractors a thoughtful learner might confuse it with. Put "Not a Distortion" among the options on some distortion items, and put real distortions among the options on the "Not a Distortion" items.
+
+Make this round feel different from previous ones. Return only the JSON object.`;
+
+/* ---- state ---- */
+let deck = [], idx = 0, score = 0, streak = 0, answered = false, results = [];
+const app = document.getElementById("app");
+
+function headEl(){
+  return `<div class="toolhero">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/><path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/><path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/><path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/><path d="M12 5a3 3 0 0 0 -6 0v.5"/><path d="M12 5a3 3 0 0 1 6 0v.5"/><path d="M12 5v14"/></svg></div>
+    <div>
+      <div class="brand">Distortion <span class="bot">Decoder</span></div>
+      <div class="tagline">Spot the thinking trap, or call it clean.</div>
+    </div>
+  </div>`;
 }
 
-function chimePlace() {
-  const ctx = getCtx(), t = ctx.currentTime;
-  tone(880, 'sine', t, 0.07, 0.08, ctx);
-}
-function chimeCorrect() {
-  const ctx = getCtx(), t = ctx.currentTime;
-  [[523.25,0],[659.25,0.08],[783.99,0.16]].forEach(([f,d]) => tone(f,'sine',t+d,0.45,0.22,ctx));
-}
-function chimeIncorrect() {
-  const ctx = getCtx(), t = ctx.currentTime;
-  [[320,0],[240,0.12]].forEach(([f,d]) => tone(f,'sawtooth',t+d,0.28,0.12,ctx));
-}
-function chimePerfect() {
-  const ctx = getCtx(), t = ctx.currentTime;
-  [[523.25,0],[659.25,0.1],[783.99,0.2],[1046.5,0.32],[1318.5,0.46]].forEach(([f,d]) => tone(f,'sine',t+d,0.55,0.2,ctx));
+/* ---- screens ---- */
+function renderStart(){
+  app.innerHTML = headEl() + `
+    <div class="intro">
+      <h1>Can you decode the distortion?</h1>
+      <div class="orient">
+        <div class="ohd">Instructions</div>
+        <p class="lead">Twenty client statements, one at a time. Some are classic cognitive distortions, some are just honest, hard feelings, and your job is to tell which is which.</p>
+        <div class="steps">
+          <div class="step"><div class="n">1</div><div class="tx">Read each statement and pick the label you think fits.</div></div>
+          <div class="step"><div class="n">2</div><div class="tx">You'll find out right away whether you nailed it.</div></div>
+          <div class="step"><div class="n">3</div><div class="tx">Not every statement is a distortion, so watch for the ones that are simply painful and true.</div></div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="start">Deal me in</button>
+    </div>`;
+  document.getElementById("start").onclick = startRound;
 }
 
-// ── State ─────────────────────────────────────────────────────────────────
-let draggedCard = null, timerInterval = null, secondsElapsed = 0, submitted = false;
+function renderLoading(){
+  app.innerHTML = headEl() + `<div class="loading"><div class="dots"><i></i><i></i><i></i></div>
+    <div>Shuffling a fresh round...</div></div>`;
+}
 
-// ── Build a card element ─────────────────────────────────────────────────────
-function buildCard(card) {
-  const el = document.createElement('div');
-  el.className = 'card';
-  el.id = 'card-' + card.id;
-  el.dataset.category = card.category;
-  el.textContent = card.text;
-  el.style.background = card.color;
-  el.draggable = true;
-  el.addEventListener('dragstart', e => {
-    draggedCard = el;
-    setTimeout(() => el.classList.add('dragging'), 0);
-    e.dataTransfer.effectAllowed = 'move';
+function renderError(msg){
+  app.innerHTML = headEl() + `<div class="err">Something went sideways: ${esc(msg)}</div>
+    <div class="center"><button class="btn btn-primary" id="retry">Try again</button></div>`;
+  document.getElementById("retry").onclick = startRound;
+}
+
+function renderQuestion(){
+  const q = deck[idx];
+  const pct = Math.round((idx/deck.length)*100);
+  const opts = q.options.map(o=>`<button class="opt" data-label="${esc(o)}">${esc(o)}</button>`).join("");
+  app.innerHTML = headEl() + `
+    <div class="topbar">
+      <span class="count">Statement ${idx+1} of ${deck.length}</span>
+      <span class="pill">Score ${score}</span>
+      <span class="pill streak ${streak>=2?'on':''}">${streak>=2?streak+' in a row':''}</span>
+    </div>
+    <div class="progress"><i style="width:${pct}%"></i></div>
+    <div class="qcard">
+      <div class="eyebrow">What's going on in this thought?</div>
+      <div class="said">&ldquo;${esc(q.said || q.text)}&rdquo;</div>
+    </div>
+    <div class="opts" id="opts">${opts}</div>
+    <div id="fbslot"></div>`;
+  answered = false;
+  document.querySelectorAll(".opt").forEach(b=>{
+    b.onclick = ()=>choose(b.getAttribute("data-label"), b);
   });
-  el.addEventListener('dragend', () => { el.classList.remove('dragging'); draggedCard = null; });
-  el.addEventListener('touchstart', onTouchStart, { passive: true });
-  el.addEventListener('touchmove',  onTouchMove,  { passive: false });
-  el.addEventListener('touchend',   onTouchEnd);
-  return el;
 }
 
-function shuffle(arr) {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
+function choose(label, btn){
+  if(answered) return;
+  answered = true;
+  const q = deck[idx];
+  const correct = (label === q.answer);
+  results.push({ text:q.said||q.text, answer:q.answer, chosen:label, correct });
+
+  if(correct){ score++; streak++; } else { streak = 0; }
+
+  document.querySelectorAll(".opt").forEach(b=>{
+    const l = b.getAttribute("data-label");
+    b.disabled = true;
+    if(l === q.answer) b.classList.add("correct");
+    if(l === label && !correct) b.classList.add("wrong");
+    if(l !== q.answer && l !== label) b.classList.add("dim");
+    if(l === q.answer) b.insertAdjacentHTML("beforeend", '<span class="mark">&#10003;</span>');
+    if(l === label && !correct) b.insertAdjacentHTML("beforeend", '<span class="mark">&#10007;</span>');
+  });
+
+  const fb = document.getElementById("fbslot");
+  let html;
+  if(correct){
+    html = `<div class="fb good"><div class="verdict">Decoded.</div>
+      <p>${esc(q.why || ("That's "+q.answer+".") )}</p>
+      <button class="btn btn-primary next" id="next">${idx+1<deck.length?'Next statement':'See results'}</button></div>`;
+  }else{
+    const g = GLOSSARY[label] || {def:"a different pattern", ex:""};
+    html = `<div class="fb bad"><div class="verdict">Not quite.</div>
+      <p><span class="lab">${esc(label)}</span> is about ${esc(g.def)}. A clearer example would be: <span class="ex">&ldquo;${esc(g.ex)}&rdquo;</span></p>
+      <p>This one is <span class="lab">${esc(q.answer)}</span>. ${esc(q.why||"")}</p>
+      <button class="btn btn-primary next" id="next">${idx+1<deck.length?'Next statement':'See results'}</button></div>`;
   }
-  return a;
+  fb.innerHTML = html;
+  document.getElementById("next").onclick = ()=>{
+    idx++;
+    if(idx < deck.length) renderQuestion(); else renderResults();
+  };
+  fb.scrollIntoView({behavior:"smooth", block:"nearest"});
 }
 
-function populateBank() {
-  const bank = document.getElementById('card-bank');
-  bank.innerHTML = '';
-  shuffle(CARDS).forEach(c => bank.appendChild(buildCard(c)));
-}
+function renderResults(){
+  const total = deck.length, pct = Math.round((score/total)*100);
+  let tier, blurb;
+  if(pct>=90){ tier="Sharp eye"; blurb="You read these like an open book. The subtle ones barely slowed you down."; }
+  else if(pct>=75){ tier="Getting fluent"; blurb="Strong round. A few of the trickier traps slipped past, but your instincts are solid."; }
+  else if(pct>=55){ tier="Warming up"; blurb="A fair start. The patterns below are the ones worth a second look."; }
+  else { tier="Just getting started"; blurb="Distortions take reps to spot. Run it again and watch the patterns below."; }
 
-// ── Drop zones ──────────────────────────────────────────────────────────
-document.querySelectorAll('.drop-zone, #card-bank').forEach(zone => {
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-  zone.addEventListener('drop', e => {
-    e.preventDefault();
-    zone.classList.remove('drag-over');
-    if (draggedCard && !submitted) {
-      removePH(zone);
-      zone.appendChild(draggedCard);
-      draggedCard.classList.remove('correct','incorrect');
-      restorePH();
-      chimePlace();
-    }
-  });
-});
-
-function removePH(zone) { const p = zone.querySelector('.placeholder-text'); if (p) p.remove(); }
-function restorePH() {
-  document.querySelectorAll('.drop-zone').forEach(z => {
-    if (!z.querySelector('.card') && !z.querySelector('.placeholder-text')) {
-      const p = document.createElement('span');
-      p.className = 'placeholder-text'; p.textContent = 'Drop cards here';
-      z.appendChild(p);
-    }
-  });
-}
-
-// ── Touch drag ──────────────────────────────────────────────────────────
-let touchClone = null, touchOX = 0, touchOY = 0;
-
-function onTouchStart(e) {
-  if (submitted) return;
-  const touch = e.touches[0], el = e.currentTarget, rect = el.getBoundingClientRect();
-  touchOX = touch.clientX - rect.left; touchOY = touch.clientY - rect.top;
-  touchClone = el.cloneNode(true);
-  Object.assign(touchClone.style, {
-    position: 'fixed', zIndex: 1000, pointerEvents: 'none',
-    width: rect.width + 'px', opacity: '0.85',
-    left: rect.left + 'px', top: rect.top + 'px'
-  });
-  document.body.appendChild(touchClone);
-  draggedCard = el;
-  el.classList.add('dragging');
-}
-function onTouchMove(e) {
-  e.preventDefault();
-  if (!touchClone) return;
-  const t = e.touches[0];
-  touchClone.style.left = (t.clientX - touchOX) + 'px';
-  touchClone.style.top  = (t.clientY - touchOY) + 'px';
-}
-function onTouchEnd(e) {
-  if (!touchClone || !draggedCard) return;
-  const t = e.changedTouches[0];
-  touchClone.remove(); touchClone = null;
-  draggedCard.classList.remove('dragging');
-  const el = document.elementFromPoint(t.clientX, t.clientY);
-  const zone = el ? el.closest('.drop-zone, #card-bank') : null;
-  if (zone) {
-    removePH(zone); zone.appendChild(draggedCard);
-    draggedCard.classList.remove('correct','incorrect');
-    restorePH(); chimePlace();
+  // tally misses by the correct label
+  const miss = {};
+  results.filter(r=>!r.correct).forEach(r=>{ miss[r.answer] = (miss[r.answer]||0)+1; });
+  const ranked = Object.keys(miss).sort((a,b)=>miss[b]-miss[a]);
+  let focusHtml;
+  if(ranked.length===0){
+    focusHtml = `<div class="focus">Clean sweep. You did not miss a single one. Try a fresh round to keep the eye sharp.</div>`;
+  }else{
+    focusHtml = ranked.slice(0,2).map(l=>`<div class="focus"><b>${esc(l)}</b> tripped you up ${miss[l]} time${miss[l]>1?'s':''}. ${esc(GLOSSARY[l] ? "Remember: it's "+GLOSSARY[l].def+"." : "")}</div>`).join("");
   }
-  draggedCard = null;
+
+  const review = results.map(r=>`
+    <div class="r">
+      <span class="ic ${r.correct?'y':'n'}">${r.correct?'&#10003;':'&#10007;'}</span>
+      <div>
+        <div class="said">&ldquo;${esc(r.text)}&rdquo;</div>
+        <div class="lab">Answer: <b>${esc(r.answer)}</b>${r.correct?'':' &nbsp;&middot;&nbsp; you said '+esc(r.chosen)}</div>
+      </div>
+    </div>`).join("");
+
+  app.innerHTML = headEl() + `
+    <div class="verdict-big">
+      <div class="score">${score}<span style="font-size:24px;color:var(--muted);font-weight:700;"> / ${total}</span></div>
+      <div class="pct">${pct}% decoded</div>
+      <div class="tier">${esc(tier)}</div>
+    </div>
+    <p class="blurb">${esc(blurb)}</p>
+    <div class="seclabel">Where to look next</div>
+    ${focusHtml}
+    <div class="seclabel">Your round</div>
+    <div class="review">${review}</div>
+    <div class="center"><button class="btn btn-primary" id="again">Play a new round</button></div>`;
+  document.getElementById("again").onclick = startRound;
 }
 
-// ── Timer ───────────────────────────────────────────────────────────────
-function startTimer() {
-  timerInterval = setInterval(() => {
-    secondsElapsed++;
-    const m = Math.floor(secondsElapsed / 60), s = secondsElapsed % 60;
-    document.getElementById('timer').textContent = m + ':' + String(s).padStart(2,'0');
-  }, 1000);
+/* ---- round lifecycle ---- */
+function normalize(item){
+  let opts = Array.isArray(item.options) ? item.options.filter(o=>LABELS.includes(o)) : [];
+  if(!opts.includes(item.answer)) opts.unshift(item.answer);
+  opts = [...new Set(opts)];
+  const pool = LABELS.filter(l=>!opts.includes(l));
+  while(opts.length < 4 && pool.length){ opts.push(pool.splice(Math.floor(Math.random()*pool.length),1)[0]); }
+  opts = opts.slice(0,4);
+  if(!opts.includes(item.answer)) opts[opts.length-1] = item.answer;
+  // shuffle
+  for(let i=opts.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [opts[i],opts[j]]=[opts[j],opts[i]]; }
+  return { text:String(item.text||"").trim(), said:String(item.text||"").trim(), answer:item.answer, why:String(item.why||"").trim(), options:opts };
 }
 
-// ── Submit ──────────────────────────────────────────────────────────────
-document.getElementById('btn-check').addEventListener('click', () => {
-  if (submitted) return;
-  if (document.querySelectorAll('#card-bank .card').length > 0) {
-    document.getElementById('score-display').textContent = 'Place all cards before submitting.';
-    return;
+async function startRound(){
+  renderLoading();
+  try{
+    const raw = await callChat(DECK_SYSTEM, [{role:"user", content:"Generate a new round."}], GEN_MODEL, 3500);
+    const parsed = extractJSON(raw);
+    const list = Array.isArray(parsed.deck) ? parsed.deck : [];
+    deck = list.filter(it=>it && it.text && LABELS.includes(it.answer)).map(normalize);
+    if(deck.length < 10) throw new Error("the round came back incomplete. Give it another go.");
+    idx = 0; score = 0; streak = 0; results = [];
+    renderQuestion();
+  }catch(e){
+    renderError(e.message || "could not load a round.");
   }
-  clearInterval(timerInterval);
-  submitted = true;
-  document.getElementById('btn-check').disabled = true;
+}
 
-  let correct = 0;
-  document.querySelectorAll('.drop-zone .card').forEach(card => {
-    const inZone = card.closest('.drop-zone').dataset.zone;
-    if (inZone === card.dataset.category) { card.classList.add('correct'); correct++; }
-    else card.classList.add('incorrect');
-  });
-
-  const total = CARDS.length, pct = Math.round(correct / total * 100);
-  const banner = document.getElementById('result-banner');
-  banner.style.display = 'block';
-
-  if (pct === 100) {
-    banner.style.background = '#27ae60';
-    banner.textContent = `Perfect score! ${correct}/${total} correct`;
-    chimePerfect();
-  } else if (pct >= 70) {
-    banner.style.background = '#b7770d';
-    banner.textContent = `Good effort — ${correct}/${total} correct (${pct}%). Green = correct, red = incorrect.`;
-    chimeCorrect();
-  } else {
-    banner.style.background = '#c0392b';
-    banner.textContent = `${correct}/${total} correct (${pct}%). Green = correct, red = incorrect.`;
-    chimeIncorrect();
-  }
-  document.getElementById('score-display').textContent = `Score: ${correct} / ${total}`;
-});
-
-// ── Reset ───────────────────────────────────────────────────────────────
-document.getElementById('btn-reset').addEventListener('click', () => {
-  clearInterval(timerInterval);
-  secondsElapsed = 0; submitted = false;
-  document.getElementById('timer').textContent = '0:00';
-  document.getElementById('score-display').textContent = 'Sort all the cards, then submit.';
-  document.getElementById('result-banner').style.display = 'none';
-  document.getElementById('btn-check').disabled = false;
-  document.querySelectorAll('.drop-zone').forEach(z => {
-    z.innerHTML = '<span class="placeholder-text">Drop cards here</span>';
-  });
-  populateBank();
-  startTimer();
-});
-
-// ── Init ────────────────────────────────────────────────────────────────
-populateBank();
-startTimer();
+renderStart();
 </script>
 </body>
 </html>
