@@ -34,6 +34,7 @@
 
     --radius: 16px;
     --radius-sm: 10px;
+    --heroMuted: #7A5048;
     --sans: Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
   }
 
@@ -81,6 +82,28 @@
   .alltools:hover { text-decoration: underline; }
   .tool-subtitle { font-size: 1rem; color: var(--muted); margin-top: 0.15rem; }
   .tool-divider { border: none; border-top: 1px solid var(--line); margin: 1.2rem 0 1.5rem; }
+
+  /* ---- Standardized Socialworky tool hero (Worksheet / pencil icon) ---- */
+  .toolhero { display: flex; align-items: center; gap: 16px; background: var(--blue-bg);
+    border: 1px solid var(--blue-line); border-radius: 12px; box-shadow: inset 4px 0 0 var(--accent);
+    padding: 18px 22px 18px 24px; margin-bottom: 18px; }
+  .toolhero .ico { width: 52px; height: 52px; border-radius: 12px; background: var(--card);
+    border: 1px solid var(--blue-line); display: flex; align-items: center; justify-content: center;
+    flex: 0 0 auto; color: var(--accentDeep); }
+  .toolhero .ico svg { width: 26px; height: 26px; display: block; }
+  .toolhero .brand { font-weight: 700; font-size: 24px; letter-spacing: -0.02em; color: var(--ink); line-height: 1.1; }
+  .toolhero .brand .bot { color: var(--accentDeep); }
+  .toolhero .tagline { color: var(--heroMuted); font-size: 14px; margin-top: 3px; }
+
+  /* ---- Standardized orientation panel ("Instructions") ---- */
+  .orient { background: #eceef1; border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-top: 1.6rem; }
+  .orient .ohd { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 10px; }
+  .orient .lead { font-size: 13.5px; color: var(--ink); line-height: 1.55; margin-bottom: 16px; }
+  .orient .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+  .orient .step { display: flex; gap: 10px; }
+  .orient .step .n { width: 24px; height: 24px; border-radius: 50%; background: var(--blue-bg); color: var(--accentDeep);
+    font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; flex: 0 0 auto; }
+  .orient .step .tx { font-size: 13.5px; color: var(--muted); line-height: 1.5; }
 
   .toolbar { display: inline-flex; gap: 0.5rem; flex-wrap: wrap; }
 
@@ -412,38 +435,22 @@
 <div class="wrap">
 
   <script src="/header.js"></script>
-  <div class="topbar">
-    <div class="toolbar">
-      <button class="tool-btn" id="copyBtn" type="button" aria-label="Copy your work">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-        Copy
-      </button>
-      <button class="tool-btn" id="downloadBtn" type="button" aria-label="Download your work">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-        Download
-      </button>
-      <button class="tool-btn" id="printBtn" type="button" aria-label="Print your work">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
-        Print
-      </button>
+  <div class="toolhero">
+    <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/><path d="M13.5 6.5l4 4"/></svg></div>
+    <div>
+      <div class="brand">Intentional <span class="bot">Reflections</span></div>
+      <div class="tagline">Motivational Interviewing practice</div>
     </div>
   </div>
-
-  <h1>Intentional Reflections</h1>
-  <div class="tool-subtitle">Motivational interviewing practice</div>
-  <hr class="tool-divider">
-  <p class="lede">Every statement below mixes sustain talk with change talk. Find the change talk and craft a reflection that highlights or deepens it.</p>
-
-  <div class="box box-amber">
-    <b>How it works:</b>
-    <ol>
-      <li>Read the statement and notice the change talk mixed in with the sustain talk.</li>
-      <li>Write a reflection that highlights or deepens that change talk. A reflection is a statement, not a question.</li>
-      <li>Check your reflection to see how it moved the field. Tap &ldquo;Show change talk&rdquo; if you get stuck.</li>
-    </ol>
+  <div class="orient">
+    <div class="ohd">Instructions</div>
+    <p class="lead">Every statement below mixes change talk with sustain talk, and sustain talk has gravity on its side, so the field starts tilted toward staying the same. Find the change talk and write a reflection that levels the field by giving it weight.</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><div class="tx">Read the statement and notice the change talk mixed in with the sustain talk.</div></div>
+      <div class="step"><div class="n">2</div><div class="tx">Write a reflection that highlights or deepens that change talk. A reflection is a statement, not a question.</div></div>
+      <div class="step"><div class="n">3</div><div class="tx">Check your reflection to see how it moved the field. Tap &ldquo;Show change talk&rdquo; if you get stuck.</div></div>
+    </div>
   </div>
-
-  <div class="box box-blue">Sustain talk has gravity on its side. When someone is ambivalent, the status quo gets a head start, so they tend to drift toward staying the same. An intentional reflection levels the field by giving the change talk weight and a fair chance.</div>
 
   <div class="section-label">
     <span class="lbl">Statements</span>
@@ -628,11 +635,8 @@
     showToast('Download started');
   }
 
-  document.getElementById('copyBtn').addEventListener('click', e => doCopy(e.currentTarget));
   document.getElementById('copyBtn2').addEventListener('click', e => doCopy(e.currentTarget));
-  document.getElementById('downloadBtn').addEventListener('click', doDownload);
   document.getElementById('downloadBtn2').addEventListener('click', doDownload);
-  document.getElementById('printBtn').addEventListener('click', () => window.print());
   document.getElementById('printBtn2').addEventListener('click', () => window.print());
   // ===== Check my reflection (AI feedback + tilt gauge) =====
   const CHECK_MODEL = 'gpt-4.1';
