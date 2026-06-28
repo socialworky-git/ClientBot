@@ -30,7 +30,7 @@
       { name: "Treatment Planning Practice",       href: "/tools/treatment-planning/" }
     ]},
     { category: "Other Tools", items: [
-      { name: "MSE Simulation",           href: "/tools/mse-simulation/" },
+      { name: "MSE Simulation",           href: "/tools/mse-simulation/index.html" },
       { name: "Practicing ASSIST",        href: "/tools/practicing-assist/" },
       { name: "Delusions vs. Obsessions", href: "/tools/delusions-obsessions/" },
       { name: "Distortion Decoder",       href: "/tools/distortion-decoder/" }
