@@ -1,21 +1,35 @@
 (function () {
   /* =========================================================
      EDIT YOUR HEADER IN ONE PLACE
-     Brand text and the two non-tool links live here.
+     Brand text and the brand link live here.
      ========================================================= */
   var BRAND_DARK   = "Social";   // dark part of the wordmark
   var BRAND_ACCENT = "worky";    // coral part of the wordmark
   var LINKS = {
     home:     "/",            // brand (top left)
-    training: "/training",    // Training & consultation page
-    tools:    "/tools/"       // "All Tools" hub (set to your real tools path)
+    training: "/training",    // Training & consultation hub (top of the Training menu)
+    tools:    "/tools/"       // "All Tools" hub (top of the Tools menu)
   };
-  var TRAINING_LABEL = "Training";   // the nav label for the training link
+  var TRAINING_LABEL = "Training";   // nav label for the Training dropdown
+  var TOOLS_LABEL    = "Tools";      // nav label for the Tools dropdown
 
   /* =========================================================
-     ADD NEW TOOLS HERE  ->  the dropdown builds itself.
-     Drop a new line under the right category and it appears
-     in the menu automatically. Empty categories are hidden.
+     ADD NEW TRAINING PAGES HERE  ->  the Training dropdown
+     builds itself. Drop a new line under the right category
+     and it appears in the menu automatically. Empty
+     categories are hidden.
+     ========================================================= */
+  var TRAININGS = [
+    { category: "Foundations", items: [
+      { name: "What is Motivational Interviewing?", href: "/clientbot/training/what-is-MI/" }
+    ]}
+    // , { category: "Workshops", items: [
+    //     { name: "Example workshop", href: "/training/example/" }
+    //   ]}
+  ];
+
+  /* =========================================================
+     ADD NEW TOOLS HERE  ->  the Tools dropdown builds itself.
      ========================================================= */
   var TOOLS = [
     { category: "MI Tools", items: [
@@ -107,14 +121,14 @@
   style.textContent = css;
   document.head.appendChild(style);
 
-  /* --- Build the Tools dropdown contents from the TOOLS list --- */
+  /* --- Helpers to build a dropdown's menu from a list --- */
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
     return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
 
-  function buildMenu(){
-    var html = '<a class="sw-dd__all" href="' + esc(LINKS.tools) + '">All Tools</a>';
-    for (var i = 0; i < TOOLS.length; i++) {
-      var cat = TOOLS[i];
+  function buildMenu(topHref, topLabel, groups){
+    var html = '<a class="sw-dd__all" href="' + esc(topHref) + '">' + esc(topLabel) + '</a>';
+    for (var i = 0; i < groups.length; i++) {
+      var cat = groups[i];
       if (!cat.items || !cat.items.length) continue;        // skip empty categories
       html += '<div class="sw-dd__group"><div class="sw-dd__label">' + esc(cat.category) + '</div>';
       for (var j = 0; j < cat.items.length; j++) {
@@ -125,20 +139,36 @@
     return html;
   }
 
+  /* --- Build one dropdown element (button + panel) --- */
+  function makeDropdown(opts){
+    var dd = document.createElement("div");
+    dd.className = "sw-dd";
+    dd.setAttribute("data-hub", opts.hubHref);   // where a click on the label goes
+    dd.innerHTML =
+      '<button class="sw-dd__btn" type="button" aria-haspopup="true" aria-expanded="false">' +
+        esc(opts.label) + ' <span class="sw-dd__caret" aria-hidden="true">&#9662;</span></button>' +
+      '<div class="sw-dd__panel" role="menu">' +
+        buildMenu(opts.hubHref, opts.hubLabel, opts.groups) +
+      '</div>';
+    return dd;
+  }
+
   /* --- The header markup --- */
   var nav = document.createElement("nav");
   nav.className = "sw-nav";
   nav.innerHTML =
     '<a class="sw-nav__brand" href="' + LINKS.home + '">' +
-      BRAND_DARK + '<span class="sw-nav__brand-accent">' + BRAND_ACCENT + "</span></a>" +
-    '<div class="sw-nav__links">' +
-      '<a href="' + LINKS.training + '">' + esc(TRAINING_LABEL) + '</a>' +
-      '<div class="sw-dd">' +
-        '<button class="sw-dd__btn" type="button" aria-haspopup="true" aria-expanded="false">' +
-          'Tools <span class="sw-dd__caret" aria-hidden="true">&#9662;</span></button>' +
-        '<div class="sw-dd__panel" role="menu">' + buildMenu() + '</div>' +
-      '</div>' +
-    '</div>';
+      BRAND_DARK + '<span class="sw-nav__brand-accent">' + BRAND_ACCENT + "</span></a>";
+
+  var linksWrap = document.createElement("div");
+  linksWrap.className = "sw-nav__links";
+  linksWrap.appendChild(makeDropdown({
+    label: TRAINING_LABEL, hubHref: LINKS.training, hubLabel: "Training & consultation", groups: TRAININGS
+  }));
+  linksWrap.appendChild(makeDropdown({
+    label: TOOLS_LABEL, hubHref: LINKS.tools, hubLabel: "All Tools", groups: TOOLS
+  }));
+  nav.appendChild(linksWrap);
 
   if (here && here.parentNode) {
     here.parentNode.insertBefore(nav, here);
@@ -147,49 +177,56 @@
   }
 
   /* --- Open / close: hover on a mouse, focus for keyboard, tap on touch --- */
-  var dd  = nav.querySelector(".sw-dd");
-  var btn = nav.querySelector(".sw-dd__btn");
-  var closeTimer;
-
-  function setOpen(open){
-    clearTimeout(closeTimer);
-    dd.classList.toggle("open", open);
-    btn.setAttribute("aria-expanded", open ? "true" : "false");
-  }
-  function scheduleClose(){
-    clearTimeout(closeTimer);
-    closeTimer = setTimeout(function(){ setOpen(false); }, 150);
-  }
-
   var canHover = window.matchMedia &&
     window.matchMedia("(hover:hover) and (pointer:fine)").matches;
 
-  /* Keyboard works on every device: focus opens it, leaving it closes it. */
-  dd.addEventListener("focusin", function(){ setOpen(true); });
-  dd.addEventListener("focusout", function(e){
-    if (!dd.contains(e.relatedTarget)) scheduleClose();
-  });
-
-  if (canHover) {
-    /* Mouse: hover reveals the menu. The brief close delay plus the
-       invisible bridge let the pointer travel to the panel without flicker. */
-    dd.addEventListener("mouseenter", function(){ setOpen(true); });
-    dd.addEventListener("mouseleave", scheduleClose);
-    /* On a mouse, clicking "Tools" jumps to the full hub; hovering shows the menu. */
-    btn.addEventListener("click", function(){ window.location.href = LINKS.tools; });
-  } else {
-    /* Touch: tap toggles the menu open and closed. */
-    btn.addEventListener("click", function(e){
-      e.preventDefault();
-      setOpen(!dd.classList.contains("open"));
-    });
+  var dropdowns = nav.querySelectorAll(".sw-dd");
+  for (var d = 0; d < dropdowns.length; d++) {
+    wireDropdown(dropdowns[d]);
   }
 
-  /* Close on outside tap/click or Escape. */
-  document.addEventListener("click", function(e){
-    if (!dd.contains(e.target)) setOpen(false);
-  });
-  document.addEventListener("keydown", function(e){
-    if (e.key === "Escape") setOpen(false);
-  });
+  function wireDropdown(dd){
+    var btn = dd.querySelector(".sw-dd__btn");
+    var hub = dd.getAttribute("data-hub");
+    var closeTimer;
+
+    function setOpen(open){
+      clearTimeout(closeTimer);
+      dd.classList.toggle("open", open);
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+    function scheduleClose(){
+      clearTimeout(closeTimer);
+      closeTimer = setTimeout(function(){ setOpen(false); }, 150);
+    }
+
+    /* Keyboard works on every device: focus opens it, leaving it closes it. */
+    dd.addEventListener("focusin", function(){ setOpen(true); });
+    dd.addEventListener("focusout", function(e){
+      if (!dd.contains(e.relatedTarget)) scheduleClose();
+    });
+
+    if (canHover) {
+      /* Mouse: hover reveals the menu. The brief close delay plus the
+         invisible bridge let the pointer travel to the panel without flicker. */
+      dd.addEventListener("mouseenter", function(){ setOpen(true); });
+      dd.addEventListener("mouseleave", scheduleClose);
+      /* On a mouse, clicking the label jumps to that section's hub. */
+      btn.addEventListener("click", function(){ window.location.href = hub; });
+    } else {
+      /* Touch: tap toggles the menu open and closed. */
+      btn.addEventListener("click", function(e){
+        e.preventDefault();
+        setOpen(!dd.classList.contains("open"));
+      });
+    }
+
+    /* Close on outside tap/click or Escape. */
+    document.addEventListener("click", function(e){
+      if (!dd.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener("keydown", function(e){
+      if (e.key === "Escape") setOpen(false);
+    });
+  }
 })();
