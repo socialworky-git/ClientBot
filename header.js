@@ -19,20 +19,20 @@
      ========================================================= */
   var TOOLS = [
     { category: "MI Tools", items: [
-      { name: "ClientBot",                    href: "/clientbot/" },
-      { name: "Reflection Batting Practice",  href: "/batting-practice/" },
-      { name: "Mining for Affirmations",      href: "/affirmations/" },
-      { name: "Intentional Reflections",      href: "/intentional-reflections/" },
-      { name: "Balancing the Scale",          href: "/balancing-the-scale/" }
+      { name: "ClientBot",                    href: "/tools/clientbot/" },
+      { name: "Reflection Batting Practice",  href: "/tools/batting-practice/" },
+      { name: "Mining for Affirmations",      href: "/tools/affirmations/" },
+      { name: "Intentional Reflections",      href: "/tools/intentional-reflections/" },
+      { name: "Balancing the Scale",          href: "/tools/balancing-the-scale/" }
     ]},
     { category: "SRA Tools", items: [
-      { name: "Empathy as a Pathway to Screening", href: "/empathy-screening/" },
-      { name: "Treatment Planning Practice",       href: "/treatment-planning/" }
+      { name: "Empathy as a Pathway to Screening", href: "/tools/empathy-screening/" },
+      { name: "Treatment Planning Practice",       href: "/tools/treatment-planning/" }
     ]},
     { category: "Other Tools", items: [
-      { name: "Practicing ASSIST",        href: "/practicing-assist/" },
-      { name: "Delusions vs. Obsessions", href: "/delusions-obsessions/" },
-      { name: "Distortion Decoder",       href: "/distortion-decoder/" }
+      { name: "Practicing ASSIST",        href: "/tools/practicing-assist/" },
+      { name: "Delusions vs. Obsessions", href: "/tools/delusions-obsessions/" },
+      { name: "Distortion Decoder",       href: "/tools/distortion-decoder/" }
     ]}
   ];
 
