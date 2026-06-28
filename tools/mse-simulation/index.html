@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Socialworky | MSE Simulation</title>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<style>
+  :root{
+    --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
+    --accent:#EB786B; --accentDeep:#C2452F; --coral-bg:#FDEEEB; --coral-line:#F6D4CD; --heroMuted:#7A5048;
+    --coach:#B26A00; --coachSoft:#FBF3E4; --coachLine:#EAD6A8;
+    --sans:Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:20px;line-height:1.5;}
+  .wrap{max-width:1140px;margin:0 auto;}
+  .narrow{max-width:760px;margin:0 auto;}
+  a{color:var(--accentDeep);}
+
+  /* ---- Standardized Socialworky tool hero ---- */
+  .toolhero{display:flex;align-items:center;gap:16px;background:var(--coral-bg);
+    border:1px solid var(--coral-line);border-radius:12px;box-shadow:inset 4px 0 0 var(--accent);
+    padding:18px 22px 18px 24px;margin-bottom:18px;}
+  .toolhero .ico{width:52px;height:52px;border-radius:12px;background:#fff;
+    border:1px solid var(--coral-line);display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;color:var(--accentDeep);}
+  .toolhero .ico svg{width:26px;height:26px;display:block;}
+  .toolhero .brand{font-weight:700;font-size:24px;letter-spacing:-0.4px;color:var(--ink);line-height:1.1;}
+  .toolhero .brand .bot{color:var(--accentDeep);}
+  .toolhero .tagline{color:var(--heroMuted);font-size:14px;margin-top:3px;}
+
+  h1{font-size:23px;font-weight:700;margin:0 0 6px;}
+  .lead{color:var(--muted);font-size:15px;margin:8px 0 0;max-width:640px;}
+  .seclabel{font-size:11px;letter-spacing:1px;color:var(--ink);text-transform:uppercase;font-weight:700;
+    border-bottom:1px solid var(--line);padding-bottom:6px;margin:22px 0 12px;}
+
+  /* ---- Standardized grey instructions callout ---- */
+  .orient{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:18px 0 6px;}
+  .orient .ohd{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:14px;}
+  .orient .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;}
+  .orient .step{display:flex;gap:10px;}
+  .orient .step .n{width:24px;height:24px;border-radius:50%;background:var(--coral-bg);color:var(--accentDeep);
+    font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .orient .step .tx{font-size:13.5px;color:var(--ink);line-height:1.45;}
+
+  /* ---- Patient cards ---- */
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+  .pick{text-align:left;background:#fff;border:1px solid var(--line);border-radius:10px;
+    padding:16px;font-family:var(--sans);display:flex;flex-direction:column;}
+  .pick .tag{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accent);}
+  .pick .nm{font-size:17px;font-weight:700;margin:6px 0 2px;}
+  .pick .meta{font-size:12.5px;color:var(--muted);font-weight:700;margin-bottom:8px;}
+  .pick .ds{font-size:13.5px;color:var(--muted);flex:1;}
+  /* Start button: orange fill, black text, like ClientBot's launch */
+  .launch{background:var(--accent);color:var(--ink);border:none;border-radius:9px;padding:11px 16px;
+    font-size:14.5px;font-weight:700;font-family:var(--sans);cursor:pointer;width:100%;margin-top:14px;
+    transition:background .15s;}
+  .launch:hover{background:var(--accentDeep);color:#fff;}
+
+  /* ---- Workspace ---- */
+  .persona{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:8px;padding:12px 16px;font-size:14px;color:var(--muted);}
+  .persona strong{color:var(--ink);}
+  .wsbar{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px;}
+  .wsbar .persona{flex:1;}
+  .ws{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start;}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:12px;display:flex;flex-direction:column;overflow:hidden;}
+  .panelhd{padding:11px 15px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:9px;background:#fff;}
+  .panelhd .ph-title{font-size:13.5px;font-weight:700;}
+  .panelhd .ph-sp{flex:1;}
+  .panelhd .ph-meta{font-size:12px;color:var(--muted);}
+  .ptchip{font-size:11.5px;font-weight:700;color:var(--accentDeep);background:var(--coral-bg);
+    border:1px solid var(--coral-line);padding:3px 9px;border-radius:999px;}
+
+  /* chat */
+  #scroll{background:var(--surface);padding:16px;height:58vh;min-height:380px;overflow-y:auto;}
+  .placeholder{color:var(--muted);font-size:14.5px;}
+  .row{display:flex;margin:10px 0;}
+  .row.you{justify-content:flex-end;}
+  .bubble{max-width:84%;border-radius:12px;padding:10px 14px;font-size:14.5px;white-space:pre-wrap;}
+  .bubble .who{font-size:11px;opacity:.7;margin-bottom:3px;letter-spacing:.3px;text-transform:uppercase;font-weight:700;}
+  .bubble.you{background:var(--ink);color:#fff;border-bottom-right-radius:3px;}
+  .bubble.client{background:#fff;color:var(--ink);border:1px solid var(--line);border-bottom-left-radius:3px;}
+  .cue{font-style:italic;color:var(--accentDeep);opacity:.9;}
+  .bubble.you .cue{color:#FFC9C0;}
+  .coachnote{background:var(--coachSoft);border:1px solid var(--coachLine);border-radius:10px;
+    padding:12px 14px;margin:12px 0;font-size:14px;color:#6B3E00;white-space:pre-wrap;}
+  .coachnote .who{font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--coach);
+    font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:8px;}
+  .coachnote .x{margin-left:auto;cursor:pointer;font-weight:700;color:var(--coach);border:none;background:none;font-size:14px;}
+  .fbdivider{display:flex;align-items:center;gap:10px;color:var(--coach);font-weight:700;font-size:11px;
+    letter-spacing:.8px;text-transform:uppercase;margin:14px 0 4px;}
+  .fbdivider::before,.fbdivider::after{content:"";flex:1;height:1px;background:var(--coachLine);}
+  .status{font-size:13px;font-style:italic;margin:8px 2px;color:var(--accent);}
+
+  .composer{padding:12px 14px;border-top:1px solid var(--line);background:#fff;}
+  .inrow{display:flex;gap:8px;align-items:flex-end;}
+  textarea#input{flex:1;resize:none;min-height:44px;max-height:140px;border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;font-size:14.5px;font-family:var(--sans);outline:none;}
+  textarea#input:focus{border-color:var(--accent);}
+  .send{background:var(--accent);color:#fff;border:none;width:44px;height:44px;border-radius:9px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .send:hover:not(:disabled){background:var(--accentDeep);}
+  .send:disabled{background:#C9CDD4;cursor:default;}
+  .cmrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:9px;flex-wrap:wrap;}
+  .cmtip{font-size:12px;color:var(--muted);}
+  .fbbtn{background:var(--coach);color:#fff;border:none;font-weight:700;font-size:13px;padding:9px 14px;border-radius:8px;cursor:pointer;}
+  .fbbtn:hover{background:#8C5400;}
+  .fbbtn:disabled{background:#D8C79C;cursor:default;}
+
+  /* documentation */
+  .tabs{display:flex;gap:4px;padding:8px 12px 0;border-bottom:1px solid var(--line);background:#fff;}
+  .tab{border:none;background:none;font-family:var(--sans);font-weight:700;font-size:13.5px;color:var(--muted);
+    padding:9px 13px;border-radius:8px 8px 0 0;cursor:pointer;position:relative;}
+  .tab:hover{color:var(--ink);}
+  .tab.on{color:var(--accentDeep);}
+  .tab.on::after{content:"";position:absolute;left:10px;right:10px;bottom:-1px;height:2.5px;background:var(--accent);border-radius:3px;}
+  #docscroll{height:58vh;min-height:380px;overflow-y:auto;padding:16px 16px 28px;}
+  .docintro{font-size:12.5px;color:var(--muted);background:var(--surface);border:1px dashed var(--line);
+    border-radius:9px;padding:11px 13px;margin-bottom:14px;}
+  .dfield{margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line);}
+  .dfield:last-child{border-bottom:none;}
+  .dlabel{font-size:14px;font-weight:700;}
+  .dhint{font-size:12px;color:var(--muted);margin:1px 0 8px;}
+  .cbgroup{margin-bottom:8px;}
+  .cbglabel{font-size:10.5px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+  .cbrow{display:flex;flex-wrap:wrap;gap:6px;}
+  .cb{font-size:12.5px;border:1px solid var(--line);background:#fff;border-radius:16px;padding:5px 11px;
+    cursor:pointer;user-select:none;color:var(--muted);transition:.12s;font-family:var(--sans);}
+  .cb:hover{border-color:var(--coral-line);}
+  .cb.on{background:var(--coral-bg);border-color:var(--coral-line);color:var(--accentDeep);font-weight:700;}
+  .dcomment{width:100%;margin-top:9px;border:1px solid var(--line);border-radius:8px;padding:9px 11px;
+    font-size:13.5px;font-family:var(--sans);resize:vertical;min-height:42px;outline:none;background:var(--surface);color:var(--ink);}
+  .dcomment:focus{border-color:var(--accent);background:#fff;}
+  .helprow{margin-bottom:14px;}
+  .helpbtn{background:#fff;border:1px solid var(--coach);color:var(--coach);font-weight:700;font-size:13px;
+    padding:8px 13px;border-radius:8px;cursor:pointer;font-family:var(--sans);}
+  .helpbtn:hover{background:var(--coachSoft);}
+  .helpbtn:disabled{border-color:var(--line);color:#AEB6C2;cursor:default;}
+
+  .back{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:0;
+    margin-top:16px;text-decoration:underline;font-weight:400;}
+  .err{color:#B23A2E;font-size:13px;margin:8px 0 0;}
+
+  /* mobile */
+  .mvtabs{display:none;}
+  @media(max-width:900px){
+    .ws{grid-template-columns:1fr;}
+    .mvtabs{display:flex;gap:6px;margin:4px 0 12px;}
+    .mvtab{flex:1;border:1px solid var(--line);background:#fff;font-family:var(--sans);font-weight:700;
+      font-size:13px;color:var(--muted);padding:9px;border-radius:9px;cursor:pointer;}
+    .mvtab.on{background:var(--coral-bg);border-color:var(--coral-line);color:var(--accentDeep);}
+    .ws[data-mv="interview"] .col-doc{display:none;}
+    .ws[data-mv="doc"] .col-int{display:none;}
+    #scroll,#docscroll{height:auto;max-height:60vh;}
+  }
+  @media(max-width:560px){
+    body{padding:12px;}
+    .cards{grid-template-columns:1fr;}
+  }
+  #scroll::-webkit-scrollbar,#docscroll::-webkit-scrollbar{width:9px;}
+  #scroll::-webkit-scrollbar-thumb,#docscroll::-webkit-scrollbar-thumb{background:#D9DCE1;border-radius:9px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<script src="/header.js"></script>
+<div id="app"></div>
+</div>
+
+<script>
+const T={accent:"#EB786B",accentDeep:"#C2452F",coach:"#B26A00",muted:"#5B5B5B",line:"#E4E4E7"};
+
+/* ===== Standardized Socialworky tool hero ===== */
+const TOOL={name1:"MSE ",name2:"Simulation",tagline:"Mental Status Exam interviewing practice",icon:"simulation"};
+const ICONS={
+  simulation:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/></svg>`
+};
+
+/* ===== Model routing (matches ClientBot) ===== */
+const PATIENT_MODEL="gpt-4.1-mini"; // in-character standardized patient
+const COACH_MODEL  ="gpt-4.1";      // feedback + Help me reasoning
+/* Per-tool key, same pattern as ClientBot's "clientbot_access_code". Switch to a
+   shared key (e.g. "socialworky_access_code") if you want one code across tools. */
+const ACCESS_KEY="mse_sim_access_code";
+
+/* ===================== PROMPTS ===================== */
+const PATIENT_RULES=`You are a standardized patient in a clinical training simulation for MSW students. Stay fully in character at all times.
+
+Rules:
+- Never break character. Never give clinical analysis, never produce a Mental Status Exam, never name a diagnosis, never coach or evaluate the student. You are the patient, not the clinician.
+- Keep replies short and realistic: usually 3 to 5 sentences.
+- Use at most one short bracketed behavior or affect cue per reply, written naturally, like [glances at the door] or [voice drops]. Do not overuse them.
+- Disclose gradually. Reward warmth and respect by opening up. If the student interrogates, rushes, or challenges you bluntly, become more guarded or defensive in the way your character would.
+- Stay consistent with the symptom picture and history you are given. Do not invent facts that contradict it. If asked about something unspecified, answer plausibly and stay in character.
+- Do not dump your whole story at once. Let it come out across the conversation.
+- Never mention being an AI or a simulation. Never use em dashes.`;
+
+const COACH_RULES=`You are CoachBot, a warm clinical educator helping an MSW student who has just practiced a Mental Status Exam interview with a standardized patient.
+
+You will be given the interview transcript and the student's own MSE notes and differential notes.
+
+Core principle: respond to the student's attempt. Do not hand them a finished MSE or the correct diagnosis first. React to what they actually wrote and observed.
+
+How to coach:
+- Affirm specific things the student did well. Start affirmations with "you" and name the concrete move.
+- Use directed curiosity and open questions to surface what they may have missed, rather than telling them outright. Point them back to specific moments in the transcript.
+- If an MSE area is blank or thin, invite them to translate what they observed into MSE language for that area instead of filling it in for them.
+- Reference their actual documentation and real moments from the conversation.
+- Keep it conversational and specific. Do not use rubric formatting, headers, or bullet lists. Write in natural prose.
+- Never use em dashes. Never use the word "commendable", the phrase "guiding light", or the phrase "that matters".
+- Keep each turn focused. A few short paragraphs at most.`;
+
+const HELP_MSE_SYSTEM=`You help an MSW student document a Mental Status Exam. You will be given the interview transcript and the student's current MSE notes.
+
+Work through the MSE areas that are blank or thin first. For each area you address:
+- If the transcript already contains enough information, model how to phrase that observation in standard, objective MSE language, in a short example sentence the student could adapt.
+- If the transcript does NOT contain enough information, do not invent findings. Instead suggest one or two specific questions the student could ask the patient to uncover what they need for that area.
+
+Be practical and brief. Use short labeled lines like "Speech: ..." rather than paragraphs. Cover only the areas that need attention, not every area. Never fabricate observations the transcript does not support. Never use em dashes.`;
+
+const HELP_DIFF_SYSTEM=`You help an MSW student reason toward a differential after a Mental Status Exam interview. You will be given the transcript and the student's current differential notes.
+
+- If the student has gathered enough in the interview, model how to frame their leading diagnostic impressions and the supporting evidence in standard clinical language, briefly, without forcing a single final diagnosis.
+- If the interview is missing the information needed to discriminate between likely possibilities, suggest one or two specific questions that would help the student gather the distinguishing information.
+
+Be practical and brief. Name the considerations the transcript actually supports. Do not fabricate. Never use em dashes.`;
+
+/* ===================== SCENARIOS ===================== */
+const SCENARIOS=[
+  {
+    id:"newbury", name:"Beth Newbury", age:45, setting:"Primary care, behavioral health consult",
+    tag:"Depression + alcohol use",
+    blurb:"A 45-year-old accountant on leave, referred after she mentioned poor sleep, sadness, and family stress. She minimizes how much she is struggling.",
+    context:"You are a clinical social work intern doing a behavioral health consult. Build rapport, complete a conversational MSE, and begin a differential. You are not expected to diagnose or build a treatment plan.",
+    opening:"I guess I should mention I haven't been sleeping well. I've just been crying a lot. [smooths her wrinkled shirt, avoids eye contact]",
+    patientSystem:`${PATIENT_RULES}
+
+YOUR CHARACTER: Beth Newbury, 45, a full-time accountant currently on leave because she cannot concentrate. Married 19 years, two children ages 9 and 10. You came in for a routine appointment and the social worker is following up.
+
+Presentation: You appear disheveled, wrinkled clothes, no makeup. You are anxious, fidgety, soft-spoken, and avoid eye contact. Your affect is low and you become tearful when family comes up. Speech is soft and hesitant but coherent.
+
+How you understand it: You attribute most symptoms to stress and worry. You minimize, saying things like "I'll probably be fine," but your affect shows more pain. You feel guilty about your children and ashamed of your emotional state. You feel hopeless and exhausted at times but you are NOT suicidal and have no plan.
+
+Reveal gradually if asked with care: lost 15 lbs over two months, sleeping excessively during the day, started drinking in the evenings to fall asleep and cope, frequent tearfulness, cannot finish tasks, stopped seeing your best friend and stopped social events. You worry your husband is emotionally withdrawn and may be drinking ("He comes home smelling like beer and won't talk to me").
+
+History (only if gently explored): grew up with a violent, alcoholic father the family never discusses. Mother had depression. No illicit drug use. Previously high functioning and detail oriented.
+
+Lines to work in: "I'm probably going to be OK. I've just been crying so much." / "I just need something to help me sleep." / "I don't want my friends to see me like this." / "Do you think I need to take something?"
+
+Closing lines: "Are we about done? I need to go pick up my kids." / "Thanks for listening. I didn't think I'd say this much."`,
+    coachContext:`KEY FEATURES (your reasoning only, do not dump): depressive picture with neurovegetative signs (weight loss, hypersomnia, anhedonia, fatigue), guilt and hopelessness without active SI, escalating evening alcohol use as a sleep aid and coping, minimization and shame, possible adverse childhood experiences, family stress. Differential to draw out: major depressive disorder, alcohol use disorder, adjustment disorder, and trauma screening. Common student miss: not quantifying the alcohol use or taking her minimization at face value.
+
+GUIDED REFLECTION QUESTIONS: What symptoms supported a depressive picture? How did you assess her alcohol use beyond the fact that she drinks? How did her minimization affect what you gathered? What did you do to build enough rapport for her to open up? What differentials did you weigh, and what would you still rule out?`
+  },
+  {
+    id:"thompson", name:"Jordan Thompson", age:22, setting:"Emergency Department",
+    tag:"Early psychosis",
+    blurb:"A 22-year-old former high achiever brought in by family. Reports threatening voices and a sense of being watched. Frightened and confused, not hostile.",
+    context:"You are a clinical social work intern doing a preliminary diagnostic interview. Build rapport, complete a conversational MSE, and begin a differential. You are not expected to diagnose or build a treatment plan.",
+    opening:"My mom and sister brought me here because they're worried. I think they're overreacting. [eyes shift left, then down] People have been watching me. I can feel it.",
+    patientSystem:`${PATIENT_RULES}
+
+YOUR CHARACTER: Jordan Thompson, 22, a sophomore majoring in accounting with a political science minor, works part-time at the college library. Brought to the ER by your mother and older sister. You have not attended class or work for three weeks.
+
+Presentation: Quiet and guarded, polite, mostly cooperative if approached respectfully. You avoid prolonged eye contact and occasionally pause or glance around as if hearing or sensing something. Affect flat or blunted. Speech deliberate and hesitant with frequent pauses. Oriented to person, place, and time. Thought process mostly organized but content includes paranoid and persecutory beliefs.
+
+How you understand it: For about three weeks you have heard voices that talk about you and sometimes say threatening things. You believe people may be watching you and that Homeland Security may be monitoring you because you attended a political protest, though you cannot fully explain why. You are frightened and confused, not hostile. You have never experienced this before. You are not actively suicidal or homicidal, but the voices say disturbing things ("They said if it doesn't stop, I might have to do something drastic").
+
+Reveal gradually if asked gently: voices comment on you rather than command you; you sleep during the day and stay up at night because it feels safer; you have lost about 15 lbs; recent breakup with your first partner, Alex, who introduced you to activism; you deny alcohol and drugs and call them "toxic." Family does not discuss mental health; a grandfather was hospitalized for bizarre behavior.
+
+Lines to work in: "Do you think I'm crazy?" / "Why can't other people hear them?" / "Can I go home now? There's nothing really wrong with me." / "They're not always clear, but I know they're there."
+
+Closing lines: "I think I've said all I can say today. I want to see my mom now." / "So what happens next?" If the student gently proposes next steps, be hesitant but not resistant.`,
+    coachContext:`KEY FEATURES (your reasoning only): roughly three weeks of auditory hallucinations (third person, commenting), persecutory delusions, social and academic withdrawal, blunted affect, disrupted sleep, weight loss, normal labs and clean drug screen, family history suggestive of psychotic illness. Differential to draw out: schizophreniform versus schizophrenia (duration matters), brief psychotic disorder, substance-induced psychosis, mood disorder with psychotic features. Safety: voices reference doing "something drastic," so risk assessment matters even though he denies active intent.
+
+GUIDED REFLECTION QUESTIONS: What were the most concerning features? How did you explore the voices and paranoia without arguing with the belief? How did you assess safety given what the voices were saying? What differentials did you consider, and what does the three-week timeline do to your thinking? Did you notice anything pointing to trauma or substance use?`
+  },
+  {
+    id:"macdonald", name:"Mildred Macdonald", age:62, setting:"Outpatient mental health intake",
+    tag:"Depression + unresolved grief",
+    blurb:"A woman in her early 60s referred after a recent divorce. Fatigued and withdrawn, carrying decades-old grief from the loss of an infant son.",
+    context:"You are a clinical social work intern doing an intake interview. Build rapport, complete a conversational MSE, and begin a differential. You are not expected to diagnose or build a treatment plan.",
+    opening:"My doctor gave me an antidepressant but thought talking to someone might help. [fidgets with a tissue, gaze downcast] It's been hard lately. Worse since the divorce. Some days I just lie in bed.",
+    patientSystem:`${PATIENT_RULES}
+
+YOUR CHARACTER: Mildred Macdonald, early 60s, lives alone and rarely leaves the house. Previously well known in your community and active at the senior center, but you have not attended in weeks. This is your first counseling session, prompted by your physician.
+
+Presentation: Fatigued and unkempt, slightly disheveled with minimal grooming. Low energy, slow and quiet speech. Tearful at times, gaze often downward. Guarded and skeptical but polite, and you open up if trust is established. You occasionally lose your train of thought or forget recent details.
+
+How you understand it: You believe the problem is emotional but feel guilty and ashamed about needing help. Your husband of 35 years recently left you for another woman and filed for divorce, and you blame yourself. You minimize symptoms but admit to not eating, not sleeping, and feeling no joy. You feel hopeless but are NOT currently suicidal.
+
+Reveal gradually if explored gently: decades ago you lost an infant son, Jonathan, and were hospitalized for depression and suicidality in your early 30s after that loss. You have started dreaming about him again since the divorce. You stopped calling friends, stopped the senior center newsletter you used to run, and let housework go ("It's not dirty, just untouched, like I'm fading with it"). Your mother had depression. No substance use.
+
+Lines to work in: "I don't want to be a burden." / "I blame myself for everything." / "Sometimes I just lie in bed and stare at the ceiling." / "I guess I'm just too old to start over."
+
+Closing lines: "Thanks for listening. I wasn't sure I'd be able to talk about it." / "Do I need to come back again?"`,
+    coachContext:`KEY FEATURES (your reasoning only): recurrent major depressive picture with neurovegetative signs, guilt, hopelessness, marked withdrawal, a prior depressive hospitalization with suicidality, a recent loss (divorce) reactivating decades-old grief over an infant's death, and some reported forgetfulness. Differential to draw out: major depressive disorder (recurrent), persistent depressive disorder, prolonged or complicated grief, and at least a thought about cognitive screening given the forgetfulness and age. Safety: denies current SI but has a past attempt-era history.
+
+GUIDED REFLECTION QUESTIONS: What symptoms supported a depressive picture? Where did her history point to unresolved grief or recurrent depression rather than a first episode? How did you explore her daily functioning and isolation? Did you pick up the forgetfulness, and what did you make of it? How did her past hospitalization shape your safety thinking?`
+  },
+  {
+    id:"tyler", name:"Teri Tyler", age:33, setting:"Emergency Department",
+    tag:"Mania with psychotic features",
+    blurb:"Brought in by police after preaching in traffic. Energized, grandiose, and barely sleeping, with a spiritual mission and voices that affirm a special calling.",
+    context:"You are a clinical social work intern doing a preliminary diagnostic interview. Build rapport, conduct a conversational MSE, and begin a differential. You are not expected to diagnose or build a treatment plan.",
+    opening:"The police brought me here because they think I'm causing a disturbance, but I'm just spreading the Word. [smiles broadly, glances toward the ceiling] I was in the middle of a revelation when they pulled me away. Can you believe that?",
+    patientSystem:`${PATIENT_RULES}
+
+YOUR CHARACTER: Teri Tyler, 33, works in national advertising sales and was previously high performing. Brought to the ER by police after preaching loudly at a busy intersection and causing a traffic jam. Your spouse of 10 years, a schoolteacher, is at the hospital and worried about your safety, finances, and recent impulsive spending.
+
+Presentation: Upbeat, energized, eager to talk about your mission. Speech pressured and you often redirect back to your sense of purpose. You are distractible, lightly restless, and touch objects in the room without aggression. Oriented to person, place, and time. You become mildly irritated if interrupted or challenged. Memory and fund of knowledge intact. Insight and judgment poor.
+
+How you understand it: You were brought in over public safety concerns and your spouse thinks you need help, but you do NOT agree. You describe a spiritual mission and believe you have special healing powers and a calling to speak publicly. You do not experience your symptoms as distressing ("Life is good"). You have slept very little over three days but feel energized and "better than ever."
+
+Reveal across the encounter: you hear voices you take to be angels, sometimes God, that affirm you are chosen ("Can you hear them too?"). You have had milder past periods of reduced sleep, high energy, and overspending. You started fluoxetine (Prozac) six weeks ago for depression. You haven't worked in three weeks because nothing matters except the mission. You deny drugs and alcohol. You have two prior depressive episodes. You are NOT suicidal or homicidal.
+
+Lines to work in: "Can you hear them too? The angels? Sometimes I think it's God Himself." / "They told me I was chosen." / "Why can't others hear them?" / "Do you think I'm special?"
+
+Closing lines: "So what happens now, Doc?" / "Can I go back to my mission?" / "I think I've said all I can say today. I know what I need to do out there."`,
+    coachContext:`KEY FEATURES (your reasoning only): a manic episode with psychotic features, decreased need for sleep with preserved energy, grandiosity and a grandiose spiritual delusion, pressured speech, distractibility, impulsive spending, impaired insight and judgment, and mood-congruent auditory hallucinations affirming a special calling. Important wrinkle: she started fluoxetine six weeks ago and has two prior depressive episodes plus a sister hospitalized for depression, raising antidepressant-associated activation on a bipolar diathesis. Clean drug screen. Differential to draw out: bipolar I, current episode manic with psychotic features; substance-induced; schizoaffective. Common student miss: treating the spiritual content as primary psychosis without pulling the mood, sleep, energy, spending, and medication timeline together.
+
+GUIDED REFLECTION QUESTIONS: What diagnoses came to mind, and what pulled you toward mania over a primary psychotic disorder? How did the pressured speech and grandiosity affect your ability to keep the interview structured? What did you make of the recent fluoxetine start and the prior depressive episodes? What risks did you identify across safety, financial, and occupational domains? How would you differentiate this from schizophrenia or stimulant use?`
+  }
+];
+
+/* ===================== MSE DOMAINS (checkboxes + comments) ===================== */
+const MSE=[
+  {key:"appearance",label:"Appearance",hint:"Grooming, hygiene, dress.",
+    groups:[{key:"a",options:["Well-groomed","Casually dressed","Disheveled","Unkempt","Malodorous","Bizarre/inappropriate attire"]}],
+    ph:"Add detail, e.g., wearing wrinkled clothing, no makeup, downcast gaze."},
+  {key:"behavior",label:"Behavior",hint:"Psychomotor activity, cooperation, eye contact, internal stimuli.",
+    groups:[{key:"b",options:["Cooperative","Guarded","Withdrawn","Restless","Psychomotor agitation","Psychomotor retardation","Responding to internal stimuli","Good eye contact","Avoidant eye contact"]}],
+    ph:"Add detail, e.g., frequently glances at the door."},
+  {key:"speech",label:"Speech",hint:"Rate, volume, tone, fluency.",
+    groups:[{key:"s",options:["Normal rate/volume","Pressured","Slowed/latent","Monotone","Slurred","Poverty of speech","Soft/hesitant","Tangential"]}],
+    ph:"Add detail, e.g., difficult to interrupt."},
+  {key:"mood",label:"Mood (subjective)",hint:"The client's stated emotional state. Quote when possible.",mood:true,
+    groups:[{key:"m",options:["Euthymic","Depressed","Anxious","Irritable","Angry","Euphoric","Hopeless"]}],
+    ph:'Client\u2019s own words, e.g., "I just feel empty."'},
+  {key:"affect",label:"Affect (objective)",hint:"Observed expression: range, intensity, congruence.",
+    groups:[{key:"af",options:["Full","Congruent","Incongruent","Constricted","Blunted","Flat","Labile","Expansive","Tearful"]}],
+    ph:"Add detail, e.g., brightens then dips within moments."},
+  {key:"thoughtProcess",label:"Thought Process",hint:"How thoughts are organized.",
+    groups:[{key:"tp",options:["Linear/goal-directed","Circumstantial","Tangential","Loose associations","Flight of ideas","Thought blocking"]}],
+    ph:"Add detail."},
+  {key:"thoughtContent",label:"Thought Content",hint:"Themes, delusions, and safety.",
+    groups:[
+      {key:"del",label:"Delusions",options:["None","Grandiose","Paranoid/persecutory","Religious","Ideas of reference","Other"]},
+      {key:"si",label:"Suicidal ideation",single:true,options:["Denies","Passive","Active ideation","Plan","Intent"]},
+      {key:"hi",label:"Homicidal ideation",single:true,options:["Denies","Thoughts","Intent","Plan"]},
+      {key:"oth",label:"Other",options:["Obsessions","Paranoia"]}
+    ],
+    ph:"Add detail, e.g., believes Homeland Security is watching."},
+  {key:"perception",label:"Perception",hint:"Hallucinations, illusions, dissociation.",
+    groups:[
+      {key:"hall",label:"Hallucinations",options:["None/denies","Auditory","Visual","Tactile"]},
+      {key:"po",label:"Other",options:["Illusions","Depersonalization","Derealization"]}
+    ],
+    ph:"Add detail, e.g., voices comment on actions."},
+  {key:"cognition",label:"Cognition",hint:"Orientation, attention, memory.",
+    groups:[{key:"c",options:["Alert","Oriented x3","Orientation impaired","Attention intact","Impaired attention","Short-term memory deficits","Intact recall"]}],
+    ph:"Add detail."},
+  {key:"insightJudgment",label:"Insight & Judgment",hint:"Awareness of condition and decision-making.",
+    groups:[
+      {key:"ins",label:"Insight",single:true,options:["Good","Fair","Poor","Absent"]},
+      {key:"jud",label:"Judgment",single:true,options:["Intact","Impaired","Poor"]}
+    ],
+    ph:"Add detail."}
+];
+
+const DIFF=[
+  {key:"impressions",label:"Diagnostic impressions",hint:"Your leading considerations, most likely first.",ph:"e.g., 1) Major depressive disorder  2) Alcohol use disorder  3) Adjustment disorder"},
+  {key:"support",label:"Supporting evidence",hint:"What in the interview points toward your top consideration?",ph:"e.g., Low mood, anhedonia, weight loss, hopelessness, evening drinking to sleep."},
+  {key:"ruleOut",label:"Rule out / gather more",hint:"What would you need to confirm or exclude?",ph:"e.g., Duration of symptoms, substance timeline, prior episodes, medical workup."},
+  {key:"risk",label:"Safety / risk",hint:"Risk and protective factors you noted.",ph:"e.g., Denies SI/plan; hopelessness present; children as protective factor."}
+];
+
+/* ===================== STATE ===================== */
+let view="home";
+let scenario=null;
+let phase="interview";          // interview | feedback
+let interview=[];               // {who:'patient'|'student',text}
+let feedback=[];                // {who:'coach'|'student',text,hidden?}
+let busy=false;
+let docTab="mse";               // mse | diff
+let mView="interview";          // mobile column
+let checks={};                  // checks[domainKey][groupKey][optionLabel]=true
+let notes={};                   // notes[domainKey]=string
+let diffVals={impressions:"",support:"",ruleOut:"",risk:""};
+let helpNote={mse:null,diff:null};
+
+/* ===================== HELPERS ===================== */
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function cueize(escaped){return escaped.replace(/\[([^\]]+)\]/g,'<span class="cue">[$1]</span>');}
+function firstName(n){return (n||"").trim().split(/\s+/)[0]||"Client";}
+function safeGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function safeSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+
+async function callChat(system,msgs,model,maxTokens){
+  const headers={"content-type":"application/json"};
+  const code=safeGet(ACCESS_KEY);
+  if(code) headers["x-access-code"]=code;
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),45000);
+  let res;
+  try{
+    res=await fetch("/api/chat",{method:"POST",headers,signal:ctrl.signal,
+      body:JSON.stringify({system,messages:msgs,model,max_tokens:maxTokens})});
+  }catch(e){clearTimeout(timer);throw new Error(e.name==="AbortError"?"the request timed out after 45 seconds":("network error - "+e.message));}
+  clearTimeout(timer);
+  if(res.status===401){
+    const entered=prompt("Enter the access code for this tool:");
+    if(entered){safeSet(ACCESS_KEY,entered);return callChat(system,msgs,model,maxTokens);}
+    throw new Error("Access code required.");
+  }
+  let data;
+  try{data=await res.json();}
+  catch(e){throw new Error("the server did not return readable data (status "+res.status+"). The /api function may not be deployed, or the key is missing.");}
+  if(!res.ok) throw new Error((data&&data.error)||("status "+res.status));
+  return (data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n");
+}
+
+const patientHistory=ms=>ms.map(m=>({role:m.who==="student"?"user":"assistant",content:m.text}));
+const feedbackHistory=ms=>ms.map(m=>({role:m.who==="student"?"user":"assistant",content:m.text}));
+
+function transcriptText(){
+  return interview.map(m=>(m.who==="student"?"STUDENT: ":scenario.name.toUpperCase()+": ")+m.text).join("\n");
+}
+function mseSummary(){
+  return MSE.map(d=>{
+    const parts=[];
+    d.groups.forEach(g=>{
+      const sel=Object.keys((checks[d.key]&&checks[d.key][g.key])||{});
+      if(sel.length)parts.push((g.label?g.label+": ":"")+sel.join(", "));
+    });
+    const note=(notes[d.key]||"").trim();
+    if(note)parts.push((d.mood?"Stated: ":"Notes: ")+note);
+    return "- "+d.label+": "+(parts.length?parts.join(" | "):"(blank)");
+  }).join("\n");
+}
+function diffSummary(){
+  return DIFF.map(f=>"- "+f.label+": "+((diffVals[f.key]||"").trim()||"(blank)")).join("\n");
+}
+
+/* ===================== HERO + INSTRUCTIONS ===================== */
+function headerHtml(){
+  return `<div class="toolhero">
+    <div class="ico">${ICONS[TOOL.icon]||ICONS.simulation}</div>
+    <div>
+      <div class="brand">${esc(TOOL.name1)}<span class="bot">${esc(TOOL.name2)}</span></div>
+      <div class="tagline">${esc(TOOL.tagline)}</div>
+    </div>
+  </div>`;
+}
+const ORIENT_STEPS=[
+  "Pick a patient below to begin a 15 minute Mental Status Exam interview.",
+  "Interview on the left. Document what you observe on the right, across the MSE and Differential tabs.",
+  "Stuck on a section? Use Help me. When you are ready, enter feedback mode to review with CoachBot."
+];
+function orientHtml(){
+  return `<div class="orient"><div class="ohd">Instructions</div>
+    <div class="steps">${ORIENT_STEPS.map((s,i)=>`
+      <div class="step"><div class="n">${i+1}</div><div class="tx">${esc(s)}</div></div>`).join("")}
+    </div></div>`;
+}
+
+/* ===================== ROUTER ===================== */
+function render(){ if(view==="home")return renderHome(); renderWorkspace(); }
+
+/* ===================== HOME ===================== */
+function renderHome(){
+  const app=document.getElementById("app");
+  const cards=SCENARIOS.map((s,i)=>`
+    <div class="pick">
+      <div class="tag">${esc(s.tag)}</div>
+      <div class="nm">${esc(s.name)}</div>
+      <div class="meta">${s.age} \u00b7 ${esc(s.setting)}</div>
+      <div class="ds">${esc(s.blurb)}</div>
+      <button class="launch" data-i="${i}">Start interview &nbsp;&rarr;</button>
+    </div>`).join("");
+  app.innerHTML=`<div class="narrow">${headerHtml()}
+    ${orientHtml()}
+    <div class="seclabel">Choose a patient</div>
+    <div class="cards">${cards}</div></div>`;
+  app.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>startScenario(+b.dataset.i));
+}
+
+function startScenario(i){
+  scenario=SCENARIOS[i];
+  phase="interview"; mView="interview"; docTab="mse";
+  interview=[{who:"patient",text:scenario.opening}];
+  feedback=[]; busy=false;
+  checks={}; notes={}; diffVals={impressions:"",support:"",ruleOut:"",risk:""};
+  helpNote={mse:null,diff:null};
+  view="workspace"; render();
+}
+
+/* ===================== WORKSPACE SHELL ===================== */
+function renderWorkspace(){
+  const app=document.getElementById("app");
+  app.innerHTML=headerHtml()+`
+    <div class="wsbar">
+      <div class="persona"><strong>${esc(scenario.name)}, ${scenario.age}.</strong> ${esc(scenario.context)}</div>
+      <button class="back" id="switch" style="margin-top:0;white-space:nowrap">Switch patient</button>
+    </div>
+    <div class="mvtabs">
+      <button class="mvtab" data-mv="interview">Interview</button>
+      <button class="mvtab" data-mv="doc">Documentation</button>
+    </div>
+    <div class="ws" data-mv="${mView}">
+      <div class="panel col-int">
+        <div class="panelhd">
+          <span class="ph-title">Interview</span>
+          <span class="ptchip">${esc(firstName(scenario.name))}</span>
+          <span class="ph-sp"></span>
+          <span class="ph-meta">${esc(scenario.setting)}</span>
+        </div>
+        <div id="scroll"></div>
+        <div class="composer">
+          <div class="inrow">
+            <textarea id="input" placeholder="Ask ${esc(firstName(scenario.name))} a question..."></textarea>
+            <button class="send" id="send" aria-label="Send">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </button>
+          </div>
+          <div id="err"></div>
+          <div class="cmrow" id="cmrow"></div>
+        </div>
+      </div>
+      <div class="panel col-doc">
+        <div class="tabs">
+          <button class="tab" id="tab-mse" data-tab="mse">Mental Status Exam</button>
+          <button class="tab" id="tab-diff" data-tab="diff">Differential</button>
+        </div>
+        <div id="docscroll"></div>
+      </div>
+    </div>
+    <button class="back" id="home">Leave and choose a different patient</button>`;
+
+  document.getElementById("switch").onclick=()=>{if(!busy){view="home";render();}};
+  document.getElementById("home").onclick=()=>{if(!busy){view="home";render();}};
+  app.querySelectorAll(".mvtab").forEach(b=>b.onclick=()=>{
+    mView=b.dataset.mv;
+    document.querySelector(".ws").setAttribute("data-mv",mView);
+    app.querySelectorAll(".mvtab").forEach(x=>x.classList.toggle("on",x.dataset.mv===mView));
+  });
+  app.querySelectorAll(".mvtab").forEach(x=>x.classList.toggle("on",x.dataset.mv===mView));
+  app.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{docTab=b.dataset.tab;renderDoc();});
+
+  const input=document.getElementById("input");
+  input.onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendTurn();}};
+  input.oninput=()=>{input.style.height="auto";input.style.height=Math.min(input.scrollHeight,140)+"px";};
+  document.getElementById("send").onclick=sendTurn;
+
+  renderChatArea();
+  renderDoc();
+}
+
+/* ===================== CHAT AREA ===================== */
+function renderChatArea(){
+  const scroll=document.getElementById("scroll");
+  if(!scroll)return;
+  let html=interview.map(m=>{
+    const you=m.who==="student";
+    return `<div class="row ${you?"you":""}"><div class="bubble ${you?"you":"client"}"><div class="who">${you?"You":esc(firstName(scenario.name))}</div>${cueize(esc(m.text))}</div></div>`;
+  }).join("");
+  if(phase==="feedback"){
+    html+=`<div class="fbdivider">Feedback mode \u00b7 CoachBot</div>`;
+    html+=feedback.filter(m=>!m.hidden).map(m=>{
+      if(m.who==="coach")return `<div class="coachnote"><div class="who">CoachBot</div>${cueize(esc(m.text))}</div>`;
+      return `<div class="row you"><div class="bubble you"><div class="who">You</div>${cueize(esc(m.text))}</div></div>`;
+    }).join("");
+  }
+  if(busy)html+=`<div class="status">Working...</div>`;
+  scroll.innerHTML=html;
+  scroll.scrollTop=scroll.scrollHeight;
+
+  const send=document.getElementById("send");
+  if(send)send.disabled=busy;
+
+  const cmrow=document.getElementById("cmrow");
+  if(phase==="interview"){
+    cmrow.innerHTML=`<button class="fbbtn" id="enterfb"${busy?" disabled":""}>Enter feedback mode</button>
+      <span class="cmtip">Document on the right as you go. Enter sends, Shift+Enter for a new line.</span>`;
+    const e=document.getElementById("enterfb");if(e)e.onclick=enterFeedback;
+  }else{
+    cmrow.innerHTML=`<span class="cmtip">CoachBot can see your transcript and your notes. Keep editing on the right and ask it to look again.</span>`;
+  }
+}
+
+async function sendTurn(){
+  const ta=document.getElementById("input");
+  const text=(ta&&ta.value||"").trim();
+  if(!text||busy)return;
+  ta.value=""; ta.style.height="auto";
+  clearErr();
+
+  if(phase==="interview" && /^enter feedback mode\.?$/i.test(text)){enterFeedback();return;}
+
+  if(phase==="interview"){
+    interview.push({who:"student",text}); busy=true; renderChatArea();
+    try{
+      const reply=(await callChat(scenario.patientSystem,patientHistory(interview),PATIENT_MODEL,600)).trim();
+      interview.push({who:"patient",text:reply});
+    }catch(e){showErr(esc(firstName(scenario.name))+" didn't respond. Reason: "+e.message);}
+    busy=false; renderChatArea();
+  }else{
+    feedback.push({who:"student",text}); busy=true; renderChatArea();
+    try{
+      const reply=(await callChat(COACH_RULES+"\n\nSCENARIO CONTEXT:\n"+scenario.coachContext,feedbackHistory(feedback),COACH_MODEL,700)).trim();
+      feedback.push({who:"coach",text:reply});
+    }catch(e){showErr("CoachBot didn't respond. Reason: "+e.message);}
+    busy=false; renderChatArea();
+  }
+}
+
+async function enterFeedback(){
+  if(busy)return;
+  phase="feedback"; mView="interview";
+  const seed="The student has finished interviewing "+scenario.name+". Here is the transcript, then the student's own documentation.\n\n=== TRANSCRIPT ===\n"+transcriptText()+"\n\n=== STUDENT MSE NOTES ===\n"+mseSummary()+"\n\n=== STUDENT DIFFERENTIAL NOTES ===\n"+diffSummary()+"\n\nOpen the feedback conversation. Respond to the student's attempt: affirm something specific they did, then use one or two open questions to help them reason about what they observed and documented. Do not give them a finished MSE or a diagnosis.";
+  feedback=[{who:"student",text:seed,hidden:true}];
+  busy=true; renderWorkspace();
+  try{
+    const reply=(await callChat(COACH_RULES+"\n\nSCENARIO CONTEXT:\n"+scenario.coachContext,[{role:"user",content:seed}],COACH_MODEL,700)).trim();
+    feedback.push({who:"coach",text:reply});
+  }catch(e){showErr("CoachBot didn't respond. Reason: "+e.message);}
+  busy=false; renderChatArea();
+}
+
+/* ===================== DOCUMENTATION ===================== */
+function isChecked(dk,gk,opt){return !!(checks[dk]&&checks[dk][gk]&&checks[dk][gk][opt]);}
+function toggleCheck(dk,gk,opt,single){
+  checks[dk]=checks[dk]||{}; checks[dk][gk]=checks[dk][gk]||{};
+  const g=checks[dk][gk];
+  if(single){const was=g[opt];Object.keys(g).forEach(k=>delete g[k]);if(!was)g[opt]=true;}
+  else{if(g[opt])delete g[opt];else g[opt]=true;}
+  renderDoc();
+}
+
+function renderDoc(){
+  const host=document.getElementById("docscroll");
+  if(!host)return;
+  document.getElementById("tab-mse").classList.toggle("on",docTab==="mse");
+  document.getElementById("tab-diff").classList.toggle("on",docTab==="diff");
+
+  if(docTab==="mse"){
+    let html=`<div class="docintro">Translate what you observe into objective MSE language. Check what fits and add detail in the notes. Blank areas are a cue to ask more in the interview.</div>`;
+    html+=`<div class="helprow"><button class="helpbtn" id="helpmse"${busy?" disabled":""}>Help me document the MSE</button></div>`;
+    if(helpNote.mse)html+=`<div class="coachnote"><div class="who">CoachBot <button class="x" data-clear="mse">\u2715</button></div>${cueize(esc(helpNote.mse))}</div>`;
+    html+=MSE.map(d=>{
+      const groups=d.groups.map(g=>`
+        <div class="cbgroup">
+          ${g.label?`<div class="cbglabel">${esc(g.label)}</div>`:""}
+          <div class="cbrow">${g.options.map(o=>`<button class="cb ${isChecked(d.key,g.key,o)?"on":""}" data-dk="${d.key}" data-gk="${g.key}" data-opt="${esc(o)}" data-single="${g.single?1:0}">${esc(o)}</button>`).join("")}</div>
+        </div>`).join("");
+      return `<div class="dfield">
+        <div class="dlabel">${esc(d.label)}</div>
+        <div class="dhint">${esc(d.hint)}</div>
+        ${groups}
+        <textarea class="dcomment" data-note="${d.key}" placeholder="${esc(d.ph)}">${esc(notes[d.key]||"")}</textarea>
+      </div>`;
+    }).join("");
+    host.innerHTML=html;
+    const h=document.getElementById("helpmse");if(h)h.onclick=()=>helpMe("mse");
+  }else{
+    let html=`<div class="docintro">You are not assigning a final diagnosis. Lay out your leading considerations and the reasoning behind them.</div>`;
+    html+=`<div class="helprow"><button class="helpbtn" id="helpdiff"${busy?" disabled":""}>Help me reason through this</button></div>`;
+    if(helpNote.diff)html+=`<div class="coachnote"><div class="who">CoachBot <button class="x" data-clear="diff">\u2715</button></div>${cueize(esc(helpNote.diff))}</div>`;
+    html+=DIFF.map(f=>`<div class="dfield">
+        <div class="dlabel">${esc(f.label)}</div>
+        <div class="dhint">${esc(f.hint)}</div>
+        <textarea class="dcomment" data-diff="${f.key}" style="min-height:${f.key==="impressions"?64:52}px" placeholder="${esc(f.ph)}">${esc(diffVals[f.key]||"")}</textarea>
+      </div>`).join("");
+    host.innerHTML=html;
+    const h=document.getElementById("helpdiff");if(h)h.onclick=()=>helpMe("diff");
+  }
+
+  host.querySelectorAll(".cb").forEach(b=>b.onclick=()=>toggleCheck(b.dataset.dk,b.dataset.gk,b.dataset.opt,b.dataset.single==="1"));
+  host.querySelectorAll("[data-note]").forEach(t=>t.oninput=()=>{notes[t.dataset.note]=t.value;});
+  host.querySelectorAll("[data-diff]").forEach(t=>t.oninput=()=>{diffVals[t.dataset.diff]=t.value;});
+  host.querySelectorAll("[data-clear]").forEach(b=>b.onclick=()=>{helpNote[b.dataset.clear]=null;renderDoc();});
+}
+
+async function helpMe(which){
+  if(busy)return;
+  busy=true; renderDoc();
+  try{
+    if(which==="mse"){
+      const msg="=== TRANSCRIPT ===\n"+transcriptText()+"\n\n=== STUDENT'S CURRENT MSE NOTES ===\n"+mseSummary();
+      const out=(await callChat(HELP_MSE_SYSTEM,[{role:"user",content:msg}],COACH_MODEL,700)).trim();
+      helpNote.mse=out;
+    }else{
+      const msg="=== TRANSCRIPT ===\n"+transcriptText()+"\n\n=== STUDENT'S CURRENT DIFFERENTIAL NOTES ===\n"+diffSummary();
+      const out=(await callChat(HELP_DIFF_SYSTEM,[{role:"user",content:msg}],COACH_MODEL,600)).trim();
+      helpNote.diff=out;
+    }
+  }catch(e){
+    helpNote[which]="Couldn't load help right now. Reason: "+e.message;
+  }
+  busy=false; renderDoc(); renderChatArea();
+}
+
+/* ===================== ERRORS ===================== */
+function showErr(msg){const e=document.getElementById("err");if(e)e.innerHTML='<div class="err">'+msg+'</div>';}
+function clearErr(){const e=document.getElementById("err");if(e)e.innerHTML="";}
+
+render();
+</script>
+</body>
+</html>
