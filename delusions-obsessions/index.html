@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Delusions vs. Obsessions — Socialworky Tools</title>
-<script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <style>
   :root {
     --accent:     #EB786B;
@@ -450,7 +453,7 @@ function populateBank() {
   shuffle(CARDS).forEach(c => bank.appendChild(buildCard(c)));
 }
 
-// ── Drop zones ──────────────────────────────────────────────────────────
+// ── Drop zones ─────────────────────────────────────────────────────��────
 document.querySelectorAll('.drop-zone, #card-bank').forEach(zone => {
   zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
   zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
