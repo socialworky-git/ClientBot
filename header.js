@@ -15,17 +15,11 @@
 
   /* =========================================================
      ADD NEW TRAINING PAGES HERE  ->  the Training dropdown
-     builds itself. Drop a new line under the right category
-     and it appears in the menu automatically. Empty
-     categories are hidden.
+     builds itself. Simple flat list, no categories.
      ========================================================= */
   var TRAININGS = [
-    { category: "Foundations", items: [
-      { name: "What is Motivational Interviewing?", href: "/clientbot/training/what-is-MI/" }
-    ]}
-    // , { category: "Workshops", items: [
-    //     { name: "Example workshop", href: "/training/example/" }
-    //   ]}
+    { name: "What is Motivational Interviewing?", href: "/training/what-is-MI/" }
+    // , { name: "Example workshop", href: "/training/example/" }
   ];
 
   /* =========================================================
@@ -125,16 +119,26 @@
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
     return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
 
-  function buildMenu(topHref, topLabel, groups){
+  function buildMenu(topHref, topLabel, list){
     var html = '<a class="sw-dd__all" href="' + esc(topHref) + '">' + esc(topLabel) + '</a>';
-    for (var i = 0; i < groups.length; i++) {
-      var cat = groups[i];
-      if (!cat.items || !cat.items.length) continue;        // skip empty categories
-      html += '<div class="sw-dd__group"><div class="sw-dd__label">' + esc(cat.category) + '</div>';
-      for (var j = 0; j < cat.items.length; j++) {
-        html += '<a href="' + esc(cat.items[j].href) + '">' + esc(cat.items[j].name) + '</a>';
+    if (list.length && list[0].href) {
+      /* flat list: items with no category labels */
+      html += '<div class="sw-dd__group">';
+      for (var k = 0; k < list.length; k++) {
+        html += '<a href="' + esc(list[k].href) + '">' + esc(list[k].name) + '</a>';
       }
       html += '</div>';
+    } else {
+      /* categorized list: each group gets a label */
+      for (var i = 0; i < list.length; i++) {
+        var cat = list[i];
+        if (!cat.items || !cat.items.length) continue;      // skip empty categories
+        html += '<div class="sw-dd__group"><div class="sw-dd__label">' + esc(cat.category) + '</div>';
+        for (var j = 0; j < cat.items.length; j++) {
+          html += '<a href="' + esc(cat.items[j].href) + '">' + esc(cat.items[j].name) + '</a>';
+        }
+        html += '</div>';
+      }
     }
     return html;
   }
