@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Test - Socialworky</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --coral: #f1645a;
+        --ink: #1f1d1c;
+        --paper: #fbf7f4;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Hanken Grotesk", system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        padding: 2rem 1rem;
+      }
+      .eyebrow {
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--coral);
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.6rem;
+        font-weight: 700;
+      }
+      p.sub {
+        margin: 0;
+        max-width: 28rem;
+        text-align: center;
+        font-weight: 400;
+        color: #5c5754;
+        line-height: 1.5;
+      }
+      #status {
+        font-weight: 600;
+        min-height: 1.2em;
+      }
+      #app {
+        margin-top: 0.5rem;
+        display: flex;
+        justify-content: center;
+      }
+      .signed-in-msg {
+        text-align: center;
+        font-weight: 600;
+        color: #2f7d4f;
+      }
+    </style>
+  </head>
+  <body>
+    <span class="eyebrow">Socialworky</span>
+    <h1>Login test page</h1>
+    <p class="sub">
+      If you can sign up, see your account button, and sign back out here, your
+      Clerk setup works. This page is a throwaway and touches none of your tools.
+    </p>
+    <div id="status">Loading Clerk...</div>
+    <div id="app"></div>
+
+    <!-- Clerk UI bundle -->
+    <script
+      defer
+      crossorigin="anonymous"
+      src="https://possible-horse-78.clerk.accounts.dev/npm/@clerk/ui@1/dist/ui.browser.js"
+      type="text/javascript"
+    ></script>
+
+    <!-- Clerk core SDK, initialized with your publishable key -->
+    <script
+      defer
+      crossorigin="anonymous"
+      data-clerk-publishable-key="pk_test_cG9zc2libGUtaG9yc2UtNzguY2xlcmsuYWNjb3VudHMuZGV2JA"
+      src="https://possible-horse-78.clerk.accounts.dev/npm/@clerk/clerk-js@6/dist/clerk.browser.js"
+      type="text/javascript"
+    ></script>
+
+    <!-- Load Clerk, then show sign-in or the signed-in account button -->
+    <script>
+      window.addEventListener("load", async function () {
+        const statusEl = document.getElementById("status");
+        const appEl = document.getElementById("app");
+
+        try {
+          await Clerk.load({
+            ui: { ClerkUI: window.__internal_ClerkUICtor },
+          });
+
+          if (Clerk.isSignedIn) {
+            statusEl.innerHTML =
+              '<span class="signed-in-msg">You are signed in. It works.</span>';
+            appEl.innerHTML = '<div id="user-button"></div>';
+            Clerk.mountUserButton(document.getElementById("user-button"));
+          } else {
+            statusEl.textContent = "You are signed out. Sign up or sign in below.";
+            appEl.innerHTML = '<div id="sign-in"></div>';
+            Clerk.mountSignIn(document.getElementById("sign-in"));
+          }
+        } catch (err) {
+          statusEl.textContent =
+            "Clerk failed to load. Double-check the keys in this file.";
+          console.error("Clerk load error:", err);
+        }
+      });
+    </script>
+  </body>
+</html>
