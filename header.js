@@ -14,6 +14,44 @@
   var TOOLS_LABEL    = "Tools";      // nav label for the Tools dropdown
 
   /* =========================================================
+     LOGIN GATE (Clerk)  --  added for the account system
+     ---------------------------------------------------------
+     These two values come from your Clerk dashboard. They are
+     safe to live in this file (publishable, client-side only).
+     When you go live on your real domain, swap them for your
+     pk_live_ key and live frontend address.
+     ========================================================= */
+  var CLERK_FRONTEND_API    = "possible-horse-78.clerk.accounts.dev";
+  var CLERK_PUBLISHABLE_KEY = "pk_test_cG9zc2libGUtaG9yc2UtNzguY2xlcmsuYWNjb3VudHMuZGV2JA";
+  var LOGIN_PAGE            = "/login.html";
+
+  /* Which pages require a signed-in user?
+     Default: every individual tool under /tools/ is protected,
+     but the Tools catalog page (/tools/) and all other pages
+     (home, training) stay public so people can browse first.
+     To ALSO gate the catalog, delete the line that returns false.
+     To open a single tool up for free, add its path here. */
+  function swIsProtectedPage(){
+    var p = window.location.pathname;
+    if (p === "/tools/" || p === "/tools" || p === "/tools/index.html") return false; // public catalog
+    return p.indexOf("/tools/") === 0; // any individual tool is protected
+  }
+
+  /* Hide the page immediately on protected pages so a signed-out
+     visitor never glimpses the tool before the redirect happens.
+     A failsafe reveals the page after 8s so it can never get stuck. */
+  var SW_PROTECTED = swIsProtectedPage();
+  var swRevealTimer;
+  function swRevealPage(){
+    clearTimeout(swRevealTimer);
+    document.documentElement.style.visibility = "";
+  }
+  if (SW_PROTECTED) {
+    document.documentElement.style.visibility = "hidden";
+    swRevealTimer = setTimeout(swRevealPage, 8000);
+  }
+
+  /* =========================================================
      ADD NEW TRAINING PAGES HERE  ->  the Training dropdown
      builds itself. Simple flat list, no categories.
      ========================================================= */
@@ -78,6 +116,10 @@
     ".sw-nav__links{display:flex;align-items:center;gap:22px;}" +
     ".sw-nav__links a{font-size:15px;font-weight:600;color:#5B5B5B;text-decoration:none;}" +
     ".sw-nav__links a:hover{color:#C2452F;}" +
+    /* auth control (Sign in link / account button) sits at the end of the nav */
+    ".sw-nav__auth{display:flex;align-items:center;min-height:28px;}" +
+    ".sw-nav__auth a{font-size:15px;font-weight:600;color:#5B5B5B;text-decoration:none;}" +
+    ".sw-nav__auth a:hover{color:#C2452F;}" +
     /* dropdown */
     ".sw-dd{position:relative;}" +
     ".sw-dd__btn{font-family:inherit;font-size:15px;font-weight:600;color:#5B5B5B;background:none;" +
@@ -172,6 +214,12 @@
   linksWrap.appendChild(makeDropdown({
     label: TOOLS_LABEL, hubHref: LINKS.tools, hubLabel: "All Tools", groups: TOOLS
   }));
+
+  /* Auth control slot: filled in once Clerk has loaded (see below). */
+  var authSlot = document.createElement("div");
+  authSlot.className = "sw-nav__auth";
+  linksWrap.appendChild(authSlot);
+
   nav.appendChild(linksWrap);
 
   if (here && here.parentNode) {
@@ -233,4 +281,57 @@
       if (e.key === "Escape") setOpen(false);
     });
   }
+
+  /* =========================================================
+     LOGIN GATE LOGIC
+     Loads Clerk from the CDN, then:
+       - on a protected tool page, sends signed-out visitors to login
+       - everywhere, shows a Sign in link or the account button
+     ========================================================= */
+  function swLoadClerk(cb){
+    if (window.Clerk) { cb(); return; }
+    var ui = document.createElement("script");
+    ui.src = "https://" + CLERK_FRONTEND_API + "/npm/@clerk/ui@1/dist/ui.browser.js";
+    ui.crossOrigin = "anonymous";
+    ui.onerror = function(){ console.error("Clerk UI bundle failed to load"); swRevealPage(); };
+    ui.onload = function(){
+      var core = document.createElement("script");
+      core.src = "https://" + CLERK_FRONTEND_API + "/npm/@clerk/clerk-js@6/dist/clerk.browser.js";
+      core.crossOrigin = "anonymous";
+      core.setAttribute("data-clerk-publishable-key", CLERK_PUBLISHABLE_KEY);
+      core.onerror = function(){ console.error("Clerk core failed to load"); swRevealPage(); };
+      core.onload = function(){ cb(); };
+      document.head.appendChild(core);
+    };
+    document.head.appendChild(ui);
+  }
+
+  function swOnClerkReady(){
+    var signedIn = !!Clerk.isSignedIn;
+
+    // Protected page + not signed in -> send to login, remembering this page.
+    if (SW_PROTECTED && !signedIn) {
+      var dest = window.location.pathname + window.location.search + window.location.hash;
+      window.location.replace(LOGIN_PAGE + "?redirect_url=" + encodeURIComponent(dest));
+      return; // stay hidden; we're navigating away
+    }
+
+    // Otherwise the page may show.
+    swRevealPage();
+
+    // Fill the header's auth control.
+    if (signedIn) {
+      authSlot.innerHTML = "";
+      Clerk.mountUserButton(authSlot);
+    } else {
+      authSlot.innerHTML = '<a href="' + LOGIN_PAGE + '">Sign in</a>';
+    }
+  }
+
+  swLoadClerk(function(){
+    if (!window.Clerk) { swRevealPage(); return; }
+    Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } })
+      .then(swOnClerkReady)
+      .catch(function(e){ console.error("Clerk load error:", e); swRevealPage(); });
+  });
 })();
