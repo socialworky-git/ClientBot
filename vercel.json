@@ -1,0 +1,16 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "ai.socialworky.com" }],
+      "destination": "https://socialworky.com/tools/",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "workshop.socialworky.com" }],
+      "destination": "https://socialworky.com/tools/",
+      "permanent": true
+    }
+  ]
+}
