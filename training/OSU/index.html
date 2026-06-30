@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OSU Training &amp; CEUs - Socialworky</title>
+    <style>
+      html, body { margin: 0; height: 100%; }
+      body { display: flex; flex-direction: column; min-height: 100vh; }
+      /* gives the injected site nav some breathing room from the edges */
+      .sw-header-bar { padding: 0 20px; }
+      /* the embed fills everything below the header */
+      .embed-frame {
+        flex: 1 1 auto;
+        width: 100%;
+        border: 0;
+        display: block;
+        min-height: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sw-header-bar">
+      <script src="/header.js"></script>
+    </div>
+
+    <iframe
+      class="embed-frame"
+      src="https://socialworky.craft.me/OSU"
+      title="OSU Training and CEUs"
+      allow="fullscreen"></iframe>
+  </body>
+</html>

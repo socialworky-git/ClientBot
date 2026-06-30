@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Socialworky | LMSW Practice Test</title>
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<style>
+  :root{
+    --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
+    --accent:#EB786B; --accentDeep:#C2452F; --coral-bg:#FDEEEB; --coral-line:#F6D4CD; --heroMuted:#7A5048;
+    --good:#2E7D5B; --goodSoft:#E8F4EE; --goodLine:#Bfe3D2;
+    --bad:#C2452F; --badSoft:#FDEEEB; --badLine:#F6D4CD;
+    --sans:Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:20px;line-height:1.5;}
+  .wrap{max-width:820px;margin:0 auto;}
+  a{color:var(--accentDeep);}
+
+  /* ---- Standardized Socialworky tool hero ---- */
+  .toolhero{display:flex;align-items:center;gap:16px;background:var(--coral-bg);
+    border:1px solid var(--coral-line);border-radius:12px;box-shadow:inset 4px 0 0 var(--accent);
+    padding:18px 22px 18px 24px;margin-bottom:18px;}
+  .toolhero .ico{width:52px;height:52px;border-radius:12px;background:#fff;
+    border:1px solid var(--coral-line);display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;color:var(--accentDeep);}
+  .toolhero .ico svg{width:26px;height:26px;display:block;}
+  .toolhero .brand{font-weight:700;font-size:24px;letter-spacing:-0.4px;color:var(--ink);line-height:1.1;}
+  .toolhero .brand .bot{color:var(--accentDeep);}
+  .toolhero .tagline{color:var(--heroMuted);font-size:14px;margin-top:3px;}
+
+  h1{font-size:23px;font-weight:700;margin:0 0 6px;}
+  .lead{color:var(--muted);font-size:15px;margin:8px 0 0;}
+  .seclabel{font-size:11px;letter-spacing:1px;color:var(--ink);text-transform:uppercase;font-weight:700;
+    border-bottom:1px solid var(--line);padding-bottom:6px;margin:22px 0 12px;}
+
+  /* ---- Standardized grey instructions callout ---- */
+  .orient{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:18px 0 6px;}
+  .orient .ohd{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:14px;}
+  .orient .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;}
+  .orient .step{display:flex;gap:10px;}
+  .orient .step .n{width:24px;height:24px;border-radius:50%;background:var(--coral-bg);color:var(--accentDeep);
+    font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
+  .orient .step .tx{font-size:13.5px;color:var(--ink);line-height:1.45;}
+
+  /* ---- blueprint mini bars on home ---- */
+  .blueprint{margin-top:16px;}
+  .bpitem{display:flex;align-items:center;gap:12px;margin:8px 0;}
+  .bpitem .bplabel{font-size:13.5px;width:210px;flex:0 0 auto;color:var(--ink);}
+  .bptrack{flex:1;height:9px;border-radius:999px;background:var(--surface);border:1px solid var(--line);overflow:hidden;}
+  .bpfill{height:100%;background:var(--accent);}
+  .bppct{font-size:12.5px;color:var(--muted);width:38px;text-align:right;flex:0 0 auto;}
+
+  /* ---- buttons ---- */
+  .launch{background:var(--accent);color:var(--ink);border:none;border-radius:9px;padding:12px 20px;
+    font-size:15px;font-weight:700;font-family:var(--sans);cursor:pointer;transition:background .15s;}
+  .launch:hover{background:var(--accentDeep);color:#fff;}
+  .ghost{background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:11px 18px;
+    font-size:14.5px;font-weight:700;font-family:var(--sans);cursor:pointer;}
+  .ghost:hover{border-color:var(--accent);}
+  .ghost:disabled{opacity:.45;cursor:default;border-color:var(--line);}
+
+  /* ---- quiz ---- */
+  .qbar{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .qtrack{flex:1;height:7px;border-radius:999px;background:var(--surface);border:1px solid var(--line);overflow:hidden;}
+  .qprog{height:100%;background:var(--accent);width:0;transition:width .2s;}
+  .qcount{font-size:12.5px;color:var(--muted);font-weight:700;flex:0 0 auto;}
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;}
+  .qmeta{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap;}
+  .areachip{font-size:11px;font-weight:700;color:var(--accentDeep);background:var(--coral-bg);
+    border:1px solid var(--coral-line);padding:3px 10px;border-radius:999px;letter-spacing:.3px;}
+  .lvlchip{font-size:11px;font-weight:700;color:var(--muted);background:var(--surface);
+    border:1px solid var(--line);padding:3px 10px;border-radius:999px;text-transform:uppercase;letter-spacing:.5px;}
+  .stem{font-size:16px;font-weight:700;line-height:1.5;margin:2px 0 16px;}
+  .opts{display:flex;flex-direction:column;gap:9px;}
+  .opt{display:flex;gap:11px;align-items:flex-start;text-align:left;background:#fff;border:1px solid var(--line);
+    border-radius:10px;padding:13px 15px;font-family:var(--sans);font-size:14.5px;cursor:pointer;line-height:1.45;
+    transition:border-color .12s,background .12s;}
+  .opt:hover{border-color:var(--accent);}
+  .opt .ltr{font-weight:700;color:var(--accentDeep);flex:0 0 auto;width:18px;}
+  .opt.sel{border-color:var(--accent);background:var(--coral-bg);}
+  .opt.sel .ltr{color:var(--accentDeep);}
+
+  .qnav{display:flex;justify-content:space-between;align-items:center;margin-top:18px;gap:12px;}
+  .qnav .right{display:flex;gap:10px;align-items:center;}
+  .savednote{font-size:12.5px;color:var(--muted);}
+
+  /* ---- results ---- */
+  .scorehero{display:flex;align-items:center;gap:20px;background:var(--coral-bg);border:1px solid var(--coral-line);
+    border-radius:12px;padding:20px 24px;box-shadow:inset 4px 0 0 var(--accent);}
+  .scorebig{font-size:40px;font-weight:700;color:var(--accentDeep);line-height:1;}
+  .scoresub{font-size:13.5px;color:var(--heroMuted);margin-top:6px;}
+  .disclaimer{font-size:12.5px;color:var(--muted);background:var(--surface);border:1px solid var(--line);
+    border-radius:10px;padding:12px 15px;margin-top:14px;line-height:1.5;}
+
+  .areacard{border:1px solid var(--line);border-radius:11px;padding:15px 17px;margin:10px 0;}
+  .areatop{display:flex;align-items:baseline;gap:10px;justify-content:space-between;}
+  .areanm{font-size:15px;font-weight:700;}
+  .areascore{font-size:13.5px;color:var(--muted);font-weight:700;}
+  .areatrack{height:9px;border-radius:999px;background:var(--surface);border:1px solid var(--line);overflow:hidden;margin:10px 0 4px;}
+  .areafill{height:100%;}
+
+  .planblock{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;
+    padding:14px 16px;margin:10px 0;background:#fff;}
+  .planrank{font-size:11px;letter-spacing:.5px;text-transform:uppercase;font-weight:700;color:var(--accent);}
+  .planarea{font-size:15px;font-weight:700;margin:3px 0 2px;}
+  .planpct{font-size:12.5px;color:var(--muted);}
+  .compline{margin-top:11px;padding-top:11px;border-top:1px solid var(--line);}
+  .compname{font-size:13.5px;font-weight:700;color:var(--ink);}
+  .compfocus{font-size:13px;color:var(--muted);margin:3px 0 4px;line-height:1.45;}
+  .compref{font-size:12.5px;color:var(--accentDeep);}
+  .planstrong{font-size:13px;color:var(--good);background:var(--goodSoft);border:1px solid var(--goodLine);
+    border-radius:8px;padding:9px 12px;margin-top:6px;}
+
+  /* review */
+  .rev{border:1px solid var(--line);border-radius:10px;margin:9px 0;overflow:hidden;}
+  .revhd{display:flex;gap:10px;align-items:flex-start;padding:12px 15px;cursor:pointer;background:#fff;}
+  .revhd:hover{background:var(--surface);}
+  .revmark{flex:0 0 auto;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:13px;font-weight:700;color:#fff;}
+  .revmark.ok{background:var(--good);}
+  .revmark.no{background:var(--bad);}
+  .revq{font-size:13.5px;font-weight:700;flex:1;line-height:1.4;}
+  .revtoggle{font-size:18px;color:var(--muted);flex:0 0 auto;line-height:1;}
+  .revbody{display:none;padding:0 15px 15px 47px;font-size:13.5px;color:var(--ink);}
+  .rev.open .revbody{display:block;}
+  .revrow{margin:4px 0;}
+  .revrow .lab{font-weight:700;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.4px;}
+  .revrationale{margin-top:8px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;
+    font-size:13px;color:var(--muted);line-height:1.5;}
+  .yourbad{color:var(--bad);font-weight:700;}
+  .yourgood{color:var(--good);font-weight:700;}
+
+  .footnote{font-size:12.5px;color:var(--muted);margin-top:18px;line-height:1.5;}
+
+  @media (max-width:560px){
+    .orient .steps{grid-template-columns:1fr;}
+    .bpitem .bplabel{width:150px;font-size:12.5px;}
+    .scorehero{flex-direction:column;align-items:flex-start;gap:10px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<script src="/header.js"></script>
+<div id="app"></div>
+</div>
+
+<script>
+/* =========================================================================
+   LMSW Practice Test  —  Socialworky Tools
+   Fixed 50-item bank mapped to the ASWB Masters exam blueprint.
+   Answer all 50, then a score report and a weakest-to-strongest study plan.
+   ========================================================================= */
+
+/* ---- Blueprint reference data (ASWB Masters category) ---- */
+var AREAS = {
+  I:   { name:"Values and Ethics",        weight:35 },
+  II:  { name:"Assessment and Planning",  weight:33 },
+  III: { name:"Intervention and Practice",weight:32 }
+};
+
+var COMPS = {
+  IA:  { area:"I",   name:"Ethical Principles and Responsibilities",
+         focus:"Informed consent, the limits of confidentiality, resolving ethical dilemmas, professional values, and self-care.",
+         ref:"NASW Code of Ethics (2021); Reamer, Social Work Values and Ethics" },
+  IB:  { area:"I",   name:"Ethical Service Delivery",
+         focus:"Professional boundaries and dual relationships, self-determination, mandatory reporting and duty to warn, documentation, and termination.",
+         ref:"NASW Code of Ethics (2021); Reamer, Risk Management in Social Work" },
+  IC:  { area:"I",   name:"Diversity and Social Justice",
+         focus:"How culture and intersectionality shape identity, implicit bias, language access, and anti-oppressive practice.",
+         ref:"Marsiglia, Kulis, and Lechuga-Pena, Diversity, Oppression, and Change" },
+  IIA: { area:"II",  name:"Assessment Concepts",
+         focus:"Indicators of trauma, mental illness, substance use, and abuse; lifespan development; defense mechanisms; co-occurring conditions.",
+         ref:"Hutchison, Essentials of Human Behavior; DSM-5-TR" },
+  IIB: { area:"II",  name:"Assessment Methods and Techniques",
+         focus:"Assessing risk of harm, interviewing skills, the mental status exam, readiness for change, and strengths assessment.",
+         ref:"Hepworth et al., Direct Social Work Practice" },
+  IIC: { area:"II",  name:"Assessment Practices",
+         focus:"Collaborative goal and treatment planning, selecting intervention modalities, and readiness for termination.",
+         ref:"Hepworth et al., Direct Social Work Practice; Johnson, Therapist's Guide to Clinical Intervention" },
+  IIIA:{ area:"III", name:"Practice Concepts",
+         focus:"Building the helping relationship, strengths-based and empowerment strategies, the problem-solving role, and end-of-life practice.",
+         ref:"Miley, O'Melia, and DuBois, Generalist Social Work Practice" },
+  IIIB:{ area:"III", name:"Intervention Methods and Techniques",
+         focus:"Active listening, crisis intervention, motivational interviewing and other evidence-based practices, grief, harm reduction, group, and family work.",
+         ref:"Miller and Rollnick, Motivational Interviewing; Walsh, Theories for Direct Social Work Practice" },
+  IIIC:{ area:"III", name:"Practice Evaluation and Research",
+         focus:"Evaluating client progress, program evaluation, and research concepts such as reliability and validity.",
+         ref:"Rubin and Babbie, Research Methods for Social Work" },
+  IIID:{ area:"III", name:"Supervision and Administration",
+         focus:"Supervision and consultation models and managing transference and countertransference in supervision.",
+         ref:"NASW and ASWB, Best Practice Standards in Social Work Supervision" }
+};
+
+/* ---- The 50-item bank.  c = correct index (0-3) ---- */
+var BANK = [
+  /* ====== I. VALUES AND ETHICS (18) ====== */
+  // IA Ethical Principles and Responsibilities (1-7)
+  { comp:"IA", lvl:"application",
+    q:"A social worker is beginning services with a new client. To honor informed consent, what should the social worker do FIRST?",
+    o:["Have the client sign the agency intake form","Explain the purpose, risks, benefits, and limits of services and obtain the client's agreement","Review the client's insurance coverage","Schedule the next appointment"],
+    c:1, r:"Informed consent requires that the client understand the purpose, risks, benefits, and limits of services and agree before treatment proceeds. A signature alone does not establish understanding." },
+  { comp:"IA", lvl:"application",
+    q:"During a first session, a client asks whether everything shared will stay private. What is the social worker's BEST response?",
+    o:["Assure the client that everything is completely confidential","Explain that confidentiality applies except in situations such as risk of harm or a legal requirement","Tell the client that privacy depends on the agency director","Move past the question to keep the client comfortable"],
+    c:1, r:"Confidentiality has limits, including risk of harm and legal mandates. Explaining those limits early supports informed consent and protects the relationship." },
+  { comp:"IA", lvl:"reasoning",
+    q:"A client discloses a plan that conflicts with the social worker's personal values. What should the social worker do FIRST?",
+    o:["Refer the client to another provider","Share personal disagreement to be transparent","Review the relevant ethical standards and the client's right to self-determination","Document the disagreement and continue"],
+    c:2, r:"The social worker grounds the response in professional ethics and the client's self-determination rather than personal values. Referral may follow only if the worker cannot practice competently and ethically." },
+  { comp:"IA", lvl:"recall",
+    q:"A social worker notices emotional exhaustion, growing cynicism toward clients, and a reduced sense of accomplishment. These signs BEST describe:",
+    o:["Countertransference","Burnout","A boundary violation","Vicarious resilience"],
+    c:1, r:"Emotional exhaustion, cynicism, and reduced accomplishment are the recognized features of burnout. Recognizing them supports timely self-care." },
+  { comp:"IA", lvl:"recall",
+    q:"Ongoing supervision, continuing education, and review of the literature primarily serve to:",
+    o:["Satisfy agency billing requirements","Maintain current professional competence","Replace the need for consultation","Document client progress"],
+    c:1, r:"These professional development activities exist to keep the social worker competent and current, which protects clients." },
+  { comp:"IA", lvl:"application",
+    q:"A social worker has reason to believe a colleague is practicing while impaired. When feasible, what should the social worker do FIRST?",
+    o:["Report the colleague to the licensing board","Confront the colleague in front of others","Address the concern directly with the colleague","Document it and take no further action"],
+    c:2, r:"When feasible, the social worker first addresses the concern directly with the colleague. Reporting to a board or other body follows if the issue is not resolved." },
+  { comp:"IA", lvl:"reasoning",
+    q:"A client presents a clinical issue that falls outside the social worker's training. What is the social worker's BEST course of action?",
+    o:["Continue and learn as the work proceeds","Seek consultation and supervision, or refer, to ensure competent service","Tell the client the issue cannot be treated","Provide only general support and avoid the issue"],
+    c:1, r:"The principle of competence requires the social worker to obtain supervision or consultation, or to refer, so the client receives competent care." },
+
+  // IB Ethical Service Delivery (8-14)
+  { comp:"IB", lvl:"application",
+    q:"A client offers to hire the social worker's spouse for a paid side project. What should the social worker consider FIRST?",
+    o:["The income it would provide the spouse","The potential conflict of interest and harm to the professional relationship","Whether the client can afford it","The agency policy on holiday gifts"],
+    c:1, r:"This arrangement creates a dual relationship and a conflict of interest. The social worker weighs the risk of harm to the professional relationship before anything else." },
+  { comp:"IB", lvl:"reasoning",
+    q:"A competent adult client decides to stop a recommended medical treatment. What should the social worker do?",
+    o:["Insist the client continue for safety","Respect the client's right to self-determination while confirming the decision is informed","Notify the client's family","Discharge the client from services"],
+    c:1, r:"Self-determination governs here. The social worker confirms the client understands the consequences and respects the informed choice." },
+  { comp:"IB", lvl:"application",
+    q:"A client states a specific and credible intent to harm an identifiable person. What should the social worker do FIRST?",
+    o:["Continue exploring the client's feelings","Take steps to protect the intended victim, which may include warning and notifying authorities","Wait until the next session to reassess","Refer the client to a psychiatrist"],
+    c:1, r:"A specific, credible threat to an identifiable person triggers the duty to protect, which can include warning the person and notifying authorities." },
+  { comp:"IB", lvl:"recall",
+    q:"The PRIMARY ethical purpose of accurate client records is to:",
+    o:["Protect the agency from lawsuits","Support continuity and quality of care and accountability","Satisfy the supervisor","Increase reimbursement"],
+    c:1, r:"Documentation exists chiefly to support continuity of care, quality, and accountability to the client. Liability protection is secondary." },
+  { comp:"IB", lvl:"application",
+    q:"A client must end services because the social worker is leaving the agency. What is the social worker's ethical responsibility?",
+    o:["End services on the final day with no further steps","Provide notice and arrange for continuity of care or an appropriate referral","Ask the client to locate a new provider alone","Transfer the record without telling the client"],
+    c:1, r:"Ethical termination requires notice and steps to ensure continuity, including referral, so the client is not abandoned." },
+  { comp:"IB", lvl:"recall",
+    q:"A school social worker develops a reasonable suspicion that a child is being abused. The social worker's obligation is to:",
+    o:["Confirm the abuse before acting","Report the reasonable suspicion to the proper authority","Inform the parents before reporting","Wait for the child to disclose directly"],
+    c:1, r:"Mandated reporting is based on reasonable suspicion, not confirmation. The social worker reports to the proper authority." },
+  { comp:"IB", lvl:"application",
+    q:"A client asks to send clinical updates through personal text messages. What should the social worker do FIRST?",
+    o:["Agree, to keep the client engaged","Explain the privacy and confidentiality risks and review agency policy before deciding","Refuse all electronic contact","Use a personal email account instead"],
+    c:1, r:"Electronic communication raises privacy and confidentiality concerns. The social worker addresses those risks and policy before agreeing to a method." },
+
+  // IC Diversity and Social Justice (15-18)
+  { comp:"IC", lvl:"recall",
+    q:"Understanding how culture, race, and intersectionality shape a client's identity BEST helps the social worker to:",
+    o:["Predict the client's diagnosis","Provide responsive, individualized assessment and engagement","Assign the client to a standard group","Avoid discussing difference"],
+    c:1, r:"Attention to culture and intersectionality supports assessment and engagement that fit the individual client rather than assumptions." },
+  { comp:"IC", lvl:"reasoning",
+    q:"A social worker notices an automatic negative assumption about a client from a different background. What should the social worker do?",
+    o:["Ignore it as harmless","Reflect on the bias and seek supervision so it does not affect care","Reassign the client to a colleague","Disclose the bias to the client"],
+    c:1, r:"Implicit bias is addressed through self-reflection and supervision so it does not shape the work. Reassignment is not the first response." },
+  { comp:"IC", lvl:"application",
+    q:"A client has limited English proficiency. What is the BEST practice for the session?",
+    o:["Ask the client's child to interpret","Use a trained, neutral interpreter","Rely on simplified English and gestures","Reschedule until the client improves their English"],
+    c:1, r:"A trained, neutral interpreter protects accuracy and confidentiality. Using a family member, especially a child, risks distortion and role strain." },
+  { comp:"IC", lvl:"reasoning",
+    q:"A client's presenting problem is strongly shaped by systemic barriers. An anti-oppressive approach would lead the social worker to:",
+    o:["Focus only on the client's individual choices","Address both the client's needs and the structural conditions affecting the client","Refer to legal services and close the case","Avoid naming the barriers"],
+    c:1, r:"Anti-oppressive practice attends to structural conditions alongside individual needs rather than locating the problem solely in the client." },
+
+  /* ====== II. ASSESSMENT AND PLANNING (16) ====== */
+  // IIA Assessment Concepts (19-25)
+  { comp:"IIA", lvl:"recall",
+    q:"Intergenerational and historical trauma are BEST understood as:",
+    o:["Limited to the directly affected individual","Transmitted across generations and shaped by historical oppression","Always resolved within a single generation","Unrelated to present functioning"],
+    c:1, r:"Historical and intergenerational trauma extends beyond the individual and is shaped by collective experiences of oppression that influence current functioning." },
+  { comp:"IIA", lvl:"application",
+    q:"A client reports two weeks of depressed mood, loss of interest, sleep disturbance, and feelings of worthlessness. These BEST suggest screening for:",
+    o:["Generalized anxiety disorder","A major depressive episode","A manic episode","An adjustment disorder"],
+    c:1, r:"Depressed mood, loss of interest, sleep disturbance, and worthlessness across two weeks point toward a major depressive episode and warrant further assessment." },
+  { comp:"IIA", lvl:"application",
+    q:"A client minimizes drinking but reports tolerance, morning use, and conflict at work. What should the social worker assess NEXT?",
+    o:["The client's early childhood","The pattern, frequency, and consequences of use to gauge severity","The client's diet and exercise","Family history alone"],
+    c:1, r:"Tolerance, morning use, and consequences signal possible substance use disorder. The next step is assessing the pattern and consequences to gauge severity." },
+  { comp:"IIA", lvl:"reasoning",
+    q:"An older adult presents with unexplained injuries while a caregiver answers all questions on the client's behalf. What should the social worker consider FIRST?",
+    o:["That this reflects normal aging","The possibility of elder abuse or neglect and the client's safety","The caregiver's stress alone","A medication side effect"],
+    c:1, r:"Unexplained injuries and a caregiver who controls communication are warning signs. The social worker first considers possible abuse or neglect and the client's safety." },
+  { comp:"IIA", lvl:"recall",
+    q:"A four-year-old who dresses with little help, plays with peers, and asks 'who' and 'why' questions is showing development that is:",
+    o:["Delayed for the age","Typical for the age","Advanced well beyond the age","A sign of concern"],
+    c:1, r:"These abilities are expected milestones around age four and reflect typical development." },
+  { comp:"IIA", lvl:"recall",
+    q:"A client consistently attributes their own unacceptable feelings to other people. This defense mechanism is:",
+    o:["Projection","Sublimation","Regression","Reaction formation"],
+    c:0, r:"Projection is attributing one's own unacceptable feelings or impulses to others." },
+  { comp:"IIA", lvl:"application",
+    q:"A client has both a substance use disorder and major depression. BEST practice is to:",
+    o:["Treat the depression only after full sobriety","Address both conditions in an integrated way","Refer out and close the case","Treat the substance use and ignore the depression"],
+    c:1, r:"Co-occurring disorders are best addressed through integrated treatment rather than sequencing one condition behind the other." },
+
+  // IIB Assessment Methods and Techniques (26-31)
+  { comp:"IIB", lvl:"reasoning",
+    q:"During an intake, a client discloses passive thoughts of death. What should the social worker do FIRST?",
+    o:["Reassure the client that this is normal","Assess for ideation, plan, access to means, and intent","Change the subject to reduce distress","Schedule a follow-up in two weeks"],
+    c:1, r:"Any disclosure of thoughts of death calls for a direct risk assessment of ideation, plan, means, and intent before other steps." },
+  { comp:"IIB", lvl:"application",
+    q:"A client gives a vague answer. The social worker says, 'Help me understand what that was like for you.' This is an example of:",
+    o:["Confrontation","An open, clarifying invitation","Interpretation","Advice giving"],
+    c:1, r:"This is an open, clarifying prompt that invites the client to expand, consistent with interest-based interviewing." },
+  { comp:"IIB", lvl:"recall",
+    q:"Assessing a client's orientation, attention, and memory addresses which mental status exam domain?",
+    o:["Affect","Thought content","Cognition","Insight"],
+    c:2, r:"Orientation, attention, and memory fall under the cognition domain of the mental status exam." },
+  { comp:"IIB", lvl:"recall",
+    q:"A client says, 'Maybe my drinking is a problem, but I am not sure I want to change.' This BEST reflects which stage of change?",
+    o:["Precontemplation","Contemplation","Action","Maintenance"],
+    c:1, r:"Acknowledging a possible problem while remaining ambivalent about change is the contemplation stage." },
+  { comp:"IIB", lvl:"application",
+    q:"A client becomes hesitant when asked about a past experience of abuse. What should the social worker do FIRST?",
+    o:["Move on to a different topic","Acknowledge the client's hesitancy and let the client set the pace","Press for specific details","End the session early"],
+    c:1, r:"Acknowledging hesitancy and allowing the client to set the pace respects the difficulty of disclosing sensitive information and supports the relationship." },
+  { comp:"IIB", lvl:"recall",
+    q:"Asking a client about their coping skills, supports, and past successes is part of:",
+    o:["A risk assessment","A strengths-based assessment","A mandated report","A discharge summary"],
+    c:1, r:"Exploring coping, supports, and past successes is the core of a strengths-based assessment." },
+
+  // IIC Assessment Practices (32-34)
+  { comp:"IIC", lvl:"application",
+    q:"After completing an assessment, the social worker and client set goals together. The treatment plan should BEST be:",
+    o:["Written by the social worker alone","Developed collaboratively with measurable objectives","Based on what is convenient for the agency","Kept private from the client"],
+    c:1, r:"A treatment plan is a joint product with measurable objectives, developed with the client rather than imposed." },
+  { comp:"IIC", lvl:"reasoning",
+    q:"A client with limited literacy is referred for a structured workbook intervention. What should the social worker consider FIRST?",
+    o:["The cost of the workbook","The fit between the modality and the client's abilities and context","The social worker's own preference","The agency caseload"],
+    c:1, r:"Selecting a modality requires matching it to the client's abilities and context, so the worker first considers fit." },
+  { comp:"IIC", lvl:"recall",
+    q:"A strong indicator that a client is ready for termination is that:",
+    o:["The client has begun missing appointments","The client has met goals and shows stable functioning","Insurance coverage has ended","The social worker has a full caseload"],
+    c:1, r:"Readiness for termination is signaled by goal attainment and stable functioning, not by external or logistical factors." },
+
+  /* ====== III. INTERVENTION AND PRACTICE (16) ====== */
+  // IIIA Practice Concepts (35-39)
+  { comp:"IIIA", lvl:"recall",
+    q:"The MOST important social worker action for building a therapeutic alliance early in the work is:",
+    o:["Setting firm limits","Conveying empathy, warmth, and a nonjudgmental stance","Completing the required paperwork","Offering quick advice"],
+    c:1, r:"Empathy, warmth, and a nonjudgmental stance are central to forming the therapeutic alliance early in the relationship." },
+  { comp:"IIIA", lvl:"application",
+    q:"A client feels hopeless about finding employment. A strengths-based response would FIRST:",
+    o:["List the client's deficits","Identify the client's existing skills, supports, and past successes","Refer to vocational services and close the case","Reassure the client that things will work out"],
+    c:1, r:"A strengths-based approach begins by surfacing the client's existing skills, supports, and successes to build on." },
+  { comp:"IIIA", lvl:"reasoning",
+    q:"A client expects the social worker to solve the problem for them. The social worker's role is BEST described as:",
+    o:["Directing the client to the correct answer","Partnering with the client to identify options and support the client's decisions","Taking over the decision for the client","Avoiding the problem until the client is ready"],
+    c:1, r:"In the problem-solving process the social worker partners with the client, supporting the client's own decision making rather than deciding for them." },
+  { comp:"IIIA", lvl:"recall",
+    q:"A care conference that includes a nurse, a physician, and a social worker is an example of:",
+    o:["Peer supervision","Interdisciplinary team collaboration","Group therapy","Case consultation with the client"],
+    c:1, r:"Professionals from different disciplines coordinating care is interdisciplinary team collaboration." },
+  { comp:"IIIA", lvl:"application",
+    q:"A terminally ill client wants to talk about fears of dying. The social worker's BEST response is to:",
+    o:["Redirect the client to practical planning","Allow space and explore the client's feelings about dying","Reassure the client not to worry","Refer the client to a chaplain right away"],
+    c:1, r:"End-of-life practice calls for allowing space and exploring the client's feelings rather than redirecting or reassuring away the concern." },
+
+  // IIIB Intervention Methods and Techniques (40-47)
+  { comp:"IIIB", lvl:"recall",
+    q:"Reflecting back the feeling beneath a client's words demonstrates:",
+    o:["Interpretation","Empathic reflection","Confrontation","Summarizing"],
+    c:1, r:"Naming the feeling underneath the client's words is empathic reflection, a core active-listening skill." },
+  { comp:"IIIB", lvl:"reasoning",
+    q:"A client in acute crisis is overwhelmed and unable to function. The social worker's FIRST priority is to:",
+    o:["Explore the client's childhood history","Ensure safety and stabilize the immediate situation","Develop a long-term treatment plan","Assign between-session homework"],
+    c:1, r:"Crisis intervention begins with safety and stabilization before any longer-term work." },
+  { comp:"IIIB", lvl:"application",
+    q:"A client is ambivalent about change. Consistent with motivational interviewing, the social worker should:",
+    o:["Warn the client about the consequences of not changing","Evoke and reinforce the client's own reasons for change","Tell the client exactly what to do","Confront the client's denial"],
+    c:1, r:"Motivational interviewing works by evoking and strengthening the client's own motivations rather than warning, directing, or confronting." },
+  { comp:"IIIB", lvl:"reasoning",
+    q:"A court-mandated client is hostile at intake. What should the social worker do FIRST to build the relationship?",
+    o:["Remind the client of the consequences of noncompliance","Acknowledge the client's feelings about being mandated","Begin the formal assessment right away","Refer the client back to the court"],
+    c:1, r:"Acknowledging the client's feelings about being mandated reduces reactance and opens engagement with an involuntary client." },
+  { comp:"IIIB", lvl:"application",
+    q:"A client whose partner recently died expresses intense sadness. The social worker's BEST initial response is to:",
+    o:["Suggest the client begin to move on","Normalize grief and provide space to express it","Refer to a psychiatrist for medication","Set a timeline for recovery"],
+    c:1, r:"Grief work begins by normalizing the reaction and providing space for expression rather than rushing the process." },
+  { comp:"IIIB", lvl:"recall",
+    q:"Providing clean supplies and education to reduce risk for a client who continues to use substances reflects:",
+    o:["Abstinence-only treatment","A harm reduction approach","Confrontation","Mandated reporting"],
+    c:1, r:"Reducing the risks of ongoing use without requiring abstinence is harm reduction." },
+  { comp:"IIIB", lvl:"application",
+    q:"In a newly formed group, members are quiet, cautious, and unsure of their roles. This BEST reflects which stage of group development?",
+    o:["Forming","Performing","Adjourning","Norming"],
+    c:0, r:"Early caution and uncertainty about roles characterize the forming stage of group development." },
+  { comp:"IIIB", lvl:"reasoning",
+    q:"A family presents one child as the problem, but the social worker observes wider relational patterns. A systems approach would lead the social worker to:",
+    o:["Treat the child individually","Consider the family as the unit of attention and the patterns among members","Refer the child to a psychiatrist","Side with the parents' view"],
+    c:1, r:"A family-systems lens treats the family as the unit of attention and examines patterns among members rather than locating the problem in one person." },
+
+  // IIIC Practice Evaluation and Research (48-49)
+  { comp:"IIIC", lvl:"recall",
+    q:"Reviewing whether a client is meeting measurable objectives over time is an example of:",
+    o:["A needs assessment","Monitoring intervention effectiveness","A literature review","Program licensing"],
+    c:1, r:"Tracking progress toward measurable objectives is how the social worker monitors the effectiveness of intervention." },
+  { comp:"IIIC", lvl:"recall",
+    q:"A measure that produces consistent results across repeated uses is said to be:",
+    o:["Valid","Reliable","Biased","Generalizable"],
+    c:1, r:"Consistency across repeated administrations is reliability. Validity is whether the measure captures what it intends to." },
+
+  // IIID Supervision and Administration (50)
+  { comp:"IIID", lvl:"application",
+    q:"A social worker notices strong personal feelings toward a client that echo an old relationship. What should the social worker do NEXT?",
+    o:["End services with the client","Bring the reactions to supervision","Disclose the feelings to the client","Set the feelings aside and continue"],
+    c:1, r:"Countertransference is addressed by bringing the reactions to supervision so they do not interfere with the work." }
+];
+
+/* ---- state ---- */
+var state = { i:0, answers:new Array(BANK.length).fill(null) };
+var app = document.getElementById("app");
+
+/* ---- shared header markup ---- */
+function heroHtml(){
+  return ''
+  + '<div class="toolhero">'
+  +   '<div class="ico">'
+  +     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'
+  +       '<rect x="5" y="3" width="14" height="18" rx="2"></rect>'
+  +       '<path d="M9 3.5h6a1 1 0 0 1 1 1V6H8V4.5a1 1 0 0 1 1-1z"></path>'
+  +       '<path d="M8.5 11.5l1.5 1.5 2.5-3"></path>'
+  +       '<path d="M14.5 11.5H16"></path>'
+  +       '<path d="M8.5 16h7"></path>'
+  +     '</svg>'
+  +   '</div>'
+  +   '<div>'
+  +     '<div class="brand">LMSW <span class="bot">Practice Test</span></div>'
+  +     '<div class="tagline">A 50-question diagnostic mapped to the ASWB Masters blueprint, with a personalized study plan</div>'
+  +   '</div>'
+  + '</div>';
+}
+
+/* ---- HOME ---- */
+function renderHome(){
+  var bp = '';
+  ["I","II","III"].forEach(function(k){
+    var a = AREAS[k];
+    bp += '<div class="bpitem">'
+       +    '<div class="bplabel">'+a.name+'</div>'
+       +    '<div class="bptrack"><div class="bpfill" style="width:'+a.weight+'%"></div></div>'
+       +    '<div class="bppct">'+a.weight+'%</div>'
+       +  '</div>';
+  });
+
+  app.innerHTML = heroHtml()
+  + '<div class="orient">'
+  +   '<div class="ohd">How it works</div>'
+  +   '<div class="steps">'
+  +     '<div class="step"><div class="n">1</div><div class="tx">Answer all 50 questions. They are drawn across the three ASWB Masters content areas in roughly the same proportions as the exam.</div></div>'
+  +     '<div class="step"><div class="n">2</div><div class="tx">Submit to see your overall score and a breakdown of how you did in each content area and competency.</div></div>'
+  +     '<div class="step"><div class="n">3</div><div class="tx">Get a study plan ordered from your weakest area to your strongest, with the topics and references to review for each.</div></div>'
+  +   '</div>'
+  + '</div>'
+  + '<div class="blueprint">'
+  +   '<div class="seclabel">What the test covers</div>'
+  +   bp
+  + '</div>'
+  + '<div style="margin-top:22px;"><button class="launch" id="start">Start the practice test</button></div>'
+  + '<div class="footnote">There is no time limit and no feedback between questions, which mirrors the experience of working a full section before reviewing. You can move backward and change answers before you submit.</div>';
+
+  document.getElementById("start").onclick = function(){ state.i = 0; renderQuestion(); };
+}
+
+/* ---- QUESTION ---- */
+function renderQuestion(){
+  var idx = state.i;
+  var item = BANK[idx];
+  var comp = COMPS[item.comp];
+  var area = AREAS[comp.area];
+  var answered = state.answers.filter(function(a){ return a!==null; }).length;
+  var pct = Math.round(((idx) / BANK.length) * 100);
+
+  var letters = ["A","B","C","D"];
+  var opts = item.o.map(function(text, k){
+    var sel = state.answers[idx] === k ? ' sel' : '';
+    return '<button class="opt'+sel+'" data-k="'+k+'"><span class="ltr">'+letters[k]+'</span><span>'+text+'</span></button>';
+  }).join('');
+
+  var isLast = idx === BANK.length - 1;
+
+  app.innerHTML = heroHtml()
+  + '<div class="qbar">'
+  +   '<div class="qcount">Question '+(idx+1)+' of '+BANK.length+'</div>'
+  +   '<div class="qtrack"><div class="qprog" style="width:'+pct+'%"></div></div>'
+  +   '<div class="qcount">'+answered+' answered</div>'
+  + '</div>'
+  + '<div class="qcard">'
+  +   '<div class="qmeta">'
+  +     '<span class="areachip">'+area.name+'</span>'
+  +     '<span class="lvlchip">'+item.lvl+'</span>'
+  +   '</div>'
+  +   '<div class="stem">'+item.q+'</div>'
+  +   '<div class="opts">'+opts+'</div>'
+  +   '<div class="qnav">'
+  +     '<button class="ghost" id="back"'+(idx===0?' disabled':'')+'>Back</button>'
+  +     '<div class="right">'
+  +       (isLast ? '<button class="launch" id="submit">See my results</button>'
+                  : '<button class="ghost" id="next">Next</button>')
+  +     '</div>'
+  +   '</div>'
+  + '</div>'
+  + (isLast ? '<div class="footnote">You can go back to review or change any answer before submitting. Unanswered questions are scored as incorrect, the same as on the real exam.</div>' : '');
+
+  app.querySelectorAll(".opt").forEach(function(b){
+    b.onclick = function(){
+      state.answers[idx] = parseInt(b.dataset.k, 10);
+      app.querySelectorAll(".opt").forEach(function(x){ x.classList.remove("sel"); });
+      b.classList.add("sel");
+    };
+  });
+  var back = document.getElementById("back");
+  if(back) back.onclick = function(){ if(state.i>0){ state.i--; renderQuestion(); window.scrollTo(0,0);} };
+  var next = document.getElementById("next");
+  if(next) next.onclick = function(){ if(state.i<BANK.length-1){ state.i++; renderQuestion(); window.scrollTo(0,0);} };
+  var sub = document.getElementById("submit");
+  if(sub) sub.onclick = confirmSubmit;
+}
+
+function confirmSubmit(){
+  var unanswered = state.answers.filter(function(a){ return a===null; }).length;
+  if(unanswered > 0){
+    var ok = window.confirm(unanswered + " question" + (unanswered>1?"s are":" is") + " unanswered and will be marked incorrect. Submit anyway?");
+    if(!ok) return;
+  }
+  renderResults();
+  window.scrollTo(0,0);
+}
+
+/* ---- RESULTS ---- */
+function tally(){
+  var byComp = {}, byArea = { I:{c:0,t:0}, II:{c:0,t:0}, III:{c:0,t:0} };
+  Object.keys(COMPS).forEach(function(k){ byComp[k] = {c:0,t:0}; });
+  var total = 0;
+  BANK.forEach(function(item, idx){
+    var correct = state.answers[idx] === item.c;
+    byComp[item.comp].t++; if(correct) byComp[item.comp].c++;
+    var a = COMPS[item.comp].area;
+    byArea[a].t++; if(correct){ byArea[a].c++; total++; }
+  });
+  return { byComp:byComp, byArea:byArea, total:total };
+}
+
+function fillColor(pct){
+  if(pct >= 75) return "var(--good)";
+  if(pct >= 60) return "var(--accent)";
+  return "var(--accentDeep)";
+}
+
+function renderResults(){
+  var t = tally();
+  var n = BANK.length;
+  var pct = Math.round((t.total / n) * 100);
+
+  // area breakdown
+  var areaCards = '';
+  ["I","II","III"].forEach(function(k){
+    var a = AREAS[k], r = t.byArea[k];
+    var p = Math.round((r.c / r.t) * 100);
+    areaCards += '<div class="areacard">'
+      + '<div class="areatop"><span class="areanm">'+a.name+'</span>'
+      + '<span class="areascore">'+r.c+' / '+r.t+' &nbsp;('+p+'%)</span></div>'
+      + '<div class="areatrack"><div class="areafill" style="width:'+p+'%;background:'+fillColor(p)+'"></div></div>'
+      + '</div>';
+  });
+
+  // study plan: order areas weakest first
+  var order = ["I","II","III"].slice().sort(function(x,y){
+    return (t.byArea[x].c/t.byArea[x].t) - (t.byArea[y].c/t.byArea[y].t);
+  });
+  var plan = '';
+  order.forEach(function(k, rank){
+    var a = AREAS[k];
+    var r = t.byArea[k];
+    var ap = Math.round((r.c/r.t)*100);
+    // competencies in this area, weakest first, that the student missed at least one in
+    var comps = Object.keys(COMPS).filter(function(ck){ return COMPS[ck].area === k; });
+    comps.sort(function(x,y){ return (t.byComp[x].c/t.byComp[x].t) - (t.byComp[y].c/t.byComp[y].t); });
+    var weak = comps.filter(function(ck){ return t.byComp[ck].c < t.byComp[ck].t; });
+
+    var compHtml = '';
+    if(weak.length === 0){
+      compHtml = '<div class="planstrong">You answered every item in this area correctly. Keep it warm with a light review.</div>';
+    } else {
+      weak.forEach(function(ck){
+        var c = COMPS[ck];
+        var cr = t.byComp[ck];
+        compHtml += '<div class="compline">'
+          + '<div class="compname">'+c.name+' &middot; '+cr.c+'/'+cr.t+'</div>'
+          + '<div class="compfocus">'+c.focus+'</div>'
+          + '<div class="compref">Review: '+c.ref+'</div>'
+          + '</div>';
+      });
+    }
+
+    plan += '<div class="planblock">'
+      + '<div class="planrank">Priority '+(rank+1)+'</div>'
+      + '<div class="planarea">'+a.name+'</div>'
+      + '<div class="planpct">'+r.c+' of '+r.t+' correct ('+ap+'%) &middot; '+a.weight+'% of the exam</div>'
+      + compHtml
+      + '</div>';
+  });
+
+  // review list
+  var letters = ["A","B","C","D"];
+  var review = '';
+  BANK.forEach(function(item, idx){
+    var chosen = state.answers[idx];
+    var correct = chosen === item.c;
+    var mark = correct ? '<div class="revmark ok">&#10003;</div>' : '<div class="revmark no">&#10007;</div>';
+    var yourLine = (chosen === null)
+      ? '<span class="yourbad">No answer</span>'
+      : (correct
+          ? '<span class="yourgood">'+letters[chosen]+'. '+item.o[chosen]+'</span>'
+          : '<span class="yourbad">'+letters[chosen]+'. '+item.o[chosen]+'</span>');
+    var keyLine = '<span class="yourgood">'+letters[item.c]+'. '+item.o[item.c]+'</span>';
+
+    review += '<div class="rev" data-idx="'+idx+'">'
+      + '<div class="revhd">'+mark
+      +   '<div class="revq">'+(idx+1)+'. '+item.q+'</div>'
+      +   '<div class="revtoggle">+</div>'
+      + '</div>'
+      + '<div class="revbody">'
+      +   '<div class="revrow"><span class="lab">Your answer</span><br>'+yourLine+'</div>'
+      +   (correct ? '' : '<div class="revrow"><span class="lab">Correct answer</span><br>'+keyLine+'</div>')
+      +   '<div class="revrationale">'+item.r+'</div>'
+      + '</div>'
+      + '</div>';
+  });
+
+  app.innerHTML = heroHtml()
+  + '<div class="scorehero">'
+  +   '<div><div class="scorebig">'+pct+'%</div></div>'
+  +   '<div><div style="font-size:16px;font-weight:700;">'+t.total+' of '+n+' correct</div>'
+  +     '<div class="scoresub">Across the three ASWB Masters content areas</div></div>'
+  + '</div>'
+  + '<div class="disclaimer">This is a study diagnostic, not a score predictor. The real ASWB exam is scored pass or fail using a scaled cutoff, and the number needed to pass shifts slightly between forms. Use the breakdown below to decide where to put your study time.</div>'
+
+  + '<div class="seclabel">By content area</div>'
+  + areaCards
+
+  + '<div class="seclabel">Your study plan</div>'
+  + '<div class="footnote" style="margin-top:0;margin-bottom:10px;">Ordered from your weakest area to your strongest. Within each area, the competencies where you missed at least one item are listed first, with what to review.</div>'
+  + plan
+
+  + '<div class="seclabel">Review every question</div>'
+  + '<div class="footnote" style="margin-top:0;margin-bottom:10px;">Tap any question to see your answer, the correct answer, and a short rationale.</div>'
+  + review
+
+  + '<div style="margin-top:22px;display:flex;gap:10px;flex-wrap:wrap;">'
+  +   '<button class="launch" id="again">Take it again</button>'
+  +   '<button class="ghost" id="reviewmissed">Expand only missed</button>'
+  + '</div>'
+  + '<div class="footnote">Your answers reset when you reload the page. To track progress over time, note your area percentages before starting again.</div>';
+
+  // review toggles
+  app.querySelectorAll(".rev .revhd").forEach(function(hd){
+    hd.onclick = function(){
+      var card = hd.parentNode;
+      card.classList.toggle("open");
+      hd.querySelector(".revtoggle").textContent = card.classList.contains("open") ? "\u2013" : "+";
+    };
+  });
+  document.getElementById("again").onclick = function(){
+    state.i = 0; state.answers = new Array(BANK.length).fill(null);
+    renderHome(); window.scrollTo(0,0);
+  };
+  document.getElementById("reviewmissed").onclick = function(){
+    BANK.forEach(function(item, idx){
+      var card = app.querySelector('.rev[data-idx="'+idx+'"]');
+      if(!card) return;
+      var missed = state.answers[idx] !== item.c;
+      if(missed && !card.classList.contains("open")){
+        card.classList.add("open");
+        card.querySelector(".revtoggle").textContent = "\u2013";
+      }
+    });
+    window.scrollTo(0, app.querySelector(".seclabel:last-of-type") ? 0 : 0);
+  };
+}
+
+/* ---- go ---- */
+renderHome();
+</script>
+</body>
+</html>

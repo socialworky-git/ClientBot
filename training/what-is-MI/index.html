@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Socialworky | What is Motivational Interviewing?</title>
+<meta name="description" content="A plain-language overview of Motivational Interviewing: ambivalence, the spirit of MI, the core skills, and the four fundamental processes." />
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap');
+  :root{
+    --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
+    --accent:#EB786B; --accentDeep:#C2452F; --coral-bg:#FDEEEB; --coral-line:#F6D4CD;
+    --soft:#C9BEB8; --softInk:#8A7F79; --visualBg:#FBF5F1;
+    --sans:'Hanken Grotesk',Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap{ max-width:820px; margin:0 auto; padding:24px; }
+  a{ color:var(--accentDeep); }
+
+  /* Header look comes entirely from /header.js so it stays identical site-wide */
+
+  /* Hero */
+  .hero{ background:radial-gradient(120% 120% at 85% 10%,#FFF1E9 0%,#FBF5F1 45%,#FBF6F2 100%);
+    border-radius:20px; padding:42px 40px 38px; margin-top:16px; }
+  .hero h1{ font-size:clamp(32px,5vw,50px); line-height:1.05; letter-spacing:-.02em; font-weight:800; margin:0; max-width:18ch; }
+  .hero .sub{ font-size:17px; line-height:1.6; color:#6E625C; margin:18px 0 0; font-weight:400; max-width:60ch; }
+
+  /* Content sections */
+  .section{ margin-top:46px; }
+  .section .eyebrow{ font-size:12px; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; color:var(--accentDeep); margin:0 0 16px; padding-bottom:8px; border-bottom:1px solid var(--line); }
+  .section__grid{ display:grid; grid-template-columns:1fr 330px; gap:32px; align-items:center; }
+  .section h2{ font-size:23px; line-height:1.2; letter-spacing:-.01em; font-weight:700; margin:0 0 12px; }
+  .section p{ font-size:16.5px; color:#3a3a3a; margin:0; }
+  .section .term{ font-weight:600; color:var(--ink); }
+
+  /* Visual cards */
+  .section__visual{ position:relative; background:var(--visualBg); border:1px solid var(--coral-line); border-radius:16px; overflow:hidden; }
+  .section__visual.dark{ background:var(--ink); border-color:#3a2a28; }
+  .section__visual .cv{ display:block; width:100%; height:auto; }
+  .section__visual.canvas{ height:300px; }
+  .section__visual.canvas .cv{ height:100%; }
+  .section__visual svg text{ font-family:var(--sans); }
+  .vlab{ position:absolute; font-size:12px; font-weight:600; letter-spacing:.02em; }
+
+  /* --- Spirit (lifted from design, recolored) --- */
+  .spirit-ripple{ fill:none; stroke:var(--accent); stroke-width:1.5; transform-box:fill-box; transform-origin:center; animation:ripple 4.2s ease-out infinite; }
+  .pace-line{ stroke:var(--coral-line); stroke-width:1.5; fill:none; }
+  .helper-ring{ fill:none; stroke:var(--accentDeep); stroke-width:2; transform-box:fill-box; transform-origin:center; animation:breath 3.6s ease-in-out infinite; }
+  .helper{ fill:var(--ink); }
+  .pace{ fill:#fff; stroke:var(--accent); stroke-width:2.5; transform-box:fill-box; transform-origin:center; animation:breath 3.4s ease-in-out infinite; }
+  .pl{ font-size:15px; font-weight:600; fill:var(--ink); }
+
+  /* --- Four processes (lifted from design, recolored) --- */
+  .p4track{ fill:none; stroke:var(--coral-line); stroke-width:3; stroke-linecap:round; }
+  .p4node{ fill:#fff; stroke:var(--accent); stroke-width:3; transform-box:fill-box; transform-origin:center; animation:p4fill 8s ease-in-out infinite; }
+  .p4client{ fill:var(--accentDeep); animation:p4move 8s linear infinite; }
+  .sn{ font-size:12px; font-weight:600; fill:var(--muted); }
+  .sl{ font-size:15px; font-weight:600; fill:var(--ink); }
+
+  @keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+  @keyframes ripple{0%{transform:scale(.7);opacity:0}18%{opacity:.6}100%{transform:scale(4.6);opacity:0}}
+  @keyframes p4fill{0%,7%{fill:#fff;stroke:var(--accent);transform:scale(1)}13%{fill:var(--accentDeep);stroke:var(--accentDeep);transform:scale(1.4)}22%{transform:scale(1.12)}100%{fill:var(--accentDeep);stroke:var(--accentDeep);transform:scale(1.12)}}
+  @keyframes p4move{0%{offset-distance:0%;opacity:0}5%{opacity:1}93%{opacity:1}100%{offset-distance:100%;opacity:0}}
+
+  @media (prefers-reduced-motion: reduce){
+    .spirit-ripple,.helper-ring,.pace,.p4node,.p4client{ animation:none; }
+    .p4node{ fill:var(--accentDeep); stroke:var(--accentDeep); }
+    .p4client{ opacity:0; }
+  }
+
+  /* Closing call to action */
+  .cta{ background:var(--coral-bg); border:1px solid var(--coral-line); border-radius:14px; padding:24px 26px; margin-top:50px; }
+  .cta h3{ margin:0 0 6px; font-size:18px; }
+  .cta p{ margin:0 0 16px; color:#6E625C; font-size:15px; line-height:1.55; }
+  .btn{ display:inline-block; font-size:15px; font-weight:700; text-decoration:none; padding:11px 20px; border-radius:9px; border:1px solid transparent; transition:background .15s,border-color .15s; }
+  .btn-primary{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  .btn-primary:hover{ background:var(--accentDeep); border-color:var(--accentDeep); }
+
+  .foot{ color:var(--muted); font-size:12.5px; margin-top:56px; border-top:1px solid var(--line); padding-top:16px; }
+
+  @media (max-width:680px){
+    .wrap{ padding:16px; }
+    .hero{ padding:30px 24px 28px; }
+    .section__grid{ grid-template-columns:1fr; gap:20px; }
+    .section__visual{ max-width:360px; margin:2px auto 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <script src="/header.js"></script>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>What is Motivational Interviewing?</h1>
+    <p class="sub">A collaborative, person-centered way of talking with people about change. It draws out a person's own reasons for change rather than imposing ours. Here is how it fits together.</p>
+  </section>
+
+  <!-- Ambivalence (canvas in the export; rebuilt as SVG in your palette) -->
+  <section class="section">
+    <p class="eyebrow">01 — Ambivalence</p>
+    <div class="section__grid">
+      <div class="section__text">
+        <h2>Ambivalence is the starting point</h2>
+        <p>Most people who feel stuck about a change want two things at once. One part argues for staying the same, which we call <span class="term">sustain talk</span>, and another part argues for moving forward, which we call <span class="term">change talk</span>. That pull in both directions is not resistance or denial. It is a normal, human part of facing anything hard.</p>
+      </div>
+      <div class="section__visual canvas">
+        <canvas id="ambiCanvas" class="cv" role="img" aria-label="A wandering point drifts between change-talk nodes on one side and sustain-talk nodes on the other, lighting up the connections it passes."></canvas>
+        <span class="vlab" style="top:16px;left:18px;color:var(--softInk)">&larr; sustain talk</span>
+        <span class="vlab" style="top:16px;right:18px;color:var(--accentDeep)">change talk &rarr;</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- The spirit (lifted SVG from design) -->
+  <section class="section">
+    <p class="eyebrow">02 — The spirit</p>
+    <div class="section__grid">
+      <div class="section__visual">
+        <svg class="cv" viewBox="0 0 480 380" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Four qualities radiate from the helper toward the person: partnership, acceptance, compassion, and empowerment.">
+          <circle class="spirit-ripple" style="animation-delay:0s" cx="240" cy="190" r="22"></circle>
+          <circle class="spirit-ripple" style="animation-delay:1.4s" cx="240" cy="190" r="22"></circle>
+          <circle class="spirit-ripple" style="animation-delay:2.8s" cx="240" cy="190" r="22"></circle>
+          <line class="pace-line" x1="240" y1="190" x2="124" y2="100"></line>
+          <line class="pace-line" x1="240" y1="190" x2="356" y2="100"></line>
+          <line class="pace-line" x1="240" y1="190" x2="356" y2="280"></line>
+          <line class="pace-line" x1="240" y1="190" x2="124" y2="280"></line>
+          <circle class="helper-ring" cx="240" cy="190" r="22"></circle>
+          <circle class="helper" cx="240" cy="190" r="15"></circle>
+          <circle class="pace" style="animation-delay:0s" cx="124" cy="100" r="11"></circle>
+          <circle class="pace" style="animation-delay:.45s" cx="356" cy="100" r="11"></circle>
+          <circle class="pace" style="animation-delay:.9s" cx="356" cy="280" r="11"></circle>
+          <circle class="pace" style="animation-delay:1.35s" cx="124" cy="280" r="11"></circle>
+          <text class="pl" x="124" y="78" text-anchor="middle">Partnership</text>
+          <text class="pl" x="356" y="78" text-anchor="middle">Acceptance</text>
+          <text class="pl" x="356" y="308" text-anchor="middle">Compassion</text>
+          <text class="pl" x="124" y="308" text-anchor="middle">Empowerment</text>
+        </svg>
+      </div>
+      <div class="section__text">
+        <h2>It begins with a spirit, not a technique</h2>
+        <p>Before any method, MI is a way of being with someone, what its founders call the underlying spirit. Four qualities flow from the helper toward the person: <span class="term">partnership</span>, <span class="term">acceptance</span>, <span class="term">compassion</span>, and <span class="term">empowerment</span>. The skills only do their work when they grow out of this stance.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- The skills (canvas in the export; rebuilt as SVG in your palette) -->
+  <section class="section">
+    <p class="eyebrow">03 — The skills</p>
+    <div class="section__grid">
+      <div class="section__text">
+        <h2>Evoking change talk</h2>
+        <p>MI runs on a few simple skills, open questions and reflections most of all. A good question or reflection builds momentum, and helps clients hear themselves think aloud and build their own case for change.</p>
+      </div>
+      <div class="section__visual canvas">
+        <canvas id="evokeCanvas" class="cv" role="img" aria-label="The helper sends labeled open question and reflection pills toward the person, where they burst into change talk."></canvas>
+        <span class="vlab" style="top:16px;left:18px;color:var(--softInk)">helper</span>
+        <span class="vlab" style="top:16px;right:18px;color:var(--accentDeep)">ambivalent client</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- The four processes (lifted SVG from design) -->
+  <section class="section">
+    <p class="eyebrow">04 — The four processes</p>
+    <div class="section__grid">
+      <div class="section__visual">
+        <svg class="cv" viewBox="0 0 480 380" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Four processes that build forward along a climbing path: engage, focus, evoke, then plan.">
+          <path class="p4track" d="M70 282 C 132 282 150 236 192 236 S 270 188 302 188 S 382 118 412 118"></path>
+          <circle class="p4node" style="animation-delay:.2s" cx="70" cy="282" r="9"></circle>
+          <circle class="p4node" style="animation-delay:2.2s" cx="192" cy="236" r="9"></circle>
+          <circle class="p4node" style="animation-delay:4.4s" cx="302" cy="188" r="9"></circle>
+          <circle class="p4node" style="animation-delay:6.4s" cx="412" cy="118" r="9"></circle>
+          <circle class="p4client" r="7" style="offset-path:path('M70 282 C 132 282 150 236 192 236 S 270 188 302 188 S 382 118 412 118')"></circle>
+          <text class="sn" x="70" y="316" text-anchor="middle">01</text>
+          <text class="sl" x="70" y="334" text-anchor="middle">Engage</text>
+          <text class="sn" x="192" y="270" text-anchor="middle">02</text>
+          <text class="sl" x="192" y="288" text-anchor="middle">Focus</text>
+          <text class="sn" x="302" y="222" text-anchor="middle">03</text>
+          <text class="sl" x="302" y="240" text-anchor="middle">Evoke</text>
+          <text class="sn" x="412" y="152" text-anchor="middle">04</text>
+          <text class="sl" x="412" y="170" text-anchor="middle">Plan</text>
+        </svg>
+      </div>
+      <div class="section__text">
+        <h2>It unfolds in four processes</h2>
+        <p>MI moves through four processes that build on one another: <span class="term">engaging</span> to form the relationship, <span class="term">focusing</span> to find a direction, <span class="term">evoking</span> the person's own motivation, and <span class="term">planning</span> the steps that follow.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Specific yet generalizable -->
+  <section class="section">
+    <p class="eyebrow">One skillset, many settings</p>
+    <h2>Where does MI fit?</h2>
+    <p>MI is a clearly defined skillset, precise enough to be measured, taught, and practiced on purpose. It makes sense in any clinical setting where a client may be ambivalent about some aspect of change, whether that is substance misuse treatment, suicide prevention engagement, basic assessment and diagnostic work, or most behavioral evidence based practice modalities like cognitive behavioral therapy. MI is not a competing model so much as a way of being in the conversation that makes other good work possible.</p>
+  </section>
+
+  <!-- CTA -->
+  <div class="cta">
+    <h3>Put it into practice</h3>
+    <p>Reading about MI is one thing. Building the skills takes reps. The browser-based tools here let you practice open questions, reflections, and the four processes on your own or with a group.</p>
+    <a class="btn btn-primary" href="/tools/">Open the tools &rarr;</a>
+  </div>
+
+  <div class="foot">&copy; 2026 Socialworky. Motivational Interviewing training and resources.</div>
+
+</div>
+<script>
+(function(){
+  function initAmbi(cv){
+    var ctx=cv.getContext('2d');
+    var C={ change:'#C2452F', sustain:'#C9BEB8', warm:'#EB786B' };
+    var dots=[], aw=0, ah=0, aC=null, raf;
+    function fit(){
+      var r=cv.getBoundingClientRect(); aw=r.width; ah=r.height;
+      var dpr=Math.min(2, window.devicePixelRatio||1);
+      cv.width=Math.round(r.width*dpr); cv.height=Math.round(r.height*dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      var cx=r.width/2, cy=r.height/2, R=Math.min(r.width,r.height)*0.40;
+      var ch=[-58,-20,20,58], su=[122,160,200,238];
+      dots=[];
+      ch.forEach(function(a){var t=a*Math.PI/180; dots.push({x:cx+Math.cos(t)*R,y:cy+Math.sin(t)*R,type:'change'});});
+      su.forEach(function(a){var t=a*Math.PI/180; dots.push({x:cx+Math.cos(t)*R,y:cy+Math.sin(t)*R,type:'sustain'});});
+      aC={cx:cx,cy:cy,R:R};
+    }
+    fit(); window.addEventListener('resize',fit);
+    function draw(now){
+      if(!aC){raf=requestAnimationFrame(draw);return;}
+      var cx=aC.cx, cy=aC.cy, R=aC.R;
+      var a=now*0.00019;
+      var r=R*(0.32+0.12*Math.sin(now*0.00063));
+      var x=cx+Math.cos(a)*r+Math.cos(now*0.0011)*R*0.07;
+      var y=cy+Math.sin(a)*r+Math.sin(now*0.0013)*R*0.07;
+      ctx.clearRect(0,0,aw,ah);
+      ctx.beginPath(); ctx.arc(cx,cy,R,0,7); ctx.strokeStyle='rgba(194,69,47,.16)'; ctx.lineWidth=1.5; ctx.stroke();
+      var maxd=R*1.45;
+      ctx.setLineDash([2,5]);
+      dots.forEach(function(d){
+        var dist=Math.hypot(d.x-x,d.y-y);
+        var op=Math.max(0,1-dist/maxd); op=Math.pow(op,1.3)*0.95;
+        if(op>0.03){ ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(d.x,d.y); ctx.strokeStyle='rgba(194,69,47,'+op.toFixed(3)+')'; ctx.lineWidth=1.6; ctx.stroke(); }
+      });
+      ctx.setLineDash([]);
+      dots.forEach(function(d){
+        var dist=Math.hypot(d.x-x,d.y-y);
+        var prox=Math.max(0,1-dist/(R*0.95));
+        var pr=8+prox*3.5;
+        if(prox>0.02){ ctx.beginPath(); ctx.arc(d.x,d.y,pr+5,0,7); ctx.fillStyle='rgba(194,69,47,'+(0.12*prox).toFixed(3)+')'; ctx.fill(); }
+        ctx.beginPath(); ctx.arc(d.x,d.y,pr,0,7); ctx.fillStyle=d.type==='change'?C.change:C.sustain; ctx.fill();
+      });
+      ctx.beginPath(); ctx.arc(x,y,16,0,7); ctx.fillStyle='rgba(235,120,107,.16)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(x,y,9,0,7); ctx.fillStyle=C.warm; ctx.fill();
+      raf=requestAnimationFrame(draw);
+    }
+    raf=requestAnimationFrame(draw);
+  }
+
+  function initEvoke(cv){
+    var ctx=cv.getContext('2d');
+    var C={ pill:'#EB786B', client:'#EB786B' };
+    var W=0,H=0,raf;
+    function fit(){
+      var r=cv.getBoundingClientRect(); W=r.width; H=r.height;
+      var dpr=Math.min(2,window.devicePixelRatio||1);
+      cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+    }
+    fit(); window.addEventListener('resize',fit);
+    function rr(c,x,y,w,h,r){ c.beginPath(); c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r); c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath(); }
+    var skills=['open question','reflection','reflection','open question'];
+    var st={proj:null,parts:[],cs:1,csT:1,skill:0,next:0,last:0};
+    function burst(x,y){
+      var cols=['#C2452F','#EB786B','#E0876F','#CFA37F'];
+      for(var i=0;i<24;i++){ var a=Math.random()*Math.PI*2, sp=1.4+Math.random()*3.4; st.parts.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,r:2+Math.random()*2.6,c:cols[i%4]}); }
+      st.csT=1.9;
+    }
+    function draw(now){
+      if(!st.last)st.last=now; var dt=Math.min(50,now-st.last); st.last=now;
+      if(!W){raf=requestAnimationFrame(draw);return;}
+      var hx=W*0.16, hy=H/2, clx=W*0.76, cly=H/2;
+      if(st.next===0)st.next=now+500;
+      if(!st.proj && now>st.next)st.proj={p:0,label:skills[st.skill%skills.length]};
+      ctx.clearRect(0,0,W,H);
+      ctx.beginPath(); ctx.moveTo(hx,hy); ctx.lineTo(clx,cly); ctx.strokeStyle='rgba(194,69,47,.12)'; ctx.lineWidth=1; ctx.stroke();
+      ctx.beginPath(); ctx.arc(hx,hy,13,0,7); ctx.fillStyle='#C9BEB8'; ctx.fill();
+      ctx.beginPath(); ctx.arc(hx,hy,19,0,7); ctx.strokeStyle='rgba(194,69,47,.4)'; ctx.lineWidth=2; ctx.stroke();
+      if(st.proj){
+        st.proj.p+=0.016*(dt/16.7); var p=st.proj.p;
+        var arc=Math.sin(Math.min(1,p)*Math.PI)*-26;
+        var x=hx+(clx-hx)*p, y=hy+(cly-hy)*p+arc;
+        if(p>=1){ burst(clx,cly); st.proj=null; st.next=now+1400; st.skill++; }
+        else{
+          ctx.save(); ctx.globalAlpha=p<0.12?p/0.12:(p>0.9?(1-p)/0.1:1);
+          var label=st.proj.label; ctx.font='600 12px "Hanken Grotesk", sans-serif';
+          var tw=ctx.measureText(label).width, w=tw+18, h=22;
+          rr(ctx,x-w/2,y-h/2,w,h,11); ctx.fillStyle=C.pill; ctx.fill();
+          ctx.fillStyle='#1b2430'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(label,x,y);
+          ctx.restore();
+        }
+      }
+      st.parts=st.parts.filter(function(pt){return pt.life>0;});
+      st.parts.forEach(function(pt){
+        pt.x+=pt.vx; pt.y+=pt.vy; pt.vx*=0.95; pt.vy*=0.95; pt.life-=dt/900;
+        ctx.globalAlpha=Math.max(0,pt.life); ctx.beginPath(); ctx.arc(pt.x,pt.y,pt.r,0,7); ctx.fillStyle=pt.c; ctx.fill();
+      });
+      ctx.globalAlpha=1;
+      st.cs+=(st.csT-st.cs)*0.18; st.csT+=(1-st.csT)*0.05;
+      var fl=Math.sin(now/700)*3, cr=10*st.cs;
+      ctx.beginPath(); ctx.arc(clx,cly+fl,cr+10,0,7); ctx.fillStyle='rgba(235,120,107,.16)'; ctx.fill();
+      ctx.beginPath(); ctx.arc(clx,cly+fl,cr,0,7); ctx.fillStyle=C.client; ctx.fill();
+      raf=requestAnimationFrame(draw);
+    }
+    raf=requestAnimationFrame(draw);
+  }
+
+  var a=document.getElementById('ambiCanvas'); if(a) initAmbi(a);
+  var e=document.getElementById('evokeCanvas'); if(e) initEvoke(e);
+})();
+</script>
+</body>
+</html>

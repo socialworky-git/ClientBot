@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign in - Socialworky</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --coral: #f1645a;
+        --ink: #1f1d1c;
+        --paper: #fbf7f4;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Hanken Grotesk", system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--paper);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.25rem;
+        padding: 2rem 1rem;
+      }
+      .brand {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--coral);
+        letter-spacing: -0.01em;
+      }
+      p.sub {
+        margin: 0;
+        max-width: 26rem;
+        text-align: center;
+        color: #5c5754;
+        line-height: 1.5;
+      }
+      #sign-in { margin-top: 0.5rem; }
+      #status { min-height: 1.2em; color: #5c5754; font-weight: 500; }
+    </style>
+  </head>
+  <body>
+    <div class="brand">Socialworky</div>
+    <p class="sub">Sign in or create a free account to use the tools.</p>
+    <div id="status">Loading...</div>
+    <div id="sign-in"></div>
+
+    <!-- Clerk UI bundle -->
+    <script
+      defer
+      crossorigin="anonymous"
+      src="https://clerk.socialworky.com/npm/@clerk/ui@1/dist/ui.browser.js"
+      type="text/javascript"
+    ></script>
+
+    <!-- Clerk core SDK -->
+    <script
+      defer
+      crossorigin="anonymous"
+      data-clerk-publishable-key="pk_live_Y2xlcmsuc29jaWFsd29ya3kuY29tJA"
+      src="https://clerk.socialworky.com/npm/@clerk/clerk-js@6/dist/clerk.browser.js"
+      type="text/javascript"
+    ></script>
+
+    <script>
+      // Where to send people who reach this page with no specific destination.
+      // Change this to your tools hub page if you'd prefer.
+      const DEFAULT_AFTER_LOGIN = "/";
+
+      window.addEventListener("load", async function () {
+        const statusEl = document.getElementById("status");
+        const signInEl = document.getElementById("sign-in");
+
+        try {
+          await Clerk.load({
+            ui: { ClerkUI: window.__internal_ClerkUICtor },
+          });
+
+          // If they're already signed in, don't show a login box.
+          // Send them straight to where they were headed.
+          if (Clerk.isSignedIn) {
+            const params = new URLSearchParams(window.location.search);
+            const dest = params.get("redirect_url") || DEFAULT_AFTER_LOGIN;
+            window.location.replace(dest);
+            return;
+          }
+
+          statusEl.textContent = "";
+          // Clerk automatically reads redirect_url from the address.
+          // fallbackRedirectUrl is used only when redirect_url is absent.
+          Clerk.mountSignIn(signInEl, {
+            fallbackRedirectUrl: DEFAULT_AFTER_LOGIN,
+            signUpFallbackRedirectUrl: DEFAULT_AFTER_LOGIN,
+          });
+        } catch (err) {
+          statusEl.textContent =
+            "Login failed to load. Please refresh, or try again shortly.";
+          console.error("Clerk load error:", err);
+        }
+      });
+    </script>
+  </body>
+</html>
