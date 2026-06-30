@@ -41,7 +41,7 @@
     --sans: 'Hanken Grotesk', Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: var(--sans); color: var(--ink); background: var(--shell); line-height: 1.6; padding: clamp(1rem, 4vw, 2.5rem) 1rem 4rem; }
+  body { font-family: var(--sans); color: var(--ink); background: var(--bg); line-height: 1.6; padding: clamp(1rem, 4vw, 2.5rem) 1rem 4rem; }
   .wrap { max-width: 720px; margin: 0 auto; }
 
   .alltools { color: var(--accentDeep); text-decoration: none; font-weight: 600; font-size: 0.92rem; display: inline-block; }
@@ -63,7 +63,7 @@
   .toolhero .tagline { color: var(--heroMuted); font-size: 14px; margin-top: 3px; }
 
   /* ---- Standardized orientation panel ("Instructions") ---- */
-  .orient { background: #eceef1; border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-bottom: 18px; }
+  .orient { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; margin-bottom: 18px; }
   .orient .ohd { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 14px; }
   .orient .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
   .orient .step { display: flex; gap: 10px; }
