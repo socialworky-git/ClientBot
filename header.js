@@ -84,9 +84,6 @@
     ]}
   ];
 
-  /* Capture the script tag now so the header drops where you placed it. */
-  var here = document.currentScript;
-
   /* --- Ship the font with the header so it never depends on the page --- */
   if (!document.getElementById("sw-font-hanken")) {
     var pc1 = document.createElement("link");
@@ -104,11 +101,16 @@
   /* --- The header owns its own styles, scoped to .sw-nav --- */
   var css =
     ".sw-nav,.sw-nav *{box-sizing:border-box;}" +
-    /* the bar fades and settles in on load instead of popping */
+    /* Full-width band: the bar spans the page so its position never depends on
+       whatever column a page drops the <script> tag into. */
     ".sw-nav{font-family:'Hanken Grotesk',Arial,Helvetica,system-ui,sans-serif;" +
-      "display:flex;align-items:center;justify-content:space-between;gap:16px;" +
-      "padding:14px 0;margin:0 0 8px;position:relative;z-index:1000;" +
+      "display:block;width:100%;margin:0 0 8px;position:relative;z-index:1000;" +
       "animation:sw-nav-in .42s ease both;}" +
+    /* Inner rail: centered at the shared site width with the shared gutter, so
+       the brand + links line up with page content identically on every page. */
+    ".sw-nav__inner{max-width:var(--sw-maxw,820px);margin:0 auto;" +
+      "padding:14px var(--sw-gutter,24px);display:flex;align-items:center;" +
+      "justify-content:space-between;gap:16px;}" +
     ".sw-nav__brand{font-size:20px;font-weight:800;letter-spacing:-.02em;" +
       "color:#1A1A1A;text-decoration:none;line-height:1;}" +
     ".sw-nav__brand-accent{color:#EB786B;}" +
@@ -145,7 +147,7 @@
     ".sw-dd__label{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;" +
       "color:#C2452F;padding:6px 10px 2px;}" +
     "@keyframes sw-nav-in{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}" +
-    "@media (max-width:640px){.sw-nav{padding:12px 0;}.sw-nav__links{gap:16px;}.sw-dd__panel{min-width:210px;}}" +
+    "@media (max-width:640px){.sw-nav__inner{padding:12px var(--sw-gutter,16px);}.sw-nav__links{gap:16px;}.sw-dd__panel{min-width:210px;}}" +
     /* respect reduced-motion: show instantly, no slide or fade */
     "@media (prefers-reduced-motion: reduce){" +
       ".sw-nav{animation:none;}" +
@@ -199,10 +201,13 @@
     return dd;
   }
 
-  /* --- The header markup --- */
+  /* --- The header markup ---
+     nav = full-width band; inner = the centered rail that holds brand + links. */
   var nav = document.createElement("nav");
   nav.className = "sw-nav";
-  nav.innerHTML =
+  var inner = document.createElement("div");
+  inner.className = "sw-nav__inner";
+  inner.innerHTML =
     '<a class="sw-nav__brand" href="' + LINKS.home + '">' +
       BRAND_DARK + '<span class="sw-nav__brand-accent">' + BRAND_ACCENT + "</span></a>";
 
@@ -220,12 +225,15 @@
   authSlot.className = "sw-nav__auth";
   linksWrap.appendChild(authSlot);
 
-  nav.appendChild(linksWrap);
+  inner.appendChild(linksWrap);
+  nav.appendChild(inner);
 
-  if (here && here.parentNode) {
-    here.parentNode.insertBefore(nav, here);
-  } else {
+  /* Always mount the bar at the very top of <body>, so its on-screen position
+     is identical on every page regardless of where the <script> tag sits. */
+  if (document.body.firstChild) {
     document.body.insertBefore(nav, document.body.firstChild);
+  } else {
+    document.body.appendChild(nav);
   }
 
   /* --- Open / close: hover on a mouse, focus for keyboard, tap on touch --- */

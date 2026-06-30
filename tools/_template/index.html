@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- ============================================================
+     NEW-TOOL TEMPLATE  —  copy this folder to tools/<your-slug>/
+     and replace every TODO. See /DESIGN.md for the conventions.
+     The font (Hanken Grotesk) and the nav bar come from header.js;
+     the shell width/colors come from tokens.css. You only write
+     your activity's own markup + styles below.
+     ============================================================ -->
+
+<title>TODO Tool Name | Socialworky</title>
+<meta name="description" content="TODO A [sim / game / practice sheet / quiz] to practice [goal]." />
+<link rel="canonical" href="https://socialworky.com/tools/TODO-slug/" />
+
+<!-- Social / Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Socialworky" />
+<meta property="og:title" content="TODO Tool Name | Socialworky" />
+<meta property="og:description" content="TODO A [sim / game / practice sheet / quiz] to practice [goal]." />
+<meta property="og:url" content="https://socialworky.com/tools/TODO-slug/" />
+<meta property="og:image" content="https://socialworky.com/images/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="TODO Tool Name | Socialworky" />
+<meta name="twitter:description" content="TODO A [sim / game / practice sheet / quiz] to practice [goal]." />
+<meta name="twitter:image" content="https://socialworky.com/images/og-image.png" />
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+
+<!-- Shared design tokens (colors + shell width). Variables only — safe to link. -->
+<link rel="stylesheet" href="/tokens.css" />
+
+<!-- Vercel Web Analytics -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+
+<style>
+  /* --- Page shell: matches every other page so the header lines up.
+         Do NOT change the column width here — edit --sw-maxw in tokens.css. --- */
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+        line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap{ max-width:var(--sw-maxw,820px); margin:0 auto; padding:var(--sw-gutter,24px); }
+  a{ color:var(--accentDeep); }
+
+  /* --- Standard tool hero (the coral banner) --- */
+  .toolhero{ display:flex; align-items:center; gap:16px; background:var(--coral-bg);
+    border:1px solid var(--coral-line); border-radius:12px; box-shadow:inset 4px 0 0 var(--accent);
+    padding:18px 22px 18px 24px; margin-bottom:18px; }
+  .toolhero .ico{ width:52px; height:52px; border-radius:12px; background:#fff;
+    border:1px solid var(--coral-line); display:flex; align-items:center; justify-content:center;
+    flex:0 0 auto; color:var(--accentDeep); }
+  .toolhero .ico svg{ width:26px; height:26px; display:block; }
+  .toolhero .brand{ font-weight:700; font-size:24px; letter-spacing:-.02em; color:var(--ink); line-height:1.1; }
+  .toolhero .brand .bot{ color:var(--accentDeep); }
+  .toolhero .tagline{ color:#7A5048; font-size:14px; margin-top:3px; }
+
+  /* --- Instructions panel --- */
+  .orient{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:22px; }
+  .orient .ohd{ font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:700; margin-bottom:10px; }
+  .orient p{ font-size:14px; color:var(--ink); line-height:1.55; margin:0; }
+
+  /* --- Your activity's own styles go here --- */
+
+  /* --- Footer --- */
+  .foot{ color:var(--muted); font-size:12.5px; margin-top:40px; border-top:1px solid var(--line); padding-top:16px; }
+</style>
+</head>
+<body>
+
+  <!-- Nav bar (mounts itself at the top of <body>) -->
+  <script src="/header.js"></script>
+
+  <div class="wrap">
+
+    <!-- HERO — pick the icon that matches your activity type:
+           Simulation (speech):    <path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/>
+           Game (controller):      <path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/>
+           Practice sheet (pencil):<path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4"/><path d="M13.5 6.5l4 4"/>
+           Quiz (brain):           <path d="M15.5 13a3.5 3.5 0 0 0 -3.5 3.5v1a3.5 3.5 0 0 0 7 0v-1.8"/><path d="M8.5 13a3.5 3.5 0 0 1 3.5 3.5v1a3.5 3.5 0 0 1 -7 0v-1.8"/><path d="M17.5 16a3.5 3.5 0 0 0 0 -7h-.5"/><path d="M6.5 16a3.5 3.5 0 0 1 0 -7h.5"/><path d="M12 5a3 3 0 0 0 -6 0v.5"/><path d="M12 5a3 3 0 0 1 6 0v.5"/><path d="M12 5v14"/>
+    -->
+    <div class="toolhero">
+      <div class="ico">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand">TODO Tool <span class="bot">Name</span></div>
+        <div class="tagline">TODO One line on what you'll practice.</div>
+      </div>
+    </div>
+
+    <!-- INSTRUCTIONS -->
+    <div class="orient">
+      <div class="ohd">How it works</div>
+      <p>TODO Briefly explain what the learner does.</p>
+    </div>
+
+    <!-- ACTIVITY -->
+    <main>
+      <!-- TODO: build your activity here. To call the shared AI backend,
+           POST to /api/chat with { system, messages, model, max_tokens }. -->
+    </main>
+
+    <div class="foot">A Socialworky training resource. For practice only —
+      please use fictional details, not real client information.</div>
+
+  </div>
+</body>
+</html>

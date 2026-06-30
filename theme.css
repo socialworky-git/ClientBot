@@ -1,21 +1,19 @@
-/* =========================================================
-   SOCIALWORKY — SHARED THEME
-   Edit brand colors, base type, buttons, and section styles
-   HERE, once, and every page that links this file updates.
+@import url("/tokens.css");
 
-   Link it in the <head> of each page, BEFORE the page's own
-   <style> block, so page-specific rules can still override:
+/* =========================================================
+   SOCIALWORKY — SHARED THEME (components)
+   Brand + shell tokens live in /tokens.css (imported above).
+   This file adds the shared base type + components for the MAIN
+   pages (home, training, tools hub). Link it BEFORE a page's own
+   <style> so page-specific rules can still override:
      <link rel="stylesheet" href="/theme.css">
+
+   Bespoke tool pages link /tokens.css instead (variables only),
+   so these component classes never bleed into their own styles.
 
    The font itself (Hanken Grotesk) is loaded by /header.js,
    which every page already includes.
    ========================================================= */
-
-:root{
-  --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
-  --accent:#EB786B; --accentDeep:#C2452F; --coral-bg:#FDEEEB; --coral-line:#F6D4CD;
-  --sans:'Hanken Grotesk',Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
-}
 
 *{ box-sizing:border-box; }
 
@@ -28,7 +26,7 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
-.wrap{ max-width:820px; margin:0 auto; padding:24px; }
+.wrap{ max-width:var(--sw-maxw); margin:0 auto; padding:var(--sw-gutter); }
 
 a{ color:var(--accentDeep); }
 
