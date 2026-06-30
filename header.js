@@ -21,8 +21,8 @@
      When you go live on your real domain, swap them for your
      pk_live_ key and live frontend address.
      ========================================================= */
-  var CLERK_FRONTEND_API    = "possible-horse-78.clerk.accounts.dev";
-  var CLERK_PUBLISHABLE_KEY = "pk_test_cG9zc2libGUtaG9yc2UtNzguY2xlcmsuYWNjb3VudHMuZGV2JA";
+  var CLERK_FRONTEND_API    = "clerk.socialworky.com";
+  var CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsuc29jaWFsd29ya3kuY29tJA";
   var LOGIN_PAGE            = "/login.html";
 
   /* Which pages require a signed-in user?
