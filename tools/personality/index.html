@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personality Cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;0,800;1,500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --coral:#EB786B;
+    --coral-deep:#D85D4F;
+    --paper:#FCF6F1;
+    --paper-2:#F6ECE4;
+    --ink:#23201E;
+    --ink-soft:#6B625C;
+    --line:#E7D8CD;
+    --radius:18px;
+    --maxw:680px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Hanken Grotesk',system-ui,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    transition:background .5s ease, color .5s ease;
+  }
+
+  .stage{
+    width:100%;
+    max-width:var(--maxw);
+    padding:34px 22px 80px;
+  }
+
+  /* progress dots */
+  .dots{ display:flex; gap:7px; justify-content:center; margin-bottom:30px; }
+  .dot{ width:7px; height:7px; border-radius:50%; background:var(--line); transition:all .4s ease; }
+  .dot.on{ background:var(--coral); transform:scale(1.25); }
+
+  .screen{ display:none; animation:rise .5s ease both; }
+  .screen.active{ display:block; }
+  @keyframes rise{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--coral-deep);
+    margin:0 0 12px;
+  }
+
+  h1{ font-size:clamp(30px,7vw,44px); font-weight:800; line-height:1.05; margin:0 0 16px; letter-spacing:-.01em; }
+  h2{ font-size:clamp(24px,5.5vw,32px); font-weight:800; line-height:1.1; margin:0 0 14px; letter-spacing:-.01em; }
+  p.lead{ font-size:18px; color:var(--ink-soft); margin:0 0 26px; max-width:54ch; }
+
+  .btn{
+    appearance:none; border:none; cursor:pointer;
+    font-family:inherit; font-weight:600; font-size:17px;
+    background:var(--coral); color:#fff;
+    padding:14px 26px; border-radius:999px;
+    transition:transform .15s ease, background .2s ease, opacity .2s ease;
+  }
+  .btn:hover{ background:var(--coral-deep); }
+  .btn:active{ transform:translateY(1px); }
+  .btn:disabled{ opacity:.35; cursor:not-allowed; background:var(--coral); }
+  .btn.ghost{ background:transparent; color:var(--ink-soft); padding:14px 6px; }
+  .btn:focus-visible{ outline:3px solid var(--coral-deep); outline-offset:3px; }
+
+  .actions{ display:flex; align-items:center; gap:10px; margin-top:30px; flex-wrap:wrap; }
+
+  /* trait cards */
+  .grid{ display:grid; gap:12px; margin:6px 0 4px; }
+  @media(min-width:560px){ .grid{ grid-template-columns:1fr 1fr; } }
+
+  .card{
+    text-align:left; cursor:pointer;
+    background:#fff; border:1.5px solid var(--line);
+    border-radius:var(--radius); padding:16px 18px;
+    transition:border-color .15s ease, box-shadow .15s ease, transform .12s ease;
+    display:flex; flex-direction:column; gap:5px;
+  }
+  .card:hover{ border-color:var(--coral); }
+  .card .name{ font-weight:700; font-size:17px; display:flex; align-items:center; gap:9px; }
+  .card .desc{ font-size:14.5px; color:var(--ink-soft); }
+  .tick{
+    width:20px; height:20px; border-radius:50%; flex:0 0 auto;
+    border:2px solid var(--line); display:inline-grid; place-items:center;
+    transition:all .15s ease;
+  }
+  .card.sel{ border-color:var(--coral); box-shadow:0 0 0 1.5px var(--coral); background:#fff8f5; }
+  .card.sel .tick{ background:var(--coral); border-color:var(--coral); }
+  .card.sel .tick::after{ content:""; width:6px; height:10px; border:solid #fff; border-width:0 2.5px 2.5px 0; transform:rotate(45deg) translateY(-1px); }
+  .card[aria-disabled="true"]{ opacity:.45; cursor:not-allowed; }
+  .card[aria-disabled="true"]:hover{ border-color:var(--line); }
+  .card:focus-visible{ outline:3px solid var(--coral-deep); outline-offset:2px; }
+
+  .hint{ font-size:14px; color:var(--ink-soft); margin:14px 0 0; }
+
+  /* affirmation */
+  .affirm{
+    background:var(--paper-2); border:1.5px solid var(--line);
+    border-radius:var(--radius); padding:34px 28px;
+    font-size:clamp(22px,5vw,30px); font-weight:500; line-height:1.35; margin:8px 0 6px;
+  }
+  .pill{
+    display:inline-block; background:var(--coral); color:#fff;
+    font-weight:700; padding:2px 14px; border-radius:999px; white-space:nowrap;
+    line-height:1.4;
+  }
+
+  .remind{
+    background:var(--paper-2); border:1.5px solid var(--line);
+    border-radius:var(--radius); padding:18px 22px; margin:4px 0 2px;
+    display:flex; flex-direction:column; gap:11px;
+  }
+  .remind-label{
+    font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--ink-soft);
+  }
+  .remind #remindTraits{ display:flex; gap:9px; flex-wrap:wrap; }
+
+  /* assessment readout */
+  .readout{
+    background:#fff; border:1.5px solid var(--line);
+    border-radius:var(--radius); overflow:hidden; margin:6px 0;
+  }
+  .readout .bar{
+    font-family:'Space Mono',monospace; font-size:12px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--coral-deep);
+    padding:13px 20px; border-bottom:1.5px solid var(--line);
+    background:var(--paper-2);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .readout .body{ padding:22px 20px 26px; }
+  .readout .label{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 7px; }
+  .readout .inputs{ font-family:'Space Mono',monospace; font-size:14px; color:var(--ink); margin:0 0 22px; }
+  .verdict{
+    font-size:clamp(21px,5vw,27px); font-weight:800; line-height:1.25;
+    color:var(--ink); margin:0;
+    border-left:3px solid var(--coral); padding-left:16px;
+  }
+  .deliver{
+    font-family:'Space Mono',monospace; font-size:13px; color:var(--ink-soft);
+    margin:20px 0 0; padding-top:18px; border-top:1px dashed var(--line);
+  }
+  .scanline{ font-family:'Space Mono',monospace; color:var(--coral-deep); font-size:14px; min-height:24px; }
+
+  /* debrief */
+  .prompts{ list-style:none; margin:6px 0 0; padding:0; counter-reset:q; }
+  .prompts li{
+    position:relative; padding:16px 16px 16px 52px; border:1.5px solid var(--line);
+    border-radius:14px; margin-bottom:11px; background:#fff; font-size:17px;
+  }
+  .prompts li::before{
+    counter-increment:q; content:counter(q);
+    position:absolute; left:14px; top:15px;
+    font-family:'Space Mono',monospace; font-weight:700; font-size:14px;
+    color:var(--coral-deep); background:var(--paper-2);
+    width:26px; height:26px; border-radius:50%; display:grid; place-items:center;
+  }
+  .keyq{
+    margin-top:20px; background:var(--ink); color:var(--paper);
+    border-radius:var(--radius); padding:24px 24px;
+  }
+  .keyq .label{ font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--coral); margin:0 0 9px; }
+  .keyq p{ margin:0; font-size:20px; font-weight:600; line-height:1.3; }
+
+  /* closing restore */
+  .restore{
+    background:var(--paper-2); border:1.5px solid var(--line); border-radius:var(--radius);
+    padding:30px 26px; font-size:clamp(20px,4.5vw,26px); font-weight:500; line-height:1.35;
+  }
+
+  .footer-note{ margin-top:46px; font-size:13px; color:var(--ink-soft); text-align:center; }
+  a.reset{ color:inherit; text-decoration:underline; cursor:pointer; }
+
+  @media (prefers-reduced-motion: reduce){
+    .screen{ animation:none; }
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+<main class="stage">
+  <div class="dots" id="dots" aria-hidden="true"></div>
+
+  <!-- 0 INTRO -->
+  <section class="screen active" id="s0">
+    <p class="eyebrow">A reflection activity</p>
+    <h1>Personality Cards</h1>
+    <p class="lead">Pick two traits you are proud of. A partner will then run those same traits through a system and read you what it says. Spend your time on the first part.</p>
+    <div class="actions">
+      <button class="btn" data-go="1">Begin</button>
+    </div>
+  </section>
+
+  <!-- 1 CHOOSE SELF -->
+  <section class="screen" id="s1">
+    <p class="eyebrow">Part 1 of 2 &middot; Your card</p>
+    <h2>Choose two traits you are proud of</h2>
+    <p class="lead">Read each one. Pick the two that feel most like you as a person.</p>
+    <div class="grid" id="selfGrid" role="group" aria-label="Choose two traits"></div>
+    <p class="hint" id="selfHint">Select two to continue.</p>
+    <div class="actions">
+      <button class="btn" id="selfNext" data-go="2" disabled>Continue</button>
+    </div>
+  </section>
+
+  <!-- 2 AFFIRMATION -->
+  <section class="screen" id="s2">
+    <p class="eyebrow">Your card</p>
+    <h2>This is what you wrote</h2>
+    <div class="affirm" id="affirmText"></div>
+    <p class="hint">Read it back to yourself. Say it out loud if you want to.</p>
+    <div class="actions">
+      <button class="btn" data-go="3">Next: pair up</button>
+      <button class="btn ghost" data-go="1">Change my traits</button>
+    </div>
+  </section>
+
+  <!-- 3 PAIR UP -->
+  <section class="screen" id="s3">
+    <p class="eyebrow">Switching roles</p>
+    <h2>Now you take turns</h2>
+    <p class="lead">In your pair, decide who reads first. The reader enters their partner's two traits below, then reads what comes back out loud, straight to them. After that you trade, so each of you reads one assessment and hears one about yourself. When it is your turn to be read to, set the screen aside and just listen.</p>
+    <div class="remind">
+      <span class="remind-label">Your two traits, to tell your partner</span>
+      <span id="remindTraits"></span>
+    </div>
+    <div class="actions">
+      <button class="btn" data-go="4">Enter my partner's traits</button>
+    </div>
+  </section>
+
+  <!-- 4 CHOOSE PARTNER -->
+  <section class="screen" id="s4">
+    <p class="eyebrow">Part 2 of 2 &middot; Your partner's inputs</p>
+    <h2>Select your partner's two traits</h2>
+    <p class="lead">The two they just told you. Choose carefully.</p>
+    <div class="grid" id="partnerGrid" role="group" aria-label="Choose your partner's two traits"></div>
+    <p class="hint" id="partnerHint">Select two to run the assessment.</p>
+    <div class="actions">
+      <button class="btn" id="partnerNext" disabled>Generate assessment</button>
+    </div>
+  </section>
+
+  <!-- 5 READOUT -->
+  <section class="screen" id="s5">
+    <p class="eyebrow">System output</p>
+    <div class="readout">
+      <div class="bar"><span>Personality Assessment</span><span id="stamp">v1.0</span></div>
+      <div class="body">
+        <p class="label">Inputs received</p>
+        <p class="inputs" id="readoutInputs"></p>
+        <div class="scanline" id="scan"></div>
+        <p class="verdict" id="verdict" style="display:none"></p>
+        <p class="deliver" id="deliver" style="display:none">Read this to your partner now, in an evaluator's voice. Then trade places so they can read yours to you.</p>
+      </div>
+    </div>
+    <div class="actions" id="readoutActions" style="display:none">
+      <button class="btn" data-go="6">Continue to debrief</button>
+      <span class="hint" style="margin:0">Both of you go before moving on.</span>
+    </div>
+  </section>
+
+  <!-- 6 DEBRIEF -->
+  <section class="screen" id="s6">
+    <h2>Let's talk about what just happened</h2>
+    <ul class="prompts">
+      <li>How did it feel to hear your own traits turned into something negative?</li>
+      <li>Did the critique feel unfair? Did it make you defensive?</li>
+      <li>Did any critique land as a little bit true?</li>
+      <li>Did any of it make you feel sad or embarrassed?</li>
+    </ul>
+    <div class="keyq">
+      <p>What might this tell us about the challenge of diagnosing a personality as disordered?</p>
+    </div>
+    <div class="actions">
+      <button class="btn" data-go="7">One more thing</button>
+    </div>
+  </section>
+
+  <!-- 7 CLOSING -->
+  <section class="screen" id="s7">
+    <p class="eyebrow">Before we move on</p>
+    <h2>Same person, different lens</h2>
+    <p class="lead">The system took the traits you are proud of and described them as problems. You did not change between Part 1 and Part 2. The lens did. Telling a trait apart from a symptom is a lot of what diagnosis asks of us.</p>
+    <p class="remind-label" style="margin-bottom:12px">What you wrote at the start</p>
+    <div class="restore" id="restoreText"></div>
+    <div class="actions">
+      <button class="btn ghost reset" id="restart">Start over</button>
+    </div>
+  </section>
+
+  <p class="footer-note">Socialworky 2026</p>
+</main>
+
+<script>
+  const TRAITS = [
+    { id:'honest',        name:'Honest & Humble',     desc:'I am fair, sincere, and modest.' },
+    { id:'emotional',     name:'Emotional',           desc:'I feel my emotions deeply and can be anxious, sensitive, or sentimental.' },
+    { id:'extraverted',   name:'Extraverted',         desc:'I am sociable, energetic, and comfortable being around people.' },
+    { id:'agreeable',     name:'Agreeable',           desc:'I am patient, gentle, and cooperative.' },
+    { id:'conscientious', name:'Conscientious',       desc:'I am organized, reliable, careful, and disciplined.' },
+    { id:'open',          name:'Open to Experiences', desc:'I am curious, imaginative, and open to new ideas and experiences.' }
+  ];
+
+  const VERDICTS = {
+    'emotional+honest':        "You're too naive, overly sensitive, and easily exploited.",
+    'extraverted+honest':      "You're too trusting and people take advantage of you.",
+    'agreeable+honest':        "You're too nice for your own good and let people walk over you.",
+    'conscientious+honest':    "You're too rigid and moralistic, obsessed with doing the right thing.",
+    'honest+open':             "You're too gullible and unrealistic, chasing big ideas without seeing risks.",
+    'emotional+extraverted':   "You're too exhausting, always emotional and needing attention to feel secure.",
+    'agreeable+emotional':     "You're too fragile and let people use you because you avoid conflict.",
+    'conscientious+emotional': "You're too anxious and controlling, worrying over every detail.",
+    'emotional+open':          "You're too scattered and dramatic, jumping from feelings to wild ideas.",
+    'agreeable+extraverted':   "You're too desperate for approval and can't stop trying to please everyone.",
+    'conscientious+extraverted':"You're too bossy and controlling, always telling people how to do things.",
+    'extraverted+open':        "You're too impulsive and inconsistent, chasing thrills without thinking them through.",
+    'agreeable+conscientious': "You're so focused on peace and perfection that you never speak your mind.",
+    'agreeable+open':          "You're overly idealistic and naive, always assuming people are good.",
+    'conscientious+open':      "You're a perfectionist who overthinks everything and never feels satisfied."
+  };
+
+  const nameOf = id => TRAITS.find(t => t.id === id).name;
+  const pairKey = (a,b) => [a,b].sort().join('+');
+  const verdictFor = (a,b) => VERDICTS[pairKey(a,b)] || "No assessment available.";
+
+  let selfSel = [];
+  let partnerSel = [];
+
+  const TOTAL = 8;
+  const dotsWrap = document.getElementById('dots');
+  for (let i=0;i<TOTAL;i++){ const d=document.createElement('span'); d.className='dot'; dotsWrap.appendChild(d); }
+  const dots = [...dotsWrap.children];
+
+  function show(n){
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('s'+n).classList.add('active');
+    dots.forEach((d,i) => d.classList.toggle('on', i===n));
+    window.scrollTo({top:0, behavior:'smooth'});
+    if (n===2) renderAffirm();
+    if (n===3) renderRemind();
+    if (n===5) runAssessment();
+    if (n===7) renderRestore();
+  }
+
+  function buildGrid(container, selectedArr, onChange){
+    container.innerHTML = '';
+    TRAITS.forEach(t => {
+      const card = document.createElement('button');
+      card.type='button'; card.className='card'; card.dataset.id=t.id;
+      card.setAttribute('aria-pressed','false');
+      card.innerHTML = '<span class="name"><span class="tick"></span>'+t.name+'</span><span class="desc">'+t.desc+'</span>';
+      card.addEventListener('click', () => {
+        const idx = selectedArr.indexOf(t.id);
+        if (idx > -1){ selectedArr.splice(idx,1); }
+        else if (selectedArr.length < 2){ selectedArr.push(t.id); }
+        paint(container, selectedArr);
+        onChange();
+      });
+      container.appendChild(card);
+    });
+    paint(container, selectedArr);
+  }
+
+  function paint(container, selectedArr){
+    [...container.querySelectorAll('.card')].forEach(card => {
+      const on = selectedArr.includes(card.dataset.id);
+      card.classList.toggle('sel', on);
+      card.setAttribute('aria-pressed', on ? 'true':'false');
+      const full = selectedArr.length >= 2 && !on;
+      card.setAttribute('aria-disabled', full ? 'true':'false');
+    });
+  }
+
+  buildGrid(document.getElementById('selfGrid'), selfSel, () => {
+    const ok = selfSel.length === 2;
+    document.getElementById('selfNext').disabled = !ok;
+    document.getElementById('selfHint').textContent = ok ? 'Ready.' : (selfSel.length===1 ? 'One more.' : 'Select two to continue.');
+  });
+
+  buildGrid(document.getElementById('partnerGrid'), partnerSel, () => {
+    const ok = partnerSel.length === 2;
+    document.getElementById('partnerNext').disabled = !ok;
+    document.getElementById('partnerHint').textContent = ok ? 'Ready to run.' : (partnerSel.length===1 ? 'One more.' : 'Select two to run the assessment.');
+  });
+
+  function renderAffirm(){
+    const [a,b] = selfSel;
+    document.getElementById('affirmText').innerHTML =
+      'I am proud to be a person who is <span class="pill">'+nameOf(a)+'</span> and <span class="pill">'+nameOf(b)+'</span>.';
+  }
+
+  function renderRemind(){
+    const [a,b] = selfSel;
+    document.getElementById('remindTraits').innerHTML =
+      '<span class="pill">'+nameOf(a)+'</span><span class="pill">'+nameOf(b)+'</span>';
+  }
+
+  function renderRestore(){
+    const [a,b] = selfSel;
+    document.getElementById('restoreText').innerHTML =
+      'I am proud to be a person who is <span class="pill">'+nameOf(a)+'</span> and <span class="pill">'+nameOf(b)+'</span>.';
+  }
+
+  function runAssessment(){
+    const [a,b] = partnerSel;
+    document.getElementById('readoutInputs').textContent = nameOf(a).toUpperCase() + '  +  ' + nameOf(b).toUpperCase();
+    const scan = document.getElementById('scan');
+    const verdict = document.getElementById('verdict');
+    const deliver = document.getElementById('deliver');
+    const actions = document.getElementById('readoutActions');
+    verdict.style.display='none'; deliver.style.display='none'; actions.style.display='none';
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reveal = () => {
+      verdict.textContent = verdictFor(a,b);
+      verdict.style.display='block';
+      deliver.style.display='block';
+      actions.style.display='flex';
+      scan.textContent='';
+    };
+
+    if (reduced){ reveal(); return; }
+    const steps = ['> analyzing inputs', '> cross-referencing traits', '> generating assessment'];
+    let i=0; scan.textContent='';
+    const tick = setInterval(() => {
+      scan.textContent = steps[i] + ' ...';
+      i++;
+      if (i >= steps.length){ clearInterval(tick); setTimeout(reveal, 550); }
+    }, 620);
+  }
+
+  document.querySelectorAll('[data-go]').forEach(btn => {
+    btn.addEventListener('click', () => show(parseInt(btn.dataset.go,10)));
+  });
+  document.getElementById('partnerNext').addEventListener('click', () => show(5));
+
+  document.getElementById('restart').addEventListener('click', () => {
+    selfSel.length=0; partnerSel.length=0;
+    paint(document.getElementById('selfGrid'), selfSel);
+    paint(document.getElementById('partnerGrid'), partnerSel);
+    document.getElementById('selfNext').disabled=true;
+    document.getElementById('partnerNext').disabled=true;
+    document.getElementById('selfHint').textContent='Select two to continue.';
+    document.getElementById('partnerHint').textContent='Select two to run the assessment.';
+    show(0);
+  });
+
+  show(0);
+</script>
+</body>
+</html>
