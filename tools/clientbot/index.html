@@ -28,6 +28,7 @@
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
+<link rel="stylesheet" href="/tokens.css" />
 <style>
   /* To match Socialworky's brand when embedding, change --accent (and --accentDeep) below. */
   :root{
@@ -189,6 +190,13 @@
     .persona{background:#fff !important;break-inside:avoid;}
     .turn,.card,.countbox,.gbar,.chip{break-inside:avoid;}
   }
+</style>
+
+<!-- Shared shell: header band + content column use one width & gutter site-wide. -->
+<style>
+  body{ padding-left:0; padding-right:0; }
+  .wrap, .page{ max-width:var(--sw-maxw,820px); margin-left:auto; margin-right:auto;
+                padding-left:var(--sw-gutter,24px); padding-right:var(--sw-gutter,24px); }
 </style>
 </head>
 <body>

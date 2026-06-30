@@ -27,6 +27,7 @@
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
+<link rel="stylesheet" href="/tokens.css" />
 <style>
   :root{
     --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
@@ -106,6 +107,13 @@
     .client,.summarybox,.step,.vignette,.note-fb{break-inside:avoid;}
     #step1,#step2,#step3,#finalbox{display:block !important;}
   }
+</style>
+
+<!-- Shared shell: header band + content column use one width & gutter site-wide. -->
+<style>
+  body{ padding-left:0; padding-right:0; }
+  .wrap, .page{ max-width:var(--sw-maxw,820px); margin-left:auto; margin-right:auto;
+                padding-left:var(--sw-gutter,24px); padding-right:var(--sw-gutter,24px); }
 </style>
 </head>
 <body>

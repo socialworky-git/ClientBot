@@ -1,0 +1,28 @@
+/* =========================================================
+   SOCIALWORKY — DESIGN TOKENS (variables only)
+   The single source of truth for brand colors, the type face,
+   and the page-shell width/gutter.
+
+   This file defines ONLY CSS custom properties (`:root` vars),
+   so it is safe to link on ANY page — it can never restyle an
+   element or class. theme.css imports it for the main pages;
+   each bespoke tool links it directly for the shell width.
+   ========================================================= */
+
+:root{
+  /* Brand palette */
+  --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
+  --accent:#EB786B; --accentDeep:#C2452F; --coral-bg:#FDEEEB; --coral-line:#F6D4CD;
+
+  /* Type */
+  --sans:'Hanken Grotesk',Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
+
+  /* Page shell — the one column width + gutter every page (and the header
+     bar in header.js) share, so the header always lines up with content. */
+  --sw-maxw:820px;   /* content column width */
+  --sw-gutter:24px;  /* left/right gutter */
+}
+
+@media (max-width:640px){
+  :root{ --sw-gutter:16px; }
+}

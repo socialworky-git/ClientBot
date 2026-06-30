@@ -27,6 +27,7 @@
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
+<link rel="stylesheet" href="/tokens.css" />
 <style>
   :root {
     --ink: #1f2328;
@@ -452,6 +453,13 @@
   .tilt-gauge { width: 300px; max-width: 100%; height: auto; }
   .tilt-beam { transition: transform 1s cubic-bezier(0.34, 1.1, 0.5, 1); }
   .gauge-cap { text-align: center; font-size: 0.8rem; color: var(--muted); margin-top: -0.3rem; margin-bottom: 0.8rem; }
+</style>
+
+<!-- Shared shell: header band + content column use one width & gutter site-wide. -->
+<style>
+  body{ padding-left:0; padding-right:0; }
+  .wrap, .page{ max-width:var(--sw-maxw,820px); margin-left:auto; margin-right:auto;
+                padding-left:var(--sw-gutter,24px); padding-right:var(--sw-gutter,24px); }
 </style>
 </head>
 <body>

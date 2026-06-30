@@ -27,6 +27,7 @@
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
+<link rel="stylesheet" href="/tokens.css" />
 <style>
   :root {
     --ink: #1f2328; --muted: #6b7280; --muted-2: #9ca3af;
@@ -169,6 +170,13 @@
     .pan { width: 110px; margin-left: -55px; }
     .grid2 { grid-template-columns: 1fr; }
   }
+</style>
+
+<!-- Shared shell: header band + content column use one width & gutter site-wide. -->
+<style>
+  body{ padding-left:0; padding-right:0; }
+  .wrap, .page{ max-width:var(--sw-maxw,820px); margin-left:auto; margin-right:auto;
+                padding-left:var(--sw-gutter,24px); padding-right:var(--sw-gutter,24px); }
 </style>
 </head>
 <body>

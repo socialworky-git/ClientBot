@@ -27,6 +27,7 @@
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
+<link rel="stylesheet" href="/tokens.css" />
 <style>
   :root{
     --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
@@ -122,6 +123,13 @@
   .obs{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:14.5px;}
   .foot{color:var(--muted);font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;}
   @media (max-width:560px){ body{padding:14px;} h1{font-size:21px;} .btn{width:100%;} .scoreboard{gap:18px;} }
+</style>
+
+<!-- Shared shell: header band + content column use one width & gutter site-wide. -->
+<style>
+  body{ padding-left:0; padding-right:0; }
+  .wrap, .page{ max-width:var(--sw-maxw,820px); margin-left:auto; margin-right:auto;
+                padding-left:var(--sw-gutter,24px); padding-right:var(--sw-gutter,24px); }
 </style>
 </head>
 <body>
