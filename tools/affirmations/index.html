@@ -32,7 +32,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #f5f5f5;
+    --bg: #ffffff;
     --card: #ffffff;
     --text: #1a1a1a;
     --text-secondary: #6b7280;
@@ -526,7 +526,7 @@
 
   /* ---- Standardized orientation panel ("Instructions") ---- */
   .orient {
-    background: #eceef1; border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
     padding: 20px 24px; margin-bottom: 14px;
   }
   .orient .ohd { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; margin-bottom: 10px; }
@@ -618,7 +618,7 @@
 
 <!-- Shared shell: header band + content column use one width & gutter site-wide. -->
 <style>
-  body{ padding-left:0; padding-right:0; }
+  body{ padding-top:0; padding-left:0; padding-right:0; }
   .wrap, .page{ max-width:var(--sw-maxw,820px); margin-left:auto; margin-right:auto;
                 padding-left:var(--sw-gutter,24px); padding-right:var(--sw-gutter,24px); }
 </style>
