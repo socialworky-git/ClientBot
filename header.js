@@ -69,7 +69,8 @@
       { name: "Reflection Batting Practice",  href: "/tools/batting-practice/" },
       { name: "Mining for Affirmations",      href: "/tools/affirmations/" },
       { name: "Intentional Reflections",      href: "/tools/intentional-reflections/" },
-      { name: "Balancing the Scale",          href: "/tools/balancing-the-scale/" }
+      { name: "Balancing the Scale",          href: "/tools/balancing-the-scale/" },
+      { name: "MITI Tools",                   href: "/tools/miti-tools/" }
     ]},
     { category: "SRA Tools", items: [
       { name: "Empathy as a Pathway to Screening", href: "/tools/empathy-screening/" },

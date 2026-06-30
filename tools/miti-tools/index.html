@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MITI Tools | Socialworky</title>
+<meta name="description" content="A practice sheet to code motivational interviewing sessions with the MITI, alone or as a group.">
+<link rel="canonical" href="https://socialworky.com/tools/miti-tools/">
+
+<!-- Social / Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Socialworky">
+<meta property="og:title" content="MITI Tools | Socialworky">
+<meta property="og:description" content="A practice sheet to code motivational interviewing sessions with the MITI, alone or as a group.">
+<meta property="og:url" content="https://socialworky.com/tools/miti-tools/">
+<meta property="og:image" content="https://socialworky.com/images/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MITI Tools | Socialworky">
+<meta name="twitter:description" content="A practice sheet to code motivational interviewing sessions with the MITI, alone or as a group.">
+<meta name="twitter:image" content="https://socialworky.com/images/og-image.png">
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+
+<!-- Preview fallback only. /tokens.css below overrides these on the live site. -->
+<style>
+  :root{
+    --ink:#1A1A1A;--muted:#5B5B5B;--line:#E4E4E7;--surface:#F6F7F8;
+    --accent:#EB786B;--accentDeep:#C2452F;--coral-bg:#FDEEEB;--coral-line:#F6D4CD;
+    --sans:'Hanken Grotesk',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    --sw-maxw:820px;--sw-gutter:24px;
+  }
+</style>
+<link rel="stylesheet" href="/tokens.css">
+
+<style>
+  /* ---- page shell (matches DESIGN.md) ---- */
+  body{margin:0;background:#fff;font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:var(--sw-maxw,820px);margin:0 auto;padding:var(--sw-gutter,24px)}
+  .view{display:none}
+  .view.active{display:block}
+  .view > [class^="wrap-"]{max-width:none;margin:0;padding:0}
+
+  /* ---- standard tool hero ---- */
+  .toolhero{display:flex;gap:15px;align-items:center;background:var(--coral-bg);border:1.5px solid var(--coral-line);border-radius:18px;padding:18px 20px;margin:18px 0 16px}
+  .toolhero .ico{flex-shrink:0;width:46px;height:46px;border-radius:12px;background:#fff;color:var(--accentDeep);display:flex;align-items:center;justify-content:center;border:1.5px solid var(--coral-line)}
+  .toolhero .brand{font-weight:800;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;color:var(--ink);line-height:1.1}
+  .toolhero .brand .bot{color:var(--accentDeep)}
+  .toolhero .tagline{font-size:.95rem;color:var(--muted);margin-top:3px}
+
+  /* ---- tab switcher ---- */
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .tab{font-family:var(--sans);text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:9px 14px;cursor:pointer;line-height:1.15;transition:all .12s}
+  .tab:hover{border-color:var(--accent)}
+  .tab.active{background:var(--accent);border-color:var(--accent)}
+  .tab .tt{display:block;font-weight:700;font-size:.92rem;color:var(--ink)}
+  .tab.active .tt{color:#fff}
+  .tab .td{display:block;font-size:.73rem;font-weight:600;color:var(--muted)}
+  .tab.active .td{color:rgba(255,255,255,.9)}
+  .tab:focus-visible{outline:none;box-shadow:0 0 0 3px var(--coral-bg)}
+
+  /* ---- footer disclaimer ---- */
+  .foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);font-size:.8rem;color:var(--muted);line-height:1.55}
+
+/* ===== coder ===== */
+
+  :root{
+    --accent-deep:var(--accentDeep);--accent-soft:var(--coral-bg);
+    --paper:#ffffff;--card:#ffffff;
+    --good:#2f9e6f;--good-soft:#e6f4ee;--fair:#c9881f;--fair-soft:#f8efda;--below:#b25a4f;--below-soft:#f6e7e4;
+    --radius:14px;--shadow:0 1px 2px rgba(43,38,34,.04), 0 6px 20px rgba(43,38,34,.06);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.45;-webkit-font-smoothing:antialiased}
+  .wrap-coder{max-width:1180px;margin:0 auto;padding:28px 20px 80px}
+
+  header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:8px}
+  .title-block h1{font-size:1.7rem;font-weight:800;letter-spacing:-.02em;margin:0}
+  .title-block .sub{color:var(--muted);font-size:.95rem;margin-top:2px}
+  .pill{display:inline-block;background:var(--accent-soft);color:var(--accent-deep);font-weight:700;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:999px;margin-bottom:8px}
+
+  .timer-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+  .timer{display:flex;align-items:center;gap:10px;background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:7px 10px 7px 14px}
+  .timer .clock{font-variant-numeric:tabular-nums;font-weight:800;font-size:1.15rem;min-width:64px;letter-spacing:.01em}
+  .timer .clock.running{color:var(--accent-deep)}
+  .tbtn{font-family:inherit;font-weight:700;font-size:.82rem;border:none;border-radius:8px;padding:7px 11px;cursor:pointer;background:var(--accent-soft);color:var(--accent-deep)}
+  .tbtn:hover{background:#f7ddd8}
+  .tbtn.ghost{background:transparent;color:var(--muted)}
+  .tbtn.ghost:hover{color:var(--ink)}
+  .sample-note{font-size:.74rem;font-weight:600;color:var(--fair);opacity:0;transition:opacity .2s;height:0}
+  .sample-note.show{opacity:1;height:auto}
+
+  .meta{display:flex;flex-wrap:wrap;gap:12px;margin:18px 0 24px}
+  .field{flex:1 1 220px;min-width:180px}
+  .field label{display:block;font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px}
+  .field input{width:100%;font-family:inherit;font-size:.95rem;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:9px 11px}
+  .field input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+
+  .grid{display:grid;grid-template-columns:1fr 340px;gap:26px;align-items:start}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}}
+
+  .section-label{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:26px 0 12px;display:flex;align-items:center;gap:9px}
+  .section-label:first-child{margin-top:0}
+  .section-label .bar{width:22px;height:3px;border-radius:2px;background:var(--accent)}
+  .section-label .bar.adh{background:var(--good)}
+  .section-label .bar.non{background:var(--below)}
+  .section-label .bar.neu{background:var(--muted)}
+
+  .counters{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+  .counter{position:relative;background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:14px 14px 12px;cursor:pointer;user-select:none;transition:border-color .12s,transform .06s,box-shadow .12s;text-align:left}
+  .counter:hover{border-color:var(--accent);box-shadow:var(--shadow)}
+  .counter:focus-visible{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .counter:active{transform:translateY(1px)}
+  .counter .nm{font-weight:700;font-size:.92rem;line-height:1.2;padding-right:22px}
+  .counter .ab{font-size:.72rem;color:var(--muted);font-weight:600;margin-top:1px}
+  .counter .val{font-size:2.2rem;font-weight:800;line-height:1;margin-top:10px;font-variant-numeric:tabular-nums}
+  .counter .hint{position:absolute;right:12px;bottom:12px;font-size:.7rem;color:var(--muted);font-weight:600;opacity:0;transition:opacity .12s}
+  .counter:hover .hint{opacity:1}
+  .counter .minus{position:absolute;top:9px;right:9px;width:24px;height:24px;border-radius:7px;border:none;background:transparent;color:var(--muted);font-size:1.2rem;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .counter .minus:hover{background:var(--below-soft);color:var(--below)}
+  .counter[data-group="adh"]{border-top:3px solid var(--good)}
+  .counter[data-group="non"]{border-top:3px solid var(--below)}
+  .counter[data-group="neu"]{border-top:3px solid var(--muted)}
+  .counter[data-group="ref"]{border-top:3px solid var(--accent)}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+  .counter .val.bump{animation:pop .22s ease}
+  @media(prefers-reduced-motion:reduce){.counter .val.bump{animation:none}}
+
+  .globals{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:560px){.globals{grid-template-columns:1fr}}
+  .global{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:13px 14px}
+  .global .gnm{font-weight:700;font-size:.92rem}
+  .global .gsc{font-size:.72rem;color:var(--muted);font-weight:600;margin-bottom:9px}
+  .scale{display:flex;gap:6px}
+  .scale button{flex:1;font-family:inherit;font-weight:700;font-size:.95rem;border:1.5px solid var(--line);background:var(--paper);color:var(--muted);border-radius:9px;padding:8px 0;cursor:pointer;transition:all .1s}
+  .scale button:hover{border-color:var(--accent)}
+  .scale button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .scale button:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+
+  .summary{position:sticky;top:20px;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:20px;box-shadow:var(--shadow)}
+  .summary h2{font-size:1.05rem;font-weight:800;margin:0 0 4px}
+  .summary .live{font-size:.74rem;color:var(--muted);font-weight:600;margin-bottom:16px}
+  .metric{margin-bottom:16px}
+  .metric .mh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .metric .ml{font-weight:700;font-size:.9rem}
+  .metric .mv{font-weight:800;font-size:1.05rem;font-variant-numeric:tabular-nums}
+  .badge{font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:999px}
+  .badge.good{background:var(--good-soft);color:var(--good)}
+  .badge.fair{background:var(--fair-soft);color:var(--fair)}
+  .badge.below{background:var(--below-soft);color:var(--below)}
+  .badge.flat{background:#f0ebe7;color:var(--muted)}
+  .meter{height:7px;border-radius:4px;background:#f0ebe7;margin-top:7px;overflow:hidden;position:relative}
+  .meter > span{position:absolute;left:0;top:0;bottom:0;border-radius:4px;transition:width .2s}
+  .meter > span.good{background:var(--good)}
+  .meter > span.fair{background:var(--fair)}
+  .meter > span.below{background:var(--below)}
+  .meter > span.accent{background:var(--accent)}
+  .mnote{font-size:.72rem;color:var(--muted);margin-top:5px}
+  .split{display:flex;height:9px;border-radius:5px;overflow:hidden;margin-top:8px;background:#f0ebe7}
+  .split > i{display:block;height:100%}
+  .legend{display:flex;gap:14px;font-size:.72rem;color:var(--muted);margin-top:6px;font-weight:600}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .dot{width:9px;height:9px;border-radius:3px;display:inline-block}
+  .divider{height:1px;background:var(--line);margin:18px 0}
+
+  .gi-block{background:#faf7f4;border:1.5px solid var(--line);border-radius:11px;padding:12px 13px;margin-bottom:16px}
+  .gi-block .mh{margin-bottom:8px}
+  .gi-bars{display:flex;height:9px;border-radius:5px;overflow:hidden;background:#f0ebe7}
+  .gi-bars > i{display:block;height:100%}
+  .gi-sub{font-size:.74rem;color:var(--muted);margin-top:8px;line-height:1.4}
+  .gi-sub strong{color:var(--ink);font-weight:700}
+
+  .actions{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+  .btn{font-family:inherit;font-weight:700;font-size:.92rem;border-radius:11px;padding:11px 14px;cursor:pointer;border:1.5px solid transparent;text-align:center}
+  .btn.primary{background:var(--accent);color:#fff}
+  .btn.primary:hover{background:var(--accent-deep)}
+  .btn.secondary{background:var(--card);border-color:var(--line);color:var(--ink)}
+  .btn.secondary:hover{border-color:var(--accent)}
+  .btn.reset{background:transparent;color:var(--muted);font-size:.82rem;padding:6px}
+  .btn.reset:hover{color:var(--below)}
+  .btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+
+
+/* ===== timeline ===== */
+
+  :root{
+    --accent-deep:var(--accentDeep);--accent-soft:var(--coral-bg);
+    --paper:#ffffff;--card:#ffffff;
+    --good:#2f9e6f;--fair:#c9881f;--below:#b25a4f;
+    --q:#EB786B;--sr:#7FBEC9;--cr:#2E7C8F;--adh:#3FA877;--non:#C0584C;--gi:#D29B3C;--pwp:#A99E96;
+    --radius:14px;--shadow:0 1px 2px rgba(43,38,34,.04),0 6px 20px rgba(43,38,34,.06);
+  }
+  *{box-sizing:border-box}html,body{margin:0}
+  body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.45;-webkit-font-smoothing:antialiased}
+  .wrap-timeline{max-width:1080px;margin:0 auto;padding:28px 20px 80px}
+  .pill{display:inline-block;background:var(--accent-soft);color:var(--accent-deep);font-weight:700;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:999px;margin-bottom:8px}
+  h1{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;margin:0}
+  .sub{color:var(--muted);font-size:.95rem;margin-top:3px;max-width:660px}
+
+  .panel{background:var(--card);border:1.5px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px;margin-top:22px}
+  .how{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap}
+  .how .step{flex:1 1 220px;background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;font-size:.86rem;display:flex;gap:10px;align-items:flex-start;line-height:1.35}
+  .how .step b{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent-deep);font-size:.8rem;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .how .step em{font-style:normal;font-weight:700;color:var(--accent-deep)}
+  .lab{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 7px}
+
+  /* intake */
+  .intake{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.intake{grid-template-columns:1fr}}
+  textarea{width:100%;min-height:104px;font-family:var(--sans);font-size:.82rem;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:11px;padding:11px;resize:vertical}
+  textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .drop{border:1.5px dashed #d8cfc8;border-radius:11px;min-height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:.85rem;gap:6px;padding:14px;cursor:pointer;transition:all .12s}
+  .drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft);color:var(--accent-deep)}
+  .drop b{color:var(--ink);font-weight:700}
+  .btnrow{display:flex;gap:9px;margin-top:10px;flex-wrap:wrap}
+  .btn{font-family:inherit;font-weight:700;font-size:.88rem;border-radius:10px;padding:9px 13px;cursor:pointer;border:1.5px solid transparent}
+  .btn.primary{background:var(--accent);color:#fff}.btn.primary:hover{background:var(--accent-deep)}
+  .btn.secondary{background:var(--card);border-color:var(--line);color:var(--ink)}.btn.secondary:hover{border-color:var(--accent)}
+  .btn.ghost{background:transparent;color:var(--muted);border-color:transparent}.btn.ghost:hover{color:var(--below)}
+  .btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+
+  .loaded{margin-top:18px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .chip{display:inline-flex;align-items:center;gap:7px;background:#f4efeb;border-radius:999px;padding:5px 6px 5px 12px;font-size:.82rem;font-weight:600}
+  .chip .ev{color:var(--muted);font-weight:500;font-size:.76rem}
+  .chip button{border:none;background:#e3dad3;color:var(--muted);width:19px;height:19px;border-radius:50%;cursor:pointer;font-size:.9rem;line-height:1;display:flex;align-items:center;justify-content:center}
+  .chip button:hover{background:var(--below);color:#fff}
+  .warn{font-size:.8rem;color:var(--fair);background:#fbf3e0;border:1px solid #efdcae;border-radius:9px;padding:9px 11px;margin-top:12px;display:none}
+  .warn.show{display:block}
+  .msg{font-size:.8rem;color:var(--below);margin-top:8px;min-height:1em}
+
+  /* timeline */
+  #viz{display:none}
+  .controls{display:flex;flex-wrap:wrap;align-items:center;gap:14px;justify-content:space-between;margin-bottom:18px}
+  .seg{display:inline-flex;background:#f4efeb;border-radius:10px;padding:3px}
+  .seg button{font-family:inherit;font-weight:700;font-size:.82rem;border:none;background:transparent;color:var(--muted);padding:7px 13px;border-radius:8px;cursor:pointer}
+  .seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.75rem;font-weight:600;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .ribbon{display:flex;gap:2px;height:26px;margin-bottom:4px}
+  .ribbon .cell{flex:1;border-radius:4px;cursor:pointer;transition:transform .08s}
+  .ribbon .cell:hover{transform:translateY(-2px)}
+  .ribbon .cell.sel{outline:2.5px solid var(--ink);outline-offset:1px}
+  .bars{display:flex;gap:2px;height:150px;align-items:flex-end;margin-top:16px}
+  .bars .col{flex:1;display:flex;flex-direction:column-reverse;cursor:pointer;border-radius:4px 4px 0 0;overflow:hidden;min-height:2px;transition:opacity .1s}
+  .bars .col:hover{opacity:.82}
+  .bars .col.sel{outline:2.5px solid var(--ink);outline-offset:1px}
+  .bars .col i{display:block;width:100%}
+  .axis{display:flex;gap:2px;margin-top:6px}
+  .axis .tk{flex:1;text-align:center;font-size:.66rem;color:var(--muted);font-variant-numeric:tabular-nums}
+  .axis .tk span{opacity:0}.axis .tk.show span{opacity:1}
+  .hint{font-size:.78rem;color:var(--muted);margin-top:14px}
+  .key{margin-top:10px}
+  .key-scale{display:flex;flex-wrap:wrap;gap:13px;font-size:.74rem;font-weight:600;color:var(--muted)}
+  .key-scale span{display:inline-flex;align-items:center;gap:5px}
+  .key-scale i{width:14px;height:14px;border-radius:3px;display:inline-block;border:1px solid rgba(0,0,0,.05)}
+  .key-read{font-size:.79rem;color:var(--ink);margin-top:9px;font-weight:500}
+  .detail{margin-top:20px;border-top:1px solid var(--line);padding-top:18px;min-height:120px}
+  .detail .dh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .detail .dt{font-weight:800;font-size:1.1rem}
+  .detail .dmeta{font-size:.82rem;color:var(--muted);font-weight:600}
+  .verdict{display:inline-block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;padding:3px 9px;border-radius:999px;margin-left:auto}
+  .verdict.agree{background:#e6f4ee;color:var(--good)}
+  .verdict.split{background:#f6e7e4;color:var(--below)}
+  .verdict.mild{background:#f8efda;color:var(--fair)}
+  .break{margin-top:14px;display:flex;flex-direction:column;gap:7px}
+  .row{display:flex;align-items:center;gap:10px}
+  .row .nm{width:180px;font-size:.85rem;font-weight:600;flex-shrink:0}
+  .row .track{flex:1;height:16px;background:#f2ede9;border-radius:5px;overflow:hidden}
+  .row .track i{display:block;height:100%;border-radius:5px}
+  .row .ct{width:78px;text-align:right;font-size:.8rem;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+  .takeaway{margin-top:14px;font-size:.86rem;background:#faf7f4;border:1.5px solid var(--line);border-radius:10px;padding:11px 13px;line-height:1.45}
+  .empty{color:var(--muted);font-size:.88rem;font-style:italic;padding-top:6px}
+
+
+/* ===== transcript ===== */
+
+  :root{
+    --accent-deep:var(--accentDeep);--accent-soft:var(--coral-bg);
+    --paper:#ffffff;--card:#ffffff;
+    --good:#2f9e6f;--fair:#c9881f;--below:#b25a4f;
+    --intv:#EB786B;--intv-soft:#fdeeeb;--client:#5f8aa0;--client-soft:#eaf1f4;
+    --radius:14px;--shadow:0 1px 2px rgba(43,38,34,.04),0 6px 20px rgba(43,38,34,.06);
+  }
+  *{box-sizing:border-box}html,body{margin:0}
+  body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.45;-webkit-font-smoothing:antialiased}
+  .wrap-transcript{max-width:880px;margin:0 auto;padding:28px 20px 90px}
+  .pill{display:inline-block;background:var(--accent-soft);color:var(--accent-deep);font-weight:700;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:999px;margin-bottom:8px}
+  h1{font-size:1.6rem;font-weight:800;letter-spacing:-.02em;margin:0}
+  .sub{color:var(--muted);font-size:.95rem;margin-top:3px;max-width:620px}
+  .steps{display:flex;gap:8px;margin-top:16px;font-size:.76rem;font-weight:700}
+  .steps .s{padding:5px 11px;border-radius:999px;background:#f4efeb;color:var(--muted)}
+  .steps .s.on{background:var(--accent);color:#fff}
+
+  .panel{background:var(--card);border:1.5px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:22px;margin-top:20px}
+  .lab{font-size:.74rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 8px}
+  textarea{width:100%;min-height:150px;font-family:var(--sans);font-size:.92rem;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:11px;padding:12px;resize:vertical;line-height:1.5}
+  textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .btnrow{display:flex;gap:9px;margin-top:12px;flex-wrap:wrap}
+  .btn{font-family:inherit;font-weight:700;font-size:.9rem;border-radius:10px;padding:10px 15px;cursor:pointer;border:1.5px solid transparent}
+  .btn.primary{background:var(--accent);color:#fff}.btn.primary:hover{background:var(--accent-deep)}
+  .btn.secondary{background:var(--card);border-color:var(--line);color:var(--ink)}.btn.secondary:hover{border-color:var(--accent)}
+  .btn.ghost{background:transparent;color:var(--muted);border-color:transparent;padding:8px 6px}.btn.ghost:hover{color:var(--ink)}
+  .btn:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+  .btn[disabled]{opacity:.45;cursor:default}
+
+  .note{font-size:.84rem;border-radius:11px;padding:12px 14px;margin-top:14px;line-height:1.5}
+  .note.info{background:var(--client-soft);border:1.5px solid #cfe0e7;color:#33586a}
+  .note.warn{background:#fbf3e0;border:1.5px solid #efdcae;color:#8a6410}
+  .note b{font-weight:700}
+
+  /* speakers assignment */
+  .spk-assign{display:flex;flex-wrap:wrap;gap:9px;margin-top:6px}
+  .spk{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:999px;padding:6px 7px 6px 13px;font-size:.86rem;font-weight:600;background:var(--card)}
+  .spk .role{font-size:.74rem;font-weight:700;border:none;border-radius:999px;padding:4px 10px;cursor:pointer}
+  .spk .role.interviewer{background:var(--intv-soft);color:var(--accent-deep)}
+  .spk .role.client{background:var(--client-soft);color:#33586a}
+
+  /* turns */
+  .turns{display:flex;flex-direction:column;gap:9px;margin-top:6px}
+  .turn{border:1.5px solid var(--line);border-radius:12px;padding:11px 12px;display:flex;gap:11px;align-items:flex-start;background:var(--card)}
+  .turn.interviewer{border-left:4px solid var(--intv);background:var(--intv-soft)}
+  .turn.client{border-left:4px solid var(--client);background:var(--client-soft)}
+  .role-pill{flex-shrink:0;font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em;border:none;border-radius:7px;padding:5px 8px;cursor:pointer;white-space:nowrap}
+  .turn.interviewer .role-pill{background:var(--intv);color:#fff}
+  .turn.client .role-pill{background:var(--client);color:#fff}
+  .turn .body{flex:1;min-width:0}
+  .turn .txt{font-size:.92rem;line-height:1.5}
+  .turn .tools{display:flex;gap:3px;flex-shrink:0;opacity:.55;transition:opacity .1s}
+  .turn:hover .tools{opacity:1}
+  .tool{border:none;background:transparent;color:var(--muted);font-size:.74rem;font-weight:700;cursor:pointer;padding:4px 6px;border-radius:6px}
+  .tool:hover{background:rgba(0,0,0,.05);color:var(--ink)}
+  .sent{cursor:default}
+  .splitgap{display:inline-block;width:0;color:var(--accent-deep);font-weight:800;cursor:pointer;opacity:.0;transition:opacity .1s}
+  .turn.splitting .txt .splitgap{opacity:1;width:auto;padding:0 4px}
+  .turn.splitting .txt .splitgap:hover{text-decoration:underline}
+  .turn.splitting .txt{outline:1.5px dashed var(--accent);outline-offset:4px;border-radius:6px}
+
+  .counts{display:flex;gap:16px;font-size:.82rem;font-weight:600;color:var(--muted);margin:2px 0 0}
+  .counts b{color:var(--ink)}
+  .counts i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:5px}
+
+  .handoff{background:#faf7f4;border:1.5px solid var(--line);border-radius:12px;padding:14px 15px;margin-top:18px;display:none}
+  .handoff.show{display:block}
+  .handoff h3{margin:0 0 5px;font-size:1rem;font-weight:800}
+  .handoff p{margin:0;font-size:.86rem;color:var(--muted);line-height:1.5}
+  #stage2{display:none}
+  .hidden{display:none}
+
+
+</style>
+</head>
+<body>
+<script src="/header.js"></script>
+<div class="wrap">
+
+  <div class="toolhero">
+    <div class="ico">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+    </div>
+    <div>
+      <div class="brand">MITI <span class="bot">Tools</span></div>
+      <div class="tagline">Code motivational interviewing sessions with the MITI, on your own or as a group.</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+<button class="tab active" data-view="coder"><span class="tt">Coding sheet</span><span class="td">Code one session yourself</span></button>
+<button class="tab" data-view="timeline"><span class="tt">Group timeline</span><span class="td">Compare a group of coders</span></button>
+<button class="tab" data-view="transcript"><span class="tt">Transcript coder</span><span class="td">Suggest codes from a transcript</span></button>
+  </div>
+
+<section class="view active" id="view-coder">
+<div class="wrap-coder">
+
+  <header class="top">
+    <div class="title-block">
+      <span class="pill">MITI 4 &middot; Solo coding</span>
+      <h1>MITI Coder</h1>
+      <div class="sub">Code from a video, audio, or live observation. Tap to tally and the summary updates as you go.</div>
+    </div>
+    <div class="timer-wrap">
+      <div class="timer" aria-label="Segment timer">
+        <span class="clock" id="clock">00:00</span>
+        <button class="tbtn" id="timerToggle">Start</button>
+        <button class="tbtn ghost" id="timerReset">Reset</button>
+      </div>
+      <div class="sample-note" id="sampleNote">Full MITI sample reached (15 to 20 min)</div>
+    </div>
+  </header>
+
+  <div class="meta">
+    <div class="field"><label for="coder">Coder name</label><input id="coder" type="text" placeholder="e.g. Jordan"></div>
+    <div class="field"><label for="event">Event</label><input id="event" type="text" placeholder="e.g. Fred demo, or a live session"></div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="section-label"><span class="bar"></span>Reflections &amp; Questions</div>
+      <div class="counters" id="rq-counters"></div>
+
+      <div class="section-label"><span class="bar adh"></span>MI Adherent</div>
+      <div class="counters" id="adh-counters"></div>
+
+      <div class="section-label"><span class="bar non"></span>MI Non-Adherent</div>
+      <div class="counters" id="non-counters"></div>
+
+      <div class="section-label"><span class="bar neu"></span>Neutral &amp; Conditional</div>
+      <div class="counters" id="neu-counters"></div>
+
+      <div class="section-label"><span class="bar"></span>Global Ratings <span style="font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted)">&nbsp;1 = low &middot; 5 = high</span></div>
+      <div class="globals" id="globals"></div>
+    </div>
+
+    <aside class="summary" aria-live="polite">
+      <h2>Live summary</h2>
+      <div class="live">Updates as you code</div>
+
+      <div class="metric" id="m-rq"></div>
+      <div class="metric" id="m-pc"></div>
+      <div class="divider"></div>
+      <div class="metric" id="m-adh"></div>
+      <div class="gi-block" id="m-gi"></div>
+      <div class="metric" id="m-tech"></div>
+      <div class="metric" id="m-rel"></div>
+      <div class="divider"></div>
+
+      <div class="actions">
+        <button class="btn primary" id="copyCode">Copy my code for the group</button>
+        <button class="btn secondary" id="exportCsv">Download my coding (CSV)</button>
+        <button class="btn secondary" id="exportSummary">Download readable summary</button>
+        <button class="btn reset" id="resetAll">Reset session</button>
+      </div>
+    </aside>
+  </div>
+</div>
+</section>
+<section class="view" id="view-timeline">
+<div class="wrap-timeline">
+  <span class="pill">MITI 4 &middot; Group calibration</span>
+  <h1>Group timeline</h1>
+  <div class="sub">Pull in everyone's coding for the same interview, then see where the group agreed and where it split. Works best when everyone coded the same video and started their timer when the clip began.</div>
+
+  <div class="how">
+    <div class="step"><b>1</b><span>Everyone codes the same clip, then taps <em>Copy my code</em>.</span></div>
+    <div class="step"><b>2</b><span>They paste their codes into one shared spot, a doc or your chat.</span></div>
+    <div class="step"><b>3</b><span>You paste them all into the box below and load.</span></div>
+  </div>
+
+  <div class="panel">
+    <div class="intake">
+      <div>
+        <div class="lab">Paste codes</div>
+        <textarea id="codeBox" placeholder="Paste each learner's code on its own line:
+MITI1:eyJ2Ijox...
+MITI1:eyJ2Ijox..."></textarea>
+        <div class="btnrow">
+          <button class="btn primary" id="loadPaste">Load pasted codes</button>
+          <button class="btn secondary" id="loadSample">Load example set</button>
+        </div>
+      </div>
+      <div>
+        <div class="lab">Or drop CSV files</div>
+        <div class="drop" id="drop">
+          <b>Drop coding CSVs here</b>
+          <span>or click to choose files</span>
+          <input type="file" id="file" accept=".csv" multiple hidden>
+        </div>
+      </div>
+    </div>
+
+    <div class="msg" id="msg"></div>
+
+    <div class="loaded" id="loaded" style="display:none">
+      <div class="lab">Loaded coders <span id="count" style="color:var(--ink)"></span></div>
+      <div class="chips" id="chips"></div>
+      <div class="warn" id="warn"></div>
+      <div class="btnrow"><button class="btn ghost" id="clearAll">Clear all</button></div>
+    </div>
+  </div>
+
+  <div class="panel" id="viz">
+    <div class="controls">
+      <div>
+        <div class="lab" style="margin-bottom:5px">Window size</div>
+        <div class="seg" id="winSeg"><button data-w="30" class="on">30 sec</button><button data-w="60">1 min</button></div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--q)"></i>Question</span>
+        <span><i style="background:var(--sr)"></i>Simple R</span>
+        <span><i style="background:var(--cr)"></i>Complex R</span>
+        <span><i style="background:var(--adh)"></i>Adherent</span>
+        <span><i style="background:var(--non)"></i>Non-adherent</span>
+        <span><i style="background:var(--gi)"></i>Giving Info</span>
+        <span><i style="background:var(--pwp)"></i>Persuade w/ perm</span>
+      </div>
+    </div>
+    <div class="lab">How the group coded each moment</div>
+    <div class="ribbon" id="ribbon"></div>
+    <div class="key">
+      <div class="key-scale">
+        <span><i style="background:#d8ebdf"></i>Agreed</span>
+        <span><i style="background:#f0deb0"></i>Some spread</span>
+        <span><i style="background:#e6b483"></i>Real spread</span>
+        <span><i style="background:#d27a66"></i>Split</span>
+        <span><i style="background:#ece7e2"></i>Too few coders</span>
+      </div>
+      <div class="key-read">Darker means the group split more on what they saw. Click a darker moment to pull up the video at that point and review it together.</div>
+    </div>
+    <div class="lab" style="margin-top:18px">Coders who marked something here</div>
+    <div class="bars" id="bars"></div>
+    <div class="axis" id="axis"></div>
+    <div class="hint">Tall single-color bars are moments the group saw the same way. Tall bars in mixed colors, lit red above, are where they split. Short bars are quiet stretches.</div>
+    <div class="detail" id="detail"><div class="empty">Click a moment on the timeline to see how the group coded it.</div></div>
+  </div>
+</div>
+</section>
+<section class="view" id="view-transcript">
+<div class="wrap-transcript">
+  <span class="pill">MITI 4 &middot; Transcript coder</span>
+  <h1>Transcript coder</h1>
+  <div class="sub">Paste a session transcript. The tool splits it into Interviewer and Client turns for you to check, then suggests MITI codes for the interviewer's turns.</div>
+  <div class="steps">
+    <span class="s on" id="step1">1 &middot; Split &amp; check speakers</span>
+    <span class="s" id="step2">2 &middot; Suggest codes</span>
+  </div>
+
+  <!-- STAGE 1: intake -->
+  <div class="panel" id="intake">
+    <div class="lab">Paste transcript</div>
+    <textarea id="tBox" placeholder="Paste your transcript here.
+
+If it already has speaker labels (Therapist:, Client:, Speaker 1:, names), the tool uses them. If it is one unbroken block of text, the tool will split the speakers for you."></textarea>
+    <div class="btnrow">
+      <button class="btn primary" id="splitBtn">Split speakers</button>
+      <button class="btn secondary" id="exampleBtn">Load example transcript</button>
+    </div>
+    <div id="intakeNote"></div>
+  </div>
+
+  <!-- STAGE 1: review -->
+  <div class="panel hidden" id="review">
+    <div class="lab">Speakers</div>
+    <div class="spk-assign" id="spkAssign"></div>
+    <div class="counts" id="counts" style="margin-top:12px"></div>
+
+    <div class="lab" style="margin-top:20px">Check the split</div>
+    <div style="font-size:.8rem;color:var(--muted);margin:-3px 0 10px">Tap a role tag to flip a single turn. Use the tools on the right to split, merge, or remove a turn.</div>
+    <div class="turns" id="turns"></div>
+
+    <div class="btnrow">
+      <button class="btn primary" id="codeBtn">Looks right, suggest codes</button>
+      <button class="btn ghost" id="restartBtn">Start over with a new transcript</button>
+    </div>
+
+    <div class="handoff" id="handoff">
+      <h3>Ready for coding</h3>
+      <p id="handoffText"></p>
+    </div>
+  </div>
+</div>
+</section>
+
+
+  <div class="foot">A Socialworky training resource. For practice only — please use fictional details, not real client information.</div>
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var v=btn.dataset.view;
+      document.querySelectorAll('.tab').forEach(function(b){b.classList.toggle('active',b===btn);});
+      document.querySelectorAll('.view').forEach(function(s){s.classList.toggle('active',s.id==='view-'+v);});
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+</script>
+<script>(function(){
+
+const COUNTS = [
+  {key:'question', name:'Question',                ab:'Q',   group:'ref', cat:'Question'},
+  {key:'simple',   name:'Simple Reflection',       ab:'SR',  group:'ref', cat:'Reflection'},
+  {key:'complex',  name:'Complex Reflection',      ab:'CR',  group:'ref', cat:'Reflection'},
+  {key:'sc',       name:'Seeking Collaboration',   ab:'SC',  group:'adh', cat:'Adherent'},
+  {key:'ea',       name:'Emphasizing Autonomy',    ab:'EA',  group:'adh', cat:'Adherent'},
+  {key:'af',       name:'Affirmation',             ab:'AF',  group:'adh', cat:'Adherent'},
+  {key:'confront', name:'Confrontation',           ab:'CO',  group:'non', cat:'Non-Adherent'},
+  {key:'persuade', name:'Persuasion',              ab:'PE',  group:'non', cat:'Non-Adherent'},
+  {key:'pwp',      name:'Persuade with Permission',ab:'PwP', group:'neu', cat:'Conditional'},
+  {key:'gi',       name:'Giving Information',       ab:'GI',  group:'neu', cat:'Neutral'},
+];
+const GLOBALS = [
+  {key:'cct', name:'Cultivating Change Talk', scope:'Technical'},
+  {key:'sst', name:'Softening Sustain Talk',  scope:'Technical'},
+  {key:'partnership', name:'Partnership',     scope:'Relational'},
+  {key:'empathy', name:'Empathy',             scope:'Relational'},
+];
+const NAME = Object.fromEntries(COUNTS.map(c=>[c.key,c]));
+const COLLAB = new Set(['sc','ea','question','simple','complex']);
+
+let state = {
+  counts:Object.fromEntries(COUNTS.map(c=>[c.key,0])),
+  globals:Object.fromEntries(GLOBALS.map(g=>[g.key,0])),
+  events:[]
+};
+
+function counterCard(c){
+  const el=document.createElement('button');
+  el.className='counter'; el.setAttribute('data-group',c.group);
+  el.setAttribute('aria-label',c.name+'. Click to add one.');
+  el.innerHTML=`
+    <button class="minus" aria-label="Subtract one ${c.name}" tabindex="-1">&minus;</button>
+    <div class="nm">${c.name}</div><div class="ab">${c.ab}</div>
+    <div class="val" id="v-${c.key}">0</div><div class="hint">click to add</div>`;
+  el.addEventListener('click',e=>{
+    if(e.target.closest('.minus'))return;
+    if(!timerStarted) startTimer();
+    state.counts[c.key]++; state.events.push({t:secs,code:c.key}); bump(c.key); render();
+  });
+  el.querySelector('.minus').addEventListener('click',e=>{
+    e.stopPropagation();
+    if(state.counts[c.key]>0){
+      state.counts[c.key]--;
+      for(let i=state.events.length-1;i>=0;i--){if(state.events[i].code===c.key){state.events.splice(i,1);break;}}
+      render();
+    }
+  });
+  return el;
+}
+COUNTS.forEach(c=>{
+  const map={ref:'rq-counters',adh:'adh-counters',non:'non-counters',neu:'neu-counters'};
+  document.getElementById(map[c.group]).appendChild(counterCard(c));
+});
+function bump(key){const v=document.getElementById('v-'+key);v.classList.remove('bump');void v.offsetWidth;v.classList.add('bump');}
+
+GLOBALS.forEach(g=>{
+  const wrap=document.createElement('div'); wrap.className='global';
+  let btns=''; for(let i=1;i<=5;i++) btns+=`<button data-g="${g.key}" data-v="${i}" aria-label="${g.name} score ${i}">${i}</button>`;
+  wrap.innerHTML=`<div class="gnm">${g.name}</div><div class="gsc">${g.scope}</div><div class="scale">${btns}</div>`;
+  document.getElementById('globals').appendChild(wrap);
+});
+document.getElementById('globals').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  const k=b.dataset.g,v=+b.dataset.v; state.globals[k]=state.globals[k]===v?0:v; render();
+});
+
+function compute(){
+  const c=state.counts,g=state.globals;
+  const refl=c.simple+c.complex;
+  const rq=c.question>0?refl/c.question:null;
+  const pc=refl>0?c.complex/refl:null;
+  const adh=c.sc+c.ea+c.af, non=c.confront+c.persuade;
+  const tv=[g.cct,g.sst].filter(v=>v>0), rv=[g.partnership,g.empathy].filter(v=>v>0);
+  const tech=tv.length?tv.reduce((a,b)=>a+b,0)/tv.length:null;
+  const rel=rv.length?rv.reduce((a,b)=>a+b,0)/rv.length:null;
+  const ev=state.events; let giTotal=0,giEx=0,giStand=0,maxRun=0,run=0;
+  ev.forEach((e,i)=>{
+    if(e.code==='gi'){
+      giTotal++; run++; if(run>maxRun)maxRun=run;
+      const prev=i>0?ev[i-1].code:null,next=i<ev.length-1?ev[i+1].code:null;
+      if((prev&&COLLAB.has(prev))||(next&&COLLAB.has(next))) giEx++; else giStand++;
+    } else run=0;
+  });
+  return {refl,rq,pc,adh,non,tech,rel,giTotal,giEx,giStand,maxRun};
+}
+function level(v,f,g){if(v==null)return'flat';if(v>=g)return'good';if(v>=f)return'fair';return'below';}
+const badgeText={good:'Good',fair:'Fair',below:'Below fair',flat:'—'};
+
+function render(){
+  const d=compute();
+  COUNTS.forEach(c=>document.getElementById('v-'+c.key).textContent=state.counts[c.key]);
+  GLOBALS.forEach(g=>document.querySelectorAll(`.scale button[data-g="${g.key}"]`).forEach(b=>b.classList.toggle('on',+b.dataset.v===state.globals[g.key])));
+
+  const rqLvl=level(d.rq,1,2),rqPct=d.rq==null?0:Math.min(d.rq/2*100,100);
+  document.getElementById('m-rq').innerHTML=`
+    <div class="mh"><span class="ml">Reflection : Question</span><span class="mv">${d.rq==null?'—':d.rq.toFixed(2)+' : 1'}</span></div>
+    <div class="meter"><span class="${rqLvl==='flat'?'accent':rqLvl}" style="width:${rqPct}%"></span></div>
+    <div class="mh" style="margin-top:5px"><span class="mnote">Fair 1:1 &middot; Good 2:1</span><span class="badge ${rqLvl}">${badgeText[rqLvl]}</span></div>`;
+
+  const pcLvl=level(d.pc,.4,.5),pcPct=d.pc==null?0:d.pc*100;
+  document.getElementById('m-pc').innerHTML=`
+    <div class="mh"><span class="ml">% Complex Reflections</span><span class="mv">${d.pc==null?'—':Math.round(pcPct)+'%'}</span></div>
+    <div class="meter"><span class="${pcLvl==='flat'?'accent':pcLvl}" style="width:${Math.min(pcPct,100)}%"></span></div>
+    <div class="mh" style="margin-top:5px"><span class="mnote">Fair 40% &middot; Good 50%</span><span class="badge ${pcLvl}">${badgeText[pcLvl]}</span></div>`;
+
+  const tot=d.adh+d.non,adhW=tot>0?d.adh/tot*100:0,nonW=tot>0?d.non/tot*100:0;
+  document.getElementById('m-adh').innerHTML=`
+    <div class="mh"><span class="ml">Adherent vs Non-Adherent</span><span class="mv">${d.adh} / ${d.non}</span></div>
+    <div class="split"><i style="width:${adhW}%;background:var(--good)"></i><i style="width:${nonW}%;background:var(--below)"></i></div>
+    <div class="legend"><span><i class="dot" style="background:var(--good)"></i>Adherent ${d.adh}</span><span><i class="dot" style="background:var(--below)"></i>Non-adherent ${d.non}</span></div>`;
+
+  const giEl=document.getElementById('m-gi');
+  if(d.giTotal===0){
+    giEl.innerHTML=`<div class="mh"><span class="ml">Giving Information</span><span class="mv">0</span></div><div class="gi-sub">No information-giving coded yet.</div>`;
+  } else {
+    const exW=d.giEx/d.giTotal*100,stW=d.giStand/d.giTotal*100;
+    let sub=`<strong>${d.giEx}</strong> offered within an exchange, <strong>${d.giStand}</strong> standalone.`;
+    if(d.giStand>0||d.maxRun>=2){ sub+=` Worth a look at whether information ran ahead of the client`+(d.maxRun>=2?`, including a stretch of ${d.maxRun} in a row.`:`.`); }
+    else { sub+=` Information stayed inside the conversation.`; }
+    giEl.innerHTML=`
+      <div class="mh"><span class="ml">Giving Information</span><span class="mv">${d.giTotal}</span></div>
+      <div class="gi-bars"><i style="width:${exW}%;background:var(--good)"></i><i style="width:${stW}%;background:var(--fair)"></i></div>
+      <div class="gi-sub">${sub}</div>`;
+  }
+
+  document.getElementById('m-tech').innerHTML=globalBlock('Technical global',d.tech,level(d.tech,3.5,4));
+  document.getElementById('m-rel').innerHTML=globalBlock('Relational global',d.rel,level(d.rel,3.5,4));
+}
+function globalBlock(label,val,lvl){
+  const pct=val==null?0:val/5*100;
+  return `<div class="mh"><span class="ml">${label}</span><span class="mv">${val==null?'—':val.toFixed(1)+' / 5'}</span></div>
+    <div class="meter"><span class="${lvl==='flat'?'accent':lvl}" style="width:${pct}%"></span></div>
+    <div class="mh" style="margin-top:5px"><span class="mnote">Fair 3.5 &middot; Good 4.0</span><span class="badge ${lvl}">${badgeText[lvl]}</span></div>`;
+}
+
+let secs=0,tick=null,timerStarted=false;
+const clock=document.getElementById('clock'),toggle=document.getElementById('timerToggle'),note=document.getElementById('sampleNote');
+function fmt(s){const m=Math.floor(s/60),r=s%60;return String(m).padStart(2,'0')+':'+String(r).padStart(2,'0')}
+function startTimer(){if(tick)return;timerStarted=true;tick=setInterval(()=>{secs++;clock.textContent=fmt(secs);if(secs>=900)note.classList.add('show');},1000);toggle.textContent='Pause';clock.classList.add('running');}
+function stopTimer(){clearInterval(tick);tick=null;toggle.textContent='Start';clock.classList.remove('running');}
+toggle.addEventListener('click',()=>{tick?stopTimer():startTimer();});
+document.getElementById('timerReset').addEventListener('click',()=>{stopTimer();secs=0;timerStarted=false;clock.textContent='00:00';note.classList.remove('show');});
+
+function meta(){return{coder:document.getElementById('coder').value.trim(),event:document.getElementById('event').value.trim(),date:new Date().toISOString().slice(0,10),segmentSeconds:secs};}
+function indices(){const d=compute();return{rq:d.rq==null?'':d.rq.toFixed(2),pc:d.pc==null?'':Math.round(d.pc*100),adh:d.adh,non:d.non,tech:d.tech==null?'':d.tech.toFixed(2),rel:d.rel==null?'':d.rel.toFixed(2)};}
+function dl(name,text,type){const b=new Blob([text],{type});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;a.click();URL.revokeObjectURL(u);}
+function slug(){const m=meta();return ((m.coder||'coder')+'_'+(m.event||'session')).replace(/[^\w-]+/g,'-');}
+const esc=v=>{v=String(v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;};
+
+document.getElementById('exportCsv').addEventListener('click',()=>{
+  const m=meta(),ix=indices(),c=state.counts,g=state.globals,rows=[];
+  rows.push(['MITI 4 Coding File']);
+  rows.push(['Coder',m.coder]);rows.push(['Event',m.event]);rows.push(['Date',m.date]);rows.push(['Segment length (s)',m.segmentSeconds]);
+  rows.push([]); rows.push(['Global','Score']); GLOBALS.forEach(x=>rows.push([x.name,g[x.key]||'']));
+  rows.push([]); rows.push(['Behavior','Count']); COUNTS.forEach(x=>rows.push([x.name,c[x.key]]));
+  rows.push([]); rows.push(['Index','Value']);
+  rows.push(['Reflection to Question',ix.rq]);rows.push(['Percent Complex',ix.pc]);
+  rows.push(['MI Adherent total',ix.adh]);rows.push(['MI Non-Adherent total',ix.non]);
+  rows.push(['Technical global',ix.tech]);rows.push(['Relational global',ix.rel]);
+  rows.push([]); rows.push(['Event log']); rows.push(['Time (s)','Code','Category']);
+  state.events.forEach(e=>rows.push([e.t,NAME[e.code].ab,NAME[e.code].cat]));
+  dl(slug()+'.csv',rows.map(r=>r.map(esc).join(',')).join('\n'),'text/csv');
+});
+
+document.getElementById('exportSummary').addEventListener('click',()=>{
+  const m=meta(),ix=indices(),c=state.counts,g=state.globals,L=[];
+  L.push('MITI 4 CODING SUMMARY','======================');
+  L.push('Coder:   '+(m.coder||'(unnamed)'));L.push('Event:   '+(m.event||'(none)'));L.push('Date:    '+m.date);L.push('Sample:  '+fmt(m.segmentSeconds));
+  L.push('','BEHAVIOR COUNTS'); COUNTS.forEach(x=>L.push('  '+(x.name+' ('+x.ab+')').padEnd(34)+c[x.key]));
+  L.push('','GLOBAL RATINGS (1-5)'); GLOBALS.forEach(x=>L.push('  '+(x.name+' ['+x.scope+']').padEnd(34)+(g[x.key]||'-')));
+  L.push('','SUMMARY INDICES');
+  L.push('  Reflection : Question        '+(ix.rq||'-')+(ix.rq?' : 1':'')+'   (fair 1:1 / good 2:1)');
+  L.push('  % Complex Reflections        '+(ix.pc===''?'-':ix.pc+'%')+'   (fair 40 / good 50)');
+  L.push('  MI Adherent total            '+ix.adh);
+  L.push('  MI Non-Adherent total        '+ix.non);
+  L.push('  Technical global             '+(ix.tech||'-')+'   (fair 3.5 / good 4.0)');
+  L.push('  Relational global            '+(ix.rel||'-')+'   (fair 3.5 / good 4.0)');
+  dl(slug()+'-summary.txt',L.join('\n'),'text/plain');
+});
+
+function compactCode(){
+  const m=meta();
+  const ev=state.events.map(e=>[e.t,COUNTS.findIndex(c=>c.key===e.code)]);
+  const g=[state.globals.cct,state.globals.sst,state.globals.partnership,state.globals.empathy];
+  return 'MITI1:'+btoa(encodeURIComponent(JSON.stringify({v:1,c:m.coder,e:m.event,s:m.segmentSeconds,g,ev})));
+}
+document.getElementById('copyCode').addEventListener('click',async e=>{
+  const code=compactCode(),btn=e.currentTarget,old=btn.textContent;
+  try{await navigator.clipboard.writeText(code);}
+  catch(_){const ta=document.createElement('textarea');ta.value=code;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}
+  btn.textContent='Copied. Paste it where your facilitator asked.'; setTimeout(()=>btn.textContent=old,2400);
+});
+
+document.getElementById('resetAll').addEventListener('click',()=>{
+  if(!confirm('Clear all counts, ratings, and the event log for this session?'))return;
+  state.counts=Object.fromEntries(COUNTS.map(c=>[c.key,0]));
+  state.globals=Object.fromEntries(GLOBALS.map(g=>[g.key,0]));
+  state.events=[]; render();
+});
+
+render();
+
+})();</script>
+<script>(function(){
+
+/* ---------- shared code definitions (must match the coder) ---------- */
+const CODEKEYS=['question','simple','complex','sc','ea','af','confront','persuade','pwp','gi'];
+const AB2KEY={Q:'question',SR:'simple',CR:'complex',SC:'sc',EA:'ea',AF:'af',CO:'confront',PE:'persuade',PwP:'pwp',GI:'gi'};
+const GROUP={question:'Q',simple:'SR',complex:'CR',sc:'ADH',ea:'ADH',af:'ADH',confront:'NON',persuade:'NON',gi:'GI',pwp:'PwP'};
+const GCOLOR={Q:'var(--q)',SR:'var(--sr)',CR:'var(--cr)',ADH:'var(--adh)',NON:'var(--non)',GI:'var(--gi)',PwP:'var(--pwp)'};
+const GORDER=['Q','SR','CR','ADH','NON','GI','PwP'];
+const FULLNAME={question:'Question',simple:'Simple Reflection',complex:'Complex Reflection',sc:'Seeking Collaboration',ea:'Emphasizing Autonomy',af:'Affirmation',confront:'Confrontation',persuade:'Persuasion',gi:'Giving Information',pwp:'Persuade w/ Permission'};
+
+let subs=[]; // {coder,event,events:[{t,code}]}
+
+/* ---------- decoders ---------- */
+function decodeCode(str){
+  str=str.trim(); if(!str.startsWith('MITI1:'))return null;
+  try{
+    const p=JSON.parse(decodeURIComponent(atob(str.slice(6))));
+    const events=(p.ev||[]).map(([t,ci])=>({t:+t,code:CODEKEYS[ci]})).filter(e=>e.code);
+    return {coder:p.c||'(unnamed)',event:p.e||'',events};
+  }catch(_){return null;}
+}
+function extractCodes(text){
+  // Pull every MITI1: code out of the blob no matter how they are separated.
+  // A code body is pure base64, so it ends at the first character that is not base64.
+  const codes=[],parts=text.split('MITI1:');
+  for(let i=1;i<parts.length;i++){const m=parts[i].match(/^[A-Za-z0-9+/=]+/);if(m)codes.push('MITI1:'+m[0]);}
+  return codes;
+}
+function parseCSVrows(text){
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<text.length;i++){const ch=text[i];
+    if(q){ if(ch==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false;} else f+=ch; }
+    else{ if(ch==='"')q=true; else if(ch===','){row.push(f);f='';} else if(ch==='\n'){row.push(f);rows.push(row);row=[];f='';} else if(ch==='\r'){} else f+=ch; }
+  }
+  if(f.length||row.length){row.push(f);rows.push(row);}
+  return rows;
+}
+function decodeCSV(text){
+  const rows=parseCSVrows(text); let coder='(unnamed)',event='';
+  let logStart=-1;
+  for(let i=0;i<rows.length;i++){
+    const r=rows[i];
+    if(r[0]==='Coder')coder=r[1]||coder;
+    if(r[0]==='Event')event=r[1]||event;
+    if(r[0]==='Time (s)'&&r[1]==='Code'){logStart=i+1;break;}
+  }
+  if(logStart<0)return null;
+  const events=[];
+  for(let i=logStart;i<rows.length;i++){
+    const r=rows[i]; if(!r[0]&&!r[1])continue;
+    const t=+r[0], code=AB2KEY[(r[1]||'').trim()];
+    if(!isNaN(t)&&code)events.push({t,code});
+  }
+  return {coder,event,events};
+}
+
+/* ---------- add / remove submissions ---------- */
+function addSub(s){
+  if(!s||!s.events.length)return false;
+  const key=(s.coder+'|'+s.event).toLowerCase();
+  const ix=subs.findIndex(x=>(x.coder+'|'+x.event).toLowerCase()===key);
+  if(ix>=0)subs[ix]=s; else subs.push(s);
+  return true;
+}
+function refresh(){
+  const loaded=document.getElementById('loaded'),chips=document.getElementById('chips'),warn=document.getElementById('warn');
+  if(!subs.length){loaded.style.display='none';document.getElementById('viz').style.display='none';return;}
+  loaded.style.display='block';
+  document.getElementById('count').textContent='('+subs.length+')';
+  chips.innerHTML='';
+  subs.forEach((s,i)=>{
+    const c=document.createElement('span');c.className='chip';
+    c.innerHTML=`${s.coder} <span class="ev">${s.event||'no event name'}</span> <button aria-label="Remove">&times;</button>`;
+    c.querySelector('button').addEventListener('click',()=>{subs.splice(i,1);refresh();});
+    chips.appendChild(c);
+  });
+  const evs=[...new Set(subs.map(s=>(s.event||'').trim()).filter(Boolean))];
+  if(evs.length>1){warn.classList.add('show');warn.textContent='Heads up: these submissions name different events ('+evs.join(', ')+'). The timeline only lines up if everyone coded the same video.';}
+  else warn.classList.remove('show');
+  if(subs.length>=2){document.getElementById('viz').style.display='block';draw();}
+  else document.getElementById('viz').style.display='none';
+}
+
+/* ---------- intake handlers ---------- */
+const msg=document.getElementById('msg');
+function flashMsg(t){msg.textContent=t;setTimeout(()=>{if(msg.textContent===t)msg.textContent='';},4000);}
+document.getElementById('loadPaste').addEventListener('click',()=>{
+  const found=extractCodes(document.getElementById('codeBox').value);
+  if(!found.length){flashMsg('No codes found. Make sure you pasted the MITI codes.');return;}
+  let ok=0,bad=0;
+  found.forEach(l=>{const s=decodeCode(l);if(s&&addSub(s))ok++;else bad++;});
+  document.getElementById('codeBox').value='';
+  flashMsg(ok+' loaded'+(bad?', '+bad+' could not be read':'')); refresh();
+});
+const drop=document.getElementById('drop'),fileInput=document.getElementById('file');
+drop.addEventListener('click',()=>fileInput.click());
+drop.addEventListener('dragover',e=>{e.preventDefault();drop.classList.add('over');});
+drop.addEventListener('dragleave',()=>drop.classList.remove('over'));
+drop.addEventListener('drop',e=>{e.preventDefault();drop.classList.remove('over');handleFiles(e.dataTransfer.files);});
+fileInput.addEventListener('change',e=>handleFiles(e.target.files));
+function handleFiles(files){
+  let pending=files.length,ok=0,bad=0;
+  if(!pending)return;
+  [...files].forEach(f=>{
+    const r=new FileReader();
+    r.onload=()=>{const s=decodeCSV(r.result);if(s&&addSub(s))ok++;else bad++;if(--pending===0){flashMsg(ok+' file'+(ok!==1?'s':'')+' loaded'+(bad?', '+bad+' unreadable':''));refresh();}};
+    r.onerror=()=>{bad++;if(--pending===0){flashMsg(ok+' loaded, '+bad+' unreadable');refresh();}};
+    r.readAsText(f);
+  });
+}
+document.getElementById('clearAll').addEventListener('click',()=>{subs=[];selected=null;refresh();});
+
+/* ---------- timeline ---------- */
+let WIN=30,windows=[],selected=null,DUR=60;
+const ribbon=document.getElementById('ribbon'),bars=document.getElementById('bars'),axis=document.getElementById('axis'),detail=document.getElementById('detail');
+function fmt(s){const m=Math.floor(s/60),r=Math.round(s%60);return m+':'+String(r).padStart(2,'0');}
+function heatColor(d){if(d===null)return'#ece7e2';if(d<0.22)return'#d8ebdf';if(d<0.40)return'#f0deb0';if(d<0.55)return'#e6b483';return'#d27a66';}
+
+function bin(){
+  const N=subs.length;
+  let maxT=0; subs.forEach(s=>s.events.forEach(e=>{if(e.t>maxT)maxT=e.t;}));
+  DUR=Math.max(60,Math.ceil((maxT+1)/WIN)*WIN);
+  const n=Math.ceil(DUR/WIN); windows=[];
+  for(let i=0;i<n;i++)windows.push({i,start:i*WIN,end:Math.min(DUR,(i+1)*WIN),codes:{},groups:{},coders:new Set()});
+  subs.forEach((s,si)=>s.events.forEach(e=>{
+    const w=windows[Math.floor(e.t/WIN)];if(!w)return;
+    w.codes[e.code]=(w.codes[e.code]||0)+1;
+    const g=GROUP[e.code];w.groups[g]=(w.groups[g]||0)+1;
+    w.coders.add(si);
+  }));
+  windows.forEach(w=>{
+    const counts=Object.values(w.codes),total=counts.reduce((a,b)=>a+b,0);
+    w.total=total;w.N=N;
+    const modal=counts.length?Math.max(...counts):0;
+    w.modalShare=total?modal/total:0;
+    const enough=Math.max(3,Math.ceil(N*0.25));
+    w.disagree= total>=enough ? 1-w.modalShare : null;
+  });
+}
+function maxPart(){return Math.max(...windows.map(w=>w.coders.size),1);}
+function draw(){
+  bin();ribbon.innerHTML='';bars.innerHTML='';axis.innerHTML='';
+  const mp=maxPart();
+  windows.forEach(w=>{
+    const c=document.createElement('div');c.className='cell';c.style.background=heatColor(w.disagree);
+    c.title=fmt(w.start)+' – '+fmt(w.end);c.addEventListener('click',()=>select(w.i));ribbon.appendChild(c);
+    const col=document.createElement('div');col.className='col';col.style.height=(w.coders.size/mp*100)+'%';
+    GORDER.forEach(g=>{if(w.groups[g]){const seg=document.createElement('i');seg.style.height=(w.groups[g]/Math.max(w.total,1)*100)+'%';seg.style.background=GCOLOR[g];col.appendChild(seg);}});
+    col.addEventListener('click',()=>select(w.i));bars.appendChild(col);
+    const tk=document.createElement('div');tk.className='tk';
+    const showTick=(w.start%60===0);
+    if(showTick){tk.classList.add('show');tk.innerHTML='<span>'+Math.round(w.start/60)+'m</span>';}else tk.innerHTML='<span>.</span>';
+    axis.appendChild(tk);
+  });
+  if(selected!=null&&selected<windows.length)select(selected);
+  else detail.innerHTML='<div class="empty">Click a moment on the timeline to see how the group coded it.</div>';
+}
+function select(i){
+  selected=i;const w=windows[i];
+  [...ribbon.children].forEach((c,k)=>c.classList.toggle('sel',k===i));
+  [...bars.children].forEach((c,k)=>c.classList.toggle('sel',k===i));
+  const entries=Object.entries(w.codes).sort((a,b)=>b[1]-a[1]),tot=w.total||1;
+  let verdict='agree',vlabel='Strong agreement';
+  if(w.disagree===null){verdict='mild';vlabel='Too few coders';}
+  else if(w.disagree>=0.4){verdict='split';vlabel='Real split';}
+  else if(w.disagree>=0.22){verdict='mild';vlabel='Some spread';}
+  let rows='';
+  entries.forEach(([code,n])=>{rows+=`<div class="row"><div class="nm">${FULLNAME[code]}</div><div class="track"><i style="width:${n/tot*100}%;background:${GCOLOR[GROUP[code]]}"></i></div><div class="ct">${n} coder${n>1?'s':''}</div></div>`;});
+  let take='';
+  if(entries.length){
+    const top=entries[0],second=entries[1];
+    if(verdict==='split'&&second){
+      const pair=[top[0],second[0]].sort().join('|');
+      const map={'complex|simple':'The depth-of-reflection call. Part of the group heard a reflection that added meaning, part heard a restatement. A clean one to rewatch together.','question|simple':'Some coded a reflection, some a question. Often the interviewer used reflective phrasing with an upward inflection. Worth replaying the line.','gi|persuade':'Information versus persuasion. The split usually turns on whether a recommendation slipped in. Listen for permission.','af|sc':'Affirmation versus seeking collaboration. Both feel collaborative, so the line blurs easily.'};
+      take=map[pair]||`The group split mainly between ${FULLNAME[top[0]]} and ${FULLNAME[second[0]]}. A good spot to pause the video and talk it through.`;
+    }else if(verdict==='agree'){take=`Clear consensus on ${FULLNAME[top[0]]}. ${w.coders.size} of ${w.N} coders agreed.`;}
+    else if(verdict==='mild'){take=w.disagree===null?`Only ${w.coders.size} coders marked anything here, not enough to read a pattern.`:`A little spread, mostly ${FULLNAME[top[0]]}. Probably not worth stopping for.`;}
+  }
+  detail.innerHTML=`<div class="dh"><span class="dt">${fmt(w.start)} – ${fmt(w.end)}</span><span class="dmeta">${w.coders.size} of ${w.N} coders marked something here</span><span class="verdict ${verdict}">${vlabel}</span></div><div class="break">${rows||'<div class="empty">Nothing coded in this window.</div>'}</div>${take?`<div class="takeaway">${take}</div>`:''}`;
+}
+document.getElementById('winSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  [...e.currentTarget.children].forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  WIN=+b.dataset.w;selected=null;if(subs.length>=2)draw();
+});
+
+/* ---------- example set (real codes through the real pipeline) ---------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function buildExampleCodes(){
+  const rng=mulberry32(20260630);
+  const g=()=>{let u=0,v=0;while(u===0)u=rng();while(v===0)v=rng();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+  const pick=a=>a[Math.floor(rng()*a.length)];
+  const DURX=960,NC=16,base=['question','question','simple','simple','complex','simple','sc','question','af','gi','complex','question','simple','ea'];
+  const ut=[];let t=14;while(t<DURX-12){ut.push({t:Math.round(t),code:pick(base),contested:null,salient:rng()>0.12});t+=11+rng()*20;}
+  const hot=(time,set)=>{let b=null,bd=1e9;ut.forEach(u=>{const d=Math.abs(u.t-time);if(d<bd){bd=d;b=u;}});if(b){b.contested=set;b.salient=true;}};
+  hot(150,['gi','persuade']);hot(305,['simple','complex']);hot(312,['simple','complex']);hot(545,['question','simple']);hot(770,['af','sc']);
+  const conf={question:['simple'],simple:['complex','question'],complex:['simple'],gi:['persuade'],af:['sc'],ea:['af']};
+  const names=['Avery','Bao','Cruz','Dana','Eli','Fatima','Gabe','Hana','Ivan','Jo','Kai','Lena','Mateo','Nia','Omar','Priya'];
+  const codes=[];
+  for(let c=0;c<NC;c++){
+    const ev=[];
+    ut.forEach(u=>{
+      if(rng()<(u.salient?0.05:0.30))return;
+      let code;
+      if(u.contested)code=rng()<0.52?u.contested[0]:u.contested[1];
+      else if(rng()<0.14&&conf[u.code])code=pick(conf[u.code]);
+      else code=u.code;
+      const tt=Math.max(0,Math.min(DURX,Math.round(u.t+g()*2.4)));
+      ev.push([tt,CODEKEYS.indexOf(code)]);
+    });
+    ev.sort((a,b)=>a[0]-b[0]);
+    codes.push('MITI1:'+btoa(encodeURIComponent(JSON.stringify({v:1,c:names[c],e:'Fred demo, clip 2',s:DURX,g:[4,3,4,4],ev}))));
+  }
+  return codes;
+}
+document.getElementById('loadSample').addEventListener('click',()=>{
+  document.getElementById('codeBox').value=buildExampleCodes().join('\n');
+  flashMsg('Example codes pasted. Click "Load pasted codes" to see them parse.');
+});
+
+})();</script>
+<script>(function(){
+
+const IROLE=['therapist','counselor','counsellor','clinician','interviewer','provider','helper','worker','social worker','sw','coach','doctor','dr','practitioner','facilitator','nurse','case manager','mi'];
+const CROLE=['client','patient','pt','caller','participant','consumer','member','student','customer'];
+function roleFor(label){
+  const l=label.toLowerCase().replace(/[^a-z ]/g,'').trim();
+  if(IROLE.includes(l))return'interviewer';
+  if(CROLE.includes(l))return'client';
+  return'unknown';
+}
+
+const EXAMPLE=`Therapist: Thanks for coming in today. What's been on your mind lately?
+Client: I don't know. My wife thinks I drink too much, so here I am. I don't really see the problem.
+Therapist: It sounds like coming in wasn't really your idea, and from where you sit the drinking isn't a big deal.
+Client: Right. I have a few beers after work. Everybody does. It's how I unwind.
+Therapist: Unwinding after a hard day is important to you. And you've noticed it's become a sticking point at home.
+Client: Yeah. We've been fighting about it. Last weekend got bad. I said some things I regret.
+Therapist: That sounds painful. You care about her, and the fighting is wearing on you.
+Client: It is. I don't want to lose my family over this.
+Therapist: Can I share something I've seen with other folks in a similar spot?
+Client: Sure, go ahead.
+Therapist: People often find that cutting back even a little eases the tension at home, and they sleep better too. How does that land for you?
+Client: I guess I could try a couple nights without. I hadn't really thought about it that way.
+Therapist: So you're open to trying a few alcohol-free nights and seeing what shifts. That takes some courage to consider.`;
+
+let turns=[]; // {id, label, text, role}
+let labelRole={}; // label -> role (bulk)
+let uid=0;
+
+function parseTranscript(text){
+  const re=/(?:^|\n)[ \t]*([A-Za-z][A-Za-z0-9 ._'\-]{0,28}?):[ \t]+/g;
+  const marks=[]; let m;
+  while((m=re.exec(text))){marks.push({label:m[1].trim(),contentStart:re.lastIndex,labelStart:m.index});}
+  if(marks.length<2)return{labeled:false,turns:[]};
+  const out=[];
+  for(let i=0;i<marks.length;i++){
+    const end=i+1<marks.length?marks[i+1].labelStart:text.length;
+    const t=text.slice(marks[i].contentStart,end).trim().replace(/\s+/g,' ');
+    if(t)out.push({label:marks[i].label,text:t});
+  }
+  return{labeled:true,turns:out};
+}
+
+document.getElementById('exampleBtn').addEventListener('click',()=>{document.getElementById('tBox').value=EXAMPLE;});
+
+document.getElementById('splitBtn').addEventListener('click',()=>{
+  const text=document.getElementById('tBox').value.trim();
+  const note=document.getElementById('intakeNote');
+  if(!text){note.innerHTML='<div class="note warn">Paste a transcript first, or load the example.</div>';return;}
+  const parsed=parseTranscript(text);
+  if(!parsed.labeled){
+    note.innerHTML='<div class="note info"><b>This looks like an unlabeled block.</b> On your site this is where the tool hands the text to your model to split the speakers, then drops you into the same check screen below. For now, try the example, or paste a transcript whose turns start with a label like <b>Therapist:</b> or <b>Client:</b> on each line.</div>';
+    return;
+  }
+  note.innerHTML='';
+  // assign roles per distinct label
+  const labels=[...new Set(parsed.turns.map(t=>t.label))];
+  labelRole={};
+  let unknownIx=0;
+  labels.forEach(lb=>{
+    let r=roleFor(lb);
+    if(r==='unknown'){ r = unknownIx===0?'interviewer':'client'; unknownIx++; }
+    labelRole[lb]=r;
+  });
+  turns=parsed.turns.map(t=>({id:++uid,label:t.label,text:t.text,role:labelRole[t.label]}));
+  document.getElementById('intake').classList.add('hidden');
+  document.getElementById('review').classList.remove('hidden');
+  renderReview();
+});
+
+function renderReview(){
+  // speaker chips
+  const labels=[...new Set(turns.map(t=>t.label))];
+  const sa=document.getElementById('spkAssign');
+  sa.innerHTML='';
+  labels.forEach(lb=>{
+    const role=labelRole[lb]||'interviewer';
+    const el=document.createElement('span');el.className='spk';
+    el.innerHTML=`${lb} <button class="role ${role}">${role==='interviewer'?'Interviewer':'Client'}</button>`;
+    el.querySelector('.role').addEventListener('click',()=>{
+      const nr=labelRole[lb]==='interviewer'?'client':'interviewer';
+      labelRole[lb]=nr; turns.forEach(t=>{if(t.label===lb)t.role=nr;}); renderReview();
+    });
+    sa.appendChild(el);
+  });
+
+  // counts
+  const iv=turns.filter(t=>t.role==='interviewer').length, cl=turns.filter(t=>t.role==='client').length;
+  document.getElementById('counts').innerHTML=`<span><i style="background:var(--intv)"></i><b>${iv}</b> interviewer turns</span><span><i style="background:var(--client)"></i><b>${cl}</b> client turns</span>`;
+
+  // turns
+  const box=document.getElementById('turns');box.innerHTML='';
+  turns.forEach((t,idx)=>{
+    const row=document.createElement('div');row.className='turn '+t.role;
+    if(t._splitting)row.classList.add('splitting');
+    const pill=`<button class="role-pill">${t.role==='interviewer'?'Interviewer':'Client'}</button>`;
+    let txtHtml;
+    if(t._splitting){
+      const parts=t.text.split(/(?<=[.?!])\s+/);
+      txtHtml='<span class="txt">'+parts.map((p,i)=>(i>0?`<span class="splitgap" data-i="${i}">| split |</span>`:'')+'<span class="sent">'+escapeHtml(p)+' </span>').join('')+'</span>';
+    } else {
+      txtHtml=`<span class="txt">${escapeHtml(t.text)}</span>`;
+    }
+    row.innerHTML=`${pill}<div class="body">${txtHtml}</div>
+      <div class="tools">
+        <button class="tool" data-act="split">${t._splitting?'done':'split'}</button>
+        ${idx>0?'<button class="tool" data-act="merge">merge up</button>':''}
+        <button class="tool" data-act="del">remove</button>
+      </div>`;
+    row.querySelector('.role-pill').addEventListener('click',()=>{t.role=t.role==='interviewer'?'client':'interviewer';renderReview();});
+    row.querySelectorAll('.tool').forEach(b=>b.addEventListener('click',()=>handleTool(t.id,b.dataset.act)));
+    if(t._splitting){
+      row.querySelectorAll('.splitgap').forEach(g=>g.addEventListener('click',()=>doSplit(t.id,+g.dataset.i)));
+    }
+    box.appendChild(row);
+  });
+  document.getElementById('handoff').classList.remove('show');
+}
+
+function handleTool(id,act){
+  const i=turns.findIndex(t=>t.id===id);if(i<0)return;
+  if(act==='del'){turns.splice(i,1);}
+  else if(act==='merge'){ if(i>0){turns[i-1].text=(turns[i-1].text+' '+turns[i].text).replace(/\s+/g,' ').trim();turns.splice(i,1);} }
+  else if(act==='split'){ turns.forEach(t=>{if(t.id!==id)t._splitting=false;}); turns[i]._splitting=!turns[i]._splitting; }
+  renderReview();
+}
+function doSplit(id,partIndex){
+  const i=turns.findIndex(t=>t.id===id);if(i<0)return;
+  const parts=turns[i].text.split(/(?<=[.?!])\s+/);
+  const first=parts.slice(0,partIndex).join(' ').trim();
+  const second=parts.slice(partIndex).join(' ').trim();
+  if(!first||!second){turns[i]._splitting=false;renderReview();return;}
+  turns[i].text=first;turns[i]._splitting=false;
+  turns.splice(i+1,0,{id:++uid,label:turns[i].label,text:second,role:turns[i].role});
+  renderReview();
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+document.getElementById('restartBtn').addEventListener('click',()=>{
+  turns=[];document.getElementById('review').classList.add('hidden');
+  document.getElementById('intake').classList.remove('hidden');
+  document.getElementById('intakeNote').innerHTML='';
+});
+
+document.getElementById('codeBtn').addEventListener('click',()=>{
+  const iv=turns.filter(t=>t.role==='interviewer').length;
+  const h=document.getElementById('handoff');
+  document.getElementById('handoffText').innerHTML=`The interviewer's <b>${iv}</b> turns are ready to code. This is the handoff point to stage two, where the tool sends these turns to your model in small batches and streams back suggested MITI codes for you to review. That stage is the next build.`;
+  h.classList.add('show');
+  h.scrollIntoView({behavior:'smooth',block:'nearest'});
+});
+
+})();</script>
+
+</body>
+</html>
