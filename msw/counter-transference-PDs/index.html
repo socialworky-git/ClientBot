@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Countertransference Clues | Socialworky</title>
+<style>
+  :root{
+    --accent:#eb786b;
+    --accentDeep:#c2452f;
+    --coral-bg:#fdeeeb;
+    --coral-line:#f6d4cd;
+    --ink:#2b2622;
+    --muted:#6f665f;
+    --line:#e8e1db;
+    --card:#ffffff;
+    --page:#fbf8f6;
+    --amber:#b5731f; --amber-bg:#fbf1e0; --amber-line:#efddbd;
+    --radius:16px;
+    --radius-sm:10px;
+    --sans:Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:var(--sans);
+    background:var(--page);
+    color:var(--ink);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:28px 20px 64px}
+
+  a.alltools{
+    display:inline-block;color:var(--accentDeep);text-decoration:none;
+    font-weight:bold;font-size:.95rem;margin-bottom:14px;
+  }
+  a.alltools:hover{text-decoration:underline}
+
+  h1{font-size:1.9rem;margin:0 0 6px;letter-spacing:-.01em}
+  .tool-subtitle{color:var(--muted);margin:0 0 18px;font-size:1.02rem}
+  hr.tool-divider{border:none;border-top:1px solid var(--line);margin:0 0 26px}
+
+  .framing{
+    background:var(--coral-bg);border:1px solid var(--coral-line);
+    border-radius:var(--radius);padding:16px 18px;margin-bottom:26px;
+    font-size:.98rem;
+  }
+  .framing strong{color:var(--accentDeep)}
+
+  /* ---------- landing ---------- */
+  .pick-label{
+    font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);font-weight:bold;margin:0 0 12px;
+  }
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:640px){.cards{grid-template-columns:1fr}}
+  .client-card{
+    text-align:left;background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:18px 18px 16px;cursor:pointer;
+    font-family:var(--sans);font-size:1rem;color:var(--ink);
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .client-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .client-card:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .client-card .cc-name{font-weight:bold;font-size:1.15rem;margin:0 0 4px}
+  .client-card .cc-hook{color:var(--muted);font-size:.95rem;margin:0 0 10px}
+  .client-card .cc-go{color:var(--accentDeep);font-weight:bold;font-size:.92rem}
+
+  /* ---------- client view ---------- */
+  .backline{margin-bottom:16px}
+  .backbtn{
+    background:none;border:none;padding:0;cursor:pointer;
+    color:var(--accentDeep);font-weight:bold;font-size:.95rem;font-family:var(--sans);
+  }
+  .backbtn:hover{text-decoration:underline}
+  .backbtn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+  h2.client-title{font-size:1.5rem;margin:0 0 4px}
+  .client-kicker{color:var(--muted);margin:0 0 18px}
+
+  .panel{
+    background:var(--card);border:1px solid var(--line);
+    border-radius:var(--radius);padding:20px 22px;margin-bottom:18px;
+  }
+  .panel h3{
+    margin:0 0 10px;font-size:.85rem;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--muted);
+  }
+  .panel .subnote{color:var(--muted);font-size:.92rem;margin:-4px 0 14px}
+  .vignette p{margin:0 0 12px;font-size:1.04rem}
+  .vignette p:last-child{margin-bottom:0}
+
+  /* clue phrases inside the vignette */
+  .clue{font:inherit;color:inherit}
+  body.clues-on .clue{
+    cursor:pointer;
+    border-bottom:2px dotted var(--accentDeep);
+    background:var(--coral-bg);
+  }
+  body.clues-on .clue:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  body.clues-on .clue.open{background:var(--coral-line)}
+  .clue-chip{display:none}
+  body.clues-on .clue-chip.show{
+    display:inline;
+    font-size:.84rem;font-weight:bold;color:var(--accentDeep);
+    background:#fff;border:1px solid var(--coral-line);
+    border-radius:8px;padding:1px 8px;margin:0 4px;
+  }
+
+  .clue-toggle-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:14px}
+  .toggle-btn{
+    font-family:var(--sans);font-size:.95rem;font-weight:bold;cursor:pointer;
+    border:1px solid var(--coral-line);background:#fff;color:var(--accentDeep);
+    border-radius:999px;padding:8px 16px;
+    transition:background .15s ease;
+  }
+  .toggle-btn:hover{background:var(--coral-bg)}
+  .toggle-btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .toggle-btn[aria-pressed="true"]{background:var(--accentDeep);border-color:var(--accentDeep);color:#fff}
+  .toggle-hint{color:var(--muted);font-size:.9rem}
+
+  .prompts ol{margin:0;padding-left:22px}
+  .prompts li{margin-bottom:8px;font-size:1.02rem}
+  .prompts li:last-child{margin-bottom:0}
+
+  /* ---------- HEXACO sliders ---------- */
+  .hex-row{padding:14px 0;border-bottom:1px solid var(--line)}
+  .hex-row:last-child{border-bottom:none;padding-bottom:4px}
+  .hex-name{font-weight:bold;margin:0 0 2px}
+  .hex-poles{display:flex;justify-content:space-between;color:var(--muted);font-size:.85rem;margin:0 0 6px;gap:12px}
+  .hex-slider-wrap{position:relative;padding:6px 0}
+  input[type=range]{
+    width:100%;margin:0;accent-color:var(--accentDeep);cursor:pointer;height:22px;
+  }
+  input[type=range]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .hex-tick{
+    position:absolute;top:-4px;width:4px;height:30px;border-radius:2px;
+    background:var(--accentDeep);display:none;transform:translateX(-50%);
+    pointer-events:none;
+  }
+  body.revealed .hex-tick{display:block}
+  .hex-note{
+    display:none;font-size:.9rem;color:var(--accentDeep);
+    background:var(--coral-bg);border:1px solid var(--coral-line);
+    border-radius:var(--radius-sm);padding:8px 12px;margin-top:8px;
+  }
+  body.revealed .hex-note{display:block}
+
+  /* ---------- AMPD facets ---------- */
+  .ampd-domain{padding:14px 0;border-bottom:1px solid var(--line)}
+  .ampd-domain:last-child{border-bottom:none;padding-bottom:4px}
+  .ampd-name{font-weight:bold;margin:0 0 2px}
+  .ampd-desc{color:var(--muted);font-size:.9rem;margin:0 0 10px}
+  .facet-grid{display:flex;flex-wrap:wrap;gap:8px}
+  .facet{
+    font-family:var(--sans);font-size:.9rem;cursor:pointer;
+    border:1px solid var(--line);background:#fff;color:var(--ink);
+    border-radius:999px;padding:6px 14px;
+    transition:background .15s ease, border-color .15s ease;
+    position:relative;
+  }
+  .facet:hover{border-color:var(--accent)}
+  .facet:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .facet[aria-pressed="true"]{
+    background:var(--accentDeep);border-color:var(--accentDeep);color:#fff;font-weight:bold;
+  }
+  body.revealed .facet.suggested{
+    box-shadow:0 0 0 3px var(--coral-line);border-color:var(--accentDeep);
+  }
+  body.revealed .facet.suggested::after{
+    content:"\2726";
+    color:var(--accentDeep);font-size:.8rem;margin-left:6px;
+  }
+  body.revealed .facet.suggested[aria-pressed="true"]::after{color:#fff}
+  .facet-legend{display:none;color:var(--muted);font-size:.88rem;margin-top:12px}
+  body.revealed .facet-legend{display:block}
+  .facet-legend .demo-star{color:var(--accentDeep)}
+
+  /* ---------- reveal ---------- */
+  .reveal-panel{margin-bottom:18px}
+  .reveal-btn{
+    width:100%;font-family:var(--sans);font-size:1.02rem;font-weight:bold;cursor:pointer;
+    background:var(--accentDeep);color:#fff;border:none;border-radius:var(--radius-sm);
+    padding:14px 18px;
+    transition:background .15s ease;
+  }
+  .reveal-btn:hover{background:var(--accent)}
+  .reveal-btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .reveal-hint{color:var(--muted);font-size:.9rem;text-align:center;margin:8px 0 0}
+  .reveal-body{display:none;margin-top:14px;font-size:.99rem}
+  body.revealed .reveal-body{display:block}
+  body.revealed .reveal-btn, body.revealed .reveal-hint{display:none}
+  .reveal-body p{margin:0 0 10px}
+  .reveal-body p:last-child{margin-bottom:0}
+
+  .caution{
+    background:var(--amber-bg);border:1px solid var(--amber-line);
+    border-radius:var(--radius-sm);padding:12px 14px;font-size:.95rem;margin-top:12px;
+  }
+  .caution strong{color:var(--amber)}
+
+  footer{
+    margin-top:44px;padding-top:18px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:.88rem;text-align:center;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="alltools" href="/">&larr; All tools</a>
+  <h1>Countertransference Clues</h1>
+  <p class="tool-subtitle">Reading your reactions to a client, and deciding what they mean</p>
+  <hr class="tool-divider">
+
+  <!-- ================= LANDING ================= -->
+  <section id="view-landing">
+    <div class="framing">
+      <strong>How this works.</strong> Strong reactions to clients are normal. Sometimes annoyance is just annoyance, and frustration is just a hard day. But when reactions are intense, repeating, or pulling you away from your usual clinical stance, they can be clues that a personality pattern is playing out in the relationship itself. Choose your assigned client, read the clinician's account, and talk it through as a group. Then use the trait worksheet to describe what seems evident in the presentation.
+    </div>
+    <p class="pick-label">Choose your assigned client</p>
+    <div class="cards" id="cardGrid"></div>
+  </section>
+
+  <!-- ================= CLIENT VIEW ================= -->
+  <section id="view-client" hidden>
+    <div class="backline">
+      <button class="backbtn" id="backBtn" type="button">&larr; All clients</button>
+    </div>
+    <h2 class="client-title" id="clientTitle"></h2>
+    <p class="client-kicker" id="clientKicker"></p>
+
+    <div class="panel">
+      <h3>The clinician's account</h3>
+      <div class="vignette" id="vignetteBody"></div>
+      <div class="clue-toggle-row">
+        <button class="toggle-btn" id="clueToggle" type="button" aria-pressed="false">Show clues in the vignette</button>
+        <span class="toggle-hint">Turn this on after your group has talked. Tap a highlighted phrase to see what it might point to.</span>
+      </div>
+    </div>
+
+    <div class="panel prompts">
+      <h3>Talk it through</h3>
+      <ol>
+        <li>What is the clinician feeling, thinking, and wanting to do?</li>
+        <li>What client traits and behaviors might be evoking these reactions?</li>
+        <li>Which reactions might point to the client's pattern, and which might just be ordinary frustration or something of the clinician's own?</li>
+        <li>If this pattern shows up in the client's life outside the room, what does it look like?</li>
+      </ol>
+    </div>
+
+    <div class="panel">
+      <h3>Trait worksheet: HEXACO</h3>
+      <p class="subnote">As a group, set each slider where this client seems to sit. Leave a slider at the middle if the vignette gives you nothing to go on.</p>
+      <div id="hexaco"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Trait worksheet: AMPD trait facets</h3>
+      <p class="subnote">Tap the facets that seem evident in the presentation. Be choosy. A profile that selects everything describes no one.</p>
+      <div id="ampd"></div>
+      <p class="facet-legend">Filled = your group's picks. <span class="demo-star">&#10022;</span> = one interpretation. Where they differ, argue it out.</p>
+    </div>
+
+    <div class="reveal-panel">
+      <button class="reveal-btn" id="revealBtn" type="button">Compare with one interpretation</button>
+      <p class="reveal-hint">Open this only after your group commits to its ratings.</p>
+      <div class="panel reveal-body" id="revealBody"></div>
+    </div>
+  </section>
+
+  <footer>A Socialworky training resource. Vignettes are fictional and for education only. Reactions are clues, not diagnoses.</footer>
+</div>
+
+<script>
+var HEX_DOMAINS = [
+  {key:"H", name:"Honesty-Humility", lo:"Entitled, self-important, willing to exploit", hi:"Sincere, modest, fair"},
+  {key:"E", name:"Emotionality", lo:"Detached, fearless, self-reliant", hi:"Anxious, dependent, easily hurt"},
+  {key:"X", name:"Extraversion", lo:"Withdrawn, quiet, low social confidence", hi:"Bold, lively, socially confident"},
+  {key:"A", name:"Agreeableness", lo:"Critical, quick to anger, holds grudges", hi:"Patient, forgiving, flexible"},
+  {key:"C", name:"Conscientiousness", lo:"Disorganized, impulsive, careless", hi:"Organized, disciplined, perfectionistic"},
+  {key:"O", name:"Openness", lo:"Conventional, concrete, routine-bound", hi:"Curious, unconventional, imaginative"}
+];
+
+var AMPD_DOMAINS = [
+  {name:"Negative Affectivity", desc:"Frequent, intense negative emotions",
+   facets:["Emotional lability","Anxiousness","Separation insecurity","Submissiveness","Perseveration"]},
+  {name:"Detachment", desc:"Avoidance of connection and restricted emotional experience",
+   facets:["Withdrawal","Intimacy avoidance","Anhedonia","Depressivity","Restricted affectivity","Suspiciousness"]},
+  {name:"Antagonism", desc:"Behaviors that put the self at odds with others",
+   facets:["Manipulativeness","Deceitfulness","Grandiosity","Attention seeking","Callousness","Hostility"]},
+  {name:"Disinhibition", desc:"Impulsive behavior without regard for consequences. Its opposite pole is rigid overcontrol",
+   facets:["Irresponsibility","Impulsivity","Distractibility","Risk taking","Rigid perfectionism"]},
+  {name:"Psychoticism", desc:"Odd, unusual, or eccentric thoughts and experiences",
+   facets:["Unusual beliefs and experiences","Eccentricity","Cognitive and perceptual dysregulation"]}
+];
+
+var CLIENTS = {
+  lisa: {
+    name: "Lisa",
+    hook: "Weekly crises, and you tense up when you see her name on the schedule.",
+    kicker: "Every week there is a new crisis, and today it is about you.",
+    vignette: [
+      'Every week, Lisa comes in with {a new crisis|Emotions shift fast and run hot}. Today she is crying and {accusing me of not caring because I would not answer her call last night|Unavailability is felt as abandonment}. She said, "{I might as well kill myself if no one is there when I need them|The risk statement is tied to perceived rejection}."',
+      'She {flips between telling me I am the only person she trusts and screaming that I am useless like everyone else|People are all good or all bad, sometimes within one session}.',
+      'I feel {my stomach clench when I see her name on my schedule|Dread before contact is worth noticing}. Part of me {wants to tell her off for being dramatic|The pull to punish}. Another part {worries she will actually harm herself if I set firmer boundaries|The pull to rescue}.'
+    ],
+    hexaco: {
+      E:{pos:90, note:"Very high. Intense anxiety and heavy dependence on others for soothing."},
+      A:{pos:18, note:"Low. Quick to feel wronged, quick to anger."},
+      C:{pos:35, note:"Somewhat low. Impulsivity under distress."},
+      H:{pos:50}, X:{pos:50}, O:{pos:50}
+    },
+    facets: ["Emotional lability","Anxiousness","Separation insecurity","Hostility","Depressivity","Impulsivity"],
+    reveal: '<p>The picture, abandonment fear, emotional storms, idealization and devaluation, and a risk statement tied to rejection, most resembles a <strong>borderline pattern</strong>. In HEXACO terms the signal sits in very high Emotionality and low Agreeableness. In AMPD terms the facets cluster in Negative Affectivity, with hostility, depressivity, and impulsivity alongside.</p><p>Notice where the strongest evidence came from. Not a form. The clinician\'s clenched stomach and the tug of war between scolding and rescuing.</p><div class="caution"><strong>Hold it loosely.</strong> One account from one clinician shows a pattern, not a person. Some of what a clinician feels is ordinary frustration, and some belongs to their own history. Assessment tools are adjunctive here. Conceptualization stays with clinical judgment.</div>'
+  },
+  michael: {
+    name: "Michael",
+    hook: "Charismatic and dismissive, and you catch yourself wanting to agree with him.",
+    kicker: "He insults your whole profession to your face, and you still feel drawn in.",
+    vignette: [
+      'Michael came in for his therapy session today {furious because his wife accused him of being "controlling" again|The problem is always located in someone else}. He launched into a speech about {how incompetent everyone is at work|Others exist beneath him} and how {people are jealous because he is smarter and works harder|A self story of superiority that explains away all friction}. He insists {his wife should respect him more|Admiration is owed, not earned} and complains that "{therapists never understand genius|Even the helper must confirm his self image}."',
+      'It is an odd thing to say to me because I am his current therapist.',
+      'Despite all this, I feel myself drawn to him. Part of me {feels pulled in by his charisma|The pull to admire}. But another part of me starts doubting myself, like {maybe he is smarter than me, and I am missing something|His inflation seems to require your deflation}. It is an odd mix of feeling impressed and feeling defensive. I catch myself {wanting to agree with him just to keep the session smooth|The session bends around protecting his self esteem}.'
+    ],
+    hexaco: {
+      H:{pos:8, note:"Very low. Entitlement, self-importance, a felt right to special treatment. HEXACO added this factor partly because the Big Five kept missing exactly this."},
+      X:{pos:80, note:"High. Social boldness and confidence, which is part of why the charisma works."},
+      A:{pos:30, note:"Low. Anger flares when the self image is challenged."},
+      E:{pos:50}, C:{pos:50}, O:{pos:50}
+    },
+    facets: ["Grandiosity","Attention seeking"],
+    reveal: '<p>Grandiosity, entitlement, devaluation of others, and a clinician who feels impressed and shrunken at the same time most resemble a <strong>narcissistic pattern</strong> in its charming, grandiose presentation. The AMPD keeps this facet list short on purpose, just grandiosity and attention seeking. The impairment in how he relates carries most of the picture. In HEXACO terms the core is very low Honesty-Humility.</p><p>The tell was not the insults. It was the clinician\'s impulse to agree just to keep things smooth.</p><div class="caution"><strong>Hold it loosely.</strong> Charm is not a symptom and confidence is not a disorder. Look for the cost: relationships that keep collapsing, empathy that thins out, and a self that cannot tolerate being ordinary. Feeling impressed is human. The clue is when your judgment starts bending.</div>'
+  },
+  josh: {
+    name: "Josh",
+    hook: "He corrects everything you say, and you want to win the argument.",
+    kicker: "A lot like Michael on paper, and a completely different feeling in the room.",
+    vignette: [
+      'Josh is infuriating. In almost all of our sessions he {goes off on tangents "correcting" anything I say about psychology or research|The session becomes a contest}. He repeatedly tells me {his past therapists were incompetent|A trail of failed helpers is a pattern, not a coincidence} and that he {only respects people who "know their stuff"|Worth is rationed by status and performance}. He constantly {interrupts me mid-sentence to explain how I should be doing my job|Even your role belongs to him}.',
+      'It is like he is my older brother or something. Part of me {wants to prove Josh wrong and put him in his place|The pull to compete}. Another part just {wants to let him talk to avoid getting attacked|The pull to submit}. I have even been {tempted to cut the session short to escape the tension|The pull to escape}.'
+    ],
+    hexaco: {
+      H:{pos:15, note:"Low. The same entitlement and self-importance as Michael."},
+      A:{pos:8, note:"Very low, and lower than Michael. Quarrelsome, critical, slow to forgive, quick to attack. HEXACO Agreeableness is specifically about patience and tolerance, which is what is missing here."},
+      E:{pos:50}, X:{pos:55}, C:{pos:55}, O:{pos:50}
+    },
+    facets: ["Grandiosity","Hostility"],
+    reveal: '<p>Grandiosity delivered through combat, a history of devalued helpers, and a clinician stuck choosing between fighting, submitting, and fleeing most resemble a <strong>narcissistic pattern with prominent antagonism</strong>. Same core facet as Michael, grandiosity, but traveling with hostility instead of charm, which is why the room feels so different. In HEXACO terms both men are low in Honesty-Humility, and Josh drops further on Agreeableness.</p><p>The trail of incompetent past therapists is the pattern announcing itself in advance.</p><div class="caution"><strong>Hold it loosely.</strong> Some clients correct their therapists because their therapists were wrong, and some clinician irritation is just irritation. The clue is the totality: every helper fails, every exchange is a contest, and the relationship cannot survive the clinician being right. Notice whether the urge to win is his pattern, yours, or both.</div>'
+  },
+  katrina: {
+    name: "Katrina",
+    hook: "Long, precise monologues, and you drift off, then panic about your notes.",
+    kicker: "You are bored, then suddenly worried you are not organized enough.",
+    vignette: [
+      'Katrina spends session after session talking about {how people disappoint her|Others chronically fail to meet the standard} and how she ends up {having to fix everything because no one else gets it right|Control justified as necessity}. She goes into {long, detailed explanations|Precision crowds out connection} and sometimes I will go {5 or even 10 minutes in session just nodding my head without saying a word|You have become an audience for a report}.',
+      'I notice myself feeling {drained and oddly bored|Boredom can be information, not just bad clinician behavior}, but then suddenly anxious, like {maybe I am not as organized as I should be|Her rulebook is now grading you}. I keep {checking my notes during our sessions, worrying I will forget something she said or make a mistake she will criticize|Working to avoid criticism instead of working the treatment}.',
+      'Part of me wants to interrupt her and steer the conversation to something deeper. Another part {wants to just let her talk, because at least then she is not upset with me right now|Peace purchased by abandoning the work}. Sometimes I even wonder if she is right, {maybe I should be more precise in my own life|Her system starts to feel like the truth}.'
+    ],
+    hexaco: {
+      C:{pos:95, note:"Very high. Perfectionism and diligence held so rigidly that the trait stops serving her and starts running her. High scores on a valued trait can still be where the impairment lives."},
+      A:{pos:25, note:"Low, especially flexibility. Others are chronically disappointing, and compromise reads as error."},
+      E:{pos:60, note:"Somewhat high. Anxiety runs under the control."},
+      H:{pos:55}, X:{pos:45}, O:{pos:40}
+    },
+    facets: ["Rigid perfectionism","Perseveration"],
+    reveal: '<p>Perfectionism, control, criticism of others, and a clinician who is bored, drained, and quietly auditioning for approval most resemble an <strong>obsessive compulsive personality pattern</strong>. In AMPD terms, rigid perfectionism sits at the overcontrolled pole of the Disinhibition domain, a reminder that pathology can live at either end of a trait. In HEXACO terms, the same idea: extremely high Conscientiousness with low flexibility.</p><p>The giveaway was the note checking. Her standards had colonized the clinician before anything was ever assessed.</p><div class="caution"><strong>Hold it loosely.</strong> Plenty of conscientious, exacting people are thriving, and a clinician\'s boredom sometimes just means a long week. The threshold questions are rigidity, distress, and cost: can she flex when it counts, and what is this doing to her relationships and her life? Also worth naming: OCPD is not OCD, and conflating them in front of a client costs credibility.</div>'
+  }
+};
+
+var ORDER = ["lisa","michael","josh","katrina"];
+
+/* ---------- landing cards ---------- */
+var grid = document.getElementById("cardGrid");
+ORDER.forEach(function(key){
+  var c = CLIENTS[key];
+  var btn = document.createElement("button");
+  btn.className = "client-card";
+  btn.type = "button";
+  btn.innerHTML =
+    '<p class="cc-name">' + c.name + '</p>' +
+    '<p class="cc-hook">' + c.hook + '</p>' +
+    '<span class="cc-go">Open scenario &rarr;</span>';
+  btn.addEventListener("click", function(){ showClient(key); });
+  grid.appendChild(btn);
+});
+
+/* ---------- vignette parsing: {phrase|note} ---------- */
+function renderVignette(paras){
+  return paras.map(function(p){
+    var html = p.replace(/\{([^|{}]+)\|([^{}]+)\}/g, function(m, phrase, note){
+      return '<span class="clue" role="button" tabindex="-1">' + phrase +
+             '</span><span class="clue-chip">' + note + '</span>';
+    });
+    return "<p>" + html + "</p>";
+  }).join("");
+}
+
+/* ---------- client view ---------- */
+var landing = document.getElementById("view-landing");
+var clientView = document.getElementById("view-client");
+var cluesOn = false;
+
+function showClient(key){
+  var c = CLIENTS[key];
+  document.getElementById("clientTitle").textContent = c.name;
+  document.getElementById("clientKicker").textContent = c.kicker;
+  document.getElementById("vignetteBody").innerHTML = renderVignette(c.vignette);
+  buildHexaco(c.hexaco);
+  buildAmpd(c.facets);
+  document.getElementById("revealBody").innerHTML = c.reveal;
+  document.body.classList.remove("revealed");
+  setClues(false);
+  wireClues();
+  landing.hidden = true;
+  clientView.hidden = false;
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+document.getElementById("backBtn").addEventListener("click", function(){
+  clientView.hidden = true;
+  landing.hidden = false;
+  document.body.classList.remove("revealed");
+  window.scrollTo({top:0, behavior:"smooth"});
+});
+
+/* ---------- clue toggle ---------- */
+var clueToggle = document.getElementById("clueToggle");
+function setClues(on){
+  cluesOn = on;
+  document.body.classList.toggle("clues-on", on);
+  clueToggle.setAttribute("aria-pressed", on ? "true" : "false");
+  clueToggle.textContent = on ? "Hide clues" : "Show clues in the vignette";
+  document.querySelectorAll(".clue").forEach(function(el){
+    el.tabIndex = on ? 0 : -1;
+    el.classList.remove("open");
+  });
+  document.querySelectorAll(".clue-chip").forEach(function(el){
+    el.classList.remove("show");
+  });
+}
+clueToggle.addEventListener("click", function(){ setClues(!cluesOn); });
+
+function wireClues(){
+  function activate(el){
+    if(!cluesOn) return;
+    var chip = el.nextElementSibling;
+    var opening = !el.classList.contains("open");
+    el.classList.toggle("open", opening);
+    if(chip && chip.classList.contains("clue-chip")){
+      chip.classList.toggle("show", opening);
+    }
+  }
+  document.querySelectorAll(".clue").forEach(function(el){
+    el.addEventListener("click", function(){ activate(el); });
+    el.addEventListener("keydown", function(e){
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault();
+        activate(el);
+      }
+    });
+  });
+}
+
+/* ---------- HEXACO sliders ---------- */
+function buildHexaco(profile){
+  var wrapEl = document.getElementById("hexaco");
+  wrapEl.innerHTML = "";
+  HEX_DOMAINS.forEach(function(d){
+    var row = document.createElement("div");
+    row.className = "hex-row";
+    var suggestion = profile[d.key] || {pos:50};
+    row.innerHTML =
+      '<p class="hex-name">' + d.name + '</p>' +
+      '<div class="hex-poles"><span>' + d.lo + '</span><span>' + d.hi + '</span></div>' +
+      '<div class="hex-slider-wrap">' +
+        '<input type="range" min="0" max="100" value="50" aria-label="' + d.name + '">' +
+        '<span class="hex-tick" style="left:' + suggestion.pos + '%"></span>' +
+      '</div>' +
+      (suggestion.note ? '<div class="hex-note">' + suggestion.note + '</div>' : '');
+    wrapEl.appendChild(row);
+  });
+}
+
+/* ---------- AMPD facets ---------- */
+function buildAmpd(suggested){
+  var wrapEl = document.getElementById("ampd");
+  wrapEl.innerHTML = "";
+  AMPD_DOMAINS.forEach(function(d){
+    var block = document.createElement("div");
+    block.className = "ampd-domain";
+    var head = '<p class="ampd-name">' + d.name + '</p>' +
+               '<p class="ampd-desc">' + d.desc + '</p>';
+    var gridEl = document.createElement("div");
+    gridEl.className = "facet-grid";
+    d.facets.forEach(function(f){
+      var b = document.createElement("button");
+      b.className = "facet" + (suggested.indexOf(f) > -1 ? " suggested" : "");
+      b.type = "button";
+      b.setAttribute("aria-pressed","false");
+      b.textContent = f;
+      b.addEventListener("click", function(){
+        var on = b.getAttribute("aria-pressed") === "true";
+        b.setAttribute("aria-pressed", on ? "false" : "true");
+      });
+      gridEl.appendChild(b);
+    });
+    block.innerHTML = head;
+    block.appendChild(gridEl);
+    wrapEl.appendChild(block);
+  });
+}
+
+/* ---------- reveal ---------- */
+document.getElementById("revealBtn").addEventListener("click", function(){
+  document.body.classList.add("revealed");
+});
+</script>
+</body>
+</html>
