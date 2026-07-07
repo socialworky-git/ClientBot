@@ -1095,6 +1095,26 @@ Respond with ONLY a JSON object, no code fences and no extra text:
 }
 Include one entry in "codes" for every interviewer turn id given, in order.`;
 
+const SPLIT_SYSTEM=`You are a transcript formatter for motivational interviewing practice. You are given a raw session transcript that may have clean labels, generic labels (Speaker 1, SPEAKER_00), no labels at all (auto-captions), timestamps, or other noise.
+
+Your job: split the text into consecutive speaker turns and label every turn as either the INTERVIEWER (the therapist / counselor / helper / clinician / coach — the one asking questions, reflecting, and guiding) or the CLIENT (the person being helped).
+
+Deciding roles:
+- If labels exist, map them: therapist / counselor / clinician / provider / coach / interviewer / doctor / usually "Speaker 1" (whoever opens and asks questions) -> INTERVIEWER; client / patient / participant -> CLIENT.
+- If there are no labels, infer from context. The interviewer asks open questions, reflects, affirms, and guides; the client describes their situation, feelings, and ambivalence. It is a two-person conversation that alternates.
+- Merge consecutive lines from the same speaker into one turn.
+
+Rules:
+- Preserve the speakers' words EXACTLY. Do not paraphrase, summarize, translate, correct, or omit content. Remove only timestamps, caption artifacts, and old speaker labels.
+- Output ONE turn per line, in original order, in exactly this format:
+ROLE||text
+where ROLE is the literal word INTERVIEWER or CLIENT, then two pipe characters, then that turn's text on a single line.
+- Output nothing else: no headers, blank lines, numbering, commentary, or code fences.
+
+Example:
+INTERVIEWER||What brings you in today?
+CLIENT||My wife thinks I drink too much. I don't really see the problem.`;
+
 async function callChat(system, messages, model, maxTokens){
   const headers={'content-type':'application/json'};
   const code=localStorage.getItem('clientbot_access_code');
@@ -1129,8 +1149,20 @@ function normCode(raw){
   return key||null;
 }
 
+// Strip timestamps, caption scaffolding, and cue noise so both the local
+// parser and the model see clean dialogue (Whisper, SRT/VTT, YouTube, etc.).
+function cleanTranscript(raw){
+  let t=(raw||'').replace(/\r\n?/g,'\n').replace(/^﻿/,'');
+  t=t.replace(/^\s*WEBVTT.*$/gmi,'');                                       // vtt header
+  t=t.replace(/^\s*NOTE\b.*$/gmi,'');                                       // vtt notes
+  t=t.replace(/^\s*\d+\s*$/gm,'');                                          // lone srt cue numbers
+  t=t.replace(/^.*\d{1,2}:\d{2}(?::\d{2})?[.,]?\d*\s*--?>.*$/gm,'');        // "00:00 --> 00:04" cue lines
+  t=t.replace(/^[ \t]*[\[(]?\d{1,2}:\d{2}(?::\d{2})?(?:[.,]\d+)?[\])]?[ \t]*/gm,''); // leading inline timestamps
+  return t.replace(/\n{3,}/g,'\n\n').trim();
+}
+
 function parseTranscript(text){
-  const re=/(?:^|\n)[ \t]*([A-Za-z][A-Za-z0-9 ._'\-]{0,28}?):[ \t]+/g;
+  const re=/(?:^|\n)[ \t]*([A-Za-z][A-Za-z0-9 ._'’_\-]{0,28}?):[ \t]+/g;
   const marks=[]; let m;
   while((m=re.exec(text))){marks.push({label:m[1].trim(),contentStart:re.lastIndex,labelStart:m.index});}
   if(marks.length<2)return{labeled:false,turns:[]};
@@ -1140,34 +1172,71 @@ function parseTranscript(text){
     const t=text.slice(marks[i].contentStart,end).trim().replace(/\s+/g,' ');
     if(t)out.push({label:marks[i].label,text:t});
   }
-  return{labeled:true,turns:out};
+  // A real transcript has a small set of labels that recur. Treat one-off
+  // "labels" (usually a sentence that happens to contain a colon) as not
+  // really labeled, so the model handles those instead.
+  const counts={}; out.forEach(t=>{counts[t.label]=(counts[t.label]||0)+1;});
+  const known=/^(speaker\s*\w+|therapist|counsell?or|clinician|interviewer|provider|helper|coach|doctor|dr\.?\s*\w+|client|patient|participant|caller)$/i;
+  const recurring=Object.keys(counts).filter(l=>counts[l]>=2||known.test(l));
+  const labeled=recurring.length>=2 && recurring.length<=6 && out.length>=3;
+  return {labeled,turns:out};
+}
+
+function enterReview(newTurns,newLabelRole){
+  labelRole=newLabelRole; codeResults={}; turns=newTurns; setStep(1);
+  document.getElementById('intake').classList.add('hidden');
+  document.getElementById('review').classList.remove('hidden');
+  renderReview();
+}
+
+async function modelSplit(text){
+  const maxTokens=Math.min(16000,Math.max(1200,Math.ceil(text.length/2.5)));
+  const out=await callChat(SPLIT_SYSTEM,[{role:'user',content:'Split this transcript into speaker turns and label each line as INTERVIEWER or CLIENT.\n\nTRANSCRIPT:\n'+text}],'gpt-4.1',maxTokens);
+  const rows=[];
+  out.split('\n').forEach(line=>{
+    const m=line.match(/^\s*(INTERVIEWER|CLIENT)\s*\|\|\s*(.*)$/i);
+    if(m){ rows.push({role:m[1].toLowerCase()==='interviewer'?'interviewer':'client',text:m[2].trim()}); }
+    else if(rows.length&&line.trim()){ rows[rows.length-1].text=(rows[rows.length-1].text+' '+line.trim()).trim(); } // reattach wrapped text
+  });
+  return rows.filter(r=>r.text);
 }
 
 document.getElementById('exampleBtn').addEventListener('click',()=>{document.getElementById('tBox').value=EXAMPLE;});
 
-document.getElementById('splitBtn').addEventListener('click',()=>{
-  const text=document.getElementById('tBox').value.trim();
+document.getElementById('splitBtn').addEventListener('click',async()=>{
+  const btn=document.getElementById('splitBtn');
+  if(btn.disabled)return;
   const note=document.getElementById('intakeNote');
+  const text=cleanTranscript(document.getElementById('tBox').value);
   if(!text){note.innerHTML='<div class="note warn">Paste a transcript first, or load the example.</div>';return;}
+
   const parsed=parseTranscript(text);
-  if(!parsed.labeled){
-    note.innerHTML='<div class="note info"><b>This looks like an unlabeled block.</b> On your site this is where the tool hands the text to your model to split the speakers, then drops you into the same check screen below. For now, try the example, or paste a transcript whose turns start with a label like <b>Therapist:</b> or <b>Client:</b> on each line.</div>';
+  if(parsed.labeled){
+    // Clean, labeled transcript — split locally (instant and exact).
+    note.innerHTML='';
+    const labels=[...new Set(parsed.turns.map(t=>t.label))];
+    const lr={}; let unknownIx=0;
+    labels.forEach(lb=>{ let r=roleFor(lb); if(r==='unknown'){r=unknownIx===0?'interviewer':'client';unknownIx++;} lr[lb]=r; });
+    enterReview(parsed.turns.map(t=>({id:++uid,label:t.label,text:t.text,role:lr[t.label]})),lr);
     return;
   }
-  note.innerHTML='';
-  // assign roles per distinct label
-  const labels=[...new Set(parsed.turns.map(t=>t.label))];
-  labelRole={};
-  let unknownIx=0;
-  labels.forEach(lb=>{
-    let r=roleFor(lb);
-    if(r==='unknown'){ r = unknownIx===0?'interviewer':'client'; unknownIx++; }
-    labelRole[lb]=r;
-  });
-  turns=parsed.turns.map(t=>({id:++uid,label:t.label,text:t.text,role:labelRole[t.label]}));
-  document.getElementById('intake').classList.add('hidden');
-  document.getElementById('review').classList.remove('hidden');
-  renderReview();
+
+  // Unlabeled / messy (YouTube captions, undiarized Whisper, odd conventions):
+  // let the model split it and infer the interviewer/client volley from context.
+  const orig=btn.textContent;
+  btn.disabled=true; btn.textContent='Splitting…';
+  note.innerHTML='<div class="note info">No clear speaker labels found — using the model to split the speakers and infer who is the interviewer. This can take a few seconds…</div>';
+  try{
+    const split=await modelSplit(text);
+    if(split.length<2)throw new Error('the transcript could not be split into speaker turns. Try adding simple labels like "Therapist:" / "Client:" on each line, then split again.');
+    note.innerHTML='<div class="note info"><b>Speakers split by the model.</b> Double-check the roles below — tap a role tag to flip any turn it guessed wrong.</div>';
+    const lr={Interviewer:'interviewer',Client:'client'};
+    enterReview(split.map(t=>({id:++uid,label:t.role==='interviewer'?'Interviewer':'Client',text:t.text,role:t.role})),lr);
+  }catch(e){
+    note.innerHTML='<div class="note warn"><b>Couldn’t split automatically.</b> '+escapeHtml(String(e.message||e))+'</div>';
+  }finally{
+    btn.disabled=false; btn.textContent=orig;
+  }
 });
 
 function renderReview(){
