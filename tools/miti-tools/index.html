@@ -348,7 +348,7 @@
   .handoff.show{display:block}
   .handoff h3{margin:0 0 5px;font-size:1rem;font-weight:800}
   .handoff p{margin:0;font-size:.86rem;color:var(--muted);line-height:1.5}
-  .turn .code-line{margin-top:9px}
+  .turn .code-line{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
   .code-chip{display:inline-flex;align-items:center;font-size:.72rem;font-weight:800;color:#fff;border-radius:7px;padding:4px 9px;letter-spacing:.02em}
   .turn .rationale{font-size:.82rem;color:var(--ink);opacity:.75;line-height:1.45;margin-top:6px}
   .tally{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0 2px}
@@ -1064,7 +1064,7 @@ const CODEMAP={
   PE :{name:'Persuasion',               color:'var(--non)'},
 };
 
-const CODER_SYSTEM=`You are an expert MITI 4.2.1 (Motivational Interviewing Treatment Integrity) coder. You assign exactly one behavior code to each interviewer utterance, following the MITI manual's decision rules.
+const CODER_SYSTEM=`You are an expert MITI 4.2.1 (Motivational Interviewing Treatment Integrity) coder. The unit of coding is the interviewer VOLLEY: all of the interviewer's speech between two client turns, marked [I#]. You assign the SET of distinct behavior codes present in each volley, following the MITI manual's decision rules.
 
 Behavior codes (use the abbreviation exactly):
 - Q (Question): a question, open or closed.
@@ -1078,22 +1078,25 @@ Behavior codes (use the abbreviation exactly):
 - CO (Confrontation): disagreeing, arguing, shaming, blaming, warning, or moralizing against the client.
 - PE (Persuasion): persuading, advising, or arguing for change WITHOUT permission.
 
-Rules:
-- Assign one and only one code per interviewer turn, choosing the single best fit.
-- Prefer CR over SR when the interviewer meaningfully adds to the client's meaning.
-- Reflections that begin with "It sounds like / So you..." are still SR unless they add meaning (then CR).
-- Only use PwP when permission was clearly granted; otherwise PE.
+Volley coding rules (critical):
+- Each behavior code may be counted AT MOST ONCE per volley. Five questions in one volley = a single Q. A handful of affirmations = a single AF.
+- REFLECTIONS collapse to ONE code: if any reflection in the volley rises to complex, code CR only; otherwise code SR. Never list both SR and CR for the same volley.
+- Give at most one reflection code per volley even if there are many reflections.
+- Code each distinct behavior that genuinely appears: a volley can hold several DIFFERENT codes (e.g., Q + CR + AF), up to a maximum of 8.
+- When a single utterance could be two things, choose its single best/highest code (e.g., an affirmation that is also a reflection counts as AF, not a reflection).
+- Prefer CR over SR when the interviewer meaningfully adds to the client's meaning. Only use PwP when permission was clearly granted; otherwise PE.
+- If a volley has no codable interviewer behavior, return an empty codes array for it.
 
 Also give global scores (integers 1-5, where 1 is low and 5 is high) for the whole session:
 - cct (Cultivating Change Talk), sst (Softening Sustain Talk), partnership, empathy.
 
 Respond with ONLY a JSON object, no code fences and no extra text:
 {
-  "codes": [ { "id": "I<number>", "code": "<abbrev>", "rationale": "<= 18 words, plain and specific" } ],
+  "volleys": [ { "id": "I<number>", "codes": [ { "code": "<abbrev>", "rationale": "<= 16 words, name what earned this code" } ] } ],
   "globals": { "cct": <1-5>, "sst": <1-5>, "partnership": <1-5>, "empathy": <1-5> },
   "note": "one sentence of overall coaching feedback"
 }
-Include one entry in "codes" for every interviewer turn id given, in order.`;
+Include one entry in "volleys" for every interviewer turn id given, in order.`;
 
 const SPLIT_SYSTEM=`You are a transcript formatter for motivational interviewing practice. You are given a raw session transcript that may have clean labels, generic labels (Speaker 1, SPEAKER_00), no labels at all (auto-captions), timestamps, or other noise.
 
@@ -1102,7 +1105,7 @@ Your job: split the text into consecutive speaker turns and label every turn as 
 Deciding roles:
 - If labels exist, map them: therapist / counselor / clinician / provider / coach / interviewer / doctor / usually "Speaker 1" (whoever opens and asks questions) -> INTERVIEWER; client / patient / participant -> CLIENT.
 - If there are no labels, infer from context. The interviewer asks open questions, reflects, affirms, and guides; the client describes their situation, feelings, and ambivalence. It is a two-person conversation that alternates.
-- Merge consecutive lines from the same speaker into one turn.
+- GROUP BY VOLLEY: combine ALL consecutive speech from the same speaker into ONE turn, even if it spans several sentences or a whole paragraph. Only start a new turn when the speaker actually changes. Do not break a single speaker's run into multiple turns.
 
 Rules:
 - Preserve the speakers' words EXACTLY. Do not paraphrase, summarize, translate, correct, or omit content. Remove only timestamps, caption artifacts, and old speaker labels.
@@ -1182,8 +1185,26 @@ function parseTranscript(text){
   return {labeled,turns:out};
 }
 
-function enterReview(newTurns,newLabelRole){
-  labelRole=newLabelRole; codeResults={}; turns=newTurns; setStep(1);
+// Collapse consecutive same-speaker rows into one volley. This is the guarantee
+// that a paragraph from one speaker becomes a single chunk regardless of how the
+// source (or the model) segmented it.
+function mergeVolleys(list){
+  const out=[];
+  list.forEach(r=>{
+    const prev=out[out.length-1];
+    if(prev&&prev.role===r.role) prev.text=(prev.text+' '+r.text).replace(/\s+/g,' ').trim();
+    else out.push({role:r.role,text:r.text});
+  });
+  return out;
+}
+
+// list: [{ role:'interviewer'|'client', text }]
+function enterReview(list){
+  const merged=mergeVolleys(list);
+  labelRole={Interviewer:'interviewer',Client:'client'};
+  codeResults={};
+  turns=merged.map(r=>({id:++uid,label:r.role==='interviewer'?'Interviewer':'Client',text:r.text,role:r.role}));
+  setStep(1);
   document.getElementById('intake').classList.add('hidden');
   document.getElementById('review').classList.remove('hidden');
   renderReview();
@@ -1217,7 +1238,7 @@ document.getElementById('splitBtn').addEventListener('click',async()=>{
     const labels=[...new Set(parsed.turns.map(t=>t.label))];
     const lr={}; let unknownIx=0;
     labels.forEach(lb=>{ let r=roleFor(lb); if(r==='unknown'){r=unknownIx===0?'interviewer':'client';unknownIx++;} lr[lb]=r; });
-    enterReview(parsed.turns.map(t=>({id:++uid,label:t.label,text:t.text,role:lr[t.label]})),lr);
+    enterReview(parsed.turns.map(t=>({role:lr[t.label],text:t.text})));
     return;
   }
 
@@ -1230,8 +1251,7 @@ document.getElementById('splitBtn').addEventListener('click',async()=>{
     const split=await modelSplit(text);
     if(split.length<2)throw new Error('the transcript could not be split into speaker turns. Try adding simple labels like "Therapist:" / "Client:" on each line, then split again.');
     note.innerHTML='<div class="note info"><b>Speakers split by the model.</b> Double-check the roles below — tap a role tag to flip any turn it guessed wrong.</div>';
-    const lr={Interviewer:'interviewer',Client:'client'};
-    enterReview(split.map(t=>({id:++uid,label:t.role==='interviewer'?'Interviewer':'Client',text:t.text,role:t.role})),lr);
+    enterReview(split);
   }catch(e){
     note.innerHTML='<div class="note warn"><b>Couldn’t split automatically.</b> '+escapeHtml(String(e.message||e))+'</div>';
   }finally{
@@ -1273,10 +1293,12 @@ function renderReview(){
       txtHtml=`<span class="txt">${escapeHtml(t.text)}</span>`;
     }
     let codeHtml='';
-    if(t.role==='interviewer' && codeResults[t.id]){
-      const r=codeResults[t.id], cm=CODEMAP[r.code]||{name:r.code,color:'var(--muted)'};
-      codeHtml=`<div class="code-line"><span class="code-chip" style="background:${cm.color}">${r.code} &middot; ${escapeHtml(cm.name)}</span></div>`
-        +(r.rationale?`<div class="rationale">${escapeHtml(r.rationale)}</div>`:'');
+    if(t.role==='interviewer' && codeResults[t.id] && codeResults[t.id].codes.length){
+      const codes=codeResults[t.id].codes;
+      const chips=codes.map(c=>{const cm=CODEMAP[c.code]||{name:c.code,color:'var(--muted)'};
+        return `<span class="code-chip" style="background:${cm.color}">${c.code} &middot; ${escapeHtml(cm.name)}</span>`;}).join('');
+      const rats=codes.filter(c=>c.rationale).map(c=>`<div class="rationale"><b>${c.code}</b> — ${escapeHtml(c.rationale)}</div>`).join('');
+      codeHtml=`<div class="code-line">${chips}</div>${rats}`;
     }
     row.innerHTML=`${pill}<div class="body">${txtHtml}${codeHtml}</div>
       <div class="tools">
@@ -1338,14 +1360,14 @@ async function requestCodes(){
     if(t.role==='interviewer'){ids.push('I'+t.id);lines.push(`[I${t.id}] INTERVIEWER: ${t.text}`);}
     else lines.push(`CLIENT: ${t.text}`);
   });
-  const user=`Code the following session. Assign exactly one behavior code to every interviewer turn marked [I#], in order.\n\nInterviewer turn ids to code: ${ids.join(', ')}\n\nTRANSCRIPT:\n${lines.join('\n')}`;
-  const maxTokens=Math.min(4000,500+ids.length*130);
+  const user=`Code the following session. For every interviewer volley marked [I#], return the SET of distinct MITI behavior codes present, applying the volley rules (each code at most once; a single reflection code at the highest level present). Do this in order.\n\nInterviewer volley ids to code: ${ids.join(', ')}\n\nTRANSCRIPT:\n${lines.join('\n')}`;
+  const maxTokens=Math.min(6000,700+ids.length*220);
   const txt=await callChat(CODER_SYSTEM,[{role:'user',content:user}],'gpt-4.1',maxTokens);
   return extractJSON(txt);
 }
 
 function renderSummary(j){
-  const tally={};Object.values(codeResults).forEach(r=>{tally[r.code]=(tally[r.code]||0)+1;});
+  const tally={};Object.values(codeResults).forEach(r=>{(r.codes||[]).forEach(c=>{tally[c.code]=(tally[c.code]||0)+1;});});
   const order=['Q','SR','CR','SC','EA','AF','GI','PwP','CO','PE'];
   const tallyHtml=order.filter(c=>tally[c]).map(c=>{
     const cm=CODEMAP[c];
@@ -1357,10 +1379,11 @@ function renderSummary(j){
     const v=(g[k]!=null&&g[k]!=='')?g[k]:'&ndash;';
     return `<div class="gest"><div class="gn">${nm}</div><div class="gv">${v}<span style="font-size:.7rem;color:var(--muted);font-weight:600"> / 5</span></div><div class="gs">${sc}</div></div>`;
   }).join('');
-  const coded=Object.keys(codeResults).length;
   const iv=turns.filter(t=>t.role==='interviewer').length;
+  const codedVolleys=Object.values(codeResults).filter(r=>r.codes&&r.codes.length).length;
+  const totalCodes=Object.values(codeResults).reduce((n,r)=>n+((r.codes&&r.codes.length)||0),0);
   let html=`<h3>Suggested MITI codes</h3>`;
-  html+=`<p>Coded ${coded} of ${iv} interviewer turn${iv===1?'':'s'}. Each turn above shows its suggested behavior code and a short rationale.</p>`;
+  html+=`<p>${totalCodes} behavior code${totalCodes===1?'':'s'} across ${codedVolleys} of ${iv} interviewer volley${iv===1?'':'s'}. Each volley above shows its codes and a short rationale; behavior counts follow the MITI volley rules (each code once per volley, one reflection at its highest level).</p>`;
   html+=`<div class="tally">${tallyHtml||'<span class="t">No codes returned</span>'}</div>`;
   html+=`<div class="gh">Global estimates</div><div class="globals-est">${gHtml}</div>`;
   if(j.note)html+=`<p style="margin-top:12px;color:var(--ink)">${escapeHtml(j.note)}</p>`;
@@ -1370,10 +1393,18 @@ function renderSummary(j){
 
 function applyCodes(j){
   codeResults={};
-  (j.codes||[]).forEach(c=>{
-    const id=parseInt(String(c.id).replace(/[^0-9]/g,''),10);
-    const code=normCode(c.code);
-    if(!isNaN(id)&&code)codeResults[id]={code,rationale:(c.rationale||'').trim()};
+  const list=j.volleys||j.codes||[];
+  list.forEach(v=>{
+    const id=parseInt(String(v.id).replace(/[^0-9]/g,''),10);
+    if(isNaN(id))return;
+    const raw=Array.isArray(v.codes)?v.codes:(v.code?[{code:v.code,rationale:v.rationale}]:[]);
+    const codes=[];
+    raw.forEach(c=>{
+      const code=normCode(c.code);
+      if(code && !codes.some(x=>x.code===code)) codes.push({code,rationale:(c.rationale||'').trim()}); // each code once per volley
+    });
+    if(codes.some(c=>c.code==='CR')){ for(let i=codes.length-1;i>=0;i--) if(codes[i].code==='SR') codes.splice(i,1); } // one reflection: highest level only
+    codeResults[id]={codes:codes.slice(0,8)};
   });
   renderReview();       // re-render turns with their chips (this hides the handoff)
   renderSummary(j);     // repopulate + show the summary box
