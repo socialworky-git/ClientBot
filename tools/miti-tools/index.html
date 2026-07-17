@@ -683,6 +683,14 @@ function compute(){
 }
 function level(v,f,g){if(v==null)return'flat';if(v>=g)return'good';if(v>=f)return'fair';return'below';}
 const badgeText={good:'Good',fair:'Fair',below:'Below fair',flat:'—'};
+// Reflection:question shown as a simple whole-number ratio (e.g. "≈ 1 : 2")
+// for readability; the exact decimal is kept in the CSV/summary exports.
+function ratioText(refl,q){
+  if(q===0) return '—';
+  if(refl===0) return '0 : 1';
+  if(refl>=q){ const n=refl/q, r=Math.round(n); return (n===r?'':'≈ ')+r+' : 1'; }
+  const m=q/refl, r=Math.round(m); return (m===r?'':'≈ ')+'1 : '+r;
+}
 
 function render(){
   const d=compute();
@@ -691,9 +699,9 @@ function render(){
 
   const rqLvl=level(d.rq,1,2),rqPct=d.rq==null?0:Math.min(d.rq/2*100,100);
   document.getElementById('m-rq').innerHTML=`
-    <div class="mh"><span class="ml">Reflection : Question</span><span class="mv">${d.rq==null?'—':d.rq.toFixed(2)+' : 1'}</span></div>
+    <div class="mh"><span class="ml">Reflection : Question</span><span class="mv">${ratioText(d.refl,state.counts.question)}</span></div>
     <div class="meter"><span class="${rqLvl==='flat'?'accent':rqLvl}" style="width:${rqPct}%"></span></div>
-    <div class="mh" style="margin-top:5px"><span class="mnote">Fair 1:1 &middot; Good 2:1</span><span class="badge ${rqLvl}">${badgeText[rqLvl]}</span></div>`;
+    <div class="mh" style="margin-top:5px"><span class="mnote">${d.refl} reflection${d.refl===1?'':'s'} to ${state.counts.question} question${state.counts.question===1?'':'s'} &middot; Fair 1:1 &middot; Good 2:1</span><span class="badge ${rqLvl}">${badgeText[rqLvl]}</span></div>`;
 
   const pcLvl=level(d.pc,.4,.5),pcPct=d.pc==null?0:d.pc*100;
   document.getElementById('m-pc').innerHTML=`
@@ -1370,6 +1378,16 @@ async function requestCodes(){
 function level(v,f,g){if(v==null)return'flat';if(v>=g)return'good';if(v>=f)return'fair';return'below';}
 const BADGE={good:'Good',fair:'Fair',below:'Below fair',flat:'—'};
 
+// Present the reflection:question ratio as a simple whole-number form for
+// self-review (e.g. 16 reflections to 33 questions -> "≈ 1 : 2") instead of a
+// bare decimal. The smaller side normalizes to 1; "≈" flags a rounded value.
+function ratioText(refl,q){
+  if(q===0) return '—';                                       // no questions: undefined
+  if(refl===0) return '0 : 1';
+  if(refl>=q){ const n=refl/q, r=Math.round(n); return (n===r?'':'≈ ')+r+' : 1'; }
+  const m=q/refl, r=Math.round(m); return (m===r?'':'≈ ')+'1 : '+r;
+}
+
 // Turn the behavior tally into the indices MITI feedback usually leads with:
 // the reflection-to-question ratio, the share of reflections that are complex,
 // and the balance of MI-adherent vs MI-non-adherent behaviors.
@@ -1384,9 +1402,9 @@ function indicesHtml(tally){
 
   return `
     <div class="metric">
-      <div class="mh"><span class="ml">Reflection : Question</span><span class="mv">${rq==null?'—':rq.toFixed(2)+' : 1'}</span></div>
+      <div class="mh"><span class="ml">Reflection : Question</span><span class="mv">${ratioText(refl,q)}</span></div>
       <div class="meter"><span class="${rqLvl==='flat'?'accent':rqLvl}" style="width:${rqPct}%"></span></div>
-      <div class="mh" style="margin-top:5px"><span class="mnote">More reflection than question is more MI adherent &middot; Fair 1:1 &middot; Good 2:1</span><span class="badge ${rqLvl}">${BADGE[rqLvl]}</span></div>
+      <div class="mh" style="margin-top:5px"><span class="mnote">${refl} reflection${refl===1?'':'s'} to ${q} question${q===1?'':'s'} &middot; more reflection is more adherent &middot; Fair 1:1 &middot; Good 2:1</span><span class="badge ${rqLvl}">${BADGE[rqLvl]}</span></div>
     </div>
     <div class="metric">
       <div class="mh"><span class="ml">% Complex Reflections</span><span class="mv">${pc==null?'—':Math.round(pcPct)+'%'}</span></div>
