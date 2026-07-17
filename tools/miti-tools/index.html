@@ -350,7 +350,6 @@
   .handoff p{margin:0;font-size:.86rem;color:var(--muted);line-height:1.5}
   .turn .code-line{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
   .code-chip{display:inline-flex;align-items:center;font-size:.72rem;font-weight:800;color:#fff;border-radius:7px;padding:4px 9px;letter-spacing:.02em}
-  .turn .rationale{font-size:.82rem;color:var(--ink);opacity:.75;line-height:1.45;margin-top:6px}
   .tally{display:flex;flex-wrap:wrap;gap:7px;margin:9px 0 2px}
   .tally .t{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:700;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:4px 11px}
   .tally .t i{width:10px;height:10px;border-radius:3px;display:inline-block}
@@ -1305,8 +1304,7 @@ function renderReview(){
       const codes=codeResults[t.id].codes;
       const chips=codes.map(c=>{const cm=CODEMAP[c.code]||{name:c.code,color:'var(--muted)'};
         return `<span class="code-chip" style="background:${cm.color}">${c.code} &middot; ${escapeHtml(cm.name)}</span>`;}).join('');
-      const rats=codes.filter(c=>c.rationale).map(c=>`<div class="rationale"><b>${c.code}</b> — ${escapeHtml(c.rationale)}</div>`).join('');
-      codeHtml=`<div class="code-line">${chips}</div>${rats}`;
+      codeHtml=`<div class="code-line">${chips}</div>`;
     }
     row.innerHTML=`${pill}<div class="body">${txtHtml}${codeHtml}</div>
       <div class="tools">
@@ -1435,7 +1433,7 @@ function renderSummary(j){
   const codedVolleys=Object.values(codeResults).filter(r=>r.codes&&r.codes.length).length;
   const totalCodes=Object.values(codeResults).reduce((n,r)=>n+((r.codes&&r.codes.length)||0),0);
   let html=`<h3>Suggested MITI codes</h3>`;
-  html+=`<p>${totalCodes} behavior code${totalCodes===1?'':'s'} across ${codedVolleys} of ${iv} interviewer volley${iv===1?'':'s'}. Each volley above shows its codes and a short rationale; behavior counts follow the MITI volley rules (each code once per volley, one reflection at its highest level).</p>`;
+  html+=`<p>${totalCodes} behavior code${totalCodes===1?'':'s'} across ${codedVolleys} of ${iv} interviewer volley${iv===1?'':'s'}. Each volley above shows its codes; behavior counts follow the MITI volley rules (each code once per volley, one reflection at its highest level).</p>`;
   html+=`<div class="tally">${tallyHtml||'<span class="t">No codes returned</span>'}</div>`;
   html+=`<div class="gh">Summary indices</div>${indicesHtml(tally)}`;
   html+=`<div class="gh">Global estimates</div><div class="globals-est">${gHtml}</div>`;
