@@ -537,7 +537,7 @@ MITI1:eyJ2Ijox..."></textarea>
 <div class="wrap-transcript">
   <span class="pill">MITI 4 &middot; Transcript coder</span>
   <h1>Transcript coder</h1>
-  <div class="sub">Paste a session transcript. The tool splits it into Interviewer and Client turns for you to check, then suggests MITI codes for the interviewer's turns.</div>
+  <div class="sub">Paste a session transcript. The tool splits it into Interviewer and Client turns for you to check, suggests MITI codes for the interviewer's turns, then summarizes the reflection-to-question ratio, complex-reflection rate, and adherent vs non-adherent balance.</div>
   <div class="steps">
     <span class="s on" id="step1">1 &middot; Split &amp; check speakers</span>
     <span class="s" id="step2">2 &middot; Suggest codes</span>
@@ -1366,6 +1366,40 @@ async function requestCodes(){
   return extractJSON(txt);
 }
 
+// Same thresholds and wording as the Coding sheet, so both sub-apps read the same.
+function level(v,f,g){if(v==null)return'flat';if(v>=g)return'good';if(v>=f)return'fair';return'below';}
+const BADGE={good:'Good',fair:'Fair',below:'Below fair',flat:'—'};
+
+// Turn the behavior tally into the indices MITI feedback usually leads with:
+// the reflection-to-question ratio, the share of reflections that are complex,
+// and the balance of MI-adherent vs MI-non-adherent behaviors.
+function indicesHtml(tally){
+  const q=tally.Q||0, sr=tally.SR||0, cr=tally.CR||0, refl=sr+cr;
+  const rq=q>0?refl/q:null, pc=refl>0?cr/refl:null;
+  const adh=(tally.SC||0)+(tally.EA||0)+(tally.AF||0), non=(tally.CO||0)+(tally.PE||0);
+
+  const rqLvl=level(rq,1,2), rqPct=rq==null?0:Math.min(rq/2*100,100);
+  const pcLvl=level(pc,.4,.5), pcPct=pc==null?0:pc*100;
+  const tot=adh+non, adhW=tot>0?adh/tot*100:0, nonW=tot>0?non/tot*100:0;
+
+  return `
+    <div class="metric">
+      <div class="mh"><span class="ml">Reflection : Question</span><span class="mv">${rq==null?'—':rq.toFixed(2)+' : 1'}</span></div>
+      <div class="meter"><span class="${rqLvl==='flat'?'accent':rqLvl}" style="width:${rqPct}%"></span></div>
+      <div class="mh" style="margin-top:5px"><span class="mnote">More reflection than question is more MI adherent &middot; Fair 1:1 &middot; Good 2:1</span><span class="badge ${rqLvl}">${BADGE[rqLvl]}</span></div>
+    </div>
+    <div class="metric">
+      <div class="mh"><span class="ml">% Complex Reflections</span><span class="mv">${pc==null?'—':Math.round(pcPct)+'%'}</span></div>
+      <div class="meter"><span class="${pcLvl==='flat'?'accent':pcLvl}" style="width:${Math.min(pcPct,100)}%"></span></div>
+      <div class="mh" style="margin-top:5px"><span class="mnote">Share of ${refl} reflection${refl===1?'':'s'} that added meaning &middot; Fair 40% &middot; Good 50%</span><span class="badge ${pcLvl}">${BADGE[pcLvl]}</span></div>
+    </div>
+    <div class="metric">
+      <div class="mh"><span class="ml">Adherent vs Non-Adherent</span><span class="mv">${adh} / ${non}</span></div>
+      <div class="split"><i style="width:${adhW}%;background:var(--good)"></i><i style="width:${nonW}%;background:var(--below)"></i></div>
+      <div class="legend"><span><i class="dot" style="background:var(--good)"></i>Adherent ${adh} (SC, EA, AF)</span><span><i class="dot" style="background:var(--below)"></i>Non-adherent ${non} (CO, PE)</span></div>
+    </div>`;
+}
+
 function renderSummary(j){
   const tally={};Object.values(codeResults).forEach(r=>{(r.codes||[]).forEach(c=>{tally[c.code]=(tally[c.code]||0)+1;});});
   const order=['Q','SR','CR','SC','EA','AF','GI','PwP','CO','PE'];
@@ -1385,6 +1419,7 @@ function renderSummary(j){
   let html=`<h3>Suggested MITI codes</h3>`;
   html+=`<p>${totalCodes} behavior code${totalCodes===1?'':'s'} across ${codedVolleys} of ${iv} interviewer volley${iv===1?'':'s'}. Each volley above shows its codes and a short rationale; behavior counts follow the MITI volley rules (each code once per volley, one reflection at its highest level).</p>`;
   html+=`<div class="tally">${tallyHtml||'<span class="t">No codes returned</span>'}</div>`;
+  html+=`<div class="gh">Summary indices</div>${indicesHtml(tally)}`;
   html+=`<div class="gh">Global estimates</div><div class="globals-est">${gHtml}</div>`;
   if(j.note)html+=`<p style="margin-top:12px;color:var(--ink)">${escapeHtml(j.note)}</p>`;
   html+=`<p class="disc">AI-suggested codes for practice and calibration only &mdash; always verify against the MITI manual and your own judgment. Use fictional details, not real client information.</p>`;
