@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title id="pageTitle">The Family Room | Socialworky</title>
+<meta name="description" content="A simulation to practice motivational interviewing with a whole family in a first session, where every member arrives at a different level of readiness." />
+<link rel="canonical" href="https://socialworky.com/tools/family-room/" />
+
+<!-- Social / Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Socialworky" />
+<meta property="og:title" content="The Family Room | Socialworky" />
+<meta property="og:description" content="A simulation to practice motivational interviewing with a whole family in a first session, where every member arrives at a different level of readiness." />
+<meta property="og:url" content="https://socialworky.com/tools/family-room/" />
+<meta property="og:image" content="https://socialworky.com/images/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="The Family Room | Socialworky" />
+<meta name="twitter:description" content="A simulation to practice motivational interviewing with a whole family in a first session, where every member arrives at a different level of readiness." />
+<meta name="twitter:image" content="https://socialworky.com/images/og-image.png" />
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+
+<!-- Shared design tokens (colors + shell width). Variables only — safe to link. -->
+<link rel="stylesheet" href="/tokens.css" />
+
+<!-- Vercel Web Analytics -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+
+<style>
+  /*
+    Socialworky | The Family Room  (v4, bilingual EN / PT-BR)
+    Family session MI practice scoped to ENGAGEMENT + EMERGENCE OF A SHARED
+    FOCUS. Visual scene: avatars with live affect faces, speech bubbles,
+    crosstalk, engagement as body language, a setup screen naming the
+    practice target, and a milestone banner when a shared focus surfaces.
+    Portuguese is written natively, not translated line by line.
+
+    BACKEND
+    -------
+    Every model call goes through callModel() below, which POSTs to the shared
+    /api/chat serverless function (same contract as the other tools: it takes
+    { system, messages, model, max_tokens } and returns { content:[{type,text}] }).
+    Assistant turns are stored as raw JSON strings to prevent format drift.
+    Per-turn family role-play runs on TURN_MODEL; the end-of-session CoachBot
+    feedback runs on COACH_MODEL. Change those two constants to swap models.
+
+    LOCALIZATION
+    ------------
+    All text lives in LOCALES below (en, pt). Adding a language = adding one
+    entry. Member ids (mom, dad, teen) are language neutral; only names,
+    copy, and prompts change. ?lang=pt in the URL preselects Portuguese.
+  */
+  /* Brand palette, the font, and the page-shell width all come from
+     /tokens.css. Only the tool-specific tokens live here: one color per
+     family member (used for the avatars) and the speech-bubble surface. */
+  :root{
+    --mom:#7a5aa0;
+    --dad:#4a7a6f;
+    --teen:#b0813a;
+    --card:#ffffff;
+    --heroMuted:#7A5048;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; color:var(--ink);
+    font-family:var(--sans);
+    background:var(--bg);
+    line-height:1.6; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--sw-maxw,820px);margin:0 auto;padding:var(--sw-gutter,24px) var(--sw-gutter,24px) 60px}
+
+  /* --- Standard tool hero (the coral banner) --- */
+  .toolhero{display:flex;align-items:center;gap:16px;background:var(--coral-bg);
+    border:1px solid var(--coral-line);border-radius:12px;box-shadow:inset 4px 0 0 var(--accent);
+    padding:18px 22px 18px 24px;margin-bottom:18px;}
+  .toolhero .ico{width:52px;height:52px;border-radius:12px;background:#fff;
+    border:1px solid var(--coral-line);display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;color:var(--accentDeep);}
+  .toolhero .ico svg{width:26px;height:26px;display:block;}
+  .toolhero .brand{font-weight:700;font-size:24px;letter-spacing:-.02em;color:var(--ink);line-height:1.1;}
+  .toolhero .tagline{color:var(--heroMuted);font-size:14px;margin-top:3px;max-width:64ch;}
+
+  .hidden{display:none !important}
+
+  /* Setup screen */
+  .intro{
+    background:var(--coral-bg);
+    border:1px solid var(--coral-line);
+    border-radius:14px;
+    padding:22px 22px 20px;
+  }
+  .lang-row{display:flex;gap:8px;margin:0 0 16px}
+  .lang-btn{background:#fff;color:var(--accentDeep);padding:7px 14px;font-size:14px}
+  .lang-btn.active{background:var(--accentDeep);color:#fff}
+  .intro h2{margin:0 0 6px;font-size:20px;color:var(--accentDeep)}
+  .intro p{font-size:15px;line-height:1.5;margin:0 0 12px;max-width:70ch}
+  .intro .goal{
+    background:#fff;border:1px solid var(--coral-line);border-radius:10px;
+    padding:10px 14px;font-size:14px;line-height:1.5;margin:0 0 14px;max-width:70ch;
+  }
+  .intro .goal b{color:var(--accentDeep)}
+  .intro .skills{margin:0 0 16px;padding-left:20px;font-size:15px;line-height:1.55}
+  .intro .skills li{margin-bottom:4px}
+  .who{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 18px}
+  .who-card{
+    flex:1 1 200px;background:#fff;border:1px solid var(--coral-line);
+    border-radius:12px;padding:12px;display:flex;gap:10px;align-items:flex-start;
+  }
+  .who-card svg{width:44px;height:54px;flex:0 0 auto}
+  .who-card b{display:block;font-size:14px}
+  .who-card span{font-size:13px;color:var(--muted);line-height:1.4;display:block}
+  .who-card .stance{color:var(--accentDeep);font-size:12px;font-weight:bold;display:block;margin-top:4px;text-transform:uppercase;letter-spacing:.03em}
+
+  /* Scene */
+  .scene{
+    background:var(--coral-bg);
+    border:1px solid var(--coral-line);
+    border-radius:14px;
+    padding:18px 14px 10px;
+    position:relative;
+  }
+  .scene-note{
+    font-size:13px;color:var(--muted);text-align:center;margin:0 0 6px;
+    font-style:italic;
+  }
+  .family{
+    display:flex;justify-content:space-around;align-items:flex-end;
+    gap:8px;min-height:340px;
+  }
+  .member{
+    flex:1 1 0;display:flex;flex-direction:column;align-items:center;
+    justify-content:flex-end;min-width:0;
+  }
+  .bubble-slot{
+    min-height:150px;display:flex;align-items:flex-end;justify-content:center;
+    width:100%;padding:4px;
+  }
+  .bubble{
+    background:var(--card);
+    border:1px solid var(--coral-line);
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:14px;line-height:1.35;
+    max-width:100%;
+    position:relative;
+    box-shadow:0 2px 6px rgba(194,69,47,.08);
+    opacity:0;transform:translateY(6px);
+    animation:pop .35s ease forwards;
+  }
+  @keyframes pop{to{opacity:1;transform:translateY(0)}}
+  @media (prefers-reduced-motion: reduce){
+    .bubble{animation:none;opacity:1;transform:none}
+    .figure{transition:none !important}
+    .figure .brow,.figure .mouth,.figure .eye{transition:none !important}
+  }
+  .bubble::after{
+    content:"";position:absolute;left:50%;bottom:-8px;margin-left:-8px;
+    border:8px solid transparent;border-bottom:none;
+    border-top:8px solid var(--card);
+    filter:drop-shadow(0 1px 0 var(--coral-line));
+  }
+  .bubble .to-tag{
+    display:block;font-size:11px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;
+  }
+  .bubble .action{font-style:italic;color:var(--muted)}
+  .figure{
+    width:96px;height:120px;transition:transform .6s ease, opacity .6s ease;
+    transform-origin:50% 100%;
+  }
+  .figure .brow{transition:transform .5s ease}
+  .figure .mouth{transition:d .5s ease}
+  .figure .eye{transition:ry .5s ease}
+  .name{font-weight:bold;font-size:14px;margin-top:4px}
+  .role{font-size:12px;color:var(--muted)}
+  .meter{display:flex;gap:4px;margin-top:6px}
+  .meter i{
+    width:9px;height:9px;border-radius:50%;
+    background:#e7cfc9;transition:background .5s ease;
+  }
+  .meter i.on{background:var(--accentDeep)}
+  .legend{font-size:12px;color:var(--muted);text-align:center;margin:8px 0 0}
+  .milestone{
+    margin:10px auto 0;max-width:560px;text-align:center;
+    background:#fff;border:1px solid var(--accent);border-radius:10px;
+    padding:8px 12px;font-size:13px;color:var(--accentDeep);
+    animation:pop .35s ease forwards;
+  }
+
+  /* Clinician row */
+  .clin-row{
+    display:flex;flex-direction:column;align-items:center;margin-top:6px;
+    padding-top:8px;border-top:1px dashed var(--coral-line);
+  }
+  .clin-bubble-slot{min-height:0;width:min(560px,100%);display:flex;justify-content:center}
+  .clin-bubble{
+    background:#fff;border:1px solid var(--accent);
+    border-radius:12px;padding:9px 12px;font-size:14px;line-height:1.35;
+    margin-bottom:6px;max-width:100%;
+    opacity:0;animation:pop .3s ease forwards;
+  }
+  .clin-label{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .thinking{font-size:13px;color:var(--muted);font-style:italic;min-height:18px;text-align:center;margin:4px 0}
+
+  /* Input */
+  .task-line{font-size:13px;color:var(--accentDeep);margin:12px 0 6px}
+  .input-row{display:flex;gap:8px}
+  textarea{
+    flex:1;resize:vertical;min-height:64px;
+    border:1px solid var(--coral-line);border-radius:10px;
+    padding:10px 12px;font:inherit;font-size:15px;
+  }
+  textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+  button{
+    font:inherit;font-size:15px;border-radius:10px;cursor:pointer;
+    padding:10px 16px;border:1px solid var(--accentDeep);
+  }
+  button:focus-visible{outline:2px solid var(--accentDeep);outline-offset:2px}
+  .send{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .send:hover{background:var(--accentDeep)}
+  .send:disabled{opacity:.5;cursor:not-allowed}
+  .secondary{background:#fff;color:var(--accentDeep)}
+  .secondary:hover{background:var(--coral-bg)}
+  .btn-row{display:flex;gap:8px;justify-content:space-between;margin-top:10px;flex-wrap:wrap}
+
+  /* Transcript + feedback */
+  details.transcript{margin-top:18px}
+  details.transcript summary{cursor:pointer;color:var(--accentDeep);font-size:14px}
+  .log{
+    border:1px solid var(--coral-line);border-radius:10px;
+    padding:12px;margin-top:8px;max-height:280px;overflow:auto;
+    font-size:14px;line-height:1.45;background:#fff;
+  }
+  .log p{margin:0 0 8px}
+  .log .spk{font-weight:bold}
+  .feedback{
+    display:none;margin-top:18px;border:1px solid var(--coral-line);
+    border-radius:12px;padding:16px 18px;background:#fff;
+  }
+  .feedback h2{margin:0 0 8px;font-size:19px;color:var(--accentDeep)}
+  .feedback .fb-body{font-size:15px;line-height:1.55;white-space:pre-wrap}
+  .notice{color:var(--accentDeep);font-size:13px;margin-top:8px;min-height:16px}
+
+  /* Footer disclaimer */
+  .foot{color:var(--muted);font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px}
+
+  @media (max-width:640px){
+    .family{min-height:300px}
+    .figure{width:74px;height:92px}
+    .bubble{font-size:13px}
+    .bubble-slot{min-height:130px}
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav bar (mounts itself at the top of <body>) -->
+<script src="/header.js"></script>
+
+<div class="wrap">
+  <!-- Standard tool hero (simulation icon) -->
+  <div class="toolhero">
+    <div class="ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 9h8"/><path d="M8 13h5"/><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="brand" id="tTitle">The Family Room</div>
+      <div class="tagline" id="tSubtitle"></div>
+    </div>
+  </div>
+
+  <!-- ================= SETUP SCREEN ================= -->
+  <div class="intro" id="intro">
+    <div class="lang-row">
+      <button class="lang-btn active" id="langEn" type="button">English</button>
+      <button class="lang-btn" id="langPt" type="button">Portugu&#234;s (BR)</button>
+    </div>
+    <h2 id="tIntroH"></h2>
+    <p id="tIntroP"></p>
+    <p class="goal" id="tGoal"></p>
+    <div class="who" id="whoCards"></div>
+    <p id="tTryTo"></p>
+    <ul class="skills" id="tSkills"></ul>
+    <button class="send" id="startBtn"></button>
+  </div>
+
+  <!-- ================= SCENE ================= -->
+  <div class="scene hidden" id="scene" aria-label="Family session scene">
+    <p class="scene-note" id="tSceneNote"></p>
+    <div class="family" id="familyRow"></div>
+    <p class="legend" id="tLegend"></p>
+    <p class="milestone hidden" id="milestone" role="status"></p>
+    <div class="clin-row">
+      <div class="clin-bubble-slot" id="slot-clin"></div>
+      <div class="clin-label" id="tClinLabel"></div>
+    </div>
+  </div>
+
+  <div id="workArea" class="hidden">
+    <p class="thinking" id="thinking"></p>
+    <p class="task-line" id="tTaskLine"></p>
+    <div class="input-row">
+      <textarea id="input" aria-label="Your response as the clinician"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="send" id="sendBtn"></button>
+      <button class="secondary" id="endBtn"></button>
+    </div>
+    <p class="notice" id="notice"></p>
+
+    <details class="transcript">
+      <summary id="tTranscript"></summary>
+      <div class="log" id="log"></div>
+    </details>
+
+    <div class="feedback" id="feedback">
+      <h2 id="tFeedbackH"></h2>
+      <div class="fb-body" id="fbBody"></div>
+    </div>
+  </div>
+
+  <div class="foot" id="tFoot"></div>
+</div>
+
+<script>
+/* ---------------- Shared structure ---------------- */
+
+const MEMBERS = ["mom","teen","dad"];           // display order, left to right
+const COLORS  = {mom:"var(--mom)", teen:"var(--teen)", dad:"var(--dad)"};
+
+const AFFECTS = {
+  smiling:    {mouth:"M38 44 Q48 52 58 44", browL:0,   browR:0,   eye:2.8},
+  neutral:    {mouth:"M40 46 L56 46",       browL:0,   browR:0,   eye:2.8},
+  worried:    {mouth:"M39 48 Q48 43 57 48", browL:-12, browR:12,  eye:2.8},
+  sad:        {mouth:"M39 49 Q48 42 57 49", browL:-10, browR:10,  eye:2.4},
+  frustrated: {mouth:"M41 47 L55 47",       browL:10,  browR:-10, eye:2.8},
+  angry:      {mouth:"M38 49 Q48 43 58 49", browL:16,  browR:-16, eye:2.8},
+  shutdown:   {mouth:"M43 47 L53 47",       browL:0,   browR:0,   eye:0.8}
+};
+const AFFECT_LIST = Object.keys(AFFECTS).join(", ");
+
+const JSON_SHAPE = `{"turns":[{"speaker":"mom","to":"clinician","text":"..."}],"engagement":{"mom":3,"dad":1,"teen":1},"affect":{"mom":"worried","dad":"frustrated","teen":"shutdown"}}`;
+
+/* ---------------- Locales ---------------- */
+
+const LOCALES = {
+
+/* ============================== ENGLISH ============================== */
+en: {
+  htmlLang:"en",
+  pageTitle:"The Family Room | Socialworky",
+  allTools:"All tools",
+  title:"The Family Room",
+  subtitle:"Practice MI with a whole family in the room, where every member arrives at a different level of readiness and motivation.",
+  introH:"What you are practicing",
+  introP:"Responding in a family session. In individual work you track one person's readiness. In the family room you track three at once, and anything you say to one person lands on all of them. The skill in this scenario is keeping everyone in the conversation while they sit at very different starting points.",
+  goal:"This is a first session. <b>Your goal is engagement and the first emergence of a shared focus</b> between the parents and Jaylen: everyone still in the room, still talking, and beginning to name something they have in common. Not commitment. Not a plan. Pushing for those too early will cost you the room.",
+  tryTo:"As you go, try to:",
+  skills:[
+    "Keep all three engaged. Watch the faces and the engagement dots. Whoever you ignore will show you.",
+    "Reflect at two levels: what one person said, and what is happening between them.",
+    "Stay out of the middle when Denise and Marcus pull against each other. Siding with one costs you the other.",
+    "Notice change talk when it appears, without chasing it. This session is not the place to harvest it.",
+    "Watch for a shared focus starting to surface between the parents and Jaylen. That is the sign the session can close well."
+  ],
+  startBtn:"Start the session",
+  names:{mom:"Denise", dad:"Marcus", teen:"Jaylen", clinician:"Clinician"},
+  roles:{mom:"Mom, 44, hospital patient accounts", dad:"Dad, 47, HVAC tech", teen:"16, sophomore"},
+  cards:{
+    mom:{desc:"Mom. Works in patient accounts at the hospital. Made this appointment and has a list of every incident. Talks a lot, sometimes for Jaylen.", stance:"Ready for change, but for Jaylen's change"},
+    teen:{desc:"Sophomore. Tore his ACL last winter and lost his varsity basketball season. Vaping THC and drinking with older guys from the building since. Here because the school required it.", stance:"Precontemplative, shut down"},
+    dad:{desc:"Dad. HVAC tech, left a job site early to be here. Thinks the school is overreacting, tired of feeling blamed.", stance:"Skeptical, low readiness"}
+  },
+  sceneNote:"First session at a community behavioral health clinic on the east side of the city. The school required an assessment after Jaylen's second incident. Denise made the appointment. Marcus left work early.",
+  legend:"Faces show affect in the moment. Dots show engagement with you.",
+  milestoneFocus:"A shared focus is surfacing. This is a natural moment to close the session and ask for feedback.",
+  clinLabel:"You (clinician)",
+  taskLine:"Your task: keep the whole family in the conversation and help a first shared focus surface. No plans, no commitments today.",
+  placeholder:"Speak to the family, or to one person. Example: Marcus, you left a job site early to be here. What made it worth it?",
+  sendBtn:"Send",
+  endBtn:"End session and get feedback",
+  transcript:"Show transcript",
+  feedbackH:"CoachBot feedback",
+  thinkingRoom:"The room reacts...",
+  thinkingCoach:"CoachBot is reading the transcript...",
+  errNoResponse:"The family did not respond. Try sending again.",
+  errFewTurns:"Give it at least a few exchanges before feedback, so CoachBot has something to work with.",
+  errFeedback:"Feedback did not come back. Try the end session button again.",
+  toWord:"to",
+  affectWords:{smiling:"smiling",neutral:"neutral",worried:"worried",sad:"sad",frustrated:"frustrated",angry:"angry",shutdown:"shut down"},
+  openingCue:"(The session begins. The family has just sat down.)",
+  transcriptIntro:"Here is the session transcript:",
+  foot:"A Socialworky training resource. For practice only — please use fictional details, not real client information.",
+
+  simSystem:`You are simulating the Carter family in their FIRST family therapy session at a community behavioral health clinic on the east side of a mid sized US city. You play all three family members. The user is the clinician.
+
+THE FAMILY
+- DENISE ("mom"), 44, works in patient accounts at the hospital. She made this appointment. Worried, talks a lot, sometimes answers for Jaylen, keeps a mental list of every incident. Underneath the monitoring is real fear that she is losing her son to the older guys in the building.
+- MARCUS ("dad"), 47, HVAC tech, left a job site early to be here. Reluctant. Thinks the school is overreacting and is half the problem: they cut Jaylen from everything after the injury and now act surprised. Short answers, dry humor, irritated by Denise's cataloging. Underneath: he lost his own younger brother years ago and does not talk about it, and he hates feeling blamed for how Jaylen is turning out.
+- JAYLEN ("teen"), 16, high school sophomore. Tore his ACL last winter and lost his spot on the varsity basketball team and his whole season, which was most of his identity and his social world. Since then he has been vaping THC and drinking with older guys from the building. The school suspended him after a second incident and required this assessment. He is quiet, embarrassed, glued to his phone, and braced to be lectured. Underneath: he misses who he was, and he is more scared about his future than he lets on.
+
+HOW TO RESPOND
+After each clinician message, reply with STRICT JSON ONLY, no code fences, no commentary, exactly this shape:
+${JSON_SHAPE}
+When the arc rules below call for it, also include the optional top level field "milestone":"shared_focus".
+
+Rules for turns:
+- 1 to 3 turns per reply. Vary who speaks. Crosstalk is allowed and encouraged when realistic: set "to" to another family member's id when they address each other instead of the clinician.
+- "speaker" and "to" must be one of: mom, dad, teen, clinician.
+- Keep each utterance under 55 words. Plain spoken urban American voices, natural and specific, no clinical vocabulary, no em dashes.
+- Nonverbal behavior goes in parentheses inside "text", e.g. "(shrugs, keeps his eyes on his phone)". A turn may be purely nonverbal.
+- If the clinician addresses one person by name, that person should usually respond, but others may interrupt if engagement dynamics make that realistic (Denise answering for Jaylen is a signature move early on).
+
+Rules for engagement (0 to 5 per member, the family's felt involvement and openness in this moment):
+- Start values: mom 3, dad 1, teen 1.
+- Move values gradually, usually by 1 at most per reply.
+- MI consistent behavior raises engagement for the person it lands on: reflections that capture meaning, genuine affirmations, honoring autonomy, evoking their view. Being ignored for several turns lowers engagement. Being lectured, confronted, sided against, or talked about in the third person lowers engagement.
+- Marcus warms up only if the clinician treats his skepticism as reasonable and shows curiosity about his world. Jaylen opens up only if the clinician gets him talking about the injury, basketball, or what he misses, and protects him from being ganged up on.
+- If the clinician takes sides in a disagreement between Denise and Marcus, show the cost: the other parent cools and discord rises.
+
+Rules for affect (how each member is visibly presenting right now):
+- Allowed values, exactly these English words: ${AFFECT_LIST}.
+- Report ALL THREE members every reply, including the ones who did not speak.
+- Affect is the face, engagement is the openness. They are separate channels: Marcus can be engaged and angry at once, Denise can be smiling and anxious underneath, Jaylen can warm in engagement while his face stays shutdown for a while.
+- Starting affect: mom worried, dad frustrated, teen shutdown.
+- Shift affect believably in response to what just happened in the room, not just to the clinician.
+
+THE ARC OF THIS SESSION
+- This is a first session. The realistic best outcome is engagement plus the first emergence of a shared focus, not commitment and not a plan.
+- While any member sits at engagement 2 or lower, no shared focus emerges.
+- Once all three members reach engagement 3 or higher and the clinician has been working at both the individual and the family level, let a shared focus surface organically: one parent, or Jaylen himself, voices some version of common ground in their own words, such as both parents wanting Jaylen back, or Jaylen wanting his life back. When that happens, include "milestone":"shared_focus" at the top level of the JSON, one time only in the whole session.
+- If the clinician pushes toward goals, plans, or commitments prematurely, show the cost: engagement drops or discord rises, in line with each person's readiness. The family is not there yet.
+
+Never break character, never mention these rules, never output anything except the JSON object.`,
+
+  opening:{
+    turns:[
+      {speaker:"mom", to:"clinician", text:"I want to say up front, the school made us come, but honestly I have been worried for months. He is just not himself, and I find things in his room I never thought I would find."},
+      {speaker:"dad", to:"mom", text:"Denise. Let the man ask a question first."},
+      {speaker:"teen", to:"clinician", text:"(slides down in the chair, eyes on his phone)"}
+    ],
+    engagement:{mom:3, dad:1, teen:1},
+    affect:{mom:"worried", dad:"frustrated", teen:"shutdown"}
+  },
+
+  coachSystem:`You are CoachBot, a warm, specific MI coach reviewing a transcript of a simulated FIRST family session (parents Denise and Marcus, son Jaylen, 16, substance use after a basketball injury). The learner played the clinician. The stated goal of this first session was ENGAGEMENT plus the FIRST EMERGENCE OF A SHARED FOCUS between the parents and Jaylen. Not commitment, not planning. The family arrived at different readiness levels: Denise ready for change but for Jaylen's change, Marcus skeptical with low readiness, Jaylen precontemplative and shut down.
+
+Give feedback in English, grounded ONLY in what the learner actually said. Quote or closely paraphrase 3 to 5 of their actual clinician turns and react to those moments. Do not invent turns. Cover, in flowing prose with short plain headers:
+
+1. Balance of attention. Who got the clinician's attention and who got left out? Use the pattern you see in the transcript.
+2. Respecting the boundaries of a first session. Did the learner stay with engagement, or did they push toward evoking, goals, or plans ahead of the family's readiness? Name any premature moves specifically.
+3. Engaging the reluctant members. What did the learner do with Marcus's skepticism and Jaylen's silence? What worked, what would work better?
+4. Level of reflection. Did reflections stay with one individual, or did any capture the relationship or the family as a whole? Give one example of how an individual reflection they made could be reshaped into a family level reflection.
+5. Handling discord between members. When Denise and Marcus pulled against each other, did the clinician stay out of the middle?
+6. The shared focus. Did a shared focus between the parents and Jaylen begin to surface? If it did, did the learner recognize it and name it, or let it slip past? If it did not, what in the session kept it from emerging? Note any change talk that appeared and whether the learner acknowledged it without chasing it.
+
+End with the two most useful next steps for this learner's next family session. Encouraging, honest, concrete. No bullet lists, no em dashes, under 450 words.`
+},
+
+/* ============================== PORTUGUESE (BR) ============================== */
+pt: {
+  htmlLang:"pt-BR",
+  pageTitle:"A Sala da Família | Socialworky",
+  allTools:"Todas as ferramentas",
+  title:"A Sala da Família",
+  subtitle:"Pratique entrevista motivacional com a família toda na sala, cada pessoa em um momento diferente em relação à mudança.",
+  introH:"O que você vai praticar",
+  introP:"Conduzir uma sessão com a família. No atendimento individual, você acompanha a prontidão de uma pessoa só. Com a família na sala, são três ao mesmo tempo, e o que você diz para um, os outros também escutam. O desafio aqui é manter todo mundo na conversa, cada um partindo de um ponto bem diferente.",
+  goal:"Esta é uma primeira sessão. <b>Seu objetivo é o engajamento e o surgimento de um primeiro foco em comum</b> entre os pais e o Gabriel: todo mundo ainda na sala, ainda conversando, começando a nomear algo que os une. Nada de compromisso, nada de plano. Forçar isso antes da hora vai custar caro.",
+  tryTo:"Durante a sessão, procure:",
+  skills:[
+    "Manter os três engajados. Repare nos rostos e nos pontos de engajamento: quem for deixado de lado vai dar sinal.",
+    "Refletir em dois níveis: o que cada um disse e o que está acontecendo entre eles.",
+    "Não entrar no meio quando Márcia e Sérgio discordarem. Ficar do lado de um é perder o outro.",
+    "Perceber a fala de mudança quando ela aparecer, sem correr atrás dela. Esta sessão não é o momento de colher.",
+    "Ficar atento ao momento em que um foco em comum começar a surgir entre os pais e o Gabriel. É o sinal de que a sessão pode terminar bem."
+  ],
+  startBtn:"Começar a sessão",
+  names:{mom:"Márcia", dad:"Sérgio", teen:"Gabriel", clinician:"Terapeuta"},
+  roles:{mom:"Mãe, 44, auxiliar administrativa", dad:"Pai, 47, manutenção predial", teen:"16, estudante"},
+  cards:{
+    mom:{desc:"Mãe. Auxiliar administrativa numa clínica. Foi ela quem marcou a consulta e guarda na cabeça cada episódio. Fala bastante, às vezes pelo filho.", stance:"Pronta para a mudança, mas a mudança do Gabriel"},
+    teen:{desc:"Está no ensino médio. Machucou o joelho no ano passado e ficou de fora da base do clube. De lá pra cá, anda fumando maconha e bebendo com os primos mais velhos. Só veio porque a escola exigiu.", stance:"Pré-contemplativo, fechado"},
+    dad:{desc:"Pai. Técnico de manutenção predial, saiu mais cedo do serviço pra vir. Acha que a escola está exagerando e está cansado de levar a culpa.", stance:"Cético, pouca prontidão"}
+  },
+  sceneNote:"Primeira sessão num serviço comunitário de saúde mental da zona leste. A escola exigiu a avaliação depois do segundo episódio com o Gabriel. Márcia marcou a consulta. Sérgio saiu mais cedo do serviço.",
+  legend:"O rosto mostra como cada um está se sentindo. Os pontos mostram o engajamento com você.",
+  milestoneFocus:"Um foco em comum está surgindo. É um bom momento para encerrar a sessão e pedir o feedback.",
+  clinLabel:"Você (terapeuta)",
+  taskLine:"Sua tarefa: manter a família inteira na conversa e ajudar um primeiro foco em comum a aparecer. Hoje não é dia de plano nem de compromisso.",
+  placeholder:"Fale com a família ou com uma pessoa só. Por exemplo: Sérgio, você saiu mais cedo do serviço pra estar aqui. O que fez valer a pena?",
+  sendBtn:"Enviar",
+  endBtn:"Encerrar a sessão e receber o feedback",
+  transcript:"Mostrar transcrição",
+  feedbackH:"Feedback do CoachBot",
+  thinkingRoom:"A família reage...",
+  thinkingCoach:"O CoachBot está lendo a transcrição...",
+  errNoResponse:"A família não respondeu. Tente enviar de novo.",
+  errFewTurns:"Converse um pouco mais antes do feedback, para o CoachBot ter material para trabalhar.",
+  errFeedback:"O feedback não veio. Tente encerrar de novo.",
+  toWord:"para",
+  affectWords:{smiling:"sorrindo",neutral:"neutro",worried:"preocupado",sad:"triste",frustrated:"frustrado",angry:"com raiva",shutdown:"fechado"},
+  openingCue:"(A sessão começa. A família acabou de se sentar.)",
+  transcriptIntro:"Segue a transcrição da sessão:",
+  foot:"Um recurso de treinamento da Socialworky. Só para prática — use dados fictícios, nunca informações reais de pacientes.",
+
+  simSystem:`Você vai simular a família Oliveira na PRIMEIRA sessão de terapia familiar, num serviço comunitário de saúde mental da zona leste de uma grande cidade brasileira. Você interpreta os três membros da família; o usuário é o terapeuta. Todo o diálogo deve soar como português brasileiro falado, natural e coloquial, do jeito que uma família de verdade conversa. Nada de texto com cara de tradução.
+
+A FAMÍLIA
+- MÁRCIA ("mom"), 44 anos, auxiliar administrativa numa clínica. Foi ela quem marcou a consulta. Preocupada, fala bastante, às vezes responde pelo filho, guarda na memória cada episódio. Por trás de tanta vigilância existe um medo real de perder o filho para os primos mais velhos.
+- SÉRGIO ("dad"), 47 anos, técnico de manutenção predial, saiu mais cedo do serviço pra vir. Veio contrariado. Acha que a escola está exagerando e que tem a sua parcela de culpa: tiraram o Gabriel de tudo depois da lesão e agora se espantam com o resultado. Respostas curtas, humor seco, se irrita com a lista da Márcia. Por trás disso: perdeu o irmão mais novo há anos, não toca no assunto, e detesta a sensação de que a culpa é dele.
+- GABRIEL ("teen"), 16 anos, no ensino médio. Machucou o joelho no ano passado e perdeu a vaga na base do clube de futebol, que era boa parte da identidade e da vida social dele. De lá pra cá, fuma maconha e bebe com os primos mais velhos. A escola o suspendeu depois do segundo episódio e exigiu esta avaliação. Está quieto, envergonhado, grudado no celular, esperando o sermão. Por trás disso: sente falta de quem ele era e tem mais medo do futuro do que deixa transparecer.
+
+COMO RESPONDER
+Depois de cada mensagem do terapeuta, responda SOMENTE com JSON estrito, sem cercas de código e sem comentários, exatamente neste formato:
+${JSON_SHAPE}
+Quando as regras do arco, mais abaixo, indicarem, inclua também o campo opcional "milestone":"shared_focus" no nível superior do JSON.
+
+Regras para "turns":
+- De 1 a 3 falas por resposta. Varie quem fala. Conversa cruzada é bem vinda quando fizer sentido: quando um membro falar com outro em vez de falar com o terapeuta, use o id dele no campo "to".
+- "speaker" e "to" só podem ser: mom, dad, teen, clinician.
+- Cada fala com menos de 55 palavras. Vozes urbanas brasileiras, específicas e naturais, sem vocabulário clínico, sem travessões.
+- Comportamento não verbal vai entre parênteses dentro de "text", por exemplo "(dá de ombros, sem tirar os olhos do celular)". Uma fala pode ser só não verbal.
+- Quando o terapeuta chamar alguém pelo nome, em geral é essa pessoa que responde, mas os outros podem interromper se a dinâmica pedir. A Márcia responder pelo Gabriel é um movimento clássico no começo.
+
+Regras para "engagement" (0 a 5 por membro: o quanto cada um está envolvido e aberto naquele momento):
+- Valores iniciais: mom 3, dad 1, teen 1.
+- Mude os valores aos poucos, em geral no máximo 1 por resposta.
+- O que é coerente com a EM aumenta o engajamento de quem recebe: reflexões que capturam o sentido, afirmações genuínas, respeito à autonomia, curiosidade pela perspectiva da pessoa. Ficar vários turnos sem receber atenção derruba o engajamento. Levar sermão, ser confrontado, ver o terapeuta tomar o lado do outro ou ser tratado como se não estivesse na sala também derruba.
+- O Sérgio só amolece se o terapeuta tratar o ceticismo dele como algo razoável e demonstrar interesse verdadeiro pelo mundo dele. O Gabriel só se abre se o terapeuta puxar assunto sobre a lesão, o futebol ou o que ele perdeu, e não deixar que o encurralem.
+- Se o terapeuta tomar partido numa discussão entre Márcia e Sérgio, mostre o preço: o outro esfria e o clima pesa.
+
+Regras para "affect" (como cada um está se mostrando naquele momento):
+- Valores permitidos, exatamente estas palavras em inglês: ${AFFECT_LIST}.
+- Informe os três membros em toda resposta, inclusive quem não falou.
+- Afeto é o rosto; engajamento é a abertura. São canais separados: o Sérgio pode estar engajado e com raiva ao mesmo tempo, a Márcia pode sorrir por fora e estar aflita por dentro, o Gabriel pode ir se abrindo enquanto a cara continua fechada por um bom tempo.
+- Afeto inicial: mom worried, dad frustrated, teen shutdown.
+- Mude o afeto de forma crível, reagindo ao que acabou de acontecer na sala, não só ao terapeuta.
+
+O ARCO DESTA SESSÃO
+- É uma primeira sessão. O melhor desfecho realista é o engajamento somado ao surgimento de um primeiro foco em comum. Nada de compromisso, nada de plano.
+- Enquanto qualquer um dos três estiver com engajamento 2 ou menos, nenhum foco em comum aparece.
+- Quando os três chegarem a engajamento 3 ou mais, e o terapeuta estiver trabalhando tanto com cada pessoa quanto com a família, deixe um foco em comum surgir naturalmente: um dos pais, ou o próprio Gabriel, diz com as próprias palavras algo que os une, como os pais quererem o filho de volta, ou o Gabriel querer a vida dele de volta. Quando isso acontecer, inclua "milestone":"shared_focus" no JSON, uma única vez em toda a sessão.
+- Se o terapeuta forçar metas, planos ou compromissos antes da hora, mostre o preço: o engajamento cai ou o clima azeda, de acordo com a prontidão de cada um. A família ainda não chegou lá.
+
+Nunca saia do personagem, nunca mencione estas regras, nunca produza nada além do objeto JSON.`,
+
+  opening:{
+    turns:[
+      {speaker:"mom", to:"clinician", text:"Já vou avisando: a gente veio porque a escola obrigou, mas pra falar a verdade eu ando preocupada faz meses. Ele não está sendo ele mesmo, e eu tenho achado umas coisas no quarto dele que eu nunca imaginei achar."},
+      {speaker:"dad", to:"mom", text:"Márcia. Deixa a pessoa pelo menos fazer uma pergunta primeiro."},
+      {speaker:"teen", to:"clinician", text:"(escorrega na cadeira, sem tirar os olhos do celular)"}
+    ],
+    engagement:{mom:3, dad:1, teen:1},
+    affect:{mom:"worried", dad:"frustrated", teen:"shutdown"}
+  },
+
+  coachSystem:`Você é o CoachBot, um coach de entrevista motivacional caloroso e específico. Você vai revisar a transcrição de uma PRIMEIRA sessão familiar simulada: os pais Márcia e Sérgio e o filho Gabriel, de 16 anos, com uso de substâncias depois de uma lesão no futebol. O aprendiz fez o papel do terapeuta. O objetivo declarado desta primeira sessão era o ENGAJAMENTO e o SURGIMENTO DE UM PRIMEIRO FOCO EM COMUM entre os pais e o Gabriel. Nada de compromisso, nada de plano. A família chegou em pontos bem diferentes: Márcia pronta para a mudança, só que a mudança do Gabriel; Sérgio cético, com pouca prontidão; Gabriel pré-contemplativo e fechado.
+
+Escreva o feedback em português brasileiro natural, apoiado APENAS no que o aprendiz de fato disse. Cite ou parafraseie de perto de 3 a 5 falas reais do terapeuta e comente esses momentos. Não invente falas. Organize em prosa fluida, com títulos simples, cobrindo:
+
+1. Equilíbrio da atenção. Quem recebeu a atenção do terapeuta e quem ficou de fora? Descreva o padrão que aparece na transcrição.
+2. Respeito aos limites de uma primeira sessão. O aprendiz ficou no engajamento ou tentou evocar, definir metas ou planejar antes da hora? Aponte com precisão qualquer movimento precipitado.
+3. Engajamento dos relutantes. O que o aprendiz fez com o ceticismo do Sérgio e com o silêncio do Gabriel? O que funcionou e o que funcionaria melhor?
+4. Nível da reflexão. As reflexões ficaram só no indivíduo, ou alguma capturou a relação ou a família como um todo? Dê um exemplo de como uma reflexão individual que o aprendiz fez poderia virar uma reflexão no nível da família.
+5. Manejo da discordância. Quando Márcia e Sérgio bateram de frente, o terapeuta conseguiu ficar fora do meio?
+6. O foco em comum. Chegou a surgir um foco em comum entre os pais e o Gabriel? Se sim, o aprendiz percebeu e nomeou, ou deixou passar? Se não surgiu, o que na sessão impediu? Registre também qualquer fala de mudança que apareceu e se o aprendiz a acolheu sem sair correndo atrás dela.
+
+Termine com os dois próximos passos mais úteis para a próxima sessão familiar deste aprendiz. Um tom encorajador, honesto e concreto. Sem listas com marcadores, sem travessões, menos de 450 palavras.`
+}
+};
+
+/* ---------------- State ---------------- */
+
+let lang = new URLSearchParams(location.search).get("lang") === "pt" ? "pt" : "en";
+let L = LOCALES[lang];
+let messages = [];
+let transcript = [];
+let ended = false;
+let started = false;
+
+/* ---------------- Locale rendering ---------------- */
+
+const $ = id => document.getElementById(id);
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function figureSVG(m, small){
+  const cls = small ? "" : ' class="figure" id="fig-'+m+'"';
+  const face = small ? "" : `
+    <g stroke="#fff" fill="#fff" stroke-linecap="round">
+      <line class="brow" id="browL-${m}" x1="32" y1="24" x2="44" y2="24" stroke-width="2.6" fill="none"/>
+      <line class="brow" id="browR-${m}" x1="52" y1="24" x2="64" y2="24" stroke-width="2.6" fill="none"/>
+      <ellipse class="eye" id="eyeL-${m}" cx="39" cy="32" rx="2.8" ry="2.8" stroke="none"/>
+      <ellipse class="eye" id="eyeR-${m}" cx="57" cy="32" rx="2.8" ry="2.8" stroke="none"/>
+      <path class="mouth" id="mouth-${m}" d="M40 46 L56 46" stroke-width="2.6" fill="none"/>
+    </g>`;
+  return `<svg${cls} viewBox="0 0 96 120" role="img" aria-label="${L.names[m]}">
+    <circle cx="48" cy="36" r="24" fill="${COLORS[m]}"/>
+    <path d="M10 120 C10 76, 30 58, 48 58 C66 58, 86 76, 86 120 Z" fill="${COLORS[m]}" opacity=".85"/>${face}
+  </svg>`;
+}
+
+function buildWhoCards(){
+  const order = ["mom","teen","dad"];
+  const ages = {mom:"44", teen:"16", dad:"47"};
+  $("whoCards").innerHTML = order.map(m=>`
+    <div class="who-card">
+      ${figureSVG(m, true)}
+      <div><b>${L.names[m]}, ${ages[m]}</b>
+      <span>${L.cards[m].desc}</span>
+      <span class="stance">${L.cards[m].stance}</span></div>
+    </div>`).join("");
+}
+
+function buildFamilyRow(){
+  $("familyRow").innerHTML = MEMBERS.map(m=>`
+    <div class="member" id="m-${m}">
+      <div class="bubble-slot" id="slot-${m}" aria-live="polite"></div>
+      ${figureSVG(m, false)}
+      <div class="name">${L.names[m]}</div>
+      <div class="role">${L.roles[m]}</div>
+      <div class="meter" id="meter-${m}" aria-label="${L.names[m]}"><i></i><i></i><i></i><i></i><i></i></div>
+    </div>`).join("");
+}
+
+function applyLocale(){
+  L = LOCALES[lang];
+  document.documentElement.lang = L.htmlLang;
+  document.title = L.pageTitle;
+  $("tTitle").textContent = L.title;
+  $("tSubtitle").textContent = L.subtitle;
+  $("tIntroH").textContent = L.introH;
+  $("tIntroP").textContent = L.introP;
+  $("tGoal").innerHTML = L.goal;
+  $("tTryTo").textContent = L.tryTo;
+  $("tSkills").innerHTML = L.skills.map(s=>`<li>${s}</li>`).join("");
+  $("startBtn").textContent = L.startBtn;
+  $("tSceneNote").textContent = L.sceneNote;
+  $("tLegend").textContent = L.legend;
+  $("tClinLabel").textContent = L.clinLabel;
+  $("tTaskLine").textContent = L.taskLine;
+  $("input").placeholder = L.placeholder;
+  $("sendBtn").textContent = L.sendBtn;
+  $("endBtn").textContent = L.endBtn;
+  $("tTranscript").textContent = L.transcript;
+  $("tFeedbackH").textContent = L.feedbackH;
+  $("tFoot").textContent = L.foot;
+  $("langEn").classList.toggle("active", lang==="en");
+  $("langPt").classList.toggle("active", lang==="pt");
+  buildWhoCards();
+  buildFamilyRow();
+}
+
+$("langEn").addEventListener("click", ()=>{ if(!started){ lang="en"; applyLocale(); }});
+$("langPt").addEventListener("click", ()=>{ if(!started){ lang="pt"; applyLocale(); }});
+
+/* ---------------- Model plumbing ---------------- */
+
+/* The family role-play (per turn) runs on the cheaper, faster model; CoachBot's
+   end-of-session feedback runs on the sharper one. Same split as the other MI sims. */
+const TURN_MODEL  = "gpt-4.1-mini";
+const COACH_MODEL = "gpt-4.1";
+
+async function callModel(system, msgs, model, maxTokens){
+  const headers = {"Content-Type":"application/json"};
+  const code = localStorage.getItem("family_room_access_code");
+  if(code) headers["x-access-code"] = code;
+  const controller = new AbortController();
+  const t = setTimeout(()=>controller.abort(), 45000);
+  let response;
+  try{
+    response = await fetch("/api/chat", {
+      method:"POST",
+      headers,
+      signal: controller.signal,
+      body: JSON.stringify({ system, messages: msgs, model, max_tokens: maxTokens || 1000 })
+    });
+  } finally { clearTimeout(t); }
+  if(response.status === 401){
+    const entered = prompt("Enter the access code for this tool:");
+    if(entered){ localStorage.setItem("family_room_access_code", entered); return callModel(system, msgs, model, maxTokens); }
+    throw new Error("Access code required.");
+  }
+  const data = await response.json();
+  if(!response.ok) throw new Error((data && data.error) || ("status " + response.status));
+  if(!data || !data.content) throw new Error("Empty response");
+  return data.content.filter(i=>i.type==="text").map(i=>i.text).join("\n");
+}
+
+function extractJSON(text){
+  if(!text) return null;
+  let s = text.replace(/```json/gi,"").replace(/```/g,"").trim();
+  const start = s.indexOf("{");
+  if(start < 0) return null;
+  let depth = 0, inStr = false, esc = false;
+  for(let i=start;i<s.length;i++){
+    const c = s[i];
+    if(inStr){
+      if(esc){esc=false;}
+      else if(c==="\\"){esc=true;}
+      else if(c==='"'){inStr=false;}
+    } else {
+      if(c==='"') inStr = true;
+      else if(c==="{") depth++;
+      else if(c==="}"){
+        depth--;
+        if(depth===0){
+          try{ return JSON.parse(s.slice(start, i+1)); }catch(e){ return null; }
+        }
+      }
+    }
+  }
+  return null;
+}
+
+async function getTurn(){
+  for(let attempt=0; attempt<2; attempt++){
+    try{
+      const raw = await callModel(L.simSystem, messages, TURN_MODEL, 1000);
+      const obj = extractJSON(raw);
+      if(obj && Array.isArray(obj.turns) && obj.engagement){
+        messages.push({role:"assistant", content: JSON.stringify(obj)});
+        return obj;
+      }
+    }catch(e){ /* retry */ }
+  }
+  throw new Error(L.errNoResponse);
+}
+
+/* ---------------- Rendering ---------------- */
+
+function setAffect(affects){
+  if(!affects) return;
+  MEMBERS.forEach(m=>{
+    const key = String(affects[m] || "").toLowerCase();
+    const a = AFFECTS[key];
+    if(!a) return;
+    $("mouth-"+m).setAttribute("d", a.mouth);
+    $("browL-"+m).setAttribute("transform", `rotate(${a.browL} 38 24)`);
+    $("browR-"+m).setAttribute("transform", `rotate(${a.browR} 58 24)`);
+    $("eyeL-"+m).setAttribute("ry", a.eye);
+    $("eyeR-"+m).setAttribute("ry", a.eye);
+    $("fig-"+m).setAttribute("aria-label", `${L.names[m]}, ${L.affectWords[key]||key}`);
+  });
+}
+
+function setEngagement(scores){
+  MEMBERS.forEach(m=>{
+    const v = Math.max(0, Math.min(5, Number(scores[m]) ?? 0));
+    const dots = $("meter-"+m).children;
+    for(let i=0;i<5;i++) dots[i].classList.toggle("on", i < v);
+    const fig = $("fig-"+m);
+    const angle = m==="dad" ? 1 : -1; // turn toward the outside of the room
+    if(v <= 1){ fig.style.transform = `rotate(${8*angle}deg) translateY(4px)`; fig.style.opacity = .5; }
+    else if(v === 2){ fig.style.transform = `rotate(${4*angle}deg)`; fig.style.opacity = .72; }
+    else if(v === 3){ fig.style.transform = "none"; fig.style.opacity = .9; }
+    else { fig.style.transform = "translateY(-4px) scale(1.04)"; fig.style.opacity = 1; }
+  });
+}
+
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function bubbleHTML(turn){
+  const toTag = (turn.to && turn.to !== "clinician")
+    ? `<span class="to-tag">${L.toWord} ${L.names[turn.to] || turn.to}</span>` : "";
+  const isAction = /^\(.*\)$/.test(turn.text.trim());
+  const body = isAction ? `<span class="action">${escapeHTML(turn.text)}</span>` : escapeHTML(turn.text);
+  return toTag + body;
+}
+
+function clearBubbles(){
+  MEMBERS.forEach(m=> $("slot-"+m).innerHTML = "");
+  $("slot-clin").innerHTML = "";
+}
+
+async function playTurns(obj){
+  for(const turn of obj.turns){
+    if(!MEMBERS.includes(turn.speaker)) continue;
+    $("slot-"+turn.speaker).innerHTML = `<div class="bubble">${bubbleHTML(turn)}</div>`;
+    transcript.push(turn);
+    logLine(turn.speaker, turn.to, turn.text);
+    if(!reduced) await sleep(950);
+  }
+  if(obj.engagement) setEngagement(obj.engagement);
+  if(obj.affect) setAffect(obj.affect);
+  if(obj.milestone === "shared_focus"){
+    $("milestone").textContent = L.milestoneFocus;
+    $("milestone").classList.remove("hidden");
+  }
+}
+
+function showClinician(text){
+  $("slot-clin").innerHTML = `<div class="clin-bubble">${escapeHTML(text)}</div>`;
+  transcript.push({speaker:"clinician", to:"family", text});
+  logLine("clinician", "family", text);
+}
+
+function logLine(speaker, to, text){
+  const p = document.createElement("p");
+  const dir = (to && to !== "clinician" && to !== "family") ? ` (${L.toWord} ${L.names[to]||to})` : "";
+  p.innerHTML = `<span class="spk">${L.names[speaker]||speaker}${dir}:</span> ${escapeHTML(text)}`;
+  $("log").appendChild(p);
+  $("log").scrollTop = $("log").scrollHeight;
+}
+
+/* ---------------- Flow ---------------- */
+
+async function send(){
+  if(ended) return;
+  const text = $("input").value.trim();
+  if(!text) return;
+  $("notice").textContent = "";
+  $("input").value = "";
+  $("sendBtn").disabled = true;
+  clearBubbles();
+  showClinician(text);
+  $("thinking").textContent = L.thinkingRoom;
+  messages.push({role:"user", content:text});
+  try{
+    const obj = await getTurn();
+    $("thinking").textContent = "";
+    await playTurns(obj);
+  }catch(e){
+    $("thinking").textContent = "";
+    $("notice").textContent = e.message || L.errNoResponse;
+    messages.pop(); // let the learner retry the same turn cleanly
+  }finally{
+    $("sendBtn").disabled = false;
+    $("input").focus();
+  }
+}
+
+async function endSession(){
+  if(ended) return;
+  const clinTurns = transcript.filter(t=>t.speaker==="clinician").length;
+  if(clinTurns < 3){
+    $("notice").textContent = L.errFewTurns;
+    return;
+  }
+  ended = true;
+  $("sendBtn").disabled = true;
+  $("endBtn").disabled = true;
+  $("thinking").textContent = L.thinkingCoach;
+  const lines = transcript.map(t=>{
+    const dir = (t.to && t.to!=="clinician" && t.to!=="family") ? ` (${L.toWord} ${L.names[t.to]||t.to})` : "";
+    return `${L.names[t.speaker]||t.speaker}${dir}: ${t.text}`;
+  }).join("\n");
+  try{
+    const fb = await callModel(L.coachSystem,
+      [{role:"user", content: L.transcriptIntro + "\n\n" + lines}], COACH_MODEL, 1000);
+    $("fbBody").textContent = fb.trim();
+    $("feedback").style.display = "block";
+    $("feedback").scrollIntoView({behavior: reduced ? "auto" : "smooth"});
+  }catch(e){
+    $("notice").textContent = L.errFeedback;
+    ended = false; $("sendBtn").disabled = false; $("endBtn").disabled = false;
+  }finally{
+    $("thinking").textContent = "";
+  }
+}
+
+$("sendBtn").addEventListener("click", send);
+$("endBtn").addEventListener("click", endSession);
+$("input").addEventListener("keydown", e=>{
+  if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); send(); }
+});
+
+$("startBtn").addEventListener("click", async ()=>{
+  started = true;
+  messages = [
+    {role:"user", content: L.openingCue},
+    {role:"assistant", content: JSON.stringify(L.opening)}
+  ];
+  $("intro").classList.add("hidden");
+  $("scene").classList.remove("hidden");
+  $("workArea").classList.remove("hidden");
+  setEngagement(L.opening.engagement);
+  setAffect(L.opening.affect);
+  await sleep(reduced ? 0 : 500);
+  await playTurns(L.opening);
+  $("input").focus();
+});
+
+applyLocale();
+</script>
+</body>
+</html>

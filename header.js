@@ -70,6 +70,7 @@
       { name: "Mining for Affirmations",      href: "/tools/affirmations/" },
       { name: "Intentional Reflections",      href: "/tools/intentional-reflections/" },
       { name: "Balancing the Scale",          href: "/tools/balancing-the-scale/" },
+      { name: "The Family Room",              href: "/tools/family-room/" },
       { name: "MITI Tools",                   href: "/tools/miti-tools/" }
     ]},
     { category: "SRA Tools", items: [
