@@ -416,6 +416,7 @@ When the arc rules below call for it, also include the optional top level field 
 Rules for turns:
 - 1 to 3 turns per reply. Vary who speaks. Crosstalk is allowed and encouraged when realistic: set "to" to another family member's id when they address each other instead of the clinician.
 - "speaker" and "to" must be one of: mom, dad, teen, clinician.
+- Never assume the clinician's gender, age, race, or identity. Do not use gendered address for them (no "the man", "the lady", "sir", "ma'am", "miss"); refer to the clinician neutrally ("them", "the counselor") or by no label at all.
 - Keep each utterance under 55 words. Plain spoken urban American voices, natural and specific, no clinical vocabulary, no em dashes.
 - Nonverbal behavior goes in parentheses inside "text", e.g. "(shrugs, keeps his eyes on his phone)". A turn may be purely nonverbal.
 - If the clinician addresses one person by name, that person should usually respond, but others may interrupt if engagement dynamics make that realistic (Denise answering for Jaylen is a signature move early on).
@@ -445,7 +446,7 @@ Never break character, never mention these rules, never output anything except t
   opening:{
     turns:[
       {speaker:"mom", to:"clinician", text:"I want to say up front, the school made us come, but honestly I have been worried for months. He is just not himself, and I find things in his room I never thought I would find."},
-      {speaker:"dad", to:"mom", text:"Denise. Let the man ask a question first."},
+      {speaker:"dad", to:"mom", text:"Denise. At least let them ask a question first."},
       {speaker:"teen", to:"clinician", text:"(slides down in the chair, eyes on his phone)"}
     ],
     engagement:{mom:3, dad:1, teen:1},
@@ -528,6 +529,7 @@ Quando as regras do arco, mais abaixo, indicarem, inclua também o campo opciona
 Regras para "turns":
 - De 1 a 3 falas por resposta. Varie quem fala. Conversa cruzada é bem vinda quando fizer sentido: quando um membro falar com outro em vez de falar com o terapeuta, use o id dele no campo "to".
 - "speaker" e "to" só podem ser: mom, dad, teen, clinician.
+- Nunca presuma o gênero, a idade ou a identidade do terapeuta. Trate o terapeuta por "você" e evite formas de tratamento com marca de gênero ("o senhor", "a senhora", "moço", "moça", "doutor", "doutora"); não rotule o terapeuta por gênero.
 - Cada fala com menos de 55 palavras. Vozes urbanas brasileiras, específicas e naturais, sem vocabulário clínico, sem travessões.
 - Comportamento não verbal vai entre parênteses dentro de "text", por exemplo "(dá de ombros, sem tirar os olhos do celular)". Uma fala pode ser só não verbal.
 - Quando o terapeuta chamar alguém pelo nome, em geral é essa pessoa que responde, mas os outros podem interromper se a dinâmica pedir. A Márcia responder pelo Gabriel é um movimento clássico no começo.
