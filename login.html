@@ -101,11 +101,13 @@
           }
 
           statusEl.textContent = "";
-          // Clerk automatically reads redirect_url from the address.
-          // fallbackRedirectUrl is used only when redirect_url is absent.
+          const _params = new URLSearchParams(window.location.search);
+          const _dest = _params.get("redirect_url") || DEFAULT_AFTER_LOGIN;
+          // Clerk reads redirect_url automatically for sign-in; pass it explicitly
+          // for sign-up so new accounts also land on the right page.
           Clerk.mountSignIn(signInEl, {
-            fallbackRedirectUrl: DEFAULT_AFTER_LOGIN,
-            signUpFallbackRedirectUrl: DEFAULT_AFTER_LOGIN,
+            fallbackRedirectUrl: _dest,
+            signUpFallbackRedirectUrl: _dest,
           });
         } catch (err) {
           statusEl.textContent =
