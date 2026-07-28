@@ -386,8 +386,7 @@
     var dest = href;
     sessionStorage.setItem("sw-transition", "from-main");
     var markup =
-      '<div style="' + SW_FONT + 'font-size:52px;font-weight:800;color:#fff;letter-spacing:-0.03em;line-height:1;">SW</div>' +
-      '<div style="' + SW_FONT + 'font-size:13px;font-weight:600;color:rgba(255,255,255,.65);letter-spacing:.12em;text-transform:uppercase;">Graduate Student Tools</div>';
+      '<div style="' + SW_FONT + 'font-size:36px;font-weight:800;color:#fff;letter-spacing:-0.02em;">Social<span style="opacity:.7">worky</span></div>';
     swCurtain("#841617", markup, function(){ window.location.href = dest; });
   });
 

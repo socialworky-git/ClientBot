@@ -43,8 +43,7 @@
     el.style.background='#841617';
     el.style.transform='translateY(0)';
     el.innerHTML='<div style="'+SW_MARK_STYLES+'">'
-      +'<div style="'+SW_FONT+'font-size:52px;font-weight:800;color:#fff;letter-spacing:-0.03em;line-height:1;">SW</div>'
-      +'<div style="'+SW_FONT+'font-size:13px;font-weight:600;color:rgba(255,255,255,.65);letter-spacing:.12em;text-transform:uppercase;">Graduate Student Tools</div>'
+      +'<div style="'+SW_FONT+'font-size:36px;font-weight:800;color:#fff;letter-spacing:-0.02em;">Social<span style="opacity:.7">worky</span></div>'
       +'</div>';
     document.body.appendChild(el);
     requestAnimationFrame(function(){
@@ -81,8 +80,7 @@
       var dest=href;
       sessionStorage.setItem('sw-transition','from-msw');
       var markup=
-        '<div style="'+SW_FONT+'font-size:36px;font-weight:800;color:#fff;letter-spacing:-0.02em;">Social<span style="opacity:.7">worky</span></div>'+
-        '<div style="'+SW_FONT+'font-size:13px;font-weight:600;color:rgba(255,255,255,.65);letter-spacing:.12em;text-transform:uppercase;">Practice Tools</div>';
+        '<div style="'+SW_FONT+'font-size:36px;font-weight:800;color:#fff;letter-spacing:-0.02em;">Social<span style="opacity:.7">worky</span></div>';
       swCurtain('#EB786B',markup,function(){ window.location.href=dest; });
     }
   });
