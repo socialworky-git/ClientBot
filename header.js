@@ -147,8 +147,8 @@
     "@keyframes sw-nav-in{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}" +
     "@media (max-width:640px){.sw-nav__inner{padding:12px var(--sw-gutter,16px);}.sw-nav__links{gap:16px;}.sw-dd__panel{min-width:210px;}}" +
     /* respect reduced-motion: show instantly, no slide or fade */
-    ".sw-nav__gsw{font-size:15px;font-weight:700;color:#841617 !important;text-decoration:none;}" +
-    ".sw-nav__gsw:hover{color:#5C0F10 !important;opacity:.85;}" +
+    ".sw-dd__panel .sw-dd__gsw{color:#841617;font-weight:700;border-top:1px solid #F0F0F2;margin-top:4px;padding-top:10px;}" +
+    ".sw-dd__panel .sw-dd__gsw:hover,.sw-dd__panel .sw-dd__gsw:focus{background:#F5ECEC;color:#5C0F10;}" +
     /* page-exit fade for cross-site navigation */
     "@keyframes sw-exit{to{opacity:0;}}" +
     ".sw-exiting{animation:sw-exit .28s ease forwards;}" +
@@ -220,14 +220,15 @@
   linksWrap.appendChild(makeDropdown({
     label: TRAINING_LABEL, hubHref: LINKS.training, hubLabel: "Training & consultation", groups: TRAININGS
   }));
-  linksWrap.appendChild(makeDropdown({
+  var toolsDD = makeDropdown({
     label: TOOLS_LABEL, hubHref: LINKS.tools, hubLabel: "All Tools", groups: TOOLS
-  }));
+  });
   var gswLink = document.createElement("a");
-  gswLink.className = "sw-nav__gsw";
+  gswLink.className = "sw-dd__gsw";
   gswLink.href = "/msw/";
   gswLink.textContent = "Graduate Student Tools";
-  linksWrap.appendChild(gswLink);
+  toolsDD.querySelector(".sw-dd__panel").appendChild(gswLink);
+  linksWrap.appendChild(toolsDD);
 
   /* Auth control slot: filled in once Clerk has loaded (see below). */
   var authSlot = document.createElement("div");
