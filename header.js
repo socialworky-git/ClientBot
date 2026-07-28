@@ -79,9 +79,6 @@
     ]},
     { category: "Other Tools", items: [
       { name: "Practicing ASSIST", href: "/tools/practicing-assist/" }
-    ]},
-    { category: "Graduate Student Tools", items: [
-      { name: "Graduate Student Tools Hub", href: "/msw/" }
     ]}
   ];
 
@@ -150,8 +147,14 @@
     "@keyframes sw-nav-in{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}" +
     "@media (max-width:640px){.sw-nav__inner{padding:12px var(--sw-gutter,16px);}.sw-nav__links{gap:16px;}.sw-dd__panel{min-width:210px;}}" +
     /* respect reduced-motion: show instantly, no slide or fade */
+    ".sw-nav__gsw{font-size:15px;font-weight:700;color:#841617 !important;text-decoration:none;}" +
+    ".sw-nav__gsw:hover{color:#5C0F10 !important;opacity:.85;}" +
+    /* page-exit fade for cross-site navigation */
+    "@keyframes sw-exit{to{opacity:0;}}" +
+    ".sw-exiting{animation:sw-exit .28s ease forwards;}" +
     "@media (prefers-reduced-motion: reduce){" +
       ".sw-nav{animation:none;}" +
+      ".sw-exiting{animation:none;}" +
       ".sw-dd__panel{transform:none;transition:visibility 0s linear .001s,opacity .001s;}" +
       ".sw-dd.open .sw-dd__panel{transform:none;transition:none;}" +
       ".sw-dd__caret{transition:none;}}";
@@ -220,6 +223,11 @@
   linksWrap.appendChild(makeDropdown({
     label: TOOLS_LABEL, hubHref: LINKS.tools, hubLabel: "All Tools", groups: TOOLS
   }));
+  var gswLink = document.createElement("a");
+  gswLink.className = "sw-nav__gsw";
+  gswLink.href = "/msw/";
+  gswLink.textContent = "Graduate Student Tools";
+  linksWrap.appendChild(gswLink);
 
   /* Auth control slot: filled in once Clerk has loaded (see below). */
   var authSlot = document.createElement("div");
@@ -342,5 +350,18 @@
     Clerk.load({ ui: { ClerkUI: window.__internal_ClerkUICtor } })
       .then(swOnClerkReady)
       .catch(function(e){ console.error("Clerk load error:", e); swRevealPage(); });
+  });
+
+  /* Fade-exit transition when navigating to /msw/ */
+  document.addEventListener("click", function(e){
+    var a = e.target.closest ? e.target.closest("a") : null;
+    if (!a) return;
+    var href = a.getAttribute("href") || "";
+    if (href.indexOf("/msw/") !== 0) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    e.preventDefault();
+    var dest = href;
+    document.body.classList.add("sw-exiting");
+    setTimeout(function(){ window.location.href = dest; }, 290);
   });
 })();
