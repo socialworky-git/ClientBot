@@ -24,9 +24,30 @@
     +'</div></div>';
   document.currentScript.insertAdjacentHTML('afterend',html);
 
+  /* Fade-in for the page reveal after Clerk auth */
+  var fadeStyle=document.createElement('style');
+  fadeStyle.textContent='@keyframes sw-msw-in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}' +
+    '#page{animation:sw-msw-in .35s ease both;}' +
+    '@media(prefers-reduced-motion:reduce){#page{animation:none;}}';
+  document.head.appendChild(fadeStyle);
+
   document.addEventListener('click',function(e){
     if(e.target&&e.target.id==='signOutBtn'){
       if(window.Clerk) window.Clerk.signOut().then(function(){ window.location.replace('/msw/'); });
+    }
+    /* Fade-exit when navigating to the main site */
+    var a=e.target.closest?e.target.closest('a'):null;
+    if(a){
+      var href=a.getAttribute('href')||'';
+      var isMsw=href.indexOf('/msw/')===0||href.indexOf('/')!==0;
+      var isMain=href==='https://socialworky.com'||href==='/';
+      if(isMain&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey){
+        e.preventDefault();
+        var dest=href;
+        document.body.style.transition='opacity .28s ease';
+        document.body.style.opacity='0';
+        setTimeout(function(){window.location.href=dest;},290);
+      }
     }
   });
 })();
