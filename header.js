@@ -79,6 +79,9 @@
     ]},
     { category: "Other Tools", items: [
       { name: "Practicing ASSIST", href: "/tools/practicing-assist/" }
+    ]},
+    { category: "Graduate Student Tools", items: [
+      { name: "Graduate Student Tools Hub", href: "/msw/" }
     ]}
   ];
 
