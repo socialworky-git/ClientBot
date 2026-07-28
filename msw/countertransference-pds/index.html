@@ -219,13 +219,13 @@
   <div id="gate-inner">
     <div class="sw-mark">SW</div>
     <p>Sign in to access your course tools.</p>
-    <a href="/login.html?redirect_url=/zarrow/countertransference-pds/">Sign in</a>
+    <a href="/login.html?redirect_url=/msw/countertransference-pds/">Sign in</a>
   </div>
 </div>
 
 <!-- Page -->
 <div id="page">
-  <script src="/zarrow/header.js"></script>
+  <script src="/msw/header.js"></script>
 
   <div class="wrap">
 
@@ -305,7 +305,7 @@ window.addEventListener('load', async function(){
   try {
     await Clerk.load();
     if (!Clerk.isSignedIn) {
-      window.location.replace('/login.html?redirect_url=/zarrow/countertransference-pds/');
+      window.location.replace('/login.html?redirect_url=/msw/countertransference-pds/');
       return;
     }
     document.getElementById('gate').style.display = 'none';

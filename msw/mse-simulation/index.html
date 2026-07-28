@@ -189,13 +189,13 @@
   <div id="gate-inner">
     <div class="sw-mark">SW</div>
     <p>Sign in to access your course tools.</p>
-    <a href="/login.html?redirect_url=/zarrow/mse-simulation/">Sign in</a>
+    <a href="/login.html?redirect_url=/msw/mse-simulation/">Sign in</a>
   </div>
 </div>
 
 <!-- Main page -->
 <div id="page">
-  <script src="/zarrow/header.js"></script>
+  <script src="/msw/header.js"></script>
   <div class="wrap">
     <div id="app"></div>
   </div>
@@ -214,7 +214,7 @@ window.addEventListener('load', async function(){
   try {
     await Clerk.load();
     if (!Clerk.isSignedIn) {
-      window.location.replace('/login.html?redirect_url=/zarrow/mse-simulation/');
+      window.location.replace('/login.html?redirect_url=/msw/mse-simulation/');
       return;
     }
     document.getElementById('gate').style.display = 'none';
