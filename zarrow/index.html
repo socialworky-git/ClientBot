@@ -31,14 +31,6 @@
 
   /* Page */
   #page{display:none;}
-  .header{background:var(--accent);padding:0 24px;}
-  .header-inner{max-width:860px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;
-    gap:16px;height:56px;flex-wrap:wrap;}
-  .header .wordmark{font-weight:800;font-size:18px;letter-spacing:-0.02em;color:#fff;text-decoration:none;}
-  .header .wordmark .sub{font-weight:500;opacity:.75;margin-left:6px;font-size:14px;}
-  .header .signout{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;
-    font-family:var(--sans);font-size:13px;font-weight:600;padding:5px 13px;border-radius:6px;cursor:pointer;}
-  .header .signout:hover{background:rgba(255,255,255,.28);}
 
   .hero{background:radial-gradient(120% 120% at 80% 0%,#fff0f0 0%,#fdf7f7 50%,#f8f5f5 100%);
     padding:40px 24px 44px;}
@@ -80,12 +72,7 @@
 
 <!-- Main page -->
 <div id="page">
-  <div class="header">
-    <div class="header-inner">
-      <a class="wordmark" href="/zarrow/">Socialworky<span class="sub">Graduate Student Tools</span></a>
-      <button class="signout" id="signOutBtn">Sign out</button>
-    </div>
-  </div>
+  <script src="/zarrow/header.js"></script>
 
   <div class="hero">
     <div class="hero-inner">
@@ -153,7 +140,7 @@
       </a>
     </div>
 
-    <div class="foot">Socialworky practice tools for graduate social work students. Tools are simulations, not clinical advice. Use only fictional or composite details — never real client information.</div>
+    <div class="foot">Socialworky practice tools for graduate social work students. Tools are simulations, not clinical advice. Use only fictional or composite details — never real client information. &nbsp;&middot;&nbsp; <a href="https://socialworky.com" style="color:var(--muted);text-decoration:underline;">socialworky.com</a></div>
   </div>
 </div>
 
@@ -175,9 +162,6 @@ window.addEventListener('load', async function(){
     }
     document.getElementById('gate').style.display = 'none';
     document.getElementById('page').style.display = 'block';
-    document.getElementById('signOutBtn').addEventListener('click', function(){
-      Clerk.signOut().then(function(){ window.location.replace('/tools/'); });
-    });
   } catch(e) {
     console.error('Clerk error', e);
   }

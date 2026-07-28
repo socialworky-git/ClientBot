@@ -40,12 +40,6 @@
 
   /* Page header */
   #page{display:none;}
-  .page-header{background:var(--crimson);padding:0 20px;}
-  .page-header-inner{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;
-    gap:16px;height:50px;font-family:'Hanken Grotesk',system-ui,sans-serif;}
-  .back-link{color:rgba(255,255,255,.85);font-size:13px;font-weight:600;text-decoration:none;}
-  .back-link:hover{color:#fff;}
-  .page-wordmark{color:#fff;font-weight:800;font-size:15px;letter-spacing:-0.01em;}
 
   /* Tool */
   body.loaded{
@@ -198,12 +192,7 @@
 
 <!-- Page -->
 <div id="page">
-  <div class="page-header">
-    <div class="page-header-inner">
-      <a class="back-link" href="/zarrow/">&#8592; Graduate Student Tools</a>
-      <span class="page-wordmark">Socialworky</span>
-    </div>
-  </div>
+  <script src="/zarrow/header.js"></script>
 
   <main class="stage">
     <div class="dots" id="dots" aria-hidden="true"></div>
