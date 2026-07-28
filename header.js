@@ -149,12 +149,15 @@
     /* respect reduced-motion: show instantly, no slide or fade */
     ".sw-dd__panel .sw-dd__gsw{color:#841617;font-weight:700;border-top:1px solid #F0F0F2;margin-top:4px;padding-top:10px;}" +
     ".sw-dd__panel .sw-dd__gsw:hover,.sw-dd__panel .sw-dd__gsw:focus{background:#F5ECEC;color:#5C0F10;}" +
-    /* page-exit fade for cross-site navigation */
-    "@keyframes sw-exit{to{opacity:0;}}" +
-    ".sw-exiting{animation:sw-exit .28s ease forwards;}" +
+    /* color-curtain cross-site transition */
+    "@keyframes sw-curtain-in{from{transform:translateY(100%);}to{transform:translateY(0);}}" +
+    "@keyframes sw-curtain-out{from{transform:translateY(0);}to{transform:translateY(-100%);}}" +
+    "#sw-curtain{position:fixed;inset:0;z-index:99999;pointer-events:none;transform:translateY(100%);}" +
+    "#sw-curtain.entering{pointer-events:all;animation:sw-curtain-in .38s cubic-bezier(.76,0,.24,1) forwards;}" +
+    "#sw-curtain.leaving{pointer-events:none;animation:sw-curtain-out .38s cubic-bezier(.76,0,.24,1) forwards;}" +
     "@media (prefers-reduced-motion: reduce){" +
       ".sw-nav{animation:none;}" +
-      ".sw-exiting{animation:none;}" +
+      "#sw-curtain{display:none;}" +
       ".sw-dd__panel{transform:none;transition:visibility 0s linear .001s,opacity .001s;}" +
       ".sw-dd.open .sw-dd__panel{transform:none;transition:none;}" +
       ".sw-dd__caret{transition:none;}}";
@@ -353,7 +356,22 @@
       .catch(function(e){ console.error("Clerk load error:", e); swRevealPage(); });
   });
 
-  /* Fade-exit transition when navigating to /msw/ */
+  /* Color-curtain transition: coral→crimson when entering /msw/ */
+  function swCurtain(color, cb){
+    var el = document.getElementById("sw-curtain");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "sw-curtain";
+      document.body.appendChild(el);
+    }
+    el.style.background = color;
+    el.className = "entering";
+    el.addEventListener("animationend", function handler(){
+      el.removeEventListener("animationend", handler);
+      cb();
+    });
+  }
+
   document.addEventListener("click", function(e){
     var a = e.target.closest ? e.target.closest("a") : null;
     if (!a) return;
@@ -362,7 +380,24 @@
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
     e.preventDefault();
     var dest = href;
-    document.body.classList.add("sw-exiting");
-    setTimeout(function(){ window.location.href = dest; }, 290);
+    sessionStorage.setItem("sw-transition", "from-main");
+    swCurtain("#841617", function(){ window.location.href = dest; });
   });
+
+  /* Reveal: if we arrived from /msw/, sweep the orange curtain out */
+  (function(){
+    if (sessionStorage.getItem("sw-transition") !== "from-msw") return;
+    sessionStorage.removeItem("sw-transition");
+    var el = document.createElement("div");
+    el.id = "sw-curtain";
+    el.style.background = "#EB786B";
+    el.style.transform = "translateY(0)";
+    document.body.appendChild(el);
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        el.className = "leaving";
+        el.addEventListener("animationend", function(){ el.remove(); });
+      });
+    });
+  })();
 })();

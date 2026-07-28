@@ -10,7 +10,17 @@
     '.sw-header .wordmark .sub{font-weight:500;font-size:14px;color:rgba(255,255,255,.8);text-decoration:none;font-family:\'Hanken Grotesk\',Arial,Helvetica,system-ui,sans-serif;}',
     '.sw-header .wordmark .sub:hover{color:#fff;}',
     '.sw-header .signout{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:\'Hanken Grotesk\',Arial,Helvetica,system-ui,sans-serif;font-size:13px;font-weight:600;padding:5px 13px;border-radius:6px;cursor:pointer;}',
-    '.sw-header .signout:hover{background:rgba(255,255,255,.28);}'
+    '.sw-header .signout:hover{background:rgba(255,255,255,.28);}',
+    /* color-curtain */
+    '@keyframes sw-curtain-in{from{transform:translateY(100%);}to{transform:translateY(0);}}',
+    '@keyframes sw-curtain-out{from{transform:translateY(0);}to{transform:translateY(-100%);}}',
+    '#sw-curtain{position:fixed;inset:0;z-index:99999;pointer-events:none;transform:translateY(100%);}',
+    '#sw-curtain.entering{pointer-events:all;animation:sw-curtain-in .38s cubic-bezier(.76,0,.24,1) forwards;}',
+    '#sw-curtain.leaving{pointer-events:none;animation:sw-curtain-out .38s cubic-bezier(.76,0,.24,1) forwards;}',
+    /* page reveal fade-in */
+    '@keyframes sw-msw-in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}',
+    '#page{animation:sw-msw-in .35s ease both;}',
+    '@media(prefers-reduced-motion:reduce){#sw-curtain{display:none;}#page{animation:none;}}'
   ].join('');
   document.head.appendChild(style);
 
@@ -24,30 +34,45 @@
     +'</div></div>';
   document.currentScript.insertAdjacentHTML('afterend',html);
 
-  /* Fade-in for the page reveal after Clerk auth */
-  var fadeStyle=document.createElement('style');
-  fadeStyle.textContent='@keyframes sw-msw-in{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}' +
-    '#page{animation:sw-msw-in .35s ease both;}' +
-    '@media(prefers-reduced-motion:reduce){#page{animation:none;}}';
-  document.head.appendChild(fadeStyle);
+  /* Reveal: if we arrived from the main site, sweep the crimson curtain out */
+  (function(){
+    if(sessionStorage.getItem('sw-transition')!=='from-main') return;
+    sessionStorage.removeItem('sw-transition');
+    var el=document.createElement('div');
+    el.id='sw-curtain';
+    el.style.background='#841617';
+    el.style.transform='translateY(0)';
+    document.body.appendChild(el);
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        el.className='leaving';
+        el.addEventListener('animationend',function(){ el.remove(); });
+      });
+    });
+  })();
+
+  function swCurtain(color,cb){
+    var el=document.getElementById('sw-curtain');
+    if(!el){ el=document.createElement('div'); el.id='sw-curtain'; document.body.appendChild(el); }
+    el.style.background=color;
+    el.className='entering';
+    el.addEventListener('animationend',function handler(){ el.removeEventListener('animationend',handler); cb(); });
+  }
 
   document.addEventListener('click',function(e){
     if(e.target&&e.target.id==='signOutBtn'){
       if(window.Clerk) window.Clerk.signOut().then(function(){ window.location.replace('/msw/'); });
     }
-    /* Fade-exit when navigating to the main site */
     var a=e.target.closest?e.target.closest('a'):null;
-    if(a){
-      var href=a.getAttribute('href')||'';
-      var isMsw=href.indexOf('/msw/')===0||href.indexOf('/')!==0;
-      var isMain=href==='https://socialworky.com'||href==='/';
-      if(isMain&&!e.metaKey&&!e.ctrlKey&&!e.shiftKey&&!e.altKey){
-        e.preventDefault();
-        var dest=href;
-        document.body.style.transition='opacity .28s ease';
-        document.body.style.opacity='0';
-        setTimeout(function(){window.location.href=dest;},290);
-      }
+    if(!a) return;
+    var href=a.getAttribute('href')||'';
+    if(e.metaKey||e.ctrlKey||e.shiftKey||e.altKey) return;
+    /* Coral curtain when navigating back to the main site */
+    if(href==='https://socialworky.com'||href==='/'){
+      e.preventDefault();
+      var dest=href;
+      sessionStorage.setItem('sw-transition','from-msw');
+      swCurtain('#EB786B',function(){ window.location.href=dest; });
     }
   });
 })();
