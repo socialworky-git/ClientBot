@@ -66,13 +66,13 @@
   <div id="gate-inner">
     <div class="sw-mark">SW</div>
     <p>Sign in to access your course tools.</p>
-    <a href="/login.html?redirect_url=/zarrow/">Sign in</a>
+    <a href="/login.html?redirect_url=/msw/">Sign in</a>
   </div>
 </div>
 
 <!-- Main page -->
 <div id="page">
-  <script src="/zarrow/header.js"></script>
+  <script src="/msw/header.js"></script>
 
   <div class="hero">
     <div class="hero-inner">
@@ -85,13 +85,13 @@
 
     <div class="section-title">Client Centered Direct Practice</div>
     <div class="grid">
-      <a class="tool" href="/zarrow/distortion-decoder/">
+      <a class="tool" href="/msw/distortion-decoder/">
         <div class="tag">Cognitive Behavioral</div>
         <div class="nm">Distortion Decoder</div>
         <div class="ds">Twenty client statements, one at a time. Some are classic cognitive distortions, some are just honest hard feelings — your job is to tell which is which and name the pattern.</div>
         <span class="go">Open &rarr;</span>
       </a>
-      <a class="tool" href="/zarrow/clientbot/">
+      <a class="tool" href="/msw/clientbot/">
         <div class="tag">Motivational Interviewing</div>
         <div class="nm">ClientBot</div>
         <div class="ds">Practice a full motivational interviewing conversation with a realistic AI client. Choose a preset client or build one to match your caseload, get live coaching from CoachBot, and review a MITI coding sheet when you're done.</div>
@@ -104,25 +104,25 @@
 
     <div class="section-title">Mental Health Assessment &amp; Diagnosis</div>
     <div class="grid">
-      <a class="tool" href="/zarrow/mse-simulation/">
+      <a class="tool" href="/msw/mse-simulation/">
         <div class="tag">Clinical Simulation</div>
         <div class="nm">MSE Simulation</div>
         <div class="ds">A simulation to practice a Mental Status Exam interview with a standardized patient — four scenarios, two panels, document as you go, and review with CoachBot when you're ready.</div>
         <span class="go">Open &rarr;</span>
       </a>
-      <a class="tool" href="/zarrow/delusions-obsessions/">
+      <a class="tool" href="/msw/delusions-obsessions/">
         <div class="tag">Diagnostic Reasoning</div>
         <div class="nm">Delusions vs. Obsessions</div>
         <div class="ds">A card-sorting game to practice telling delusional thinking apart from obsessive thoughts. Sort all 15 cards, then submit to check your answers.</div>
         <span class="go">Open &rarr;</span>
       </a>
-      <a class="tool" href="/zarrow/countertransference-pds/">
+      <a class="tool" href="/msw/countertransference-pds/">
         <div class="tag">Clinical Reasoning</div>
         <div class="nm">Countertransference Clues</div>
         <div class="ds">Read a clinician's account of a difficult client, talk through the reactions as a group, and use HEXACO and AMPD trait worksheets to describe the personality pattern at play.</div>
         <span class="go">Open &rarr;</span>
       </a>
-      <a class="tool" href="/zarrow/personality/">
+      <a class="tool" href="/msw/personality/">
         <div class="tag">Dyad Activity</div>
         <div class="nm">Personality Cards</div>
         <div class="ds">An interactive reflection activity. Choose two traits you are proud of, share them with a partner, then watch a diagnostic system turn those same traits into flaws — and talk through what that reveals about personality diagnosis.</div>
@@ -132,7 +132,7 @@
 
     <div class="section-title">Other</div>
     <div class="grid">
-      <a class="tool" href="/zarrow/lmsw-practice/">
+      <a class="tool" href="/msw/lmsw-practice/">
         <div class="tag">ASWB Masters</div>
         <div class="nm">LMSW Practice Test</div>
         <div class="ds">A 50-question diagnostic mapped to the ASWB Masters blueprint, with a score, a content-area breakdown, and a personalized study plan ordered from your weakest area to your strongest.</div>
@@ -157,7 +157,7 @@ window.addEventListener('load', async function(){
   try {
     await Clerk.load();
     if (!Clerk.isSignedIn) {
-      window.location.replace('/login.html?redirect_url=/zarrow/');
+      window.location.replace('/login.html?redirect_url=/msw/');
       return;
     }
     document.getElementById('gate').style.display = 'none';
