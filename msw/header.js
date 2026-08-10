@@ -28,7 +28,7 @@
     +'<div class="wordmark">'
     +'<a href="https://socialworky.com" class="brand">Social<span style="opacity:.55">worky</span></a>'
     +'<span class="sep">/</span>'
-    +'<a href="/msw/" class="sub">Graduate Student Tools</a>'
+    +'<a href="/msw/" class="sub">Graduate Student Hub</a>'
     +'</div>'
     +'<button class="signout" id="signOutBtn">Sign out</button>'
     +'</div></div>';

@@ -229,7 +229,7 @@
   var gswLink = document.createElement("a");
   gswLink.className = "sw-dd__gsw";
   gswLink.href = "/msw/";
-  gswLink.textContent = "Graduate Student Tools";
+  gswLink.textContent = "Graduate Student Hub";
   toolsDD.querySelector(".sw-dd__panel").appendChild(gswLink);
   linksWrap.appendChild(toolsDD);
 
