@@ -6,6 +6,11 @@
   },
   "redirects": [
     {
+      "source": "/meeting",
+      "destination": "https://fantastical.app/kratz9-JnQj/my-template",
+      "permanent": false
+    },
+    {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "ai.socialworky.com" }],
       "destination": "https://socialworky.com/tools/",
