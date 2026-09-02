@@ -63,12 +63,10 @@
     border:1px solid var(--accentLine);display:flex;align-items:center;justify-content:center;
     flex:0 0 auto;color:var(--accentDeep);}
   .toolhero .ico svg{width:26px;height:26px;display:block;}
-  .toolhero .brand{font-weight:700;font-size:22px;letter-spacing:-0.4px;color:var(--ink);line-height:1.1;}
+  .toolhero .brand{margin:0;font-weight:700;font-size:22px;letter-spacing:-0.4px;color:var(--ink);line-height:1.1;}
   .toolhero .brand .bot{color:var(--accent);}
   .toolhero .tagline{color:var(--heroMuted);font-size:13.5px;margin-top:3px;}
 
-  h1{font-size:23px;font-weight:700;margin:0 0 8px;}
-  .lead{color:var(--muted);font-size:15px;margin:0;max-width:62ch;}
 
   /* ---------- sticky progress ---------- */
 
@@ -128,8 +126,8 @@
 
   .source{display:block;margin-top:14px;padding-top:12px;
     border-top:1px solid var(--line);font-size:13.5px;line-height:1.6;color:var(--muted);}
-  .source b{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;
-    font-weight:700;color:var(--accentDeep);margin-bottom:5px;}
+  .source b{font-size:11px;letter-spacing:1px;text-transform:uppercase;
+    font-weight:700;color:var(--accentDeep);margin-right:8px;}
 
   /* ---------- result ---------- */
 
@@ -180,13 +178,10 @@
       </svg>
     </div>
     <div>
-      <div class="brand">Week 2 <span class="bot">Quiz Review</span></div>
+      <h1 class="brand">Week 2 <span class="bot">Quiz Review</span></h1>
       <div class="tagline">The mental status exam, the 4P formulation, and the biopsychosocial-spiritual model</div>
     </div>
   </div>
-
-  <h1>Week 2 Quiz: The Basics</h1>
-  <p class="lead">Ten questions on the mental status exam, the 4P formulation, and the biopsychosocial-spiritual model. Pick an answer and the reasoning appears, along with where to find it in the readings. You can only answer each question once.</p>
 
   <div class="qbar">
     <span class="qcount" id="counter">0 of 10 answered</span>
@@ -225,14 +220,14 @@
       options: ["Life chart", "Mental Status Exam", "4P formulation"],
       answer: 1,
       why: "Appearance and general behavior are components of the Mental Status Exam. The life chart gathers life-course history and the 4P formulation organizes causal factors. Neither records what the clinician observes in the room.",
-      source: "Martin, p. 925, under Appearance and General Behavior, lists grooming, dress, posture, and eye contact as pertinent observations, and Table 207.1 on p. 924 places appearance among the exam domains. For the alternatives: Meyer’s life chart appears in Owen, p. 1701 (Fig. 1), and the 4P model in Owen, p. 1702 (Table 1)."
+      source: "Martin, pp. 924–925; Owen, pp. 1701–1702"
     },
     {
       stem: "At an intake appointment, a client reports that she has felt empty and heavy nearly every day for the past six weeks. During the session, her facial expression and tone shift with the topics she is discussing. In documenting the mental status exam, the social worker records the six weeks of feeling empty and heavy under:",
       options: ["Mood", "Affect", "Attitude"],
       answer: 0,
       why: "Mood is the sustained emotional baseline a client reports over time. Affect is the immediate expression the worker observes shifting across the session. Attitude is the emotional tone the client displays toward the worker or toward the illness.",
-      source: "Martin, p. 925, opens Affect and Mood by separating the two: affect is the immediate expression of emotion, mood the more sustained emotional makeup. The same page opens Attitude and Insight by defining attitude as the emotional tone displayed toward the examiner, other people, or the illness."
+      source: "Martin, p. 925"
     },
     {
       stem: "What is the primary purpose of the Mental Status Examination?",
@@ -243,14 +238,14 @@
       ],
       answer: 2,
       why: "The Mental Status Examination describes present functioning at the time of the interview. History taking covers prior psychiatric treatment, and diagnosis is a separate step that may follow the exam.",
-      source: "Martin, p. 924, Definition, describes the exam as a structured assessment of the patient’s current behavioral and cognitive functioning. The Technique section on the same page treats it as separate from the medical history, noting the clinician performs much of it through unstructured observation during the encounter, and p. 925 adds that attitude often changes across the interview and those changes should be noted."
+      source: "Martin, pp. 924–925"
     },
     {
       stem: "Which Mental Status Examination domain assesses the client’s awareness and understanding of their condition?",
       options: ["Thought content", "Insight", "Judgment"],
       answer: 1,
       why: "Insight is the client’s understanding of their own condition. Judgment concerns the quality of decision making, and thought content concerns the ideas and beliefs themselves.",
-      source: "Martin, p. 925, Attitude and Insight, frames insight around whether the patient views the illness as psychiatric or nonpsychiatric and whether they expect improvement. Thought content is handled separately under Thought and Perception on the same page, and judgment is grouped with abstract thinking on p. 927."
+      source: "Martin, pp. 925, 927"
     },
     {
       stem: "A social worker completes an assessment with a client experiencing depression. There is a long history of recurrent depression with his mother, his symptoms began after a divorce six months ago, and he has since stopped seeing friends and stays home most days. In the 4P model, which detail is best understood as a perpetuating factor?",
@@ -261,7 +256,7 @@
       ],
       answer: 2,
       why: "Perpetuating factors maintain a problem once it has started, and withdrawal from friends keeps the depression going. The family history is predisposing and the divorce is precipitating.",
-      source: "Owen, p. 1702, introduces the 4Ps as four types of causation applied across biological, psychological, and social domains (Table 1). Table 2 on the same page works the asylum seeker case, where ongoing sleep deprivation and alcohol use are the factors sustaining the presentation, while migration sits in the background."
+      source: "Owen, p. 1702"
     },
     {
       stem: "A social worker meets with a 68-year-old client whose family reports that over the past week he has become confused about the date, has seen people who are not there, and is much more alert at some hours than others. Following the diagnostic hierarchy, what should the social worker consider first?",
@@ -272,7 +267,7 @@
       ],
       answer: 1,
       why: "The diagnostic hierarchy directs the clinician toward the level closest to organic whenever there is evidence supporting it. Disorientation and alertness that fluctuates through the day point there, and complex psychotic experiences including hallucinations can arise from a medical cause.",
-      source: "Owen, pp. 1704–1705, sets out the three groups (Table 3) and states the convention of formulating at the diagnosis closest to Group I where evidence supports it. He notes that complex psychotic experiences can arise in delirium, and that disorientation and confabulation point directly to Group I. Martin, p. 924, defines delirium by fluctuating consciousness, disorientation, and hallucinations, commonly tied to toxic, infectious, or metabolic causes."
+      source: "Owen, pp. 1704–1705; Martin, p. 924"
     },
     {
       stem: "Why is formulation preferred over diagnosis alone in complex cases?",
@@ -283,7 +278,7 @@
       ],
       answer: 0,
       why: "Formulation is flexible and context-sensitive, which matters when symptoms do not fit neatly into diagnostic categories. Two clinicians assessing the same client may arrive at two different formulations, and formulation supplements a diagnosis rather than replacing it.",
-      source: "Owen opens on p. 1700 with the Maudsley Handbook epigraph, which contrasts a descriptive summary with an analytical and evaluative formulation and notes two experts assessing one patient may produce two different formulations. That rules out the agreement option. On p. 1705 he argues the 4P model cannot operate without an intelligible diagnostic scheme, which rules out the third."
+      source: "Owen, pp. 1700, 1705"
     },
     {
       stem: "What role does culture play in the biopsychosocial-spiritual model?",
@@ -294,7 +289,7 @@
       ],
       answer: 2,
       why: "Cultural meaning systems shape how clients interpret illness and what they understand healing to be. Culture reaches the experience of illness itself rather than functioning as static background or influencing behavior alone.",
-      source: "Hatala, p. 267, cites Kazarian and Evans on the consequences of a Western bias in the concept of health, including the marginalization of indigenous belief systems and healing practices, and points to Fadiman’s account of Hmong families and American doctors as a case where differing conceptions of health lie at the core of the conflict. He returns to the point on p. 268, where health is redefined to include meaning, purpose, and relationship rather than the absence of disease."
+      source: "Hatala, pp. 267–268"
     },
     {
       stem: "A social worker learns that a client’s religious community discourages her from seeking medical care for a chronic condition. In the biopsychosocial-spiritual model, what does an example like this suggest about assessing spirituality?",
@@ -305,7 +300,7 @@
       ],
       answer: 0,
       why: "Spirituality can impair health as well as promote it. Evidence of harm documents a real relation between spirituality and health, which strengthens the case for assessing it rather than setting it aside.",
-      source: "Hatala, pp. 265–266, Negative Health Effects, catalogs the harms, including reduced use of health services and deferring coping styles with the poorest outcomes, then closes the section by arguing that these ill effects add weight to including spirituality in the model precisely because they document a relation that exists. He adds that spirituality warrants the same treatment as any other domain, examined for what promotes and what impedes health."
+      source: "Hatala, pp. 265–266"
     },
     {
       stem: "A client mentions during intake that faith has been important to her since her diagnosis. The social worker wants to follow up in a way consistent with how spirituality is defined in the biopsychosocial-spiritual model. Which question fits best?",
@@ -316,7 +311,7 @@
       ],
       answer: 1,
       why: "Spirituality is defined as a search for the sacred, a definition chosen so that it spans both individual and collective experience. Congregational attendance and belief in a higher power each narrow spirituality to a single dimension.",
-      source: "Hatala, p. 260, settles on Pargament’s definition after reviewing the difficulty of defining the term at all: a search for the sacred, meaning the process by which people discover, hold onto, and when necessary transform what they hold sacred. He states directly that he chooses it because the work spans individual and collective experience, and notes on the same page that researchers contest splitting individual spirituality from collective religion."
+      source: "Hatala, p. 260"
     }
   ];
 
