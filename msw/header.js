@@ -24,13 +24,18 @@
   ].join('');
   document.head.appendChild(style);
 
+  /* Ungated hub pages (no Clerk on the page) set window.SW_MSW_PUBLIC = true
+     before this script so the Sign out button is left off — it would have
+     nothing to sign out of. */
+  var showSignOut = (window.SW_MSW_PUBLIC !== true);
+
   var html='<div class="sw-header"><div class="sw-header-inner">'
     +'<div class="wordmark">'
     +'<a href="https://socialworky.com" class="brand">Social<span style="opacity:.55">worky</span></a>'
     +'<span class="sep">/</span>'
     +'<a href="/msw/" class="sub">Graduate Student Hub</a>'
     +'</div>'
-    +'<button class="signout" id="signOutBtn">Sign out</button>'
+    +(showSignOut ? '<button class="signout" id="signOutBtn">Sign out</button>' : '')
     +'</div></div>';
   document.currentScript.insertAdjacentHTML('afterend',html);
 
