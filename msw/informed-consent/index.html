@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Informed Consent Challenge | Socialworky</title>
+<meta name="robots" content="noindex, nofollow" />
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --crimson:#841617;
+    --crimson-deep:#5C0F10;
+    --paper:#FAF5F5;
+    --paper-2:#F5ECEC;
+    --ink:#23201E;
+    --ink-soft:#6B625C;
+    --line:#E8C8C8;
+    --radius:18px;
+    --maxw:860px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+
+  /* Auth gate */
+  #gate{
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:2rem;
+    font-family:'Hanken Grotesk',system-ui,sans-serif;
+    background:var(--paper);
+  }
+  #gate-inner{text-align:center;max-width:340px;}
+  #gate-inner .sw-mark{font-size:2rem;font-weight:800;color:var(--crimson);letter-spacing:-0.03em;margin-bottom:8px;}
+  #gate-inner p{color:var(--ink-soft);font-size:15px;margin:0 0 1.5rem;}
+  #gate-inner a{display:inline-block;background:var(--crimson);color:#fff;font-weight:700;font-size:15px;
+    padding:12px 28px;border-radius:10px;text-decoration:none;}
+  #gate-inner a:hover{background:var(--crimson-deep);}
+
+  #page{display:none;}
+
+  body.loaded{
+    font-family:'Hanken Grotesk',system-ui,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  .stage{
+    width:100%;
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding:34px 22px 64px;
+  }
+
+  /* ---------- intro ---------- */
+
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--crimson-deep);
+    margin:0 0 12px;
+  }
+
+  h1{
+    font-size:clamp(28px,6vw,40px); font-weight:800; line-height:1.05;
+    letter-spacing:-.01em; margin:0 0 14px;
+  }
+
+  p.lead{ font-size:17px; color:var(--ink-soft); margin:0; max-width:56ch; }
+
+  /* ---------- table ---------- */
+
+  .table{
+    display:flex;
+    align-items:center;
+    gap:clamp(22px,5vw,44px);
+    margin-top:34px;
+  }
+
+  /* ---------- deck ---------- */
+
+  .deck{
+    position:relative;
+    width:112px; height:158px;
+    flex:none;
+    border:0; padding:0; background:none;
+    font:inherit; color:inherit; cursor:pointer;
+  }
+  .deck:disabled{ cursor:default; }
+
+  .deck-layer{
+    position:absolute; inset:0;
+    border-radius:14px;
+    background:linear-gradient(158deg,#9B1D1E 0%,var(--crimson) 55%,var(--crimson-deep) 100%);
+    box-shadow:0 6px 18px rgba(132,22,23,.22);
+    transition:transform .22s cubic-bezier(.2,.7,.3,1);
+  }
+  .deck-layer:nth-child(1){ transform:translate(6px,6px) rotate(2.4deg); opacity:.4; }
+  .deck-layer:nth-child(2){ transform:translate(3px,3px) rotate(1.1deg); opacity:.7; }
+  .deck-layer:nth-child(3){ transform:none; }
+
+  .deck-layer:nth-child(3)::after{
+    content:"SW";
+    position:absolute; inset:9px;
+    border-radius:8px;
+    border:1px solid rgba(255,255,255,.32);
+    display:grid; place-items:center;
+    font-weight:800; font-size:19px; letter-spacing:-.02em;
+    color:rgba(255,255,255,.55);
+  }
+
+  .deck:not(:disabled):hover .deck-layer:nth-child(3){ transform:translateY(-5px); }
+  .deck:not(:disabled):hover .deck-layer:nth-child(2){ transform:translate(3px,1px) rotate(1.1deg); }
+  .deck:focus-visible{ outline:3px solid var(--crimson-deep); outline-offset:6px; border-radius:16px; }
+
+  .deck[disabled] .deck-layer{
+    background:var(--paper-2);
+    box-shadow:none;
+    border:1.5px solid var(--line);
+  }
+  .deck[disabled] .deck-layer:nth-child(3)::after{ border-color:var(--line); color:var(--line); }
+
+  .deck-count{
+    position:absolute; left:0; right:0; bottom:-28px;
+    text-align:center;
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- drawn card ---------- */
+
+  .slot{
+    flex:1 1 auto;
+    min-width:0;
+    display:flex;
+    align-items:center;
+    min-height:300px;
+  }
+
+  .card{
+    width:100%;
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:var(--radius);
+    padding:clamp(22px,4vw,32px);
+    box-shadow:0 2px 14px rgba(132,22,23,.06);
+  }
+
+  .card.dealing{ animation:deal .42s cubic-bezier(.16,.9,.3,1); }
+  @keyframes deal{
+    from{ opacity:0; transform:translate(-16%,4%) scale(.42) rotate(-6deg); }
+    to{ opacity:1; transform:none; }
+  }
+
+  .card-role{
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--crimson-deep);
+    margin:0 0 18px;
+  }
+  .card-role::after{
+    content:""; display:block;
+    width:34px; height:2px; background:var(--crimson);
+    margin-top:11px;
+  }
+
+  .card-quote{
+    font-size:clamp(18px,2.6vw,22px);
+    font-weight:500;
+    line-height:1.5;
+    margin:0;
+  }
+
+  .placeholder{
+    width:100%;
+    border:1.5px dashed var(--line);
+    border-radius:var(--radius);
+    padding:clamp(22px,4vw,32px);
+    text-align:center;
+  }
+  .placeholder p{
+    margin:0;
+    font-size:17px; line-height:1.55;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- controls ---------- */
+
+  .actions{
+    display:flex; align-items:center; justify-content:center;
+    gap:14px; flex-wrap:wrap;
+    margin-top:44px;
+  }
+
+  .btn{
+    appearance:none; border:none; cursor:pointer;
+    font-family:inherit; font-weight:600; font-size:17px;
+    background:var(--crimson); color:#fff;
+    padding:14px 28px; border-radius:999px;
+    transition:transform .15s ease, background .2s ease, opacity .2s ease;
+  }
+  .btn:hover{ background:var(--crimson-deep); }
+  .btn:active{ transform:translateY(1px); }
+  .btn:disabled{ opacity:.35; cursor:not-allowed; background:var(--crimson); }
+  .btn.ghost{ background:transparent; color:var(--ink-soft); font-size:15px; padding:14px 10px; }
+  .btn.ghost:hover{ background:transparent; color:var(--ink); }
+  .btn:focus-visible{ outline:3px solid var(--crimson-deep); outline-offset:3px; }
+
+  .footer-note{ margin-top:46px; font-size:13px; color:var(--ink-soft); text-align:center; }
+
+  .visually-hidden{
+    position:absolute; width:1px; height:1px;
+    overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;
+  }
+
+  /* ---------- responsive ---------- */
+
+  @media (max-width:620px){
+    .table{ flex-direction:column; gap:44px; margin-top:28px; }
+    .deck{ width:92px; height:130px; }
+    .slot{ min-height:0; width:100%; }
+    .actions{ margin-top:32px; flex-direction:column; gap:8px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card.dealing{ animation:none; }
+    *{ transition:none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Auth gate -->
+<div id="gate">
+  <div id="gate-inner">
+    <div class="sw-mark">SW</div>
+    <p>Sign in to access your course tools.</p>
+    <a href="/login.html?redirect_url=/msw/informed-consent/">Sign in</a>
+  </div>
+</div>
+
+<!-- Page -->
+<div id="page">
+  <script src="/msw/header.js"></script>
+
+  <main class="stage">
+    <p class="eyebrow">Ethics &middot; Informed Consent</p>
+    <h1>Informed Consent Challenge</h1>
+    <p class="lead">Draw a card and respond as the clinician. Use the consent script as your starting point, not your script.</p>
+
+    <div class="table">
+      <button class="deck" id="deck" aria-label="Draw a card from the deck">
+        <span class="deck-layer"></span>
+        <span class="deck-layer"></span>
+        <span class="deck-layer"></span>
+        <span class="deck-count" id="deckCount">12 cards</span>
+      </button>
+
+      <div class="slot" id="slot" aria-live="polite">
+        <div class="placeholder">
+          <p>Twelve things a client might say after you explain confidentiality.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="draw">Draw a card</button>
+      <button class="btn ghost" id="reset">Shuffle and start over</button>
+    </div>
+
+    <p class="footer-note">A Socialworky training resource. For practice only &mdash; please use fictional details, not real client information.</p>
+  </main>
+</div>
+
+<!-- Clerk -->
+<script
+  defer crossorigin="anonymous"
+  data-clerk-publishable-key="pk_live_Y2xlcmsuc29jaWFsd29ya3kuY29tJA"
+  src="https://clerk.socialworky.com/npm/@clerk/clerk-js@6/dist/clerk.browser.js"
+  type="text/javascript">
+</script>
+
+<script>
+window.addEventListener('load', async function(){
+  try {
+    await Clerk.load();
+    if (!Clerk.isSignedIn) {
+      window.location.replace('/login.html?redirect_url=/msw/informed-consent/');
+      return;
+    }
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('page').style.display = 'block';
+    document.body.classList.add('loaded');
+  } catch(e) {
+    console.error('Clerk error', e);
+  }
+});
+</script>
+
+<script>
+  const CARDS = [
+    "Honestly, I’m here because my partner keeps saying I’m the problem. I don’t really think I need to change anything. I just want you to help them see they’re the one who needs to get their act together.",
+    "Do I have to tell you everything? There’s some stuff I’m just not ready to talk about, and I don’t want you trying to push me to go there if I’m not comfortable.",
+    "I’m worried that if I tell you certain things, somehow it’ll get back to my job. I can’t afford for people at work to think I’m unstable or going through stuff. How private is this, really?",
+    "I’ve heard horror stories about insurance companies using mental health treatment to raise rates or deny coverage later. How do I know having a paper trail here won’t come back to bite me?",
+    "What if I decide that I want to stop coming? Do I really need to keep coming for six months?",
+    "What if things get messy with the divorce and my ex’s lawyer tries to get your records for the hearing?",
+    "So…if I tell you I’m feeling suicidal, are you going to put me in the hospital?",
+    "My last therapist promised everything was confidential, but then they called my parents and told them things I said. I’m not going through that again. How do I know you won’t do the same?",
+    "I know you said things are private, but it’s hard for me to believe that. How do I know you’re not going to go tell someone else about what we talk about?",
+    "So… like, after we talk today, do you think I’ll feel better? I’m hoping this will just fix things so I don’t have to keep coming back week after week.",
+    "I really don’t want anyone to know I’m even doing therapy. What if someone finds out I’m coming here? I’d be so embarrassed if people thought there was something wrong with me.",
+    "I’m scared you’re going to judge me for some of the stuff I might tell you. I’ve had people look at me differently before when I’ve opened up, and I don’t want that to happen again."
+  ];
+
+  const slot      = document.getElementById('slot');
+  const deck      = document.getElementById('deck');
+  const deckCount = document.getElementById('deckCount');
+  const drawBtn   = document.getElementById('draw');
+  const resetBtn  = document.getElementById('reset');
+
+  let pile = [];
+  let drawn = 0;
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function updateDeck(){
+    const left = pile.length;
+    deckCount.textContent = left === 0 ? 'Deck empty' : left + (left === 1 ? ' card' : ' cards');
+    deck.disabled = left === 0;
+    drawBtn.disabled = left === 0;
+    drawBtn.textContent = left === 0 ? 'No cards left' : (drawn === 0 ? 'Draw a card' : 'Draw the next card');
+  }
+
+  function draw(){
+    if (!pile.length) return;
+    const text = pile.pop();
+    drawn++;
+
+    slot.innerHTML = '';
+    const card = document.createElement('article');
+    card.className = 'card dealing';
+
+    const role = document.createElement('p');
+    role.className = 'card-role';
+    role.textContent = 'Card ' + drawn + ' of ' + CARDS.length;
+
+    const quote = document.createElement('p');
+    quote.className = 'card-quote';
+    quote.textContent = text;
+
+    card.appendChild(role);
+    card.appendChild(quote);
+    slot.appendChild(card);
+
+    updateDeck();
+  }
+
+  function reset(){
+    pile = shuffle(CARDS);
+    drawn = 0;
+    slot.innerHTML =
+      '<div class="placeholder"><p>Twelve things a client might say after you explain confidentiality.</p></div>';
+    updateDeck();
+  }
+
+  deck.addEventListener('click', draw);
+  drawBtn.addEventListener('click', draw);
+  resetBtn.addEventListener('click', function(){ reset(); drawBtn.focus(); });
+
+  reset();
+</script>
+
+</body>
+</html>
