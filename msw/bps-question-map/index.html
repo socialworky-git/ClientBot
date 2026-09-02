@@ -34,9 +34,6 @@
     --card-edge:#E2D8D8;
 
     --maxw:1080px;
-    --mini-w:120px;
-    --mini-h:166px;
-    --mini-peek:56px;   /* how much of each stacked card stays visible */
   }
 
   *{box-sizing:border-box;}
@@ -68,41 +65,56 @@
     min-height:100vh;
   }
 
+  /* The board sizes itself to whatever height is left, so the whole
+     activity fits the window without scrolling. The reveal script sets
+     an inline display:flex on #page, so only the axis and height here. */
+  body.loaded #page{ flex-direction:column; height:100vh; }
+
   .stage{
     width:100%;
     max-width:var(--maxw);
     margin:0 auto;
-    padding:30px 22px 64px;
+    padding:20px 22px 10px;
+    flex:1;
+    min-height:0;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
   }
 
   /* ---------- intro ---------- */
 
   .eyebrow{
     font-family:'Space Mono',monospace;
-    font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+    font-size:11px; letter-spacing:.18em; text-transform:uppercase;
     color:var(--crimson-deep);
-    margin:0 0 10px;
+    margin:0 0 6px;
   }
   h1{
-    font-size:clamp(26px,4.4vw,36px); font-weight:800; line-height:1.06;
-    letter-spacing:-.01em; margin:0 0 12px;
+    font-size:clamp(22px,3vw,28px); font-weight:800; line-height:1.06;
+    letter-spacing:-.01em; margin:0 0 7px;
   }
-  p.lead{ font-size:16px; color:var(--ink-soft); margin:0 0 26px; max-width:62ch; }
+  p.lead{ font-size:14px; color:var(--ink-soft); margin:0; max-width:100ch; }
 
   /* ---------- layout ---------- */
 
   .layout{
     display:grid;
-    grid-template-columns:17rem minmax(0,1fr);
-    gap:26px;
-    align-items:start;
+    grid-template-columns:16rem minmax(0,1fr);
+    grid-template-rows:minmax(0,1fr);
+    gap:22px;
+    align-items:stretch;
+    flex:1;
+    min-height:0;
+    overflow:hidden;
+    margin-top:16px;
   }
 
   /* ---------- rail ---------- */
 
-  .rail{ position:sticky; top:22px; }
+  .rail{ display:flex; flex-direction:column; min-height:0; }
 
-  .deck-row{ display:flex; align-items:center; gap:18px; margin-bottom:20px; }
+  .deck-row{ display:flex; align-items:center; gap:18px; margin-bottom:16px; flex:none; }
 
   .deck{
     position:relative;
@@ -141,10 +153,10 @@
     color:var(--crimson-deep); font-weight:700;
   }
 
-  .current-slot{ min-height:19rem; }
+  .current-slot{ flex:1 1 0; min-height:60px; display:flex; align-items:flex-start; }
 
   .card{
-    width:100%; max-width:230px;
+    height:100%; width:auto; max-width:214px;
     aspect-ratio:5 / 7;
     background:#fff; color:var(--ink);
     border:1.5px solid var(--card-edge);
@@ -185,7 +197,7 @@
   }
 
   .empty-slot{
-    width:100%; max-width:230px;
+    height:100%; width:auto; max-width:214px;
     aspect-ratio:5 / 7;
     border:1.5px dashed var(--line);
     border-radius:16px;
@@ -194,7 +206,7 @@
     color:var(--ink-soft);
   }
 
-  .rail-actions{ display:flex; gap:14px; align-items:center; margin-top:18px; flex-wrap:wrap; }
+  .rail-actions{ display:flex; gap:14px; align-items:center; margin-top:14px; flex-wrap:wrap; flex:none; }
 
   .btn{
     appearance:none; border:none; cursor:pointer;
@@ -230,13 +242,16 @@
 
   /* ---------- board ---------- */
 
-  .board-scroll{ overflow-x:auto; padding-bottom:6px; }
+  .board-scroll{ overflow:auto; min-height:0; height:100%; }
 
   .board{
     display:grid;
-    grid-template-columns:7.9rem repeat(4,minmax(148px,1fr));
+    grid-template-columns:7.4rem repeat(4,minmax(140px,1fr));
+    grid-template-rows:auto repeat(4,minmax(0,1fr)) 8px minmax(0,.8fr);
     gap:6px;
-    min-width:750px;
+    min-width:720px;
+    height:100%;
+    min-height:430px;
   }
 
   .col-head,.row-head{
@@ -251,10 +266,12 @@
   .cell{
     background:var(--cell);
     border:1.5px solid transparent;
-    border-radius:12px;
-    min-height:12.5rem;
-    padding:12px;
-    display:flex; flex-direction:column; align-items:flex-start;
+    border-radius:10px;
+    min-height:0;
+    padding:7px;
+    display:flex; flex-direction:column; align-items:stretch;
+    gap:5px;
+    overflow-y:auto;
     transition:background .14s ease, border-color .14s ease;
   }
   .cell.tint{ background:var(--cell-2); }
@@ -265,9 +282,9 @@
     grid-column:2 / -1;
     background:var(--set-aside);
     border:1.5px dashed var(--set-aside-line);
-    min-height:12.5rem;
+    min-height:0;
     flex-direction:row; flex-wrap:wrap; align-content:flex-start;
-    gap:7px;
+    gap:5px;
   }
   .cell.set-aside.over{ border-style:solid; border-color:var(--ink-soft); background:#F5F1EC; }
 
@@ -280,51 +297,45 @@
     font-weight:700; line-height:1.45; color:var(--ink-soft);
   }
 
-  .spacer{ grid-column:1 / -1; height:14px; }
+  .spacer{ grid-column:1 / -1; }
 
-  /* mini cards, portrait, stacked */
+  /* placed question: a compact chip. Full text opens in the modal. */
 
   .mini{
-    width:var(--mini-w);
-    height:var(--mini-h);
-    flex:none;
+    display:flex; align-items:flex-start; gap:7px;
+    width:100%; flex:0 0 auto;
     font:inherit; text-align:left;
     background:#fff; color:var(--ink);
-    border:1.5px solid var(--card-edge);
-    border-radius:10px;
-    box-shadow:0 2px 6px rgba(35,32,30,.14);
-    padding:10px 9px 9px;
-    position:relative;
+    border:1px solid var(--card-edge);
+    border-radius:7px;
+    box-shadow:0 1px 2px rgba(35,32,30,.10);
+    padding:6px 8px;
     cursor:grab;
-    transition:transform .16s cubic-bezier(.2,.7,.3,1), box-shadow .16s ease;
+    transition:border-color .13s ease, box-shadow .13s ease;
   }
-  .mini + .mini{ margin-top:calc(var(--mini-peek) - var(--mini-h)); }
-  .cell.set-aside .mini{ margin-top:0 !important; }
+  .mini::before{
+    content:""; flex:0 0 auto;
+    width:5px; height:5px; border-radius:1px;
+    background:var(--crimson);
+    margin-top:5px;
+  }
+  .cell.set-aside .mini{ width:calc(25% - 4px); min-width:132px; }
 
   .mini-text{
     display:-webkit-box;
-    -webkit-line-clamp:4;
+    -webkit-line-clamp:1;
     -webkit-box-orient:vertical;
     overflow:hidden;
-    font-weight:700; font-style:italic;
-    font-size:10.5px; line-height:1.32;
+    font-weight:600; font-style:italic;
+    font-size:11px; line-height:1.35;
     letter-spacing:-.005em;
   }
 
-  .mini-mark{
-    position:absolute; left:9px; bottom:7px;
-    font-family:'Space Mono',monospace;
-    font-size:7px; letter-spacing:.12em;
-    color:var(--ink-soft);
+  .mini:hover, .mini:focus-visible{
+    border-color:var(--crimson);
+    box-shadow:0 2px 8px rgba(132,22,23,.18);
   }
-
-  .mini:hover,.mini:focus-visible{
-    transform:translateY(-14px) rotate(0deg) !important;
-    box-shadow:0 12px 24px rgba(35,32,30,.24);
-    z-index:90 !important;
-  }
-  .mini:hover .mini-text,.mini:focus-visible .mini-text{ -webkit-line-clamp:9; }
-  .mini:focus-visible{ outline:3px solid var(--crimson-deep); outline-offset:2px; }
+  .mini:focus-visible{ outline:2px solid var(--crimson-deep); outline-offset:1px; }
   .mini:active{ cursor:grabbing; }
   .mini.dragging{ opacity:.35; }
 
@@ -365,14 +376,21 @@
   .btn-dark:hover{ background:var(--crimson-deep); }
   .btn-dark:focus-visible{ outline:3px solid var(--crimson-deep); outline-offset:3px; }
 
-  .footer-note{ margin-top:44px; font-size:13px; color:var(--ink-soft); text-align:center; }
+  .footer-note{ margin-top:14px; font-size:12.5px; color:var(--ink-soft); text-align:center; flex:none; }
 
   /* ---------- responsive ---------- */
 
   @media (max-width:1000px){
-    .layout{ grid-template-columns:1fr; gap:22px; }
-    .rail{ position:static; }
-    .current-slot{ min-height:0; }
+    body.loaded #page{ height:auto; }
+    .stage{ display:block; padding:22px 22px 48px; }
+    .layout{ display:block; }
+    .rail{ display:block; }
+    .current-slot{ display:block; }
+    .card, .empty-slot{ max-height:none; }
+    .board-scroll{ overflow-x:auto; }
+    .board{ height:auto; grid-template-rows:none; min-height:0; margin-top:22px; }
+    .cell{ min-height:7.5rem; }
+    .cell.set-aside{ min-height:7.5rem; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -465,7 +483,7 @@ window.addEventListener('load', async function(){
       return;
     }
     document.getElementById('gate').style.display = 'none';
-    document.getElementById('page').style.display = 'block';
+    document.getElementById('page').style.display = 'flex';
     document.body.classList.add('loaded');
   } catch(e) {
     console.error('Clerk error', e);
@@ -548,20 +566,9 @@ window.addEventListener('load', async function(){
 
   var pile = [], current = null, dragging = null, modalCard = null;
 
-  function tilt(i) {
-    var seq = [-1.8, 1.3, -0.8, 2.0, -1.2, 0.7];
-    return seq[i % seq.length];
-  }
-
-  function restack(cell) {
-    var kids = cell.querySelectorAll('.mini');
-    for (var i = 0; i < kids.length; i++) {
-      kids[i].style.zIndex = i + 1;
-      kids[i].style.transform = cell.classList.contains('set-aside')
-        ? 'none'
-        : 'rotate(' + tilt(i) + 'deg)';
-    }
-  }
+  /* Chips lay out in normal flow; nothing to restack. Kept so the
+     drop/return paths below read the same as before. */
+  function restack(cell) {}
 
   function buildBoard() {
     board.innerHTML = '';
@@ -633,9 +640,8 @@ window.addEventListener('load', async function(){
     n.draggable = true;
 
     var body = el('span', 'mini-text', text);
-    var mark = el('span', 'mini-mark', 'BPS+4P');
     n.appendChild(body);
-    n.appendChild(mark);
+    n.title = text;
 
     n.addEventListener('dragstart', function (e) {
       dragging = { text: text, from: n.parentElement, node: n };
