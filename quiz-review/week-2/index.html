@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Week 2 Quiz Review | Socialworky</title>
+<meta name="description" content="A self-check review of the Week 2 quiz: the mental status exam, the 4P formulation, and the biopsychosocial-spiritual model, with the reasoning and the reading behind each answer." />
+
+<!-- Unlisted: shared by direct link, kept out of search. -->
+<meta name="robots" content="noindex, nofollow" />
+
+<!-- Social / Open Graph (for pasting the link into a course announcement) -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Socialworky" />
+<meta property="og:title" content="Week 2 Quiz Review | Socialworky" />
+<meta property="og:description" content="Ten questions on the mental status exam, the 4P formulation, and the biopsychosocial-spiritual model, with the reasoning and the reading behind each answer." />
+<meta property="og:image" content="https://socialworky.com/images/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Week 2 Quiz Review | Socialworky" />
+<meta name="twitter:description" content="Ten questions on the mental status exam, the 4P formulation, and the biopsychosocial-spiritual model, with the reasoning and the reading behind each answer." />
+<meta name="twitter:image" content="https://socialworky.com/images/og-image.png" />
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+
+<!-- Shared design tokens (colors + shell width). Variables only — safe to link. -->
+<link rel="stylesheet" href="/tokens.css" />
+
+<!-- Vercel Web Analytics -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+
+<style>
+  :root{
+    /* Correct / incorrect, matching the public tools' convention */
+    --good:#2E7D5B; --goodSoft:#E8F4EE; --goodLine:#BFE3D2;
+    --bad:#C2452F;  --badSoft:#FDEEEB;  --badLine:#F6D4CD;
+  }
+
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.5;-webkit-font-smoothing:antialiased;}
+
+  .wrap{max-width:var(--sw-maxw);margin:0 auto;padding:var(--sw-gutter);padding-bottom:56px;}
+  a{color:var(--accentDeep);}
+
+  /* ---------- hero ---------- */
+
+  .toolhero{display:flex;align-items:center;gap:16px;background:var(--coral-bg);
+    border:1px solid var(--coral-line);border-radius:12px;box-shadow:inset 4px 0 0 var(--accent);
+    padding:18px 22px 18px 24px;margin-bottom:20px;}
+  .toolhero .ico{width:52px;height:52px;border-radius:12px;background:#fff;
+    border:1px solid var(--coral-line);display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;color:var(--accentDeep);}
+  .toolhero .ico svg{width:26px;height:26px;display:block;}
+  .toolhero .brand{font-weight:700;font-size:22px;letter-spacing:-0.4px;color:var(--ink);line-height:1.1;}
+  .toolhero .brand .bot{color:var(--accent);}
+  .toolhero .tagline{color:#8A5348;font-size:13.5px;margin-top:3px;}
+
+  h1{font-size:23px;font-weight:700;margin:0 0 8px;}
+  .lead{color:var(--muted);font-size:15px;margin:0;max-width:62ch;}
+
+  /* ---------- sticky progress ---------- */
+
+  .qbar{position:sticky;top:0;z-index:10;background:var(--bg);
+    display:flex;align-items:center;gap:12px;
+    padding:14px 0 13px;margin:22px 0 18px;border-bottom:1px solid var(--line);}
+  .qtrack{flex:1;height:7px;border-radius:999px;background:var(--surface);
+    border:1px solid var(--line);overflow:hidden;}
+  .qprog{height:100%;background:var(--accent);width:0;transition:width .25s ease;}
+  .qcount{font-size:12.5px;color:var(--muted);font-weight:700;flex:0 0 auto;}
+
+  /* ---------- questions ---------- */
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:22px;margin-bottom:14px;}
+
+  .qnum{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;
+    color:var(--muted);margin:0 0 10px;}
+
+  .stem{font-size:16px;font-weight:700;line-height:1.5;margin:0 0 16px;}
+
+  .opts{display:flex;flex-direction:column;gap:9px;}
+  .opt{display:flex;gap:11px;align-items:flex-start;text-align:left;width:100%;
+    background:#fff;border:1px solid var(--line);border-radius:9px;
+    padding:12px 14px;font-family:var(--sans);font-size:15px;color:var(--ink);
+    cursor:pointer;transition:border-color .13s,background .13s;}
+  .opt:hover:not(:disabled){border-color:var(--accent);}
+  .opt:focus-visible{outline:3px solid var(--accentDeep);outline-offset:2px;}
+  .opt:disabled{cursor:default;}
+  .opt .ltr{font-weight:700;color:var(--accent);flex:0 0 auto;width:18px;}
+
+  .opt.correct{background:var(--goodSoft);border-color:var(--good);
+    box-shadow:inset 0 0 0 1px var(--good);font-weight:700;}
+  .opt.correct .ltr{color:var(--good);}
+  .opt.correct::after{content:"\2713";margin-left:auto;padding-left:12px;
+    color:var(--good);font-weight:700;flex:0 0 auto;}
+  .opt.wrong{background:var(--badSoft);border-color:var(--bad);
+    box-shadow:inset 0 0 0 1px var(--bad);}
+  .opt.wrong .ltr{color:var(--bad);}
+  .opt.wrong::after{content:"\2715";margin-left:auto;padding-left:12px;
+    color:var(--bad);font-weight:700;flex:0 0 auto;}
+  .opt.dim{opacity:.45;}
+
+  /* ---------- rationale ---------- */
+
+  .why{display:none;margin-top:16px;background:var(--surface);
+    border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:9px;padding:16px 18px;font-size:14.5px;line-height:1.6;}
+  .why.show{display:block;}
+  .why.ok{border-left-color:var(--good);}
+  .why.no{border-left-color:var(--bad);}
+
+  .verdict{display:block;font-weight:700;font-size:11px;letter-spacing:1px;
+    text-transform:uppercase;margin-bottom:8px;}
+  .verdict.ok{color:var(--good);}
+  .verdict.no{color:var(--bad);}
+
+  .source{display:block;margin-top:14px;padding-top:12px;
+    border-top:1px solid var(--line);font-size:13.5px;line-height:1.6;color:var(--muted);}
+  .source b{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;
+    font-weight:700;color:var(--accentDeep);margin-bottom:5px;}
+
+  /* ---------- result ---------- */
+
+  .result{display:none;margin-top:22px;background:var(--coral-bg);
+    border:1px solid var(--coral-line);border-radius:12px;padding:26px;text-align:center;}
+  .result.show{display:block;}
+  .score{font-size:38px;font-weight:800;line-height:1;margin:0 0 8px;letter-spacing:-1px;}
+  .score-note{margin:0 0 20px;font-size:15px;color:var(--muted);}
+
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:9px;
+    padding:12px 22px;font-size:15px;font-weight:700;font-family:var(--sans);
+    cursor:pointer;transition:background .15s;}
+  .btn:hover{background:var(--accentDeep);}
+  .btn:focus-visible{outline:3px solid var(--accentDeep);outline-offset:3px;}
+
+  /* ---------- references + footer ---------- */
+
+  .seclabel{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;
+    color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:6px;margin:34px 0 12px;}
+  .refs{font-size:13.5px;line-height:1.65;color:var(--muted);}
+  .refs p{margin:0 0 7px;}
+
+  .foot{color:var(--muted);font-size:12.5px;margin-top:40px;
+    border-top:1px solid var(--line);padding-top:16px;}
+  .foot a{color:var(--muted);text-decoration:underline;text-underline-offset:2px;}
+  .foot a:hover{color:var(--accentDeep);}
+  .foot-legal{margin-top:9px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav bar (mounts itself at the top of <body>) -->
+<script src="/header.js"></script>
+
+<div class="wrap">
+
+  <div class="toolhero">
+    <div class="ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="3" width="14" height="18" rx="2"></rect>
+        <path d="M9 3.5h6a1 1 0 0 1 1 1V6H8V4.5a1 1 0 0 1 1-1z"></path>
+        <path d="M8.5 11.5l1.5 1.5 2.5-3"></path><path d="M14.5 11.5H16"></path><path d="M8.5 16h7"></path>
+      </svg>
+    </div>
+    <div>
+      <div class="brand">Week 2 <span class="bot">Quiz Review</span></div>
+      <div class="tagline">The mental status exam, the 4P formulation, and the biopsychosocial-spiritual model</div>
+    </div>
+  </div>
+
+  <h1>Week 2 Quiz: The Basics</h1>
+  <p class="lead">Ten questions on the mental status exam, the 4P formulation, and the biopsychosocial-spiritual model. Pick an answer and the reasoning appears, along with where to find it in the readings. You can only answer each question once.</p>
+
+  <div class="qbar">
+    <span class="qcount" id="counter">0 of 10 answered</span>
+    <span class="qtrack"><span class="qprog" id="meterFill"></span></span>
+    <span class="qcount" id="scoreLive">0 correct</span>
+  </div>
+
+  <main id="quiz"></main>
+
+  <div class="result" id="result">
+    <p class="score" id="finalScore">0 / 10</p>
+    <p class="score-note" id="finalNote"></p>
+    <button class="btn" id="restart">Start over</button>
+  </div>
+
+  <div class="seclabel">Readings</div>
+  <div class="refs">
+    <p>Martin, D. C. The Mental Status Examination, ch. 207, pp. 924&ndash;929.</p>
+    <p>Owen, G. (2023). What is formulation in psychiatry? <em>Psychological Medicine, 53,</em> 1700&ndash;1707.</p>
+    <p>Hatala, A. R. (2013). Towards a biopsychosocial-spiritual approach in health psychology. <em>Journal of Spirituality in Mental Health, 15</em>(4), 256&ndash;276.</p>
+  </div>
+
+  <div class="foot">A Socialworky course resource. For review and study only &mdash; not clinical advice.
+    <div class="foot-legal"><a href="/terms.html">Terms of Use</a>&nbsp;&middot;&nbsp;<a href="/privacy.html">Privacy Policy</a>&nbsp;&middot;&nbsp;<a href="/disclaimer.html">Tools Disclaimer</a></div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var QUESTIONS = [
+    {
+      stem: "A clinician notes that a client arrived “disheveled, avoided eye contact, and had slumped posture.” This observation would most likely be part of which assessment tool?",
+      options: ["Life chart", "Mental Status Exam", "4P formulation"],
+      answer: 1,
+      why: "Appearance and general behavior are components of the Mental Status Exam. The life chart gathers life-course history and the 4P formulation organizes causal factors. Neither records what the clinician observes in the room.",
+      source: "Martin, p. 925, under Appearance and General Behavior, lists grooming, dress, posture, and eye contact as pertinent observations, and Table 207.1 on p. 924 places appearance among the exam domains. For the alternatives: Meyer’s life chart appears in Owen, p. 1701 (Fig. 1), and the 4P model in Owen, p. 1702 (Table 1)."
+    },
+    {
+      stem: "At an intake appointment, a client reports that she has felt empty and heavy nearly every day for the past six weeks. During the session, her facial expression and tone shift with the topics she is discussing. In documenting the mental status exam, the social worker records the six weeks of feeling empty and heavy under:",
+      options: ["Mood", "Affect", "Attitude"],
+      answer: 0,
+      why: "Mood is the sustained emotional baseline a client reports over time. Affect is the immediate expression the worker observes shifting across the session. Attitude is the emotional tone the client displays toward the worker or toward the illness.",
+      source: "Martin, p. 925, opens Affect and Mood by separating the two: affect is the immediate expression of emotion, mood the more sustained emotional makeup. The same page opens Attitude and Insight by defining attitude as the emotional tone displayed toward the examiner, other people, or the illness."
+    },
+    {
+      stem: "What is the primary purpose of the Mental Status Examination?",
+      options: [
+        "To document the client’s psychiatric history and prior treatment",
+        "To establish a DSM diagnosis from the symptoms the client reports",
+        "To describe the client’s functioning at the time of the interview"
+      ],
+      answer: 2,
+      why: "The Mental Status Examination describes present functioning at the time of the interview. History taking covers prior psychiatric treatment, and diagnosis is a separate step that may follow the exam.",
+      source: "Martin, p. 924, Definition, describes the exam as a structured assessment of the patient’s current behavioral and cognitive functioning. The Technique section on the same page treats it as separate from the medical history, noting the clinician performs much of it through unstructured observation during the encounter, and p. 925 adds that attitude often changes across the interview and those changes should be noted."
+    },
+    {
+      stem: "Which Mental Status Examination domain assesses the client’s awareness and understanding of their condition?",
+      options: ["Thought content", "Insight", "Judgment"],
+      answer: 1,
+      why: "Insight is the client’s understanding of their own condition. Judgment concerns the quality of decision making, and thought content concerns the ideas and beliefs themselves.",
+      source: "Martin, p. 925, Attitude and Insight, frames insight around whether the patient views the illness as psychiatric or nonpsychiatric and whether they expect improvement. Thought content is handled separately under Thought and Perception on the same page, and judgment is grouped with abstract thinking on p. 927."
+    },
+    {
+      stem: "A social worker completes an assessment with a client experiencing depression. There is a long history of recurrent depression with his mother, his symptoms began after a divorce six months ago, and he has since stopped seeing friends and stays home most days. In the 4P model, which detail is best understood as a perpetuating factor?",
+      options: [
+        "His mother’s history of depression",
+        "The divorce six months ago",
+        "Staying home and avoiding friends"
+      ],
+      answer: 2,
+      why: "Perpetuating factors maintain a problem once it has started, and withdrawal from friends keeps the depression going. The family history is predisposing and the divorce is precipitating.",
+      source: "Owen, p. 1702, introduces the 4Ps as four types of causation applied across biological, psychological, and social domains (Table 1). Table 2 on the same page works the asylum seeker case, where ongoing sleep deprivation and alcohol use are the factors sustaining the presentation, while migration sits in the background."
+    },
+    {
+      stem: "A social worker meets with a 68-year-old client whose family reports that over the past week he has become confused about the date, has seen people who are not there, and is much more alert at some hours than others. Following the diagnostic hierarchy, what should the social worker consider first?",
+      options: [
+        "A primary psychotic disorder emerging later in life",
+        "An underlying medical cause of the symptoms",
+        "An adjustment reaction to recent life stressors"
+      ],
+      answer: 1,
+      why: "The diagnostic hierarchy directs the clinician toward the level closest to organic whenever there is evidence supporting it. Disorientation and alertness that fluctuates through the day point there, and complex psychotic experiences including hallucinations can arise from a medical cause.",
+      source: "Owen, pp. 1704–1705, sets out the three groups (Table 3) and states the convention of formulating at the diagnosis closest to Group I where evidence supports it. He notes that complex psychotic experiences can arise in delirium, and that disorientation and confabulation point directly to Group I. Martin, p. 924, defines delirium by fluctuating consciousness, disorientation, and hallucinations, commonly tied to toxic, infectious, or metabolic causes."
+    },
+    {
+      stem: "Why is formulation preferred over diagnosis alone in complex cases?",
+      options: [
+        "It accommodates ambiguity and incorporates the client’s context",
+        "It produces closer agreement between clinicians assessing one client",
+        "It removes the need for a diagnosis in most clinical settings"
+      ],
+      answer: 0,
+      why: "Formulation is flexible and context-sensitive, which matters when symptoms do not fit neatly into diagnostic categories. Two clinicians assessing the same client may arrive at two different formulations, and formulation supplements a diagnosis rather than replacing it.",
+      source: "Owen opens on p. 1700 with the Maudsley Handbook epigraph, which contrasts a descriptive summary with an analytical and evaluative formulation and notes two experts assessing one patient may produce two different formulations. That rules out the agreement option. On p. 1705 he argues the 4P model cannot operate without an intelligible diagnostic scheme, which rules out the third."
+    },
+    {
+      stem: "What role does culture play in the biopsychosocial-spiritual model?",
+      options: [
+        "It provides background context that clinicians should note at intake",
+        "It influences health behaviors but not the experience of illness itself",
+        "It shapes how clients understand illness and what counts as healing"
+      ],
+      answer: 2,
+      why: "Cultural meaning systems shape how clients interpret illness and what they understand healing to be. Culture reaches the experience of illness itself rather than functioning as static background or influencing behavior alone.",
+      source: "Hatala, p. 267, cites Kazarian and Evans on the consequences of a Western bias in the concept of health, including the marginalization of indigenous belief systems and healing practices, and points to Fadiman’s account of Hmong families and American doctors as a case where differing conceptions of health lie at the core of the conflict. He returns to the point on p. 268, where health is redefined to include meaning, purpose, and relationship rather than the absence of disease."
+    },
+    {
+      stem: "A social worker learns that a client’s religious community discourages her from seeking medical care for a chronic condition. In the biopsychosocial-spiritual model, what does an example like this suggest about assessing spirituality?",
+      options: [
+        "It supports assessing spirituality, since the link to health runs both ways",
+        "It suggests spirituality should be raised only when a client brings it up",
+        "It suggests spiritual concerns are better handled as social support"
+      ],
+      answer: 0,
+      why: "Spirituality can impair health as well as promote it. Evidence of harm documents a real relation between spirituality and health, which strengthens the case for assessing it rather than setting it aside.",
+      source: "Hatala, pp. 265–266, Negative Health Effects, catalogs the harms, including reduced use of health services and deferring coping styles with the poorest outcomes, then closes the section by arguing that these ill effects add weight to including spirituality in the model precisely because they document a relation that exists. He adds that spirituality warrants the same treatment as any other domain, examined for what promotes and what impedes health."
+    },
+    {
+      stem: "A client mentions during intake that faith has been important to her since her diagnosis. The social worker wants to follow up in a way consistent with how spirituality is defined in the biopsychosocial-spiritual model. Which question fits best?",
+      options: [
+        "Whether she attends services at a congregation regularly",
+        "What she holds sacred and how she protects it",
+        "Whether she believes a higher power is guiding her recovery"
+      ],
+      answer: 1,
+      why: "Spirituality is defined as a search for the sacred, a definition chosen so that it spans both individual and collective experience. Congregational attendance and belief in a higher power each narrow spirituality to a single dimension.",
+      source: "Hatala, p. 260, settles on Pargament’s definition after reviewing the difficulty of defining the term at all: a search for the sacred, meaning the process by which people discover, hold onto, and when necessary transform what they hold sacred. He states directly that he chooses it because the work spans individual and collective experience, and notes on the same page that researchers contest splitting individual spirituality from collective religion."
+    }
+  ];
+
+  var LETTERS = ['a', 'b', 'c', 'd'];
+
+  var quiz       = document.getElementById('quiz');
+  var counter    = document.getElementById('counter');
+  var meterFill  = document.getElementById('meterFill');
+  var scoreLive  = document.getElementById('scoreLive');
+  var result     = document.getElementById('result');
+  var finalScore = document.getElementById('finalScore');
+  var finalNote  = document.getElementById('finalNote');
+  var restart    = document.getElementById('restart');
+
+  var answered = 0, correct = 0;
+
+  function build() {
+    quiz.innerHTML = '';
+    answered = 0;
+    correct = 0;
+    result.classList.remove('show');
+    updateStatus();
+
+    QUESTIONS.forEach(function (q, qi) {
+      var block = document.createElement('section');
+      block.className = 'qcard';
+
+      var num = document.createElement('p');
+      num.className = 'qnum';
+      num.textContent = 'Question ' + (qi + 1);
+
+      var stem = document.createElement('p');
+      stem.className = 'stem';
+      stem.textContent = q.stem;
+
+      var opts = document.createElement('div');
+      opts.className = 'opts';
+
+      var why = document.createElement('div');
+      why.className = 'why';
+      why.setAttribute('role', 'status');
+
+      q.options.forEach(function (text, oi) {
+        var btn = document.createElement('button');
+        btn.className = 'opt';
+        btn.type = 'button';
+
+        var letter = document.createElement('span');
+        letter.className = 'ltr';
+        letter.textContent = LETTERS[oi];
+
+        var label = document.createElement('span');
+        label.textContent = text;
+
+        btn.appendChild(letter);
+        btn.appendChild(label);
+        btn.addEventListener('click', function () { choose(q, oi, opts, why); });
+        opts.appendChild(btn);
+      });
+
+      block.appendChild(num);
+      block.appendChild(stem);
+      block.appendChild(opts);
+      block.appendChild(why);
+      quiz.appendChild(block);
+    });
+  }
+
+  function choose(q, oi, opts, why) {
+    var buttons = opts.querySelectorAll('.opt');
+    if (buttons[0].disabled) return;
+
+    var right = (oi === q.answer);
+    answered++;
+    if (right) correct++;
+
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].disabled = true;
+      if (i === q.answer) buttons[i].classList.add('correct');
+      else if (i === oi)  buttons[i].classList.add('wrong');
+      else                buttons[i].classList.add('dim');
+    }
+
+    var verdict = document.createElement('span');
+    verdict.className = 'verdict ' + (right ? 'ok' : 'no');
+    verdict.textContent = right ? 'Correct' : 'The answer is ' + LETTERS[q.answer];
+
+    var body = document.createElement('span');
+    body.textContent = q.why;
+
+    var src = document.createElement('span');
+    src.className = 'source';
+    var srcLabel = document.createElement('b');
+    srcLabel.textContent = 'Where to find it';
+    var srcBody = document.createElement('span');
+    srcBody.textContent = q.source;
+    src.appendChild(srcLabel);
+    src.appendChild(srcBody);
+
+    why.className = 'why ' + (right ? 'ok' : 'no');
+    why.innerHTML = '';
+    why.appendChild(verdict);
+    why.appendChild(body);
+    why.appendChild(src);
+    why.classList.add('show');
+
+    updateStatus();
+    if (answered === QUESTIONS.length) finish();
+  }
+
+  function updateStatus() {
+    counter.textContent = answered + ' of ' + QUESTIONS.length + ' answered';
+    scoreLive.textContent = correct + ' correct';
+    meterFill.style.width = (answered / QUESTIONS.length * 100) + '%';
+  }
+
+  function finish() {
+    finalScore.textContent = correct + ' / ' + QUESTIONS.length;
+    var pct = correct / QUESTIONS.length;
+    finalNote.textContent = pct === 1
+      ? 'All ten. Bring your questions to class anyway.'
+      : pct >= 0.8
+        ? 'Solid. Look back at the ones you missed before Thursday.'
+        : pct >= 0.5
+          ? 'Worth a second pass through the readings on the items you missed.'
+          : 'Read back through the rationales and the cited sections, then take it again.';
+    result.classList.add('show');
+    result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  restart.addEventListener('click', function () {
+    build();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  build();
+})();
+</script>
+
+</body>
+</html>
