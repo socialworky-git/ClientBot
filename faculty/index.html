@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Faculty Resources | Socialworky</title>
+<meta name="description" content="Unlisted tools and resources for social work faculty, shared by direct link." />
+
+<!-- Unlisted: not in the site nav, kept out of search. Share by direct link.
+     Add a new faculty resource by dropping a folder at /faculty/<slug>/ and
+     copying one of the cards below. -->
+<meta name="robots" content="noindex, nofollow" />
+
+<!-- Social / Open Graph (for pasting the link to a colleague) -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Socialworky" />
+<meta property="og:title" content="Faculty Resources | Socialworky" />
+<meta property="og:description" content="Unlisted tools and resources for social work faculty, shared by direct link." />
+<meta property="og:url" content="https://socialworky.com/faculty/" />
+<meta property="og:image" content="https://socialworky.com/images/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Faculty Resources | Socialworky" />
+<meta name="twitter:description" content="Unlisted tools and resources for social work faculty, shared by direct link." />
+<meta name="twitter:image" content="https://socialworky.com/images/og-image.png" />
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+
+<!-- Shared design tokens (colors + shell width). Variables only — safe to link.
+     The font (Hanken Grotesk) is loaded by /header.js. -->
+<link rel="stylesheet" href="/tokens.css" />
+
+<!-- Vercel Web Analytics -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+
+<style>
+  /* Page shell: same column + gutter as every other page so the header lines up. */
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+        line-height:1.6; -webkit-font-smoothing:antialiased; }
+  .wrap{ max-width:var(--sw-maxw,820px); margin:0 auto; padding:var(--sw-gutter,24px); }
+  a{ color:var(--accentDeep); }
+
+  /* Standard tool hero (the coral banner) */
+  .toolhero{ display:flex; align-items:center; gap:16px; background:var(--coral-bg);
+    border:1px solid var(--coral-line); border-radius:12px; box-shadow:inset 4px 0 0 var(--accent);
+    padding:18px 22px 18px 24px; margin-bottom:18px; }
+  .toolhero .ico{ width:52px; height:52px; border-radius:12px; background:#fff;
+    border:1px solid var(--coral-line); display:flex; align-items:center; justify-content:center;
+    flex:0 0 auto; color:var(--accentDeep); }
+  .toolhero .ico svg{ width:26px; height:26px; display:block; }
+  .toolhero .brand{ font-weight:700; font-size:24px; letter-spacing:-.02em; color:var(--ink); line-height:1.1; margin:0; }
+  .toolhero .brand .bot{ color:var(--accentDeep); }
+  .toolhero .tagline{ color:#7A5048; font-size:14px; margin-top:3px; }
+
+  .lead{ color:var(--muted); font-size:16px; margin:0 0 6px; max-width:64ch; }
+
+  /* Resource cards, same style as the Tools catalog */
+  .section-title{ font-size:12px; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; color:var(--accentDeep);
+    margin:30px 0 0; padding-bottom:6px; border-bottom:1px solid var(--line); }
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; }
+  .tool{ display:block; text-decoration:none; color:inherit; background:var(--surface); border:1px solid var(--line);
+    border-radius:12px; padding:18px; transition:border-color .12s, box-shadow .12s; }
+  .tool:hover{ border-color:var(--accent); box-shadow:0 1px 10px rgba(0,0,0,.06); }
+  .tool-head{ display:flex; align-items:center; gap:12px; margin-bottom:9px; }
+  .tool-ico{ width:40px; height:40px; border-radius:10px; background:var(--coral-bg); border:1px solid var(--coral-line);
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto; color:var(--accentDeep); }
+  .tool-ico svg{ width:21px; height:21px; display:block; }
+  .tool .nm{ font-size:18px; font-weight:700; margin:0; line-height:1.2; }
+  .tool .ds{ font-size:14px; color:var(--muted); }
+  .tool .go{ display:inline-block; margin-top:12px; font-size:13.5px; font-weight:700; color:var(--accentDeep); }
+
+  .note{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px 18px;
+    font-size:14px; color:var(--muted); margin-top:28px; }
+  .note b{ color:var(--ink); font-weight:600; }
+
+  .foot{ color:var(--muted); font-size:12.5px; margin-top:30px; border-top:1px solid var(--line); padding-top:14px; }
+  .foot a{ color:var(--muted); }
+
+  @media (max-width:640px){
+    .grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav bar (mounts itself at the top of <body>). This page is not in the nav. -->
+<script src="/header.js"></script>
+
+<div class="wrap">
+
+  <div class="toolhero">
+    <div class="ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 9l-10 -4l-10 4l10 4l10 -4v6"/>
+        <path d="M6 10.6v5.4a6 3 0 0 0 12 0v-5.4"/>
+      </svg>
+    </div>
+    <div>
+      <h1 class="brand">Faculty <span class="bot">Resources</span></h1>
+      <div class="tagline">Tools for colleagues who teach, shared by direct link.</div>
+    </div>
+  </div>
+
+  <p class="lead">A small shelf of things that save time on the teaching side of the job. Everything here is free, needs no account, and runs in your browser. Bookmark this page, since it is not linked from anywhere else on the site.</p>
+
+  <div class="section-title">Course building</div>
+  <div class="grid">
+
+    <a class="tool" href="/faculty/canvas-quiz-builder/">
+      <div class="tool-head">
+        <span class="tool-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/><path d="M9 15l2 2l4 -4"/></svg></span>
+        <div class="nm">Canvas Quiz Builder</div>
+      </div>
+      <div class="ds">Turn a quiz you already wrote in Word, a PDF, or plain text into a file Canvas imports as a ready-to-publish quiz, answer key and rationales included.</div>
+      <span class="go">Open &rarr;</span>
+    </a>
+
+    <!-- To add a resource: copy the card above, point the href at /faculty/<slug>/,
+         and swap the name, description, and icon. -->
+
+  </div>
+
+  <div class="note">
+    <b>About this page.</b> It is unlisted on purpose: search engines are told to skip it and it does not appear in the site menus. Feel free to pass the link to colleagues. If you have an idea for something that would make your teaching easier, I would like to hear it.
+  </div>
+
+  <div class="foot">A Socialworky faculty resource. Canvas is a product of Instructure and these tools are not affiliated with them.</div>
+
+</div>
+</body>
+</html>

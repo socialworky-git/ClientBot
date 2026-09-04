@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Canvas Quiz Builder | Socialworky</title>
+<meta name="description" content="Turn a Word doc, PDF, or pasted text into a QTI package you can import into Canvas." />
+
+<!-- Unlisted faculty resource: shared by direct link, kept out of search and out of the nav. -->
+<meta name="robots" content="noindex, nofollow" />
+
+<!-- Social / Open Graph (for pasting the link to a colleague) -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Socialworky" />
+<meta property="og:title" content="Canvas Quiz Builder | Socialworky" />
+<meta property="og:description" content="Turn a Word doc, PDF, or pasted text into a QTI package you can import into Canvas." />
+<meta property="og:url" content="https://socialworky.com/faculty/canvas-quiz-builder/" />
+<meta property="og:image" content="https://socialworky.com/images/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Canvas Quiz Builder | Socialworky" />
+<meta name="twitter:description" content="Turn a Word doc, PDF, or pasted text into a QTI package you can import into Canvas." />
+<meta name="twitter:image" content="https://socialworky.com/images/og-image.png" />
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+
+<!-- Shared design tokens (colors + shell width). Variables only — safe to link.
+     The font (Hanken Grotesk) is loaded by /header.js. -->
+<link rel="stylesheet" href="/tokens.css" />
+
+<!-- Vercel Web Analytics -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+
+<!-- Client-side libraries: zip building, .docx text, .pdf text. Nothing leaves the browser. -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<!--
+  OPTIONAL AI PARSE. Off by default (AI_ENABLED = false near the bottom of the
+  script) and the page is fully functional without it. To turn it on, add a
+  serverless route at AI_ENDPOINT that accepts { text } and returns
+  { questions: [...] } using the AI_PROMPT below, then flip AI_ENABLED to true.
+-->
+
+<style>
+:root{
+  /* Page-local aliases onto the site tokens in /tokens.css */
+  --coral:var(--accent);
+  --coral-soft:var(--coral-bg);
+  --paper:var(--bg);
+  --wash:var(--surface);
+  --rule:var(--line);
+  --ink-soft:var(--muted);
+  --ink-faint:#8A8A8F;
+  --correct:#2E7D5B;
+  --correct-soft:#E8F4EE;
+  --warn:#9a5b12;
+  --warn-soft:#fbf1e2;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
+      font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
+/* Page shell: same column + gutter as every other page so the header lines up.
+   Do NOT change the width here — edit --sw-maxw in tokens.css. */
+.wrap{ max-width:var(--sw-maxw,820px); margin:0 auto; padding:var(--sw-gutter,24px); }
+a{ color:var(--accentDeep); }
+
+/* Standard tool hero (the coral banner) */
+.toolhero{ display:flex; align-items:center; gap:16px; background:var(--coral-bg);
+  border:1px solid var(--coral-line); border-radius:12px; box-shadow:inset 4px 0 0 var(--accent);
+  padding:18px 22px 18px 24px; margin-bottom:18px; }
+.toolhero .ico{ width:52px; height:52px; border-radius:12px; background:#fff;
+  border:1px solid var(--coral-line); display:flex; align-items:center; justify-content:center;
+  flex:0 0 auto; color:var(--accentDeep); }
+.toolhero .ico svg{ width:26px; height:26px; display:block; }
+.toolhero .brand{ font-weight:700; font-size:24px; letter-spacing:-.02em; color:var(--ink); line-height:1.1; margin:0; }
+.toolhero .brand .bot{ color:var(--accentDeep); }
+.toolhero .tagline{ color:#7A5048; font-size:14px; margin-top:3px; }
+
+.intro{padding:4px 0 14px}
+.intro p{color:var(--ink-soft);margin:0 0 12px;font-size:17px}
+h2{font-size:20px;font-weight:600;margin:0 0 6px;letter-spacing:-.01em}
+h3{font-size:16px;font-weight:600;margin:22px 0 6px}
+
+.step{background:var(--wash);border:1px solid var(--rule);border-radius:12px;padding:22px;margin:0 0 16px}
+.step .hint{color:var(--ink-soft);font-size:15px;margin:0 0 16px}
+
+.tabs{display:flex;gap:3px;background:var(--paper);border:1px solid var(--rule);border-radius:9px;padding:3px;margin-bottom:14px;width:fit-content}
+.tab{border:0;background:transparent;color:var(--ink-soft);font:inherit;font-size:15px;padding:7px 15px;border-radius:6px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--coral-soft);color:var(--accentDeep);font-weight:600}
+.tab:focus-visible{outline:2px solid var(--coral);outline-offset:1px}
+
+textarea#src{
+  width:100%;min-height:250px;resize:vertical;background:var(--paper);
+  border:1px solid var(--rule);border-radius:9px;padding:13px 15px;color:var(--ink);
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;line-height:1.6;
+}
+:focus-visible{outline:2px solid var(--coral);outline-offset:1px}
+textarea:focus,input:focus,select:focus{outline:2px solid var(--coral);outline-offset:1px;border-color:var(--coral)}
+
+.drop{border:1.5px dashed var(--rule);border-radius:9px;padding:36px 20px;text-align:center;color:var(--ink-soft);background:var(--paper);cursor:pointer}
+.drop.over{border-color:var(--coral);background:var(--coral-soft);color:var(--ink)}
+.drop strong{display:block;color:var(--ink);font-weight:600;font-size:16px}
+.drop small{display:block;margin-top:6px;color:var(--ink-faint)}
+
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+button.act{font:inherit;font-size:15px;font-weight:600;border-radius:8px;padding:10px 18px;cursor:pointer;border:1.5px solid var(--coral);background:var(--coral);color:#fff}
+button.act:hover:not(:disabled){background:var(--accentDeep);border-color:var(--accentDeep)}
+button.act.ghost{background:transparent;color:var(--accentDeep)}
+button.act.ghost:hover:not(:disabled){background:var(--coral-soft);color:var(--accentDeep)}
+button.act:disabled{opacity:.45;cursor:not-allowed}
+button.mini{font:inherit;font-size:13px;border:1px solid var(--rule);background:var(--paper);color:var(--ink-soft);border-radius:6px;padding:4px 9px;cursor:pointer}
+button.mini:hover{color:var(--ink);border-color:var(--ink-faint)}
+button.link{border:0;background:none;color:var(--accentDeep);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;padding:0}
+label.check{display:inline-flex;gap:7px;align-items:center;color:var(--ink-soft);font-size:14px;cursor:pointer}
+label.check input{accent-color:var(--coral)}
+
+.status{margin-top:12px;font-size:14.5px;color:var(--ink-soft);min-height:20px}
+.status.err{color:#a32a2a}
+.status.ok{color:var(--correct)}
+
+.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.field label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:4px}
+.field input,.field select{width:100%;font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
+
+.q{border:1px solid var(--rule);border-radius:10px;padding:14px 16px;margin-bottom:12px;background:var(--paper)}
+.q.bad{border-color:var(--warn);background:var(--warn-soft)}
+.q-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:6px}
+.q-num{font-variant-numeric:tabular-nums;color:var(--ink-faint);font-size:14px;padding-top:4px;min-width:24px}
+.q-text{flex:1;border:0;background:transparent;font:inherit;font-weight:600;font-size:15.5px;width:100%;resize:none;overflow:hidden;color:var(--ink);padding:3px 5px;border-radius:5px}
+.q-text:hover,.ans textarea:hover,.rat textarea:hover{background:var(--wash)}
+.q-tools{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.q-tools select,.q-tools input[type=number]{font:inherit;font-size:12.5px;padding:4px 6px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink)}
+.q-tools input[type=number]{width:56px}
+
+.ans{display:flex;gap:9px;align-items:flex-start;padding:2px 0 2px 32px}
+.ans input[type=radio],.ans input[type=checkbox]{margin-top:8px;accent-color:var(--correct);flex-shrink:0}
+.ans textarea,.rat textarea{border:0;background:transparent;font:inherit;font-size:15px;padding:3px 6px;border-radius:5px;resize:none;overflow:hidden;color:var(--ink)}
+.ans.is-correct textarea{background:var(--correct-soft)}
+.rat{margin:6px 0 0 32px;display:flex;gap:9px;align-items:flex-start}
+.rat span{font-size:12.5px;color:var(--ink-faint);padding-top:7px;flex-shrink:0}
+.rat textarea{font-size:14px;color:var(--ink-soft)}
+.warnline{font-size:13px;color:var(--warn);margin:6px 0 0 32px}
+
+.summary{display:flex;gap:20px;flex-wrap:wrap;font-size:14px;color:var(--ink-soft);margin-bottom:14px}
+.summary b{color:var(--ink);font-weight:600}
+
+details.fmt{margin-top:14px;font-size:14.5px;color:var(--ink-soft)}
+details.fmt summary{cursor:pointer;color:var(--accentDeep);font-weight:500}
+pre{background:var(--paper);border:1px solid var(--rule);border-radius:9px;padding:13px 15px;overflow-x:auto;font-size:12.5px;line-height:1.6;color:var(--ink)}
+
+.guide{padding:26px 0 10px;border-top:1px solid var(--rule);margin-top:32px}
+.guide ol{padding-left:20px;margin:10px 0}
+.guide li{margin-bottom:9px}
+.guide p{color:var(--ink-soft)}
+.callout{background:var(--warn-soft);border-left:3px solid var(--warn);border-radius:0 8px 8px 0;padding:13px 16px;margin:16px 0;font-size:15px}
+.callout b{font-weight:600}
+.note{background:var(--wash);border:1px solid var(--rule);border-radius:9px;padding:14px 16px;font-size:14.5px;color:var(--ink-soft);margin:16px 0}
+.foot{color:var(--muted);font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px}
+.hidden{display:none!important}
+@media (max-width:620px){
+  .q-head{flex-wrap:wrap}
+  .q-tools{width:100%;padding-left:34px}
+}
+</style>
+</head>
+<body>
+
+<!-- Nav bar (mounts itself at the top of <body>). This page is not in the nav. -->
+<script src="/header.js"></script>
+
+<div class="wrap">
+<main>
+
+<div class="toolhero">
+  <div class="ico">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 3v4a1 1 0 0 0 1 1h4"/>
+      <path d="M17 21h-10a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z"/>
+      <path d="M9 15l2 2l4 -4"/>
+    </svg>
+  </div>
+  <div>
+    <h1 class="brand">Canvas <span class="bot">Quiz Builder</span></h1>
+    <div class="tagline">Turn a quiz you already wrote into a file Canvas can import.</div>
+  </div>
+</div>
+
+<div class="intro">
+  <p>Turn a quiz you already wrote into a package Canvas can import. Paste it in, or drop in a Word document, PDF, or spreadsheet. Fix anything that came through wrong, then download the file and upload it to your course.</p>
+  <p>Free, no account, and nothing you paste leaves your browser.</p>
+</div>
+
+<section class="step">
+  <h2>1. Bring in your quiz</h2>
+  <p class="hint">Most layouts work as written. Numbered questions with lettered answers, an asterisk or an <code>ANS:</code> line marking the key, and a rationale line if you have one. A separate answer key page at the end is fine too.</p>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab-paste" aria-selected="true">Paste text</button>
+    <button class="tab" role="tab" id="tab-file" aria-selected="false">Upload a file</button>
+  </div>
+
+  <div id="pane-paste">
+    <textarea id="src" spellcheck="false" aria-label="Quiz text" placeholder="1. Which of the following best describes ambivalence?&#10;a) Resistance to change&#10;*b) Simultaneously wanting and not wanting to change&#10;c) Denial&#10;Rationale: Ambivalence is normal and expected."></textarea>
+    <div class="row" style="margin-top:8px">
+      <button class="link" id="btn-example">Load an example so I can see the format</button>
+    </div>
+    <details class="fmt">
+      <summary>Formats it reads without any help</summary>
+<pre>1. Question text goes here.
+a) First answer
+*b) Correct answer, marked with an asterisk
+c) Third answer
+Rationale: Shown to students after they submit.
+
+2) You can also mark the key on its own line.
+A. First answer
+B. Second answer
+ANS: B
+Feedback: "Rationale", "Feedback", and "Explanation" all work.
+
+3. True or false: this becomes a true/false item on its own.
+a) True
+*b) False
+
+4. Select all that apply. [multiple answers]
+*a) First correct
+*b) Second correct
+c) Not correct
+
+5. What does MI stand for? [short answer]
+ANS: Motivational Interviewing | MI
+
+6. Describe a time you used reflective listening. [essay]
+
+
+Or keep the key on a separate page at the end:
+
+Answer Key
+
+1. B - Ambivalence is normal, and holding both sides at once
+   is what separates it from resistance.
+2. A, C - Both are core skills.</pre>
+    </details>
+  </div>
+
+  <div id="pane-file" class="hidden">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a file">
+      <strong>Choose a file or drop one here</strong>
+      <small>.docx, .pdf, .txt, .md, .csv, .rtf</small>
+    </div>
+    <input type="file" id="file" class="hidden" accept=".docx,.pdf,.txt,.md,.csv,.tsv,.rtf">
+  </div>
+
+  <div class="row">
+    <button class="act" id="btn-read">Read my quiz</button>
+    <button class="act ghost hidden" id="btn-ai">Read it with AI</button>
+    <label class="check"><input type="checkbox" id="opt-clean" checked> Clean up smart quotes and stray characters</label>
+  </div>
+  <div class="status" id="status1" role="status"></div>
+</section>
+
+<section class="step hidden" id="review">
+  <h2>2. Check your questions</h2>
+  <p class="hint">Click any line to edit it. The green marker is the answer Canvas will score as correct. Anything highlighted in amber needs attention before you export.</p>
+  <div class="summary" id="summary"></div>
+  <div id="qlist"></div>
+</section>
+
+<section class="step hidden" id="settings">
+  <h2>3. Settings and download</h2>
+  <p class="hint">These become the quiz settings in Canvas, and you can change all of them after importing.</p>
+  <div class="settings">
+    <div class="field"><label for="qtitle">Quiz title</label><input id="qtitle" value="Imported Quiz"></div>
+    <div class="field"><label for="qtype">Quiz type</label>
+      <select id="qtype">
+        <option value="assignment">Graded quiz</option>
+        <option value="practice_quiz">Practice quiz</option>
+        <option value="survey">Ungraded survey</option>
+      </select>
+    </div>
+    <div class="field"><label for="qshuffle">Shuffle answers</label>
+      <select id="qshuffle"><option value="false">No</option><option value="true">Yes</option></select>
+    </div>
+    <div class="field"><label for="qattempts">Allowed attempts</label><input id="qattempts" type="number" value="1" min="1"></div>
+  </div>
+  <div class="row">
+    <button class="act" id="btn-build">Download the Canvas file</button>
+    <span class="status" id="status2" role="status"></span>
+  </div>
+</section>
+
+<div class="guide">
+  <h2>Getting the file into Canvas</h2>
+  <p>You will download a <code>.zip</code> file. Leave it zipped. Canvas needs it that way, and on a Mac it is easy to double click it by accident.</p>
+  <ol>
+    <li>Open the Canvas course and click <b>Settings</b> in the course menu.</li>
+    <li>On the right side, click <b>Import Course Content</b>.</li>
+    <li>For content type, choose <b>QTI .zip file</b>.</li>
+    <li>Click <b>Choose File</b> and pick the zip you downloaded.</li>
+    <li>Leave the checkboxes alone and click <b>Import</b>.</li>
+    <li>Wait for the job to finish, then open <b>Quizzes</b>. Your quiz is there as an unpublished draft.</li>
+  </ol>
+
+  <div class="callout">
+    <b>Leave "Overwrite assessment content with matching IDs" unchecked.</b> Checking it tells Canvas to replace existing content that shares an ID, and there is no undo. Every file this tool builds gets a fresh ID, so an import always makes a new quiz and never touches what is already in your course.
+  </div>
+
+  <h3>After the import</h3>
+  <p>Open the quiz and click <b>Edit</b> to set the due date, time limit, and availability. Canvas imports quizzes unpublished, so students cannot see it until you publish. Preview it once before you do.</p>
+
+  <h3>If you want students to see the rationale</h3>
+  <p>Rationale text lands in the general answer comment, which Canvas shows every student after they submit, whatever they picked. For that to appear, the quiz has to let students see their responses. In the quiz edit screen, check <b>Let Students See Their Quiz Responses</b>. For a practice quiz this is usually what you want.</p>
+
+  <h3>Question types it builds</h3>
+  <p>Multiple choice, true/false, multiple answers, short answer, and essay. Matching, ordering, and file upload questions are not supported, so add those by hand after importing.</p>
+
+  <h3>If something looks wrong</h3>
+  <p>The most common cause is an answer key the tool could not connect to the questions. Watch the message after step 1: it tells you how many key entries it matched. If that number is lower than your question count, some items came through with no correct answer marked, and those get highlighted in amber in the review list. Fix them there before you export.</p>
+
+  <div class="note">
+    <b>About your quiz content.</b> Reading, editing, and building the file all happen in your browser. Nothing is uploaded, stored, or logged, and this works with your wifi off once the page has loaded. Your answer keys stay on your computer.
+  </div>
+</div>
+
+<div class="foot">
+  A Socialworky faculty resource, built for social work faculty and anyone else stuck formatting quizzes by hand. Canvas is a product of Instructure and this tool is not affiliated with them.
+  &nbsp;&middot;&nbsp; <a href="/faculty/" style="color:var(--muted);">More faculty resources &rarr;</a>
+</div>
+
+</main>
+</div>
+
+<script>
+
+/* ------------------------------------------------------------------ *
+ * Text hygiene. This is the part that fixes the junk characters.
+ * ------------------------------------------------------------------ */
+
+// Repairs UTF-8 bytes that were decoded as Windows-1252 (the "â€™" family).
+function repairMojibake(s){
+  if(!/[ÂÃ][\u0080-\u00BF\u2000-\u203A]/.test(s)) return s;
+  try{
+    const bytes = Uint8Array.from([...s].map(c => c.charCodeAt(0) & 0xff));
+    const back = new TextDecoder('utf-8', {fatal:true}).decode(bytes);
+    return back;
+  }catch(e){ return s; }
+}
+
+// Folds typographic characters down to plain ASCII equivalents.
+function normalizePunctuation(s){
+  return s
+    .replace(/[\u2018\u2019\u201A\u201B\u2032]/g, "'")
+    .replace(/[\u201C\u201D\u201E\u201F\u2033]/g, '"')
+    .replace(/[\u2013\u2014\u2015]/g, '-')
+    .replace(/\u2026/g, '...')
+    .replace(/[\u00A0\u2007\u202F]/g, ' ')
+    .replace(/[\u200B-\u200D\uFEFF\u00AD]/g, '')
+    .replace(/[\u2022\u25CF\u25AA\u00B7]/g, '-')
+    .replace(/\u00A9/g,'(c)').replace(/\u00AE/g,'(R)').replace(/\u2122/g,'(TM)')
+    .replace(/\r\n?/g, '\n');
+}
+
+function clean(s){
+  s = repairMojibake(String(s == null ? '' : s));
+  if(document.getElementById('opt-clean').checked) s = normalizePunctuation(s);
+  return s.replace(/\r\n?/g,'\n').replace(/[ \t]+$/gm,'');
+}
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+// Question text goes into Canvas as HTML, so it is escaped twice on purpose.
+function html(s){ return '<p>' + esc(s).replace(/\n+/g,'</p><p>') + '</p>'; }
+function xmlHtml(s){ return esc(html(s)); }
+
+/* ------------------------------------------------------------------ *
+ * File reading, with encoding detection for CSVs out of Excel.
+ * ------------------------------------------------------------------ */
+
+async function readTextSmart(file){
+  const buf = await file.arrayBuffer();
+  try{
+    return new TextDecoder('utf-8', {fatal:true}).decode(buf);
+  }catch(e){
+    // Excel on a Mac or Windows often writes CSVs as Windows-1252, not UTF-8.
+    return new TextDecoder('windows-1252').decode(buf);
+  }
+}
+
+async function readDocx(file){
+  const buf = await file.arrayBuffer();
+  const res = await mammoth.extractRawText({arrayBuffer: buf});
+  return res.value;
+}
+
+async function readPdf(file){
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+  let out = [];
+  for(let p = 1; p <= pdf.numPages; p++){
+    const page = await pdf.getPage(p);
+    const tc = await page.getTextContent();
+    let line = '', lastY = null;
+    for(const it of tc.items){
+      const y = it.transform[5];
+      if(lastY !== null && Math.abs(y - lastY) > 3){ out.push(line.trim()); line = ''; }
+      line += it.str + (it.hasEOL ? '\n' : ' ');
+      lastY = y;
+    }
+    out.push(line.trim());
+  }
+  return out.join('\n').replace(/\n{3,}/g,'\n\n');
+}
+
+async function loadFile(file){
+  const n = file.name.toLowerCase();
+  if(n.endsWith('.docx')) return readDocx(file);
+  if(n.endsWith('.pdf'))  return readPdf(file);
+  if(n.endsWith('.rtf')){
+    const raw = await readTextSmart(file);
+    return raw.replace(/\\'([0-9a-f]{2})/gi,(m,h)=>String.fromCharCode(parseInt(h,16)))
+              .replace(/\\par[d]?/g,'\n').replace(/\{\\[^{}]*\}/g,'')
+              .replace(/\\[a-z]+-?\d* ?/gi,'').replace(/[{}]/g,'').trim();
+  }
+  return readTextSmart(file);
+}
+
+/* ------------------------------------------------------------------ *
+ * The forgiving parser. No AI, no network.
+ * ------------------------------------------------------------------ */
+
+const RE_QNUM   = /^\s*(?:Q(?:uestion)?\s*)?(\d{1,3})\s*[.):\]]\s+(.*)$/i;
+const RE_ANS    = /^\s*(\*?)\s*\(?([a-hA-H])\s*[.):\]]\s+(.*)$/;
+const RE_KEY    = /^\s*(?:ANS|ANSWER|KEY|CORRECT)\s*[:.\-]?\s*(.+)$/i;
+const RE_RAT    = /^\s*(?:RATIONALE|FEEDBACK|EXPLANATION|COMMENT|WHY)\s*[:.\-]?\s*(.*)$/i;
+const RE_PTS    = /^\s*(?:POINTS?|PTS)\s*[:.\-]?\s*([\d.]+)\s*$/i;
+const RE_TYPEHINT = /\[(multiple answers?|select all|short answer|fill[- ]in|essay|true\/?false|numerical)\]/i;
+
+// A line that is nothing but an answer-key heading. Everything after it is a key.
+const RE_KEYHEAD = /^\s*(?:[\w\s]{0,40}?[:\-]\s*)?(?:answer\s*key|answers?\s*(?:and|&|with)\s*rationales?|answer\s*sheet|key|solutions?)\s*:?\s*$/i;
+
+// Page furniture that should never become a question.
+const RE_JUNK = /^\s*(?:instructor(?:'s)?\s*copy|do not distribute|for instructor use|confidential|page\s*\d+(?:\s*of\s*\d+)?|name\s*:?\s*_*|date\s*:?\s*_*|\d{1,3})\s*\.?\s*$/i;
+
+// Pulls "B", "B.", "(B)", "B, D" off the front of a line without swallowing
+// ordinary prose. The letter has to be followed by punctuation or end of line,
+// so "A client mentions..." is not read as answer A.
+function leadingLetters(s){
+  const m = String(s).trim().match(/^\*?\(?([A-Ha-h])\)?(?=$|[.,:;)\]\-\u2013\u2014/&]|\s+[-\u2013\u2014:])([^]*)$/);
+  if(!m) return null;
+  const letters = [m[1].toUpperCase()];
+  let rest = m[2] || '';
+  // Additional letters for select-all keys.
+  let more;
+  while((more = rest.match(/^\s*[,;/&]\s*\(?([A-Ha-h])\)?(?=$|[.,:;)\]\-\u2013\u2014/&\s])/))){
+    letters.push(more[1].toUpperCase());
+    rest = rest.slice(more[0].length);
+  }
+  rest = rest.replace(/^\s*[.):\]]?\s*[-\u2013\u2014:]?\s*/, '').trim();
+  return {letters, rest};
+}
+
+// Reads the lines after an answer-key heading into {n, letters, rationale}.
+function parseKeyLines(lines){
+  const entries = [];
+  let pendingNum = null;
+  for(const raw of lines){
+    const line = raw.trim();
+    if(!line){ continue; }
+    if(RE_JUNK.test(line) && !/^\d{1,3}\.?$/.test(line)) continue;
+
+    // Word tables flatten to a bare number on one line and the letter on the next.
+    if(/^\d{1,3}[.):\]]?$/.test(line)){ pendingNum = parseInt(line, 10); continue; }
+    if(pendingNum !== null){
+      const L = leadingLetters(line);
+      if(L){ entries.push({n: pendingNum, letters: L.letters, rationale: L.rest}); pendingNum = null; continue; }
+      pendingNum = null;
+    }
+
+    const m = line.match(/^(\d{1,3})\s*[.):\]]\s*(.+)$/);
+    if(m){
+      const L = leadingLetters(m[2]);
+      if(L){ entries.push({n: parseInt(m[1], 10), letters: L.letters, rationale: L.rest}); continue; }
+    }
+    // Anything else continues the rationale of the entry above it.
+    if(entries.length){
+      const last = entries[entries.length - 1];
+      last.rationale = (last.rationale ? last.rationale + ' ' : '') + line;
+    }
+  }
+  return entries;
+}
+
+// Answer key pages often restate the correct choice before the explanation
+// ("B - Insight" then "Insight is the client's understanding..."). Both halves
+// land in the rationale, so drop the echo. Only strips when the next word is
+// capitalized, which keeps a rationale that genuinely opens with the answer
+// ("Engaging is the first process") intact.
+function stripEchoedAnswer(rationale, answers){
+  if(!rationale) return rationale;
+  const words = s => (String(s).toLowerCase().match(/[a-z0-9]+/g) || []);
+  const rWords = words(rationale);
+  if(!rWords.length) return rationale;
+
+  const ordered = answers.filter(a => a.correct).concat(answers.filter(a => !a.correct));
+  for(const a of ordered){
+    const aWords = words(a.text);
+    if(!aWords.length || aWords.length > rWords.length) continue;
+    if(!aWords.every((w, i) => w === rWords[i])) continue;
+
+    if(aWords.length === rWords.length) return '';
+    const re = new RegExp('^\\W*(?:[A-Za-z0-9]+\\W*){' + aWords.length + '}');
+    const m = rationale.match(re);
+    if(!m) continue;
+    const tail = rationale.slice(m[0].length).trim();
+    if(!/^[A-Z]/.test(tail)) continue;
+    return tail;
+  }
+  return rationale;
+}
+
+function applyKey(qs, entries){
+  // Match on the question's own number when it has one, so a stray title line
+  // or an unnumbered item cannot shift the whole key by one.
+  const byNum = new Map();
+  qs.forEach(q => { if(q.num != null && !byNum.has(q.num)) byNum.set(q.num, q); });
+
+  let applied = 0;
+  for(const e of entries){
+    const q = byNum.get(e.n) || qs[e.n - 1];
+    if(!q) continue;
+    if(q.answers.length){
+      const before = q.answers.map(a => a.correct);
+      q.answers.forEach(a => a.correct = false);
+      let hit = false;
+      e.letters.forEach(L => {
+        const idx = L.toLowerCase().charCodeAt(0) - 97;
+        if(q.answers[idx]){ q.answers[idx].correct = true; hit = true; }
+      });
+      if(hit){
+        applied++;
+        if(e.letters.length > 1 && q.type !== 'multiple_answers_question') q.type = 'multiple_answers_question';
+      } else {
+        q.answers.forEach((a, i) => a.correct = before[i]);
+      }
+    }
+    if(e.rationale && !q.rationale){
+      const r = stripEchoedAnswer(e.rationale, q.answers);
+      if(r) q.rationale = r;
+    }
+  }
+  return applied;
+}
+
+// Fallback for keys with no heading: a run of trailing items that are bare
+// letters with no answer choices is a key, not a set of essay questions.
+function harvestTrailingKey(qs){
+  let i = qs.length - 1;
+  const entries = [];
+  while(i >= 0){
+    const q = qs[i];
+    if(q.answers.length || !q.num) break;
+    const L = leadingLetters(q.text);
+    if(!L || L.rest.length > 400) break;
+    entries.unshift({n: q.num, letters: L.letters, rationale: L.rest});
+    i--;
+  }
+  const kept = qs.slice(0, i + 1);
+  if(entries.length < 2 || !kept.length) return {qs, entries: []};
+  return {qs: kept, entries};
+}
+
+function typeFromHint(h){
+  h = (h||'').toLowerCase();
+  if(/multiple answers?|select all/.test(h)) return 'multiple_answers_question';
+  if(/short answer|fill/.test(h))            return 'short_answer_question';
+  if(/essay/.test(h))                        return 'essay_question';
+  if(/true/.test(h))                         return 'true_false_question';
+  return null;
+}
+
+function looksLikeTrueFalse(answers){
+  if(answers.length !== 2) return false;
+  const t = answers.map(a => a.text.trim().toLowerCase()).sort();
+  return t[0] === 'false' && t[1] === 'true';
+}
+
+function parseCSV(text){
+  const rows = [];
+  let row = [], cell = '', q = false;
+  const delim = (text.split('\n')[0].split('\t').length > text.split('\n')[0].split(',').length) ? '\t' : ',';
+  for(let i = 0; i < text.length; i++){
+    const c = text[i];
+    if(q){
+      if(c === '"' && text[i+1] === '"'){ cell += '"'; i++; }
+      else if(c === '"'){ q = false; }
+      else cell += c;
+    } else {
+      if(c === '"') q = true;
+      else if(c === delim){ row.push(cell); cell = ''; }
+      else if(c === '\n'){ row.push(cell); rows.push(row); row = []; cell = ''; }
+      else cell += c;
+    }
+  }
+  if(cell.length || row.length){ row.push(cell); rows.push(row); }
+  return rows.filter(r => r.some(x => x.trim() !== ''));
+}
+
+function parseCSVQuiz(text){
+  const rows = parseCSV(text);
+  if(rows.length < 2) return null;
+  const head = rows[0].map(h => h.trim().toLowerCase());
+  const qi = head.findIndex(h => /^(question|prompt|stem|item)/.test(h));
+  if(qi < 0) return null;
+  const ri = head.findIndex(h => /rationale|feedback|explanation|comment/.test(h));
+  const ci = head.findIndex(h => /^(correct|answer|key)$/.test(h));
+  const pi = head.findIndex(h => /^(points?|pts)$/.test(h));
+  const ti = head.findIndex(h => /^(type)$/.test(h));
+  const ai = head.map((h,i) => /^(answer|choice|option|distractor)\s*\d*$/.test(h) && i !== ci ? i : -1)
+                 .filter(i => i >= 0);
+  if(!ai.length) return null;
+
+  const out = [];
+  for(const r of rows.slice(1)){
+    const stem = (r[qi]||'').trim();
+    if(!stem) continue;
+    const answers = ai.map(i => (r[i]||'').trim()).filter(Boolean).map(t => ({text:t, correct:false}));
+    const keyRaw = ci >= 0 ? (r[ci]||'').trim() : '';
+    markKey(answers, keyRaw);
+    // A leading asterisk in the cell itself also marks the key.
+    answers.forEach(a => { if(a.text.startsWith('*')){ a.text = a.text.slice(1).trim(); a.correct = true; } });
+    let type = ti >= 0 ? typeFromHint(r[ti]) : null;
+    if(!type) type = looksLikeTrueFalse(answers) ? 'true_false_question'
+              : answers.filter(a=>a.correct).length > 1 ? 'multiple_answers_question'
+              : answers.length ? 'multiple_choice_question' : 'short_answer_question';
+    out.push({
+      text: stem, answers, type,
+      rationale: ri >= 0 ? (r[ri]||'').trim() : '',
+      points: pi >= 0 && r[pi] ? parseFloat(r[pi]) || 1 : 1,
+      shortAnswers: type === 'short_answer_question' ? [keyRaw].filter(Boolean) : []
+    });
+  }
+  return out.length ? out : null;
+}
+
+function markKey(answers, keyRaw){
+  if(!keyRaw) return;
+  const key = keyRaw.trim();
+  const letter = key.match(/^\(?([a-hA-H])\)?[.):\]]?$/);
+  if(letter){
+    const idx = letter[1].toLowerCase().charCodeAt(0) - 97;
+    if(answers[idx]) answers[idx].correct = true;
+    return;
+  }
+  // Comma separated letters, for select-all items.
+  if(/^[a-hA-H](\s*[,;/&]\s*[a-hA-H])+$/.test(key)){
+    key.split(/[,;/&]/).forEach(L => {
+      const idx = L.trim().toLowerCase().charCodeAt(0) - 97;
+      if(answers[idx]) answers[idx].correct = true;
+    });
+    return;
+  }
+  const hit = answers.find(a => a.text.trim().toLowerCase() === key.toLowerCase());
+  if(hit) hit.correct = true;
+}
+
+function parseText(raw){
+  const text = clean(raw);
+  if(/^[^\n]*[,\t][^\n]*\n/.test(text) && /question|prompt|stem/i.test(text.split('\n')[0])){
+    const csv = parseCSVQuiz(text);
+    if(csv) return csv;
+  }
+
+  let lines = text.split('\n');
+
+  // Split off a trailing answer key page before anything else.
+  let keyLines = [];
+  for(let i = 1; i < lines.length; i++){
+    if(RE_KEYHEAD.test(lines[i])){
+      keyLines = lines.slice(i + 1);
+      lines = lines.slice(0, i);
+      break;
+    }
+  }
+
+  const qs = [];
+  let cur = null, pendingKey = '', lastTarget = null;
+
+  const push = () => {
+    if(!cur) return;
+    if(pendingKey) markKey(cur.answers, pendingKey);
+    if(!cur.type){
+      if(looksLikeTrueFalse(cur.answers)) cur.type = 'true_false_question';
+      else if(cur.answers.filter(a => a.correct).length > 1) cur.type = 'multiple_answers_question';
+      else if(cur.answers.length) cur.type = 'multiple_choice_question';
+      else if(pendingKey) cur.type = 'short_answer_question';
+      else cur.type = 'essay_question';
+    }
+    if(cur.type === 'short_answer_question' && !cur.shortAnswers.length && pendingKey)
+      cur.shortAnswers = pendingKey.split(/\s*[|;]\s*/).filter(Boolean);
+    qs.push(cur);
+    cur = null; pendingKey = ''; lastTarget = null;
+  };
+
+  for(const line of lines){
+    if(!line.trim()){ lastTarget = null; continue; }
+
+    const mq = line.match(RE_QNUM);
+    // Guard against an answer line that happens to be numbered.
+    if(mq && !RE_ANS.test(line)){
+      push();
+      let body = mq[2];
+      let type = null;
+      const hint = body.match(RE_TYPEHINT);
+      if(hint){ type = typeFromHint(hint[1]); body = body.replace(RE_TYPEHINT,'').trim(); }
+      cur = {text: body, answers: [], rationale: '', points: 1, type, shortAnswers: [], num: parseInt(mq[1], 10)};
+      lastTarget = 'q';
+      continue;
+    }
+    if(RE_JUNK.test(line)){ lastTarget = null; continue; }
+    if(!cur){
+      // Text before the first numbered question starts an unnumbered item.
+      cur = {text: line.trim(), answers: [], rationale: '', points: 1, type: null, shortAnswers: [], num: null};
+      lastTarget = 'q';
+      continue;
+    }
+
+    const mr = line.match(RE_RAT);
+    if(mr){ cur.rationale = mr[1].trim(); lastTarget = 'r'; continue; }
+
+    const mk = line.match(RE_KEY);
+    if(mk){ pendingKey = mk[1].trim(); lastTarget = null; continue; }
+
+    const mp = line.match(RE_PTS);
+    if(mp){ cur.points = parseFloat(mp[1]) || 1; lastTarget = null; continue; }
+
+    const ma = line.match(RE_ANS);
+    if(ma){
+      let t = ma[3].trim();
+      let correct = ma[1] === '*';
+      if(/\*\s*$/.test(t)){ t = t.replace(/\*\s*$/,'').trim(); correct = true; }
+      cur.answers.push({text: t, correct});
+      lastTarget = 'a';
+      continue;
+    }
+
+    // A bare asterisk-led line is an unlettered answer.
+    const mstar = line.match(/^\s*([*-])\s+(.*)$/);
+    if(mstar && cur.answers.length !== 0){
+      cur.answers.push({text: mstar[2].trim(), correct: mstar[1] === '*'});
+      lastTarget = 'a';
+      continue;
+    }
+
+    // Anything else continues whatever we were last building.
+    if(lastTarget === 'a' && cur.answers.length) cur.answers[cur.answers.length-1].text += ' ' + line.trim();
+    else if(lastTarget === 'r') cur.rationale += ' ' + line.trim();
+    else if(lastTarget === 'q') cur.text += '\n' + line.trim();
+    else {
+      // A blank line broke the flow, so this prose starts a new item rather
+      // than getting glued onto the question above it.
+      push();
+      cur = {text: line.trim(), answers: [], rationale: '', points: 1, type: null, shortAnswers: [], num: null};
+      lastTarget = 'q';
+    }
+  }
+  push();
+
+  let out = qs.filter(q => q.text.trim() && !(q.answers.length === 0 && RE_JUNK.test(q.text)));
+
+  // A short unnumbered line sitting above the first numbered question is the
+  // document's title, not question one.
+  while(out.length > 1 && out[0].num == null && !out[0].answers.length &&
+        out[0].text.length < 120 && out.some(q => q.num != null)){
+    out.shift();
+  }
+
+  let entries = parseKeyLines(keyLines);
+  if(!entries.length){
+    const h = harvestTrailingKey(out);
+    out = h.qs; entries = h.entries;
+  }
+  parseText.keyApplied = applyKey(out, entries);
+  parseText.keyFound = entries.length;
+
+  // Re-derive types now that the key has landed.
+  out.forEach(q => {
+    if(q.answers.length && looksLikeTrueFalse(q.answers)) q.type = 'true_false_question';
+    else if(q.answers.filter(a => a.correct).length > 1) q.type = 'multiple_answers_question';
+    else if(q.answers.length && q.type === 'essay_question') q.type = 'multiple_choice_question';
+  });
+  return out;
+}
+
+/* ------------------------------------------------------------------ *
+ * QTI 1.2 output, aimed at Canvas Classic Quizzes.
+ * ------------------------------------------------------------------ */
+
+function uid(p){
+  const h = 'abcdef0123456789';
+  let s = '';
+  for(let i = 0; i < 32; i++) s += h[Math.floor(Math.random()*16)];
+  return (p || 'g') + s;
+}
+
+function feedbackBlock(ident, text){
+  return `      <itemfeedback ident="${ident}">
+        <flow_mat>
+          <material>
+            <mattext texttype="text/html">${xmlHtml(text)}</mattext>
+          </material>
+        </flow_mat>
+      </itemfeedback>\n`;
+}
+
+function buildItem(q, n){
+  const ident = uid('i');
+  const ref = uid('r');
+  const isChoice = ['multiple_choice_question','true_false_question','multiple_answers_question'].includes(q.type);
+  const ids = q.answers.map((_, i) => String(1000 + n*20 + i));
+  const correctIds = q.answers.map((a, i) => a.correct ? ids[i] : null).filter(Boolean);
+  const wrongIds   = q.answers.map((a, i) => a.correct ? null : ids[i]).filter(Boolean);
+  const title = 'Question ' + (n + 1);
+
+  let x = `    <item ident="${ident}" title="${esc(title)}">
+      <itemmetadata>
+        <qtimetadata>
+          <qtimetadatafield><fieldlabel>question_type</fieldlabel><fieldentry>${q.type}</fieldentry></qtimetadatafield>
+          <qtimetadatafield><fieldlabel>points_possible</fieldlabel><fieldentry>${(q.points||1).toFixed(1)}</fieldentry></qtimetadatafield>
+          <qtimetadatafield><fieldlabel>assessment_question_identifierref</fieldlabel><fieldentry>${ref}</fieldentry></qtimetadatafield>`;
+  if(isChoice) x += `
+          <qtimetadatafield><fieldlabel>original_answer_ids</fieldlabel><fieldentry>${ids.join(',')}</fieldentry></qtimetadatafield>`;
+  x += `
+        </qtimetadata>
+      </itemmetadata>
+      <presentation>
+        <material>
+          <mattext texttype="text/html">${xmlHtml(q.text)}</mattext>
+        </material>\n`;
+
+  if(isChoice){
+    const card = q.type === 'multiple_answers_question' ? 'Multiple' : 'Single';
+    x += `        <response_lid ident="response1" rcardinality="${card}">
+          <render_choice>\n`;
+    q.answers.forEach((a, i) => {
+      x += `            <response_label ident="${ids[i]}">
+              <material>
+                <mattext texttype="text/html">${xmlHtml(a.text)}</mattext>
+              </material>
+            </response_label>\n`;
+    });
+    x += `          </render_choice>
+        </response_lid>\n`;
+  } else {
+    x += `        <response_str ident="response1" rcardinality="Single">
+          <render_fib><response_label ident="answer1" rshuffle="No"/></render_fib>
+        </response_str>\n`;
+  }
+  x += `      </presentation>
+      <resprocessing>
+        <outcomes>
+          <decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/>
+        </outcomes>\n`;
+
+  if(q.rationale && q.rationale.trim()){
+    x += `        <respcondition continue="Yes">
+          <conditionvar><other/></conditionvar>
+          <displayfeedback feedbacktype="Response" linkrefid="general_fb"/>
+        </respcondition>\n`;
+  }
+
+  if(q.type === 'multiple_answers_question'){
+    x += `        <respcondition continue="No">
+          <conditionvar>
+            <and>\n`;
+    correctIds.forEach(id => { x += `              <varequal respident="response1">${id}</varequal>\n`; });
+    wrongIds.forEach(id => { x += `              <not><varequal respident="response1">${id}</varequal></not>\n`; });
+    x += `            </and>
+          </conditionvar>
+          <setvar action="Set" varname="SCORE">100</setvar>
+        </respcondition>\n`;
+  } else if(isChoice){
+    x += `        <respcondition continue="No">
+          <conditionvar>\n`;
+    (correctIds.length ? correctIds : [ids[0]]).forEach(id => {
+      x += `            <varequal respident="response1">${id}</varequal>\n`;
+    });
+    x += `          </conditionvar>
+          <setvar action="Set" varname="SCORE">100</setvar>
+        </respcondition>\n`;
+  } else if(q.type === 'short_answer_question'){
+    x += `        <respcondition continue="No">
+          <conditionvar>\n`;
+    (q.shortAnswers.length ? q.shortAnswers : ['']).forEach(a => {
+      x += `            <varequal respident="response1" case="No">${esc(a)}</varequal>\n`;
+    });
+    x += `          </conditionvar>
+          <setvar action="Set" varname="SCORE">100</setvar>
+        </respcondition>\n`;
+  } else {
+    x += `        <respcondition continue="No">
+          <conditionvar><other/></conditionvar>
+        </respcondition>\n`;
+  }
+
+  x += `      </resprocessing>\n`;
+  if(q.rationale && q.rationale.trim()) x += feedbackBlock('general_fb', q.rationale);
+  x += `    </item>\n`;
+  return x;
+}
+
+function buildAssessment(qs, cfg, ident){
+  let x = `<?xml version="1.0" encoding="UTF-8"?>
+<questestinterop xmlns="http://www.imsglobal.org/xsd/ims_qtiasiv1p2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/ims_qtiasiv1p2 http://www.imsglobal.org/xsd/ims_qtiasiv1p2p1.xsd">
+  <assessment ident="${ident}" title="${esc(cfg.title)}">
+    <qtimetadata>
+      <qtimetadatafield><fieldlabel>cc_maxattempts</fieldlabel><fieldentry>${cfg.attempts}</fieldentry></qtimetadatafield>
+    </qtimetadata>
+    <section ident="root_section">
+`;
+  qs.forEach((q, i) => { x += buildItem(q, i); });
+  x += `    </section>
+  </assessment>
+</questestinterop>
+`;
+  return x;
+}
+
+function buildMeta(qs, cfg, ident){
+  const pts = qs.reduce((s, q) => s + (q.points || 1), 0);
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<quiz identifier="${ident}" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
+  <title>${esc(cfg.title)}</title>
+  <description></description>
+  <shuffle_answers>${cfg.shuffle}</shuffle_answers>
+  <scoring_policy>keep_highest</scoring_policy>
+  <hide_results></hide_results>
+  <quiz_type>${cfg.type}</quiz_type>
+  <points_possible>${pts.toFixed(1)}</points_possible>
+  <require_lockdown_browser>false</require_lockdown_browser>
+  <require_lockdown_browser_for_results>false</require_lockdown_browser_for_results>
+  <require_lockdown_browser_monitor>false</require_lockdown_browser_monitor>
+  <lockdown_browser_monitor_data/>
+  <show_correct_answers>true</show_correct_answers>
+  <anonymous_submissions>false</anonymous_submissions>
+  <could_be_locked>false</could_be_locked>
+  <allowed_attempts>${cfg.attempts}</allowed_attempts>
+  <one_question_at_a_time>false</one_question_at_a_time>
+  <cant_go_back>false</cant_go_back>
+  <available>false</available>
+  <one_time_results>false</one_time_results>
+  <show_correct_answers_last_attempt>false</show_correct_answers_last_attempt>
+  <only_visible_to_overrides>false</only_visible_to_overrides>
+  <module_locked>false</module_locked>
+</quiz>
+`;
+}
+
+function buildManifest(ident){
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="${uid('m')}" xmlns="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1" xmlns:lom="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd">
+  <metadata>
+    <schema>IMS Content</schema>
+    <schemaversion>1.1.3</schemaversion>
+  </metadata>
+  <organizations/>
+  <resources>
+    <resource identifier="${ident}" type="imsqti_xmlv1p2">
+      <file href="${ident}/${ident}.xml"/>
+      <dependency identifierref="${ident}_dependency"/>
+    </resource>
+    <resource identifier="${ident}_dependency" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="${ident}/assessment_meta.xml">
+      <file href="${ident}/assessment_meta.xml"/>
+    </resource>
+  </resources>
+</manifest>
+`;
+}
+/* ------------------------------------------------------------------ *
+ * AI parse. Off until a backend route exists. See the note in the head.
+ * ------------------------------------------------------------------ */
+
+const AI_ENABLED  = false;
+const AI_ENDPOINT = '/api/qti-parse';
+
+const AI_PROMPT = `Convert the quiz below into JSON. Return ONLY a JSON array, no prose, no markdown fences.
+
+Each element: {"text":"question stem","type":"multiple_choice_question|true_false_question|multiple_answers_question|short_answer_question|essay_question","answers":[{"text":"choice","correct":true|false}],"shortAnswers":["accepted text"],"rationale":"explanation shown after submission","points":1}
+
+Rules:
+- Preserve the original wording of stems, answers, and rationales exactly. Do not rewrite, shorten, or improve them.
+- Strip list markers ("1.", "a)", "*") from the text fields.
+- If an answer key is given separately, apply it to the right choice. If the key restates the answer text before the explanation, keep only the explanation in "rationale".
+- Rationale, feedback, or explanation text goes in "rationale". Use "" when absent.
+- "answers" is empty for essay and short answer items; accepted responses go in "shortAnswers".
+- Set "points" to 1 unless the source states otherwise.
+
+QUIZ:
+`;
+
+async function aiParse(raw){
+  const res = await fetch(AI_ENDPOINT, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({text: clean(raw).slice(0, 40000)})
+  });
+  if(!res.ok) throw new Error('The AI reader is unavailable right now. Try "Read my quiz" instead.');
+  const data = await res.json();
+  if(data.error) throw new Error(data.error);
+  const arr = data.questions || [];
+  return arr.map(q => ({
+    text: clean(q.text || ''),
+    type: q.type || 'multiple_choice_question',
+    answers: (q.answers || []).map(a => ({text: clean(a.text || ''), correct: !!a.correct})),
+    shortAnswers: (q.shortAnswers || []).map(clean),
+    rationale: clean(q.rationale || ''),
+    points: parseFloat(q.points) || 1,
+    num: null
+  })).filter(q => q.text);
+}
+
+/* ------------------------------------------------------------------ *
+ * Interface
+ * ------------------------------------------------------------------ */
+
+let QS = [];
+
+const $ = id => document.getElementById(id);
+const TYPES = [
+  ['multiple_choice_question','Multiple choice'],
+  ['true_false_question','True / false'],
+  ['multiple_answers_question','Multiple answers'],
+  ['short_answer_question','Short answer'],
+  ['essay_question','Essay']
+];
+
+const EXAMPLE = `1. A client mentions during intake that faith has been important to her since her diagnosis. The social worker wants to follow up in a way consistent with how spirituality is defined in the biopsychosocial-spiritual model. Which question fits best?
+a) Whether she attends services at a congregation regularly
+b) What she holds sacred and how she protects it
+c) Whether she believes a higher power is guiding her recovery
+
+2. Which of the following is the first of the four MI processes?
+a) Planning
+b) Engaging
+c) Evoking
+
+3. Select the two that are core MI skills.
+a) Open questions
+b) Closed questions
+c) Reflections
+
+4. True or false: ambivalence about change is a sign of poor motivation.
+a) True
+b) False
+
+Answer Key
+
+1. B - Spirituality is defined by what a person holds sacred, not by religious attendance.
+2. B - Engaging is the foundation the other three processes rest on.
+3. A, C - Open questions and reflections are two of the four core skills.
+4. B - Ambivalence is normal and expected, and holding both sides at once is what separates it from a lack of motivation.
+`;
+
+function say(el, msg, kind){
+  el.textContent = msg;
+  el.className = 'status' + (kind ? ' ' + kind : '');
+}
+
+if(AI_ENABLED) $('btn-ai').classList.remove('hidden');
+
+$('tab-paste').onclick = () => switchTab(true);
+$('tab-file').onclick  = () => switchTab(false);
+function switchTab(paste){
+  $('tab-paste').setAttribute('aria-selected', paste);
+  $('tab-file').setAttribute('aria-selected', !paste);
+  $('pane-paste').classList.toggle('hidden', !paste);
+  $('pane-file').classList.toggle('hidden', paste);
+}
+
+$('btn-example').onclick = () => {
+  $('src').value = EXAMPLE;
+  $('qtitle').value = 'Example Quiz';
+  switchTab(true);
+  say($('status1'), 'Example loaded. Click "Read my quiz" to see what it does with a separate answer key.');
+};
+
+$('drop').onclick = () => $('file').click();
+$('drop').onkeydown = e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); $('file').click(); } };
+$('drop').ondragover = e => { e.preventDefault(); $('drop').classList.add('over'); };
+$('drop').ondragleave = () => $('drop').classList.remove('over');
+$('drop').ondrop = e => {
+  e.preventDefault();
+  $('drop').classList.remove('over');
+  if(e.dataTransfer.files[0]) takeFile(e.dataTransfer.files[0]);
+};
+$('file').onchange = e => { if(e.target.files[0]) takeFile(e.target.files[0]); };
+
+async function takeFile(f){
+  say($('status1'), 'Reading ' + f.name + '...');
+  try{
+    const txt = await loadFile(f);
+    $('src').value = txt;
+    if(!$('qtitle').value || $('qtitle').value === 'Imported Quiz')
+      $('qtitle').value = f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim() || 'Imported Quiz';
+    switchTab(true);
+    say($('status1'), 'Read ' + f.name + '. Check the text above, then click "Read my quiz".', 'ok');
+  }catch(err){
+    say($('status1'), 'Could not read that file. ' + err.message, 'err');
+  }
+}
+
+$('btn-read').onclick = () => {
+  const raw = $('src').value;
+  if(!raw.trim()) return say($('status1'), 'Paste a quiz or upload a file first.', 'err');
+  try{
+    QS = parseText(raw);
+    if(!QS.length) return say($('status1'), 'No questions found. Check the format guide above.', 'err');
+    render();
+    let msg = 'Found ' + QS.length + ' questions.';
+    if(parseText.keyFound)
+      msg += ' Separate answer key detected: ' + parseText.keyApplied + ' of ' + parseText.keyFound + ' entries matched a question.';
+    say($('status1'), msg, 'ok');
+    $('review').scrollIntoView({behavior:'smooth', block:'start'});
+  }catch(err){
+    say($('status1'), 'Parsing stopped: ' + err.message, 'err');
+  }
+};
+
+$('btn-ai').onclick = async () => {
+  const raw = $('src').value;
+  if(!raw.trim()) return say($('status1'), 'Paste a quiz or upload a file first.', 'err');
+  $('btn-ai').disabled = true;
+  say($('status1'), 'Reading your quiz with AI...');
+  try{
+    QS = await aiParse(raw);
+    if(!QS.length) throw new Error('Nothing came back. Try "Read my quiz" instead.');
+    render();
+    say($('status1'), 'Found ' + QS.length + ' questions.', 'ok');
+    $('review').scrollIntoView({behavior:'smooth', block:'start'});
+  }catch(err){
+    say($('status1'), err.message, 'err');
+  }finally{
+    $('btn-ai').disabled = false;
+  }
+};
+
+function problems(q){
+  const p = [];
+  const needsKey = ['multiple_choice_question','true_false_question','multiple_answers_question'].includes(q.type);
+  if(needsKey && !q.answers.length) p.push('No answer choices found.');
+  if(needsKey && q.answers.length && !q.answers.some(a => a.correct)) p.push('No correct answer marked. Click a circle to set one.');
+  if(q.type === 'multiple_choice_question' && q.answers.filter(a=>a.correct).length > 1)
+    p.push('More than one answer is marked. Switch the type to multiple answers.');
+  if(q.type === 'short_answer_question' && !q.shortAnswers.length) p.push('No accepted answer text.');
+  return p;
+}
+
+function autoGrow(el){
+  el.style.height = 'auto';
+  el.style.height = (el.scrollHeight + 2) + 'px';
+}
+
+function render(){
+  $('review').classList.remove('hidden');
+  $('settings').classList.remove('hidden');
+  const list = $('qlist');
+  list.innerHTML = '';
+
+  QS.forEach((q, i) => {
+    const probs = problems(q);
+    const box = document.createElement('div');
+    box.className = 'q' + (probs.length ? ' bad' : '');
+
+    const head = document.createElement('div');
+    head.className = 'q-head';
+    const num = document.createElement('span');
+    num.className = 'q-num'; num.textContent = (i+1) + '.';
+    head.appendChild(num);
+
+    const ta = document.createElement('textarea');
+    ta.className = 'q-text'; ta.rows = 1; ta.value = q.text;
+    ta.setAttribute('aria-label', 'Question ' + (i+1) + ' text');
+    ta.oninput = () => { q.text = ta.value; autoGrow(ta); };
+    head.appendChild(ta);
+
+    const tools = document.createElement('div');
+    tools.className = 'q-tools';
+    const sel = document.createElement('select');
+    sel.setAttribute('aria-label', 'Question type');
+    TYPES.forEach(([v, l]) => {
+      const o = document.createElement('option');
+      o.value = v; o.textContent = l; if(q.type === v) o.selected = true;
+      sel.appendChild(o);
+    });
+    sel.onchange = () => { q.type = sel.value; render(); };
+    const pts = document.createElement('input');
+    pts.type = 'number'; pts.min = '0'; pts.step = '0.5'; pts.value = q.points;
+    pts.title = 'Points'; pts.setAttribute('aria-label', 'Points');
+    pts.oninput = () => { q.points = parseFloat(pts.value) || 0; };
+    const del = document.createElement('button');
+    del.className = 'mini'; del.textContent = 'Remove';
+    del.onclick = () => { QS.splice(i,1); render(); };
+    tools.append(sel, pts, del);
+    head.appendChild(tools);
+    box.appendChild(head);
+
+    const isChoice = ['multiple_choice_question','true_false_question','multiple_answers_question'].includes(q.type);
+    if(isChoice){
+      const multi = q.type === 'multiple_answers_question';
+      q.answers.forEach((a, j) => {
+        const row = document.createElement('div');
+        row.className = 'ans' + (a.correct ? ' is-correct' : '');
+        const inp = document.createElement('input');
+        inp.type = multi ? 'checkbox' : 'radio';
+        inp.name = 'k' + i; inp.checked = a.correct;
+        inp.setAttribute('aria-label', 'Mark as correct');
+        inp.onchange = () => {
+          if(multi) a.correct = inp.checked;
+          else q.answers.forEach((x, k) => x.correct = (k === j));
+          render();
+        };
+        const at = document.createElement('textarea');
+        at.rows = 1; at.value = a.text; at.style.flex = '1';
+        at.setAttribute('aria-label', 'Answer choice');
+        at.oninput = () => { a.text = at.value; autoGrow(at); };
+        const rm = document.createElement('button');
+        rm.className = 'mini'; rm.textContent = '\u00d7'; rm.title = 'Remove this choice';
+        rm.onclick = () => { q.answers.splice(j,1); render(); };
+        row.append(inp, at, rm);
+        box.appendChild(row);
+      });
+      const add = document.createElement('button');
+      add.className = 'mini'; add.textContent = '+ answer';
+      add.style.marginLeft = '32px'; add.style.marginTop = '5px';
+      add.onclick = () => { q.answers.push({text:'', correct:false}); render(); };
+      box.appendChild(add);
+    } else if(q.type === 'short_answer_question'){
+      const row = document.createElement('div');
+      row.className = 'rat';
+      const lab = document.createElement('span'); lab.textContent = 'Accepted';
+      const sa = document.createElement('textarea');
+      sa.rows = 1; sa.style.flex = '1';
+      sa.value = q.shortAnswers.join(' | ');
+      sa.placeholder = 'Separate alternatives with |';
+      sa.setAttribute('aria-label', 'Accepted answers');
+      sa.oninput = () => { q.shortAnswers = sa.value.split('|').map(s=>s.trim()).filter(Boolean); autoGrow(sa); };
+      row.append(lab, sa);
+      box.appendChild(row);
+    }
+
+    const rr = document.createElement('div');
+    rr.className = 'rat';
+    const rlab = document.createElement('span'); rlab.textContent = 'Rationale';
+    const rt = document.createElement('textarea');
+    rt.rows = 1; rt.style.flex = '1'; rt.value = q.rationale;
+    rt.placeholder = 'Shown to students after they submit';
+    rt.setAttribute('aria-label', 'Rationale');
+    rt.oninput = () => { q.rationale = rt.value; autoGrow(rt); };
+    rr.append(rlab, rt);
+    box.appendChild(rr);
+
+    probs.forEach(p => {
+      const w = document.createElement('div');
+      w.className = 'warnline'; w.textContent = p;
+      box.appendChild(w);
+    });
+
+    list.appendChild(box);
+    // Size every textarea only after the card is in the document; a detached
+    // element measures a scrollHeight of 0 and would collapse to 2px tall.
+    box.querySelectorAll('textarea').forEach(autoGrow);
+  });
+
+  const bad = QS.filter(q => problems(q).length).length;
+  const pts = QS.reduce((s,q) => s + (q.points||0), 0);
+  const kinds = {};
+  QS.forEach(q => kinds[q.type] = (kinds[q.type]||0) + 1);
+  const kindText = TYPES.filter(([v]) => kinds[v]).map(([v,l]) => kinds[v] + ' ' + l.toLowerCase()).join(', ');
+  $('summary').innerHTML =
+    '<span><b>' + QS.length + '</b> questions</span>' +
+    '<span><b>' + pts + '</b> points</span>' +
+    (kindText ? '<span>' + kindText + '</span>' : '') +
+    (bad ? '<span style="color:var(--warn)"><b>' + bad + '</b> need attention</span>' : '');
+}
+
+// Re-fit every editable box when the window changes size (phone rotation,
+// a resized window), since the height is only computed on render and input.
+window.addEventListener('resize', () => {
+  document.querySelectorAll('#qlist textarea').forEach(autoGrow);
+});
+
+function config(){
+  return {
+    title: $('qtitle').value.trim() || 'Imported Quiz',
+    type: $('qtype').value,
+    shuffle: $('qshuffle').value,
+    attempts: parseInt($('qattempts').value) || 1
+  };
+}
+
+$('btn-build').onclick = async () => {
+  if(!QS.length) return say($('status2'), 'Nothing to build yet.', 'err');
+  const bad = QS.filter(q => problems(q).length).length;
+  if(bad && !confirm(bad + ' question(s) still need attention. Build the file anyway?')) return;
+
+  const cfg = config();
+  const ident = uid('g');
+  try{
+    const zip = new JSZip();
+    zip.file('imsmanifest.xml', buildManifest(ident));
+    const f = zip.folder(ident);
+    f.file(ident + '.xml', buildAssessment(QS, cfg, ident));
+    f.file('assessment_meta.xml', buildMeta(QS, cfg, ident));
+    const blob = await zip.generateAsync({type:'blob', mimeType:'application/zip'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = cfg.title.replace(/[^\w\s-]/g,'').replace(/\s+/g,'_').slice(0,60) + '_QTI.zip';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    say($('status2'), 'Downloaded. Keep it zipped. Import steps are below.', 'ok');
+  }catch(err){
+    say($('status2'), 'Build failed: ' + err.message, 'err');
+  }
+};
+</script>
+</body>
+</html>
