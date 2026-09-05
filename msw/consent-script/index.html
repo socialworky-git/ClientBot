@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Informed Consent Script | Socialworky</title>
+<meta name="robots" content="noindex, nofollow" />
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --crimson:#841617;
+    --crimson-deep:#5C0F10;
+    --paper:#FAF5F5;
+    --paper-2:#F5ECEC;
+    --ink:#23201E;
+    --ink-soft:#6B625C;
+    --line:#E8C8C8;
+    --radius:18px;
+    --maxw:860px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+
+  /* Auth gate */
+  #gate{
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;padding:2rem;
+    font-family:'Hanken Grotesk',system-ui,sans-serif;
+    background:var(--paper);
+  }
+  #gate-inner{text-align:center;max-width:340px;}
+  #gate-inner .sw-mark{font-size:2rem;font-weight:800;color:var(--crimson);letter-spacing:-0.03em;margin-bottom:8px;}
+  #gate-inner p{color:var(--ink-soft);font-size:15px;margin:0 0 1.5rem;}
+  #gate-inner a{display:inline-block;background:var(--crimson);color:#fff;font-weight:700;font-size:15px;
+    padding:12px 28px;border-radius:10px;text-decoration:none;}
+  #gate-inner a:hover{background:var(--crimson-deep);}
+
+  #page{display:none;}
+
+  body.loaded{
+    font-family:'Hanken Grotesk',system-ui,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  .stage{
+    width:100%;
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding:34px 22px 64px;
+  }
+
+  /* ---------- intro ---------- */
+
+  .eyebrow{
+    font-family:'Space Mono',monospace;
+    font-size:12px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--crimson-deep);
+    margin:0 0 12px;
+  }
+  .eyebrow .step{ color:var(--ink-soft); }
+
+  h1{
+    font-size:clamp(28px,6vw,40px); font-weight:800; line-height:1.05;
+    letter-spacing:-.01em; margin:0 0 14px;
+  }
+
+  p.lead{ font-size:17px; color:var(--ink-soft); margin:0; max-width:56ch; }
+
+  /* ---------- how to use ---------- */
+
+  .howto{
+    margin-top:26px;
+    border:1.5px dashed var(--line);
+    border-radius:var(--radius);
+    padding:20px 24px;
+  }
+  .howto ul{ margin:0; padding-left:20px; }
+  .howto li{ font-size:15px; line-height:1.6; color:var(--ink-soft); margin-bottom:4px; }
+  .howto li:last-child{ margin-bottom:0; }
+  .howto li::marker{ color:var(--crimson); }
+
+  /* ---------- storage warning ---------- */
+
+  .warn{
+    display:none;
+    margin-top:18px;
+    padding:14px 18px;
+    background:#FFF4E5;
+    border:1.5px solid #F0C48A;
+    border-radius:14px;
+    font-size:14px; line-height:1.55;
+    color:#6B4A12;
+  }
+  .warn.show{ display:block; }
+  .warn strong{ color:#5A3A05; }
+
+  /* ---------- name + progress ---------- */
+
+  .meta{
+    display:flex; align-items:center; flex-wrap:wrap;
+    gap:10px 20px;
+    margin-top:22px;
+    padding:14px 20px;
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:var(--radius);
+  }
+  .meta label{
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+  #name{
+    flex:1 1 12rem; min-width:0;
+    font-family:'Hanken Grotesk',system-ui,sans-serif;
+    font-size:16px; color:var(--ink);
+    background:transparent;
+    border:0; border-bottom:1.5px solid var(--line);
+    padding:4px 2px;
+  }
+  #name::placeholder{ color:var(--ink-soft); opacity:.7; }
+  #name:focus{ outline:none; border-bottom-color:var(--crimson); }
+  .progress{
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  .progress b{ color:var(--crimson); }
+
+  /* ---------- prompt cards ---------- */
+
+  .prompts{
+    list-style:none; margin:34px 0 0; padding:0;
+    display:flex; flex-direction:column; gap:20px;
+  }
+
+  .card{
+    width:100%;
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:var(--radius);
+    padding:clamp(22px,4vw,32px);
+    box-shadow:0 2px 14px rgba(132,22,23,.06);
+  }
+
+  .card-role{
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--crimson-deep);
+    margin:0 0 18px;
+  }
+  .card-role::after{
+    content:""; display:block;
+    width:34px; height:2px; background:var(--crimson);
+    margin-top:11px;
+  }
+
+  .card-question{
+    font-size:clamp(18px,2.6vw,22px);
+    font-weight:700;
+    line-height:1.35;
+    margin:0 0 18px;
+  }
+
+  .starters{
+    background:var(--paper-2);
+    border-radius:14px;
+    padding:16px 20px 18px;
+    margin:0 0 20px;
+  }
+  .starters .starters-label{
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 10px;
+  }
+  .starters ul{ margin:0; padding-left:20px; }
+  .starters li{
+    font-size:16px; line-height:1.6; color:var(--ink-soft);
+    margin-bottom:3px;
+  }
+  .starters li:last-child{ margin-bottom:0; }
+  .starters li::marker{ color:var(--crimson); }
+
+  .field{ display:block; }
+  .field-label{
+    display:block;
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 8px;
+  }
+  textarea{
+    display:block; width:100%;
+    font-family:'Hanken Grotesk',system-ui,sans-serif;
+    font-size:16px; line-height:1.6; color:var(--ink);
+    background:var(--paper);
+    border:1.5px solid var(--line);
+    border-radius:14px;
+    padding:14px 16px;
+    min-height:150px;
+    resize:vertical;
+  }
+  textarea::placeholder{ color:var(--ink-soft); opacity:.65; }
+  textarea:focus{
+    outline:3px solid var(--crimson-deep);
+    outline-offset:2px;
+    border-color:transparent;
+    background:#fff;
+  }
+
+  /* ---------- controls ---------- */
+
+  .next{
+    margin-top:44px;
+    padding:26px 28px;
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:var(--radius);
+    text-align:center;
+  }
+  .next p{
+    margin:0 0 16px;
+    font-size:15px; line-height:1.55;
+    color:var(--ink-soft);
+  }
+
+  .actions{
+    display:flex; align-items:center; justify-content:center;
+    gap:14px; flex-wrap:wrap;
+    margin-top:22px;
+  }
+
+  .btn{
+    appearance:none; border:none; cursor:pointer;
+    font-family:inherit; font-weight:600; font-size:17px;
+    background:var(--crimson); color:#fff;
+    padding:14px 28px; border-radius:999px;
+    text-decoration:none; display:inline-block;
+    transition:transform .15s ease, background .2s ease, opacity .2s ease;
+  }
+  .btn:hover{ background:var(--crimson-deep); }
+  .btn:active{ transform:translateY(1px); }
+  .btn:disabled{ opacity:.35; cursor:not-allowed; background:var(--crimson); }
+  .btn.ghost{ background:transparent; color:var(--ink-soft); font-size:15px; padding:14px 10px; }
+  .btn.ghost:hover{ background:transparent; color:var(--ink); }
+  .btn:focus-visible{ outline:3px solid var(--crimson-deep); outline-offset:3px; }
+
+  .status{
+    margin-top:14px; text-align:center;
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--crimson-deep);
+    min-height:16px;
+  }
+
+  .footer-note{ margin-top:46px; font-size:13px; color:var(--ink-soft); text-align:center; }
+
+  .visually-hidden{
+    position:absolute; width:1px; height:1px;
+    overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;
+  }
+
+  /* ---------- responsive ---------- */
+
+  @media (max-width:620px){
+    .prompts{ margin-top:28px; gap:16px; }
+    .next{ margin-top:32px; padding:22px 18px; }
+    .actions{ flex-direction:column; gap:8px; }
+    .btn{ width:100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; }
+  }
+
+  /* ---------- print ---------- */
+
+  @media print{
+    body.loaded{ background:#fff; }
+    .howto, .starters, .next, .status, .progress, .warn{ display:none; }
+    .stage{ padding:0; max-width:none; }
+    .card{ box-shadow:none; break-inside:avoid; page-break-inside:avoid; }
+    textarea{ background:#fff; min-height:90px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Auth gate -->
+<div id="gate">
+  <div id="gate-inner">
+    <div class="sw-mark">SW</div>
+    <p>Sign in to access your course tools.</p>
+    <a href="/login.html?redirect_url=/msw/consent-script/">Sign in</a>
+  </div>
+</div>
+
+<!-- Page -->
+<div id="page">
+  <script src="/msw/header.js"></script>
+
+  <main class="stage">
+    <p class="eyebrow">Ethics &middot; Informed Consent <span class="step">&middot; Step 1 of 2</span></p>
+    <h1>Informed Consent Script</h1>
+    <p class="lead">Write an informed consent script for a clinical social work session that explains these five things to a client. Use your own words and keep the language simple and client-friendly.</p>
+
+    <div class="howto">
+      <ul>
+        <li>Type straight into the boxes. Your work saves in this browser as you go, and it will be waiting for you on the next page.</li>
+        <li>The sentence starters are optional. Skip them if you already have your own opening.</li>
+        <li>When you are ready to pair up, use <strong>Continue to the challenge cards</strong>. You can come back and edit any time.</li>
+      </ul>
+    </div>
+
+    <div class="warn" id="storageWarn" role="alert">
+      <strong>This browser is blocking saved work.</strong> Your script will still show on this page, but it may not carry over to the next one. Use <strong>Copy my script</strong> before you continue, then paste it in on the cards page.
+    </div>
+
+    <div class="meta">
+      <label for="name">Name</label>
+      <input id="name" type="text" placeholder="Optional" autocomplete="name">
+      <span class="progress"><b id="done">0</b> of 5 written</span>
+    </div>
+
+    <ol class="prompts" id="prompts"></ol>
+
+    <div class="next">
+      <p>Done, or out of time? Either is fine. Your script comes with you to the next page, where you will read it to a partner and respond to challenge cards.</p>
+      <a class="btn" id="continue" href="/msw/informed-consent/">Continue to the challenge cards &rarr;</a>
+      <div class="actions">
+        <button class="btn ghost" id="copy">Copy my script</button>
+        <button class="btn ghost" id="print">Print or save as PDF</button>
+        <button class="btn ghost" id="clear">Clear all</button>
+      </div>
+    </div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+
+    <p class="footer-note">A Socialworky training resource. For practice only &mdash; please use fictional details, not real client information.</p>
+  </main>
+</div>
+
+<!-- Clerk -->
+<script
+  defer crossorigin="anonymous"
+  data-clerk-publishable-key="pk_live_Y2xlcmsuc29jaWFsd29ya3kuY29tJA"
+  src="https://clerk.socialworky.com/npm/@clerk/clerk-js@6/dist/clerk.browser.js"
+  type="text/javascript">
+</script>
+
+<script>
+window.addEventListener('load', async function(){
+  try {
+    await Clerk.load();
+    if (!Clerk.isSignedIn) {
+      window.location.replace('/login.html?redirect_url=/msw/consent-script/');
+      return;
+    }
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('page').style.display = 'block';
+    document.body.classList.add('loaded');
+  } catch(e) {
+    console.error('Clerk error', e);
+  }
+});
+</script>
+
+<script src="/msw/consent-data.js"></script>
+<script>
+  const CONSENT     = window.SW_CONSENT || {};
+  const PROMPTS     = CONSENT.PROMPTS || [];
+  const STORAGE_KEY = CONSENT.KEY || 'sw-consent-script-v1';
+  const CARDS_URL   = CONSENT.CARDS_URL || '/msw/informed-consent/';
+
+  const listEl   = document.getElementById('prompts');
+  const nameEl   = document.getElementById('name');
+  const doneEl   = document.getElementById('done');
+  const statusEl = document.getElementById('status');
+  const contEl   = document.getElementById('continue');
+  const warnEl   = document.getElementById('storageWarn');
+
+  contEl.href = CARDS_URL;
+
+  if (!PROMPTS.length) {
+    listEl.innerHTML = '<li class="card"><p class="card-question">The prompt list did not load. Check that /msw/consent-data.js is in place.</p></li>';
+  }
+
+  PROMPTS.forEach(function(item, i){
+    const li = document.createElement('li');
+    li.className = 'card';
+
+    const role = document.createElement('p');
+    role.className = 'card-role';
+    role.textContent = 'Prompt ' + (i + 1) + ' of ' + PROMPTS.length;
+
+    const q = document.createElement('h2');
+    q.className = 'card-question';
+    q.textContent = item.q;
+
+    const starters = document.createElement('div');
+    starters.className = 'starters';
+    const sLabel = document.createElement('p');
+    sLabel.className = 'starters-label';
+    sLabel.textContent = 'Optional sentence starters';
+    const ul = document.createElement('ul');
+    (item.starters || []).forEach(function(s){
+      const li2 = document.createElement('li');
+      li2.textContent = s;
+      ul.appendChild(li2);
+    });
+    starters.appendChild(sLabel);
+    starters.appendChild(ul);
+
+    const field = document.createElement('div');
+    field.className = 'field';
+    const fLabel = document.createElement('label');
+    fLabel.className = 'field-label';
+    fLabel.setAttribute('for', 'script-' + i);
+    fLabel.textContent = 'Your script';
+    const ta = document.createElement('textarea');
+    ta.id = 'script-' + i;
+    ta.placeholder = item.ph || '';
+    ta.addEventListener('input', onChange);
+    field.appendChild(fLabel);
+    field.appendChild(ta);
+
+    li.appendChild(role);
+    li.appendChild(q);
+    li.appendChild(starters);
+    li.appendChild(field);
+    listEl.appendChild(li);
+  });
+
+  function boxes(){
+    return PROMPTS.map(function(_, i){ return document.getElementById('script-' + i); });
+  }
+
+  function updateProgress(){
+    doneEl.textContent = boxes().filter(function(b){ return b.value.trim().length > 0; }).length;
+  }
+
+  /* Detect blocked storage up front so the student is warned before they type. */
+  function storageWorks(){
+    try {
+      const k = STORAGE_KEY + '-test';
+      localStorage.setItem(k, '1');
+      localStorage.removeItem(k);
+      return true;
+    } catch(e){ return false; }
+  }
+  const canStore = storageWorks();
+  if (!canStore) warnEl.classList.add('show');
+
+  function save(){
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        name: nameEl.value,
+        answers: boxes().map(function(b){ return b.value; }),
+        updated: Date.now()
+      }));
+    } catch(e){
+      warnEl.classList.add('show');
+    }
+  }
+
+  function load(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const data = JSON.parse(raw);
+      if (data && typeof data.name === 'string') nameEl.value = data.name;
+      if (data && Array.isArray(data.answers)) {
+        boxes().forEach(function(b, i){
+          if (typeof data.answers[i] === 'string') b.value = data.answers[i];
+        });
+      }
+      /* A script pasted in on the cards page arrives as one block. Drop it into the first box so it is editable here. */
+      if (data && typeof data.pasted === 'string' && data.pasted.trim() && !data.answers.some(function(a){ return a && a.trim(); })) {
+        const first = boxes()[0];
+        if (first) first.value = data.pasted;
+      }
+    } catch(e){ /* ignore malformed or blocked storage */ }
+  }
+
+  let saveTimer = null;
+  function onChange(){
+    updateProgress();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 250);
+  }
+  nameEl.addEventListener('input', onChange);
+
+  /* Flush the debounced save whenever the page is about to go away or lose focus. */
+  function flush(){ clearTimeout(saveTimer); save(); }
+  window.addEventListener('pagehide', flush);
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') flush(); });
+
+  contEl.addEventListener('click', function(){ flush(); });
+
+  function asText(){
+    const lines = ['INFORMED CONSENT SCRIPT'];
+    if (nameEl.value.trim()) lines.push(nameEl.value.trim());
+    lines.push('');
+    PROMPTS.forEach(function(item, i){
+      lines.push((i + 1) + '. ' + item.q);
+      const v = document.getElementById('script-' + i).value.trim();
+      lines.push(v ? v : '(not written yet)');
+      lines.push('');
+    });
+    return lines.join('\n');
+  }
+
+  function say(msg){
+    statusEl.textContent = msg;
+    setTimeout(function(){
+      if (statusEl.textContent === msg) statusEl.textContent = '';
+    }, 3500);
+  }
+
+  function fallbackCopy(text){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    say(ok ? 'Copied to your clipboard' : 'Copy did not work here. Select and copy manually');
+  }
+
+  document.getElementById('copy').addEventListener('click', function(){
+    const text = asText();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(
+        function(){ say('Copied to your clipboard'); },
+        function(){ fallbackCopy(text); }
+      );
+    } else {
+      fallbackCopy(text);
+    }
+  });
+
+  document.getElementById('print').addEventListener('click', function(){ window.print(); });
+
+  document.getElementById('clear').addEventListener('click', function(){
+    const anything = nameEl.value.trim() || boxes().some(function(b){ return b.value.trim(); });
+    if (anything && !window.confirm('Clear everything you have written? This cannot be undone.')) return;
+    clearTimeout(saveTimer);
+    boxes().forEach(function(b){ b.value = ''; });
+    nameEl.value = '';
+    try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
+    updateProgress();
+    say('Cleared');
+  });
+
+  load();
+  updateProgress();
+</script>
+
+</body>
+</html>

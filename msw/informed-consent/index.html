@@ -62,6 +62,8 @@
     padding:34px 22px 64px;
   }
 
+  [hidden]{ display:none !important; }
+
   /* ---------- intro ---------- */
 
   .eyebrow{
@@ -70,6 +72,7 @@
     color:var(--crimson-deep);
     margin:0 0 12px;
   }
+  .eyebrow .step{ color:var(--ink-soft); }
 
   h1{
     font-size:clamp(28px,6vw,40px); font-weight:800; line-height:1.05;
@@ -78,13 +81,108 @@
 
   p.lead{ font-size:17px; color:var(--ink-soft); margin:0; max-width:56ch; }
 
+  /* ---------- how it works ---------- */
+
+  .howto{
+    margin-top:26px;
+    border:1.5px dashed var(--line);
+    border-radius:var(--radius);
+    padding:0;
+  }
+  .howto summary{
+    list-style:none; cursor:pointer;
+    padding:16px 24px;
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--crimson-deep);
+    user-select:none;
+  }
+  .howto summary::-webkit-details-marker{ display:none; }
+  .chev{
+    width:10px; height:10px; flex:none;
+    border-right:2px solid var(--crimson); border-bottom:2px solid var(--crimson);
+    transform:rotate(-45deg);
+    transition:transform .2s ease;
+  }
+  details[open] > summary .chev{ transform:rotate(45deg); }
+  .howto ol{ margin:0; padding:0 24px 20px 44px; }
+  .howto li{ font-size:15px; line-height:1.6; color:var(--ink-soft); margin-bottom:6px; }
+  .howto li:last-child{ margin-bottom:0; }
+  .howto li::marker{ color:var(--crimson); font-weight:700; }
+  .howto strong{ color:var(--ink); }
+
+  /* ---------- role picker ---------- */
+
+  .roles-label{
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:30px 0 10px;
+  }
+  .roles{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px;
+  }
+  .role{
+    appearance:none; cursor:pointer;
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    text-align:left;
+    font-family:inherit; color:var(--ink);
+    transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .role:hover{ border-color:var(--crimson); }
+  .role:focus-visible{ outline:3px solid var(--crimson-deep); outline-offset:3px; }
+  .role[aria-pressed="true"]{
+    border-color:var(--crimson);
+    box-shadow:inset 0 0 0 1.5px var(--crimson);
+    background:#fff;
+  }
+  .role-tag{
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--crimson-deep);
+    margin:0 0 6px;
+  }
+  .role-name{ font-size:17px; font-weight:700; margin:0 0 4px; line-height:1.3; }
+  .role-desc{ font-size:14px; color:var(--ink-soft); margin:0; line-height:1.5; }
+
+  /* ---------- views ---------- */
+
+  .view{ margin-top:28px; }
+
+  .note{
+    display:flex; gap:14px; align-items:flex-start;
+    padding:16px 20px;
+    background:var(--paper-2);
+    border-radius:14px;
+    font-size:15px; line-height:1.55;
+    color:var(--ink-soft);
+    margin-bottom:22px;
+  }
+  .note strong{ color:var(--ink); }
+  .note .dot{
+    flex:none; width:10px; height:10px; margin-top:7px;
+    border-radius:50%; background:var(--crimson);
+  }
+
+  .placeholder-view{
+    margin-top:28px;
+    border:1.5px dashed var(--line);
+    border-radius:var(--radius);
+    padding:clamp(26px,5vw,40px);
+    text-align:center;
+  }
+  .placeholder-view p{ margin:0; font-size:17px; line-height:1.55; color:var(--ink-soft); }
+
   /* ---------- table ---------- */
 
   .table{
     display:flex;
     align-items:center;
     gap:clamp(22px,5vw,44px);
-    margin-top:34px;
   }
 
   /* ---------- deck ---------- */
@@ -195,6 +293,70 @@
     color:var(--ink-soft);
   }
 
+  /* ---------- script (clinician view) ---------- */
+
+  .script{
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:var(--radius);
+    padding:clamp(22px,4vw,32px);
+    box-shadow:0 2px 14px rgba(132,22,23,.06);
+  }
+  .script-name{
+    font-family:'Space Mono',monospace;
+    font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--crimson-deep);
+    margin:0 0 18px;
+  }
+  .script-name::after{
+    content:""; display:block;
+    width:34px; height:2px; background:var(--crimson);
+    margin-top:11px;
+  }
+  .script-q{
+    font-size:clamp(17px,2.4vw,20px); font-weight:700; line-height:1.35;
+    margin:24px 0 8px;
+  }
+  .script-q:first-of-type{ margin-top:0; }
+  .script-a{
+    margin:0;
+    font-size:17px; line-height:1.6;
+    white-space:pre-wrap; overflow-wrap:anywhere;
+  }
+  .script-a.empty{ color:var(--ink-soft); font-style:italic; }
+  .script-foot{
+    margin-top:26px; padding-top:16px;
+    border-top:1px solid var(--line);
+    display:flex; gap:8px 18px; flex-wrap:wrap; align-items:center;
+  }
+  .link{
+    font-size:14px; font-weight:600;
+    color:var(--crimson); text-decoration:none;
+    background:none; border:0; padding:0; cursor:pointer; font-family:inherit;
+  }
+  .link:hover{ color:var(--crimson-deep); text-decoration:underline; }
+  .link:focus-visible{ outline:3px solid var(--crimson-deep); outline-offset:3px; border-radius:4px; }
+
+  .empty-state p{ margin:0 0 16px; font-size:16px; line-height:1.55; color:var(--ink-soft); }
+  .empty-actions{ display:flex; gap:10px 18px; flex-wrap:wrap; align-items:center; }
+
+  .paste{ display:none; margin-top:18px; }
+  .paste.show{ display:block; }
+  .paste textarea{
+    display:block; width:100%;
+    font-family:'Hanken Grotesk',system-ui,sans-serif;
+    font-size:15px; line-height:1.55; color:var(--ink);
+    background:var(--paper);
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:12px 14px;
+    min-height:180px;
+    resize:vertical;
+  }
+  .paste textarea:focus{ outline:3px solid var(--crimson-deep); outline-offset:2px; border-color:transparent; background:#fff; }
+  .paste-actions{ display:flex; gap:10px 16px; align-items:center; margin-top:12px; flex-wrap:wrap; }
+  .paste-note{ margin:14px 0 0; font-size:13px; color:#6B4A12; }
+
   /* ---------- controls ---------- */
 
   .actions{
@@ -208,6 +370,7 @@
     font-family:inherit; font-weight:600; font-size:17px;
     background:var(--crimson); color:#fff;
     padding:14px 28px; border-radius:999px;
+    text-decoration:none; display:inline-block;
     transition:transform .15s ease, background .2s ease, opacity .2s ease;
   }
   .btn:hover{ background:var(--crimson-deep); }
@@ -215,7 +378,19 @@
   .btn:disabled{ opacity:.35; cursor:not-allowed; background:var(--crimson); }
   .btn.ghost{ background:transparent; color:var(--ink-soft); font-size:15px; padding:14px 10px; }
   .btn.ghost:hover{ background:transparent; color:var(--ink); }
+  .btn.outline{ background:transparent; color:var(--crimson); box-shadow:inset 0 0 0 1.5px var(--crimson); }
+  .btn.outline:hover{ background:var(--paper-2); }
+  .btn.small{ font-size:15px; padding:11px 20px; }
   .btn:focus-visible{ outline:3px solid var(--crimson-deep); outline-offset:3px; }
+
+  .swap{
+    margin-top:40px;
+    padding:22px 24px;
+    border:1.5px dashed var(--line);
+    border-radius:var(--radius);
+    text-align:center;
+  }
+  .swap p{ margin:0 0 14px; font-size:15px; line-height:1.55; color:var(--ink-soft); }
 
   .footer-note{ margin-top:46px; font-size:13px; color:var(--ink-soft); text-align:center; }
 
@@ -227,10 +402,14 @@
   /* ---------- responsive ---------- */
 
   @media (max-width:620px){
-    .table{ flex-direction:column; gap:44px; margin-top:28px; }
+    .roles{ grid-template-columns:1fr; }
+    .table{ flex-direction:column; gap:44px; }
     .deck{ width:92px; height:130px; }
     .slot{ min-height:0; width:100%; }
     .actions{ margin-top:32px; flex-direction:column; gap:8px; }
+    .actions .btn{ width:100%; }
+    .empty-actions .btn{ width:100%; text-align:center; }
+    .swap .btn{ width:100%; }
   }
 
   @media (prefers-reduced-motion: reduce){
@@ -255,29 +434,85 @@
   <script src="/msw/header.js"></script>
 
   <main class="stage">
-    <p class="eyebrow">Ethics &middot; Informed Consent</p>
+    <p class="eyebrow">Ethics &middot; Informed Consent <span class="step">&middot; Step 2 of 2</span></p>
     <h1>Informed Consent Challenge</h1>
-    <p class="lead">Draw a card and respond as the clinician. Use the consent script as your starting point, not your script.</p>
+    <p class="lead">Pair up. One of you reads your consent script as the clinician. The other draws cards and plays the client. Then swap.</p>
 
-    <div class="table">
-      <button class="deck" id="deck" aria-label="Draw a card from the deck">
-        <span class="deck-layer"></span>
-        <span class="deck-layer"></span>
-        <span class="deck-layer"></span>
-        <span class="deck-count" id="deckCount">12 cards</span>
+    <details class="howto" id="howto" open>
+      <summary><span>How this works</span><span class="chev" aria-hidden="true"></span></summary>
+      <ol>
+        <li>Decide with your partner who is the <strong>clinician</strong> first. The other person is the <strong>client</strong>. Each of you picks your role below on your own screen.</li>
+        <li><strong>Clinician:</strong> your script appears on your screen. Read it aloud to your client. If you did not finish it, or it is on paper, use what you have and improvise the rest.</li>
+        <li><strong>Client:</strong> the deck appears on your screen. Listen to the script. When it is done, draw a card and say it to your clinician in your own words. Push back the way a real client might.</li>
+        <li><strong>Clinician:</strong> respond in the moment. Your script is a starting point, not something to read back word for word.</li>
+        <li>After a few cards, both of you <strong>swap roles</strong>. Your script is still here when you come back to it.</li>
+      </ol>
+    </details>
+
+    <p class="roles-label">Pick your role</p>
+    <div class="roles" role="group" aria-label="Choose your role">
+      <button class="role" id="roleClinician" type="button" aria-pressed="false">
+        <p class="role-tag">Clinician</p>
+        <p class="role-name">I am reading my script</p>
+        <p class="role-desc">Shows your consent script. Hides the deck so you cannot see what is coming.</p>
       </button>
+      <button class="role" id="roleClient" type="button" aria-pressed="false">
+        <p class="role-tag">Client</p>
+        <p class="role-name">I am drawing the cards</p>
+        <p class="role-desc">Shows the deck. Draw a card and read it to your partner after they finish their script.</p>
+      </button>
+    </div>
 
-      <div class="slot" id="slot" aria-live="polite">
-        <div class="placeholder">
-          <p>Twelve things a client might say after you explain confidentiality.</p>
+    <!-- No role yet -->
+    <div class="placeholder-view" id="viewNone">
+      <p>Choose a role above to begin. Your partner picks the other one on their own screen.</p>
+    </div>
+
+    <!-- Clinician view -->
+    <section class="view" id="viewClinician" hidden aria-label="Clinician view">
+      <div class="note">
+        <span class="dot" aria-hidden="true"></span>
+        <div><strong>You are the clinician.</strong> Read your script aloud to your partner. When you finish, they will draw a card and challenge you. Respond as you would in session.</div>
+      </div>
+      <div class="script" id="scriptCard"></div>
+      <div class="swap">
+        <p>Finished responding to your partner's cards? Trade places.</p>
+        <button class="btn outline" type="button" data-swap="client">Swap roles: now I draw the cards</button>
+      </div>
+    </section>
+
+    <!-- Client view -->
+    <section class="view" id="viewClient" hidden aria-label="Client view">
+      <div class="note">
+        <span class="dot" aria-hidden="true"></span>
+        <div><strong>You are the client.</strong> Listen to your partner's script. When they finish, draw a card and say it to them in your own words. Draw another when they have answered.</div>
+      </div>
+
+      <div class="table">
+        <button class="deck" id="deck" aria-label="Draw a card from the deck">
+          <span class="deck-layer"></span>
+          <span class="deck-layer"></span>
+          <span class="deck-layer"></span>
+          <span class="deck-count" id="deckCount">12 cards</span>
+        </button>
+
+        <div class="slot" id="slot" aria-live="polite">
+          <div class="placeholder">
+            <p>Twelve things a client might say after hearing an informed consent script.</p>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="actions">
-      <button class="btn" id="draw">Draw a card</button>
-      <button class="btn ghost" id="reset">Shuffle and start over</button>
-    </div>
+      <div class="actions">
+        <button class="btn" id="draw">Draw a card</button>
+        <button class="btn ghost" id="reset">Shuffle and start over</button>
+      </div>
+
+      <div class="swap">
+        <p>Done challenging your partner? Trade places.</p>
+        <button class="btn outline" type="button" data-swap="clinician">Swap roles: now I read my script</button>
+      </div>
+    </section>
 
     <p class="footer-note">A Socialworky training resource. For practice only &mdash; please use fictional details, not real client information.</p>
   </main>
@@ -308,6 +543,9 @@ window.addEventListener('load', async function(){
 });
 </script>
 
+<script src="/msw/consent-data.js"></script>
+
+<!-- ---------- Challenge cards ---------- -->
 <script>
   const CARDS = [
     "Honestly, I’m here because my partner keeps saying I’m the problem. I don’t really think I need to change anything. I just want you to help them see they’re the one who needs to get their act together.",
@@ -378,7 +616,7 @@ window.addEventListener('load', async function(){
     pile = shuffle(CARDS);
     drawn = 0;
     slot.innerHTML =
-      '<div class="placeholder"><p>Twelve things a client might say after you explain confidentiality.</p></div>';
+      '<div class="placeholder"><p>Twelve things a client might say after hearing an informed consent script.</p></div>';
     updateDeck();
   }
 
@@ -387,6 +625,198 @@ window.addEventListener('load', async function(){
   resetBtn.addEventListener('click', function(){ reset(); drawBtn.focus(); });
 
   reset();
+</script>
+
+<!-- ---------- Roles + script panel ---------- -->
+<script>
+(function(){
+  const C          = window.SW_CONSENT || {};
+  const KEY        = C.KEY || 'sw-consent-script-v1';
+  const PROMPTS    = C.PROMPTS || [];
+  const SCRIPT_URL = C.SCRIPT_URL || '/msw/consent-script/';
+  const ROLE_KEY   = 'sw-consent-role';
+
+  const howto        = document.getElementById('howto');
+  const btnClinician = document.getElementById('roleClinician');
+  const btnClient    = document.getElementById('roleClient');
+  const viewNone     = document.getElementById('viewNone');
+  const viewClin     = document.getElementById('viewClinician');
+  const viewCli      = document.getElementById('viewClient');
+  const scriptCard   = document.getElementById('scriptCard');
+
+  /* ---- role handling (short-term memory: survives a refresh, not a new tab) ---- */
+
+  function getRole(){
+    try { return sessionStorage.getItem(ROLE_KEY) || ''; } catch(e){ return ''; }
+  }
+  function setRole(role, focusView){
+    try { if (role) sessionStorage.setItem(ROLE_KEY, role); else sessionStorage.removeItem(ROLE_KEY); } catch(e){}
+    applyRole(role, focusView);
+  }
+  function applyRole(role, focusView){
+    btnClinician.setAttribute('aria-pressed', role === 'clinician' ? 'true' : 'false');
+    btnClient.setAttribute('aria-pressed', role === 'client' ? 'true' : 'false');
+    viewNone.hidden = !!role;
+    viewClin.hidden = role !== 'clinician';
+    viewCli.hidden  = role !== 'client';
+    if (role) howto.open = false;
+    if (role === 'clinician') refreshScript();
+    if (focusView){
+      const target = role === 'clinician' ? viewClin : viewCli;
+      target.setAttribute('tabindex', '-1');
+      target.focus({ preventScroll: true });
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  btnClinician.addEventListener('click', function(){ setRole('clinician', true); });
+  btnClient.addEventListener('click',    function(){ setRole('client', true); });
+  document.querySelectorAll('[data-swap]').forEach(function(b){
+    b.addEventListener('click', function(){ setRole(b.getAttribute('data-swap'), true); });
+  });
+
+  /* ---- saved script ---- */
+
+  function readSaved(){
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      const d = JSON.parse(raw);
+      return d && typeof d === 'object' ? d : null;
+    } catch(e){ return null; }
+  }
+  function writeSaved(d){
+    try { localStorage.setItem(KEY, JSON.stringify(d)); return true; }
+    catch(e){ return false; }
+  }
+  function hasContent(d){
+    if (!d) return false;
+    if (typeof d.pasted === 'string' && d.pasted.trim()) return true;
+    return Array.isArray(d.answers) && d.answers.some(function(a){ return typeof a === 'string' && a.trim(); });
+  }
+  function el(tag, cls, text){
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text != null) n.textContent = text;
+    return n;
+  }
+
+  /* Reads the format produced by "Copy my script" on the previous page.
+     Anything else is kept as one block. */
+  function parsePasted(text){
+    const lines = text.split(/\r?\n/);
+    const answers = PROMPTS.map(function(){ return ''; });
+    let cur = -1, matched = 0, name = '';
+    lines.forEach(function(line){
+      const m = line.match(/^\s*(\d+)[.)]\s+(.*)$/);
+      if (m){
+        const n = parseInt(m[1], 10) - 1;
+        if (n >= 0 && n < PROMPTS.length){ cur = n; matched++; return; }
+      }
+      if (cur < 0){
+        const t = line.trim();
+        if (t && t.toUpperCase() !== 'INFORMED CONSENT SCRIPT' && !name) name = t;
+        return;
+      }
+      answers[cur] += (answers[cur] ? '\n' : '') + line;
+    });
+    if (matched >= 2){
+      return {
+        name: name,
+        answers: answers.map(function(a){ return a.replace(/^\s*\(not written yet\)\s*$/, '').trim(); }),
+        updated: Date.now()
+      };
+    }
+    return { name: '', answers: PROMPTS.map(function(){ return ''; }), pasted: text.trim(), updated: Date.now() };
+  }
+
+  function renderScript(d){
+    scriptCard.innerHTML = '';
+    scriptCard.appendChild(el('p', 'script-name', (d.name && d.name.trim()) ? d.name.trim() + ' · Informed consent script' : 'My informed consent script'));
+
+    if (typeof d.pasted === 'string' && d.pasted.trim()){
+      scriptCard.appendChild(el('p', 'script-a', d.pasted.trim()));
+    } else {
+      PROMPTS.forEach(function(p, i){
+        scriptCard.appendChild(el('h2', 'script-q', (i + 1) + '. ' + p.q));
+        const a = (d.answers && typeof d.answers[i] === 'string') ? d.answers[i].trim() : '';
+        scriptCard.appendChild(a ? el('p', 'script-a', a) : el('p', 'script-a empty', 'Not written. Improvise this part.'));
+      });
+    }
+
+    const foot = el('div', 'script-foot');
+    const edit = el('a', 'link', 'Edit my script');
+    edit.href = SCRIPT_URL;
+    foot.appendChild(edit);
+    const replace = el('button', 'link', 'Paste a different one');
+    replace.type = 'button';
+    replace.addEventListener('click', function(){ renderEmpty(true); });
+    foot.appendChild(replace);
+    scriptCard.appendChild(foot);
+  }
+
+  function renderEmpty(openPaste){
+    scriptCard.innerHTML = '';
+    scriptCard.appendChild(el('p', 'script-name', 'My informed consent script'));
+
+    const wrap = el('div', 'empty-state');
+    wrap.appendChild(el('p', null, 'No script is saved in this browser. If you wrote it on another device, paste it below. If it is on paper, or you would rather wing it, just start reading.'));
+
+    const actions = el('div', 'empty-actions');
+    const write = el('a', 'btn small', 'Write my script');
+    write.href = SCRIPT_URL;
+    actions.appendChild(write);
+    const pasteBtn = el('button', 'link', 'Paste a script');
+    pasteBtn.type = 'button';
+    actions.appendChild(pasteBtn);
+    wrap.appendChild(actions);
+
+    const paste = el('div', 'paste');
+    const ta = document.createElement('textarea');
+    ta.setAttribute('aria-label', 'Paste your informed consent script');
+    ta.placeholder = 'Paste your script here';
+    paste.appendChild(ta);
+    const pa = el('div', 'paste-actions');
+    const use = el('button', 'btn small', 'Use this script');
+    use.type = 'button';
+    pa.appendChild(use);
+    const cancel = el('button', 'link', 'Cancel');
+    cancel.type = 'button';
+    pa.appendChild(cancel);
+    paste.appendChild(pa);
+    wrap.appendChild(paste);
+
+    pasteBtn.addEventListener('click', function(){ paste.classList.add('show'); ta.focus(); });
+    cancel.addEventListener('click', function(){ paste.classList.remove('show'); ta.value = ''; });
+    use.addEventListener('click', function(){
+      const text = ta.value;
+      if (!text.trim()){ ta.focus(); return; }
+      const d = parsePasted(text);
+      const ok = writeSaved(d);
+      renderScript(d);
+      if (!ok){
+        scriptCard.insertBefore(
+          el('p', 'paste-note', 'This browser is blocking saved work, so this script will disappear if you reload the page.'),
+          scriptCard.querySelector('.script-foot')
+        );
+      }
+    });
+
+    scriptCard.appendChild(wrap);
+    if (openPaste){ paste.classList.add('show'); ta.focus(); }
+  }
+
+  function refreshScript(){
+    const d = readSaved();
+    if (hasContent(d)) renderScript(d); else renderEmpty(false);
+  }
+
+  /* Pick up edits made in another tab, or after coming back via the back button. */
+  window.addEventListener('storage', function(e){ if (e.key === KEY && getRole() === 'clinician') refreshScript(); });
+  window.addEventListener('pageshow', function(e){ if (e.persisted && getRole() === 'clinician') refreshScript(); });
+
+  applyRole(getRole(), false);
+})();
 </script>
 
 </body>
