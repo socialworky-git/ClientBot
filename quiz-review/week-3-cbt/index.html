@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>Week 3 Quiz Review | Socialworky</title>
+<meta name="description" content="A self-check review of the Week 3 quiz: relational Skills in CBT, with the reasoning and the reading behind each answer." />
+
+<!-- Unlisted: shared by direct link, kept out of search. -->
+<meta name="robots" content="noindex, nofollow" />
+
+<!-- Social / Open Graph (for pasting the link into a course announcement) -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Socialworky" />
+<meta property="og:title" content="Week 3 Quiz Review | Socialworky" />
+<meta property="og:description" content="15 questions on relational Skills in CBT, with the reasoning and the reading behind each answer." />
+<meta property="og:image" content="https://socialworky.com/images/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Week 3 Quiz Review | Socialworky" />
+<meta name="twitter:description" content="15 questions on relational Skills in CBT, with the reasoning and the reading behind each answer." />
+<meta name="twitter:image" content="https://socialworky.com/images/og-image.png" />
+
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<!-- Vercel Web Analytics -->
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+
+<style>
+  :root{
+    --bg:#FFFFFF; --surface:#F8F5F5; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E6DEDE;
+    --accent:#841617; --accentDeep:#5C0F10; --accentSoft:#F5ECEC; --accentLine:#E8C8C8;
+    --heroMuted:#6B4040;
+    --good:#2E7D5B; --goodSoft:#E8F4EE; --goodLine:#BFE3D2;
+    --bad:#841617;  --badSoft:#F5ECEC;  --badLine:#E8C8C8;
+    --sans:'Hanken Grotesk',Arial,Helvetica,system-ui,sans-serif;
+    --maxw:820px;
+  }
+
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.5;-webkit-font-smoothing:antialiased;}
+
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:24px;padding-bottom:56px;}
+  a{color:var(--accentDeep);}
+
+  /* ---------- hero ---------- */
+
+  .toolhero{display:flex;align-items:center;gap:16px;background:var(--accentSoft);
+    border:1px solid var(--accentLine);border-radius:12px;box-shadow:inset 4px 0 0 var(--accent);
+    padding:18px 22px 18px 24px;margin-bottom:20px;}
+  .toolhero .ico{width:52px;height:52px;border-radius:12px;background:#fff;
+    border:1px solid var(--accentLine);display:flex;align-items:center;justify-content:center;
+    flex:0 0 auto;color:var(--accentDeep);}
+  .toolhero .ico svg{width:26px;height:26px;display:block;}
+  .toolhero .brand{margin:0;font-weight:700;font-size:22px;letter-spacing:-0.4px;color:var(--ink);line-height:1.1;}
+  .toolhero .brand .bot{color:var(--accent);}
+  .toolhero .tagline{color:var(--heroMuted);font-size:13.5px;margin-top:3px;}
+
+
+  /* ---------- sticky progress ---------- */
+
+  .qbar{position:sticky;top:0;z-index:10;background:var(--bg);
+    display:flex;align-items:center;gap:12px;
+    padding:14px 0 13px;margin:22px 0 18px;border-bottom:1px solid var(--line);}
+  .qtrack{flex:1;height:7px;border-radius:999px;background:var(--surface);
+    border:1px solid var(--line);overflow:hidden;}
+  .qprog{height:100%;background:var(--accent);width:0;transition:width .25s ease;}
+  .qcount{font-size:12.5px;color:var(--muted);font-weight:700;flex:0 0 auto;}
+
+  /* ---------- questions ---------- */
+
+  .qcard{background:#fff;border:1px solid var(--line);border-radius:12px;
+    padding:22px;margin-bottom:14px;}
+
+  .qnum{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;
+    color:var(--muted);margin:0 0 10px;}
+
+  .stem{font-size:16px;font-weight:700;line-height:1.5;margin:0 0 16px;white-space:pre-line;}
+  .hint{font-size:12.5px;color:var(--muted);margin:-8px 0 12px;}
+
+  .opts{display:flex;flex-direction:column;gap:9px;}
+  .opt{display:flex;gap:11px;align-items:flex-start;text-align:left;width:100%;
+    background:#fff;border:1px solid var(--line);border-radius:9px;
+    padding:12px 14px;font-family:var(--sans);font-size:15px;color:var(--ink);
+    cursor:pointer;transition:border-color .13s,background .13s;}
+  .opt:hover:not(:disabled){border-color:var(--accent);}
+  .opt:focus-visible{outline:3px solid var(--accentDeep);outline-offset:2px;}
+  .opt:disabled{cursor:default;}
+  .opt .ltr{font-weight:700;color:var(--accent);flex:0 0 auto;width:18px;}
+
+  .opt.picked{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);}
+  .opt.correct{background:var(--goodSoft);border-color:var(--good);
+    box-shadow:inset 0 0 0 1px var(--good);font-weight:700;}
+  .opt.correct .ltr{color:var(--good);}
+  .opt.correct::after{content:"\2713";margin-left:auto;padding-left:12px;
+    color:var(--good);font-weight:700;flex:0 0 auto;}
+  .opt.wrong{background:var(--badSoft);border-color:var(--bad);
+    box-shadow:inset 0 0 0 1px var(--bad);}
+  .opt.wrong .ltr{color:var(--bad);}
+  .opt.wrong::after{content:"\2715";margin-left:auto;padding-left:12px;
+    color:var(--bad);font-weight:700;flex:0 0 auto;}
+  .opt.dim{opacity:.45;}
+
+  .check{margin-top:12px;background:var(--accent);color:#fff;border:none;border-radius:9px;
+    padding:9px 16px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;}
+  .check:hover:not(:disabled){background:var(--accentDeep);}
+  .check:disabled{opacity:.45;cursor:default;}
+
+  /* ---------- rationale ---------- */
+
+  .why{display:none;margin-top:16px;background:var(--surface);
+    border:1px solid var(--line);border-left:3px solid var(--accent);
+    border-radius:9px;padding:16px 18px;font-size:14.5px;line-height:1.6;}
+  .why.show{display:block;}
+  .why.ok{border-left-color:var(--good);}
+  .why.no{border-left-color:var(--bad);}
+
+  .verdict{display:block;font-weight:700;font-size:11px;letter-spacing:1px;
+    text-transform:uppercase;margin-bottom:8px;}
+  .verdict.ok{color:var(--good);}
+  .verdict.no{color:var(--bad);}
+
+  .source{display:block;margin-top:14px;padding-top:12px;
+    border-top:1px solid var(--line);font-size:13.5px;line-height:1.6;color:var(--muted);}
+  .source b{font-size:11px;letter-spacing:1px;text-transform:uppercase;
+    font-weight:700;color:var(--accentDeep);margin-right:8px;}
+
+  /* ---------- result ---------- */
+
+  .result{display:none;margin-top:22px;background:var(--accentSoft);
+    border:1px solid var(--accentLine);border-radius:12px;padding:26px;text-align:center;}
+  .result.show{display:block;}
+  .score{font-size:38px;font-weight:800;line-height:1;margin:0 0 8px;letter-spacing:-1px;}
+  .score-note{margin:0 0 20px;font-size:15px;color:var(--muted);}
+
+  .btn{background:var(--accent);color:#fff;border:none;border-radius:9px;
+    padding:12px 22px;font-size:15px;font-weight:700;font-family:var(--sans);
+    cursor:pointer;transition:background .15s;}
+  .btn:hover{background:var(--accentDeep);}
+  .btn:focus-visible{outline:3px solid var(--accentDeep);outline-offset:3px;}
+
+  /* ---------- references + footer ---------- */
+
+  .seclabel{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;
+    color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:6px;margin:34px 0 12px;}
+  .refs{font-size:13.5px;line-height:1.65;color:var(--muted);}
+  .refs p{margin:0 0 7px;}
+
+  .foot{color:var(--muted);font-size:12.5px;margin-top:40px;
+    border-top:1px solid var(--line);padding-top:16px;}
+  .foot a{color:var(--muted);text-decoration:underline;text-underline-offset:2px;}
+  .foot a:hover{color:var(--accentDeep);}
+  .foot-legal{margin-top:9px;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<!-- Graduate Student Hub bar. This page is ungated, so no Sign out button. -->
+<script>window.SW_MSW_PUBLIC = true;</script>
+<script src="/msw/header.js"></script>
+
+<div class="wrap">
+
+  <div class="toolhero">
+    <div class="ico">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="5" y="3" width="14" height="18" rx="2"></rect>
+        <path d="M9 3.5h6a1 1 0 0 1 1 1V6H8V4.5a1 1 0 0 1 1-1z"></path>
+        <path d="M8.5 11.5l1.5 1.5 2.5-3"></path><path d="M14.5 11.5H16"></path><path d="M8.5 16h7"></path>
+      </svg>
+    </div>
+    <div>
+      <h1 class="brand">Week 3 <span class="bot">Quiz Review</span></h1>
+      <div class="tagline">Relational Skills in CBT</div>
+    </div>
+  </div>
+
+  <div class="qbar">
+    <span class="qcount" id="counter">0 of 15 answered</span>
+    <span class="qtrack"><span class="qprog" id="meterFill"></span></span>
+    <span class="qcount" id="scoreLive">0 correct</span>
+  </div>
+
+  <main id="quiz"></main>
+
+  <div class="result" id="result">
+    <p class="score" id="finalScore">0 / 15</p>
+    <p class="score-note" id="finalNote"></p>
+    <button class="btn" id="restart">Start over</button>
+  </div>
+
+  <div class="seclabel">Readings</div>
+  <div class="refs">
+    <p>Doing CBT pages 1–18 and 156–185</p>
+  </div>
+
+  <div class="foot">A Socialworky course resource. For review and study only &mdash; not clinical advice.
+    <div class="foot-legal"><a href="/terms.html">Terms of Use</a>&nbsp;&middot;&nbsp;<a href="/privacy.html">Privacy Policy</a>&nbsp;&middot;&nbsp;<a href="/disclaimer.html">Tools Disclaimer</a></div>
+  </div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var QUESTIONS = [
+    {
+      "stem": "A therapist trained in CBT uses an empty-chair exercise borrowed from Gestalt therapy with a client who is stuck on an unresolved conflict with her father. Throughout, the therapist continues to conceptualize the client's distress in terms of the beliefs and avoidance behaviors that are keeping it going. Which best describes what the therapist is doing?",
+      "options": [
+        "Theoretical integrationism",
+        "Technical eclecticism",
+        "Abandoning the CBT model"
+      ],
+      "answer": 1,
+      "why": "Technical eclecticism means borrowing strategies from other models without adopting their theory, which works only when the clinician stays anchored in a coherent CBT conceptualization. Theoretical integrationism blends the underlying worldviews and tends to leave the clinician without a clear sense of what they are doing (Tolin, pp. 5-6).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "A client with PTSD related to childhood abuse asks, \"Why am I still like this after all these years?\" Which response best reflects the CBT emphasis described in the reading?",
+      "options": [
+        "\"Your history matters, and I also want us to look at what happens day to day that keeps this going.\"",
+        "\"The past is behind you, so our work will focus only on the present.\"",
+        "\"Let's spend our next several sessions tracing how these patterns first developed in your family.\""
+      ],
+      "answer": 0,
+      "why": "CBT is interested in etiology but is most effective when it targets the factors that maintain the problem. The therapist acknowledges the history rather than dismissing it, then moves toward maintenance (Tolin, p. 10).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "In an early session, a client says, \"I really want to stop feeling so anxious all the time.\" The therapist replies, \"That makes sense. Let's look at how your thinking patterns might be contributing, and I'd like you to track your thoughts using this form.\" The client hesitates and says, \"I'm not sure writing stuff down is going to help. Can't we just talk instead?\" Which element of the therapeutic alliance is most clearly missing?",
+      "options": [
+        "Agreement on the goals of therapy",
+        "An interpersonal bond between client and therapist",
+        "Agreement on the tasks of therapy"
+      ],
+      "answer": 2,
+      "why": "The client and therapist agree on the goal of reduced anxiety. They disagree about the method, which is the tasks component of Bordin's three-part alliance (Tolin, p. 158).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "Midway through therapy, a client says, \"Honestly, I'm starting to feel like you don't really get what I'm going through. You just keep giving me worksheets.\" The therapist replies, \"Well, the worksheets are evidence-based. They work if you actually use them.\" What does this interaction best illustrate?",
+      "options": [
+        "An engagement crisis",
+        "An alliance rupture",
+        "A client resistance pattern"
+      ],
+      "answer": 1,
+      "why": "The client's bond with the therapist is strained and the therapist's defensive reply deepens it. Unrepaired ruptures predict dropout and poor outcome (Tolin, pp. 160-161).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "A client begins the session by saying, \"Last week when I told you about my mom, you cut me off and moved on. It felt like you didn't care.\" Which is the therapist's best response?",
+      "options": [
+        "\"I moved us along because we had limited time and needed to finish the thought record.\"",
+        "\"That reaction sounds like the same belief about being dismissed that we've been tracking. Let's put it on the agenda for a later session.\"",
+        "\"I hear you. Looking back, I did move us along too quickly, and I'm sorry. Tell me more about what that was like for you.\""
+      ],
+      "answer": 2,
+      "why": "Rupture repair calls for an open, nondefensive response that takes responsibility for the therapist's contribution and invites the client to say more. Explaining the rationale defends the therapist, and deferring the conversation to explore it as a core belief postpones the repair (Tolin, pp. 160-161).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "A CBT therapist has planned a session on behavioral activation. The client arrives and says, \"I just need to vent today. I had a terrible fight with my partner.\" What should the therapist do next?",
+      "options": [
+        "Acknowledge the fight, then decide with the client whether it takes over the session or gets time set aside within it",
+        "Hold to the planned agenda, since structured therapy produces better outcomes than unstructured therapy",
+        "Set the agenda aside for the remainder of treatment and follow whatever the client brings each week"
+      ],
+      "answer": 0,
+      "why": "Structure helps, and rigid adherence to an agenda when the client is in crisis is counterproductive. Tolin describes both moves: putting the agenda on hold when the crisis is large, or reserving part of the session when it is smaller (Tolin, pp. 162, 180).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "During a session, a client says, \"I'm worried that those exposure activities won't help. I'll just panic anyway. Do you really think exposure is going to work for someone like me?\" The therapist replies, \"I don't know yet. What would we need to see over the next month to know whether it's working?\" Which stance is the therapist demonstrating?",
+      "options": [
+        "Unconditional positive regard",
+        "Cognitive restructuring",
+        "Collaborative empiricism"
+      ],
+      "answer": 2,
+      "why": "The \"we\" is the collaboration and the \"find out\" is the empiricism. Both therapist and client have permission to be wrong and to test the question together (Tolin, p. 174).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "Christina, a client with depression, tells her therapist she is not sure how much time she spends in bed but thinks it is \"probably not that bad.\" The therapist asks her to track it for a week. Christina returns and says, \"Wow, I didn't realize it was that much.\" Beyond giving the therapist better data, what is the most likely clinical benefit of this assignment?",
+      "options": [
+        "It substitutes for a standardized measure such as the PHQ-9",
+        "Simply tracking the behavior often begins to change it",
+        "It identifies the automatic thoughts that trigger the behavior"
+      ],
+      "answer": 1,
+      "why": "Measurement reactivity means the act of measuring tends to change what is being measured. Tolin treats this as a bonus rather than a problem, and notes cases where self-monitoring alone produced real improvement (Tolin, p. 178).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "A client with panic disorder says, \"I don't get why the attacks keep coming. I've gotten really good at getting out of a store before it gets bad.\" Which therapist response best reflects Socratic questioning?",
+      "options": [
+        "\"When you leave early, what happens to the fear right then? And what happens the next time you go back?\"",
+        "\"What if you stayed ten more minutes next time and we tracked what happened?\"",
+        "\"That's actually the problem. Leaving teaches your brain the store was dangerous, so the fear comes back stronger.\""
+      ],
+      "answer": 0,
+      "why": "Socratic questioning uses carefully worded questions rather than statements so the client arrives at the conclusion themselves, which helps the information stick. Psychoeducation in CBT is a back and forth dialogue rather than a lecture (Tolin, pp. 174-176).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "A client has missed two sessions, has not completed homework for three weeks, and debates the therapist's suggestions in session. From the perspective described in the reading, what does this behavior most likely indicate?",
+      "options": [
+        "The client is defending against unconscious material that feels threatening",
+        "The client lacks the insight needed to benefit from CBT",
+        "The therapist has misjudged the client's stage of change"
+      ],
+      "answer": 2,
+      "why": "Resistance is an outcome of the interaction between therapist and client rather than a fixed client trait. Tolin frames it as the client saying the therapist has mistaken them for someone in the action stage (Tolin, p. 169).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "A college student comes to her first session after her academic advisor referred her for missing most of a semester. She sits down and says, \"I only came because they told me I had to.\" Which response is best?",
+      "options": [
+        "\"It doesn't sound like coming to see me today was your idea.\"",
+        "\"Your advisor was probably doing you a favor by sending you.\"",
+        "\"Are you angry about having to be here?\""
+      ],
+      "answer": 0,
+      "why": "A reflective statement invites correction and keeps the conversation open. Closed questions tend to shut conversation down, and taking the spouse's side risks an argument that produces sustain talk (Tolin, pp. 169-170).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "A client says he only agreed to talk about his drinking to get his wife off his back. Earlier in the session he described himself as \"the guy who never misses\" his daughter's games, then mentioned he has skipped the last three because of hangovers. Which therapist response best illustrates developing discrepancy?",
+      "options": [
+        "\"On one hand, you're not convinced the drinking is a problem. On the other, being at those games is a big part of who you are, and you've missed three. How do those fit together for you?\"",
+        "\"I can hear how much being there for your daughter means to you.\"",
+        "\"Missing three games is exactly the kind of thing your wife is worried about.\""
+      ],
+      "answer": 1,
+      "why": "Developing discrepancy reflects the client's own stated values and current behavior side by side and lets him sit with the gap. Response a is an affirmation, and c takes the wife's side, which invites an argument (Tolin, pp. 170-171).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "A client presents with depression, drinks heavily on weekends, and has missed three of the last five sessions. There is no current safety concern. Using the suggested hierarchy of treatment goals, what should the therapist address first?",
+      "options": [
+        "The drinking, since it is likely to worsen over time",
+        "The missed sessions",
+        "The depressive symptoms, since they are why the client sought treatment"
+      ],
+      "answer": 1,
+      "why": "After threats to safety, therapy-interfering behaviors come next, because little else can be accomplished while they continue. Problems affecting current functioning follow, and problems likely to worsen come after that (Tolin, p. 181).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "A client who has been sober four months has one drink at a wedding, then drinks heavily for the following week. She says, \"I blew it, so what's the point.\" Which response best reflects relapse prevention principles?",
+      "options": [
+        "\"One rough week doesn't erase four months of progress. Let's look at what led up to it and what would help next time\"",
+        "\"Staying sober is going to come down to how badly you want it.\"",
+        "\"One drink set you back to the beginning, so let's restart the plan from the top.\""
+      ],
+      "answer": 0,
+      "why": "This is the abstinence violation effect, where a single lapse leads the client to conclude that change is hopeless. Relapse prevention reframes lapses as mistakes pointing to a need for better planning, and locates gains in skill use rather than willpower (Tolin, p. 183).",
+      "source": "Tolin, pp."
+    },
+    {
+      "stem": "A gay client describes persistent anxiety and shame that intensified after months of harassment at work. Which therapist response best reflects the principles for adapting CBT with clients from minoritized backgrounds?",
+      "options": [
+        "\"It's worth checking whether you may be overestimating how much of this was really about your identity.\"",
+        "\"Let's set the workplace situation aside for now so we can stay focused on the treatment protocol.\"",
+        "\"Anxiety and shame are common responses to that kind of ongoing stress. Let's look at how those experiences taught you to see yourself this way.\""
+      ],
+      "answer": 2,
+      "why": "Two of the six adaptation principles appear here: framing symptoms as normal responses to minority stress, and naming how ongoing minority stress teaches negative lessons about the self. Both shift blame away from the client and their group (Tolin, p. 164).",
+      "source": "Tolin, pp."
+    }
+  ];
+
+  var LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
+  var quiz       = document.getElementById('quiz');
+  var counter    = document.getElementById('counter');
+  var meterFill  = document.getElementById('meterFill');
+  var scoreLive  = document.getElementById('scoreLive');
+  var result     = document.getElementById('result');
+  var finalScore = document.getElementById('finalScore');
+  var finalNote  = document.getElementById('finalNote');
+  var restart    = document.getElementById('restart');
+
+  var answered = 0, correct = 0;
+
+  function answersOf(q) { return Array.isArray(q.answer) ? q.answer : [q.answer]; }
+
+  function build() {
+    quiz.innerHTML = '';
+    answered = 0;
+    correct = 0;
+    result.classList.remove('show');
+    updateStatus();
+
+    QUESTIONS.forEach(function (q, qi) {
+      var multi = Array.isArray(q.answer);
+      var block = document.createElement('section');
+      block.className = 'qcard';
+
+      var num = document.createElement('p');
+      num.className = 'qnum';
+      num.textContent = 'Question ' + (qi + 1);
+
+      var stem = document.createElement('p');
+      stem.className = 'stem';
+      stem.textContent = q.stem;
+
+      var opts = document.createElement('div');
+      opts.className = 'opts';
+
+      var why = document.createElement('div');
+      why.className = 'why';
+      why.setAttribute('role', 'status');
+
+      q.options.forEach(function (text, oi) {
+        var btn = document.createElement('button');
+        btn.className = 'opt';
+        btn.type = 'button';
+
+        var letter = document.createElement('span');
+        letter.className = 'ltr';
+        letter.textContent = LETTERS[oi];
+
+        var label = document.createElement('span');
+        label.textContent = text;
+
+        btn.appendChild(letter);
+        btn.appendChild(label);
+        btn.addEventListener('click', function () {
+          if (multi) { if (!btn.disabled) btn.classList.toggle('picked'); }
+          else choose(q, [oi], opts, why);
+        });
+        opts.appendChild(btn);
+      });
+
+      block.appendChild(num);
+      block.appendChild(stem);
+      if (multi) {
+        var hint = document.createElement('p');
+        hint.className = 'hint';
+        hint.textContent = 'Select all that apply, then check.';
+        block.appendChild(hint);
+      }
+      block.appendChild(opts);
+      if (multi) {
+        var check = document.createElement('button');
+        check.className = 'check';
+        check.type = 'button';
+        check.textContent = 'Check answer';
+        check.addEventListener('click', function () {
+          var picks = [];
+          var buttons = opts.querySelectorAll('.opt');
+          for (var i = 0; i < buttons.length; i++) if (buttons[i].classList.contains('picked')) picks.push(i);
+          if (!picks.length) return;
+          check.disabled = true;
+          choose(q, picks, opts, why);
+        });
+        block.appendChild(check);
+      }
+      block.appendChild(why);
+      quiz.appendChild(block);
+    });
+  }
+
+  function choose(q, picks, opts, why) {
+    var buttons = opts.querySelectorAll('.opt');
+    if (buttons[0].disabled) return;
+
+    var answers = answersOf(q);
+    var right = picks.length === answers.length && picks.every(function (p) { return answers.indexOf(p) >= 0; });
+    answered++;
+    if (right) correct++;
+
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].disabled = true;
+      buttons[i].classList.remove('picked');
+      if (answers.indexOf(i) >= 0)    buttons[i].classList.add('correct');
+      else if (picks.indexOf(i) >= 0) buttons[i].classList.add('wrong');
+      else                            buttons[i].classList.add('dim');
+    }
+
+    var verdict = document.createElement('span');
+    verdict.className = 'verdict ' + (right ? 'ok' : 'no');
+    var letters = answers.map(function (a) { return LETTERS[a]; });
+    verdict.textContent = right ? 'Correct'
+      : (letters.length > 1 ? 'The answers are ' + letters.join(' and ') : 'The answer is ' + letters[0]);
+
+    why.className = 'why ' + (right ? 'ok' : 'no');
+    why.innerHTML = '';
+    why.appendChild(verdict);
+
+    if (q.why) {
+      var body = document.createElement('span');
+      body.textContent = q.why;
+      why.appendChild(body);
+    }
+
+    if (q.source) {
+      var src = document.createElement('span');
+      src.className = 'source';
+      var srcLabel = document.createElement('b');
+      srcLabel.textContent = 'Where to find it';
+      var srcBody = document.createElement('span');
+      srcBody.textContent = q.source;
+      src.appendChild(srcLabel);
+      src.appendChild(srcBody);
+      why.appendChild(src);
+    }
+
+    why.classList.add('show');
+
+    updateStatus();
+    if (answered === QUESTIONS.length) finish();
+  }
+
+  function updateStatus() {
+    counter.textContent = answered + ' of ' + QUESTIONS.length + ' answered';
+    scoreLive.textContent = correct + ' correct';
+    meterFill.style.width = (answered / QUESTIONS.length * 100) + '%';
+  }
+
+  function finish() {
+    finalScore.textContent = correct + ' / ' + QUESTIONS.length;
+    var pct = correct / QUESTIONS.length;
+    finalNote.textContent = pct === 1
+      ? 'All fifteen. Bring your questions to class anyway.'
+      : pct >= 0.8
+        ? 'Solid. Look back at the ones you missed before class.'
+        : pct >= 0.5
+          ? 'Worth a second pass through the readings on the items you missed.'
+          : 'Read back through the rationales and the cited sections, then take it again.';
+    result.classList.add('show');
+    result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  restart.addEventListener('click', function () {
+    build();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  build();
+})();
+</script>
+
+</body>
+</html>
