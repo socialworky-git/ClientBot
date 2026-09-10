@@ -7,10 +7,8 @@
 <title>Canvas Quiz Builder | Socialworky</title>
 <meta name="description" content="Turn a Word doc, PDF, or pasted text into a QTI package you can import into Canvas." />
 
-<!-- Unlisted faculty resource: shared by direct link, kept out of search and out of the nav. -->
 <meta name="robots" content="noindex, nofollow" />
 
-<!-- Social / Open Graph (for pasting the link to a colleague) -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Socialworky" />
 <meta property="og:title" content="Canvas Quiz Builder | Socialworky" />
@@ -22,39 +20,34 @@
 <meta name="twitter:description" content="Turn a Word doc, PDF, or pasted text into a QTI package you can import into Canvas." />
 <meta name="twitter:image" content="https://socialworky.com/images/og-image.png" />
 
-<!-- Favicon -->
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
 
-<!-- Shared design tokens (colors + shell width). Variables only — safe to link.
-     The font (Hanken Grotesk) is loaded by /header.js. -->
 <link rel="stylesheet" href="/tokens.css" />
 
-<!-- Vercel Web Analytics -->
 <script>
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
 
-<!-- Client-side libraries: zip building, .docx text, .pdf text. Nothing leaves the browser. -->
+<!-- Client-side libraries -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- docx library for Word export (vendorable: cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js) -->
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
 
-<!--
-  HOW READING WORKS. Tidy, numbered text is parsed in the browser for free.
-  Anything the local parser is not confident about (spreadsheets without a
-  recognizable layout, Word/PDF text with odd formatting) is sent to the AI
-  reader, which POSTs to the site's shared /api/chat relay (see AI_MODEL and
-  AI_SYSTEM near the bottom of the script). Long quizzes are split into
-  chunks so no single call risks the relay's 45s timeout.
--->
+<!-- Local libs -->
+<script src="lib/qti-core.js"></script>
+<script src="lib/table.js"></script>
+<script src="lib/shuffle.js"></script>
+<script src="lib/paper.js"></script>
+<script src="lib/review.js"></script>
 
 <style>
 :root{
-  /* Page-local aliases onto the site tokens in /tokens.css */
   --coral:var(--accent);
   --coral-soft:var(--coral-bg);
   --paper:var(--bg);
@@ -66,17 +59,28 @@
   --correct-soft:#E8F4EE;
   --warn:#9a5b12;
   --warn-soft:#fbf1e2;
+  --amber:#b45309;
+  --amber-soft:#fffbeb;
+  --amber-line:#fde68a;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{ margin:0; background:var(--bg); color:var(--ink); font-family:var(--sans);
       font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased; }
-/* Page shell: same column + gutter as every other page so the header lines up.
-   Do NOT change the width here — edit --sw-maxw in tokens.css. */
 .wrap{ max-width:var(--sw-maxw,820px); margin:0 auto; padding:var(--sw-gutter,24px); }
 a{ color:var(--accentDeep); }
 
-/* Standard tool hero (the coral banner) */
+/* Restore bar */
+.restore-bar{background:var(--amber-soft);border:1px solid var(--amber-line);border-radius:10px;
+  padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:14.5px;}
+.restore-bar span{flex:1;color:var(--amber);}
+.restore-bar button{font:inherit;font-size:13.5px;font-weight:600;border-radius:7px;padding:6px 14px;cursor:pointer;}
+.restore-bar .btn-restore{background:var(--amber);border:1px solid var(--amber);color:#fff;}
+.restore-bar .btn-restore:hover{opacity:.9;}
+.restore-bar .btn-discard{background:transparent;border:1px solid currentColor;color:var(--amber);}
+.restore-bar .btn-discard:hover{background:var(--amber-line);}
+
+/* Hero */
 .toolhero{ display:flex; align-items:center; gap:16px; background:var(--coral-bg);
   border:1px solid var(--coral-line); border-radius:12px; box-shadow:inset 4px 0 0 var(--accent);
   padding:18px 22px 18px 24px; margin-bottom:18px; }
@@ -130,36 +134,85 @@ label.check input{accent-color:var(--coral)}
 .status.err{color:#a32a2a}
 .status.ok{color:var(--correct)}
 
-.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
-.field label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:4px}
-.field input,.field select{width:100%;font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
-
+/* Question cards */
 .q{border:1px solid var(--rule);border-radius:10px;padding:14px 16px;margin-bottom:12px;background:var(--paper)}
 .q.bad{border-color:var(--warn);background:var(--warn-soft)}
 .q-head{display:flex;gap:10px;align-items:flex-start;margin-bottom:6px}
 .q-num{font-variant-numeric:tabular-nums;color:var(--ink-faint);font-size:14px;padding-top:4px;min-width:24px}
 .q-text{flex:1;border:0;background:transparent;font:inherit;font-weight:600;font-size:15.5px;width:100%;resize:none;overflow:hidden;color:var(--ink);padding:3px 5px;border-radius:5px}
-.q-text:hover,.ans textarea:hover,.rat textarea:hover{background:var(--wash)}
+.q-text:hover,.ans textarea:hover,.rat textarea:hover,.src textarea:hover{background:var(--wash)}
 .q-tools{display:flex;gap:6px;align-items:center;flex-shrink:0}
 .q-tools select,.q-tools input[type=number]{font:inherit;font-size:12.5px;padding:4px 6px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink)}
 .q-tools input[type=number]{width:56px}
+.q-tools .move-btn{font:inherit;font-size:13px;border:1px solid var(--rule);background:var(--paper);color:var(--ink-soft);border-radius:6px;padding:3px 7px;cursor:pointer;line-height:1}
+.q-tools .move-btn:hover{color:var(--ink);border-color:var(--ink-faint)}
+.q-tools .move-btn:disabled{opacity:.3;cursor:default}
 
 .ans{display:flex;gap:9px;align-items:flex-start;padding:2px 0 2px 32px}
 .ans input[type=radio],.ans input[type=checkbox]{margin-top:8px;accent-color:var(--correct);flex-shrink:0}
-.ans textarea,.rat textarea{border:0;background:transparent;font:inherit;font-size:15px;padding:3px 6px;border-radius:5px;resize:none;overflow:hidden;color:var(--ink)}
+.ans textarea,.rat textarea,.src textarea{border:0;background:transparent;font:inherit;font-size:15px;padding:3px 6px;border-radius:5px;resize:none;overflow:hidden;color:var(--ink)}
 .ans.is-correct textarea{background:var(--correct-soft)}
 .rat{margin:6px 0 0 32px;display:flex;gap:9px;align-items:flex-start}
 .rat span{font-size:12.5px;color:var(--ink-faint);padding-top:7px;flex-shrink:0}
 .rat textarea{font-size:14px;color:var(--ink-soft)}
+.src{margin:4px 0 0 32px;display:flex;gap:9px;align-items:flex-start}
+.src .src-label{font-size:12.5px;color:var(--ink-faint);padding-top:7px;flex-shrink:0}
+.src textarea{font-size:14px;color:var(--ink-soft)}
+.src select{font:inherit;font-size:12.5px;padding:4px 6px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink-soft);flex-shrink:0}
 .warnline{font-size:13px;color:var(--warn);margin:6px 0 0 32px}
+.flagline{font-size:13px;color:var(--amber);margin:4px 0 0 32px;display:flex;gap:8px;align-items:flex-start}
+.flagline button{font:inherit;font-size:12px;border:1px solid var(--amber-line);background:var(--amber-soft);color:var(--amber);border-radius:5px;padding:2px 7px;cursor:pointer;flex-shrink:0}
 
 .summary{display:flex;gap:20px;flex-wrap:wrap;font-size:14px;color:var(--ink-soft);margin-bottom:14px}
 .summary b{color:var(--ink);font-weight:600}
+
+.review-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
 
 details.fmt{margin-top:14px;font-size:14.5px;color:var(--ink-soft)}
 details.fmt summary{cursor:pointer;color:var(--accentDeep);font-weight:500}
 pre{background:var(--paper);border:1px solid var(--rule);border-radius:9px;padding:13px 15px;overflow-x:auto;font-size:12.5px;line-height:1.6;color:var(--ink)}
 
+/* Settings & export */
+.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+.field label{display:block;font-size:13.5px;color:var(--ink-soft);margin-bottom:4px}
+.field input,.field select{width:100%;font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
+
+.export-primary{margin-bottom:12px}
+.export-secondary{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.export-secondary button{font:inherit;font-size:13.5px;font-weight:600;border-radius:8px;padding:8px 14px;cursor:pointer;border:1.5px solid var(--rule);background:var(--paper);color:var(--accentDeep)}
+.export-secondary button:hover:not(:disabled){border-color:var(--coral);background:var(--coral-soft)}
+.export-secondary button:disabled{opacity:.45;cursor:not-allowed}
+
+/* Readings step */
+.step-readings summary{list-style:none;cursor:pointer;font-size:20px;font-weight:600;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;margin:0 0 6px}
+.step-readings summary::-webkit-details-marker{display:none}
+.step-readings summary .badge{font-size:13px;font-weight:600;color:var(--accentDeep);background:var(--coral-soft);border:1px solid var(--coral-line);border-radius:999px;padding:1px 8px}
+.reading-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px;padding:10px;background:var(--paper);border:1px solid var(--rule);border-radius:9px}
+.reading-short{width:120px;flex-shrink:0;font:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--rule);border-radius:7px;background:var(--paper);color:var(--ink)}
+.reading-citation{flex:1;font:inherit;font-size:14px;padding:6px 8px;border:1px solid var(--rule);border-radius:7px;background:var(--paper);color:var(--ink);resize:none;min-height:40px;line-height:1.4}
+
+/* Column mapper modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--paper);border-radius:14px;padding:24px;max-width:860px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal h3{margin:0 0 4px;font-size:18px;font-weight:600}
+.modal .hint{color:var(--ink-soft);font-size:14px;margin:0 0 16px}
+.mapper-table-wrap{overflow-x:auto;margin-bottom:14px}
+.mapper-table{border-collapse:collapse;font-size:13.5px;min-width:100%}
+.mapper-table th,.mapper-table td{padding:5px 8px;border:1px solid var(--rule)}
+.mapper-table th{background:var(--wash);font-weight:600}
+.mapper-table select{font:inherit;font-size:12.5px;padding:3px 5px;border:1px solid var(--rule);border-radius:5px;background:var(--paper);color:var(--ink)}
+.mapper-table td.cell-faint{color:var(--ink-faint);font-style:italic}
+.mapper-footer{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}
+.mapper-footer .sub-row{font-size:14px;color:var(--ink-soft);display:flex;gap:10px;align-items:center;flex:1;flex-wrap:wrap}
+.mapper-footer select{font:inherit;font-size:13.5px;padding:5px 8px;border:1px solid var(--rule);border-radius:7px;background:var(--paper);color:var(--ink)}
+
+/* Study page dialog */
+.dialog-form .field{margin-bottom:12px}
+.dialog-form .field label{display:block;font-size:14px;color:var(--ink-soft);margin-bottom:4px}
+.dialog-form .field input{width:100%;font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);color:var(--ink)}
+.dialog-actions{display:flex;gap:10px;margin-top:18px}
+
+/* Guide */
 .guide{padding:26px 0 10px;border-top:1px solid var(--rule);margin-top:32px}
 .guide ol{padding-left:20px;margin:10px 0}
 .guide li{margin-bottom:9px}
@@ -169,19 +222,26 @@ pre{background:var(--paper);border:1px solid var(--rule);border-radius:9px;paddi
 .note{background:var(--wash);border:1px solid var(--rule);border-radius:9px;padding:14px 16px;font-size:14.5px;color:var(--ink-soft);margin:16px 0}
 .foot{color:var(--muted);font-size:12.5px;margin-top:40px;border-top:1px solid var(--line);padding-top:16px}
 .hidden{display:none!important}
-@media (max-width:620px){
+@media(max-width:620px){
   .q-head{flex-wrap:wrap}
   .q-tools{width:100%;padding-left:34px}
+  .export-secondary{gap:6px}
 }
 </style>
 </head>
 <body>
 
-<!-- Nav bar (mounts itself at the top of <body>). This page is not in the nav. -->
 <script src="/header.js"></script>
 
 <div class="wrap">
 <main>
+
+<!-- Restore bar -->
+<div class="restore-bar hidden" id="restore-bar">
+  <span id="restore-info"></span>
+  <button class="btn-restore" id="btn-restore">Restore</button>
+  <button class="btn-discard" id="btn-discard">Discard</button>
+</div>
 
 <div class="toolhero">
   <div class="ico">
@@ -198,13 +258,14 @@ pre{background:var(--paper);border:1px solid var(--rule);border-radius:9px;paddi
 </div>
 
 <div class="intro">
-  <p>Turn a quiz you already wrote into a package Canvas can import. Paste it in, or drop in a Word document, PDF, Excel sheet, or CSV, in whatever layout you already have. Fix anything that came through wrong, then download the file and upload it to your course.</p>
-  <p>Free and no account needed. Tidy text is read right in your browser. Anything messier is read by an AI model, which sees your quiz once and does not keep it.</p>
+  <p>Turn a quiz you already wrote into a package Canvas can import. Paste it in, or drop in a Word document, PDF, Excel sheet, or CSV. Fix anything that came through wrong, then export in whatever format you need.</p>
+  <p>Free and no account needed. Your draft is saved in this browser — nothing is stored on this site. Tidy text is read right in your browser. Anything messier is read by an AI model, which sees your quiz once and does not keep it.</p>
 </div>
 
+<!-- Step 1 -->
 <section class="step">
   <h2>1. Bring in your quiz</h2>
-  <p class="hint">Bring it in however you have it. Numbered questions, a Canvas or Respondus CSV export, a spreadsheet with one question per row, or a Word or PDF file. If the layout is one the page recognizes, it reads it instantly in your browser. Otherwise it hands the text to the AI reader, which is built for messy input.</p>
+  <p class="hint">Paste numbered questions, drop in a Word or PDF file, or paste rows straight from a spreadsheet. If the layout is one the page recognizes, it reads it instantly in your browser. Otherwise it hands the text to the AI reader.</p>
 
   <div class="tabs" role="tablist">
     <button class="tab" role="tab" id="tab-paste" aria-selected="true">Paste text</button>
@@ -215,6 +276,7 @@ pre{background:var(--paper);border:1px solid var(--rule);border-radius:9px;paddi
     <textarea id="src" spellcheck="false" aria-label="Quiz text" placeholder="1. Which of the following best describes ambivalence?&#10;a) Resistance to change&#10;*b) Simultaneously wanting and not wanting to change&#10;c) Denial&#10;Rationale: Ambivalence is normal and expected."></textarea>
     <div class="row" style="margin-top:8px">
       <button class="link" id="btn-example">Load an example so I can see the format</button>
+      <button class="link" id="btn-force-mapper">Read as spreadsheet columns&hellip;</button>
     </div>
     <details class="fmt">
       <summary>Formats it reads without any help</summary>
@@ -258,9 +320,9 @@ Answer Key
   <div id="pane-file" class="hidden">
     <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose a file">
       <strong>Choose a file or drop one here</strong>
-      <small>.docx, .pdf, .xlsx, .csv, .txt, .md, .rtf</small>
+      <small>.docx, .pdf, .xlsx, .csv, .txt, .md, .rtf, or a .quiz.json file to reopen</small>
     </div>
-    <input type="file" id="file" class="hidden" accept=".docx,.pdf,.xlsx,.xls,.txt,.md,.csv,.tsv,.rtf">
+    <input type="file" id="file" class="hidden" accept=".docx,.pdf,.xlsx,.xls,.txt,.md,.csv,.tsv,.rtf,.json">
   </div>
 
   <div class="row">
@@ -271,16 +333,33 @@ Answer Key
   <div class="status" id="status1" role="status"></div>
 </section>
 
+<!-- Step 2: Check questions -->
 <section class="step hidden" id="review">
   <h2>2. Check your questions</h2>
   <p class="hint">Click any line to edit it. The green marker is the answer Canvas will score as correct. Anything highlighted in amber needs attention before you export.</p>
-  <div class="summary" id="summary"></div>
+  <div class="review-actions">
+    <div class="summary" id="summary"></div>
+    <button class="mini" id="btn-shuffle" style="margin-left:auto">Shuffle answer order</button>
+    <button class="mini" id="btn-check-ai">Check my questions</button>
+  </div>
+  <div class="status" id="status-check" role="status" style="margin-bottom:10px"></div>
   <div id="qlist"></div>
 </section>
 
+<!-- Step 3: Readings (collapsed when empty) -->
+<section class="step hidden" id="readings-step">
+  <details class="step-readings" id="readings-details">
+    <summary>3. Readings <span class="badge" id="readings-badge" style="display:none"></span></summary>
+    <p class="hint" style="margin-top:8px">Readings appear in the study page export and in the "Where to find it" selector on each question.</p>
+    <div id="readings-list"></div>
+    <button class="mini" id="btn-add-reading" style="margin-top:4px">+ Add a reading</button>
+  </details>
+</section>
+
+<!-- Step 4: Settings and export -->
 <section class="step hidden" id="settings">
-  <h2>3. Settings and download</h2>
-  <p class="hint">These become the quiz settings in Canvas, and you can change all of them after importing.</p>
+  <h2>4. Settings and export</h2>
+  <p class="hint">These become the quiz settings in Canvas. You can change them after importing too.</p>
   <div class="settings">
     <div class="field"><label for="qtitle">Quiz title</label><input id="qtitle" value="Imported Quiz"></div>
     <div class="field"><label for="qtype">Quiz type</label>
@@ -295,11 +374,86 @@ Answer Key
     </div>
     <div class="field"><label for="qattempts">Allowed attempts</label><input id="qattempts" type="number" value="1" min="1"></div>
   </div>
-  <div class="row">
-    <button class="act" id="btn-build">Download the Canvas file</button>
-    <span class="status" id="status2" role="status"></span>
+
+  <div class="export-primary">
+    <button class="act" id="btn-build">Download Canvas file</button>
   </div>
+  <div class="export-secondary">
+    <button id="btn-print-quiz">Printable quiz</button>
+    <button id="btn-print-key">Answer key</button>
+    <button id="btn-docx">Word document (.docx)</button>
+    <button id="btn-txt-key">Plain text (with key)</button>
+    <button id="btn-txt-student">Plain text (student copy)</button>
+    <button id="btn-review-page">Study page (HTML)</button>
+    <button id="btn-save-file">Save quiz file</button>
+    <button id="btn-open-file" style="border-style:dashed">Open quiz file&hellip;</button>
+  </div>
+  <input type="file" id="file-open" class="hidden" accept=".json">
+  <span class="status" id="status2" role="status"></span>
 </section>
+
+<!-- Column mapper modal -->
+<div class="modal-overlay hidden" id="mapper-overlay" role="dialog" aria-modal="true" aria-label="Map spreadsheet columns">
+  <div class="modal">
+    <h3>Map spreadsheet columns</h3>
+    <p class="hint">The page found a spreadsheet. Tell it what each column contains, then click Read questions.</p>
+    <div class="mapper-table-wrap">
+      <table class="mapper-table" id="mapper-table">
+        <thead id="mapper-head"></thead>
+        <tbody id="mapper-body"></tbody>
+      </table>
+    </div>
+    <div class="mapper-footer">
+      <div class="sub-row">
+        <label class="check"><input type="checkbox" id="mapper-has-header"> First row is a header</label>
+        <label style="font-size:14px;color:var(--ink-soft)">Correct answer is:
+          <select id="mapper-correct-rule">
+            <option value="first">the first answer listed</option>
+            <option value="column">named in the Correct column</option>
+            <option value="asterisk">marked with * in the cell</option>
+            <option value="none">not marked (I'll set them)</option>
+          </select>
+        </label>
+      </div>
+      <button class="act ghost" id="mapper-cancel">Cancel</button>
+      <button class="act" id="mapper-read">Read questions</button>
+    </div>
+    <div class="status" id="mapper-status" role="status"></div>
+  </div>
+</div>
+
+<!-- Study page dialog -->
+<div class="modal-overlay hidden" id="review-dialog-overlay" role="dialog" aria-modal="true" aria-label="Export study page">
+  <div class="modal" style="max-width:440px">
+    <h3>Export study page</h3>
+    <p class="hint">The page will include all multiple choice and true/false questions. Short answer and essay items are skipped.</p>
+    <div class="dialog-form">
+      <div class="field"><label for="review-heading">Heading (e.g. "Week 2")</label><input id="review-heading" placeholder="Week 2" autocomplete="off"></div>
+      <div class="field"><label for="review-tagline">Tagline (optional)</label><input id="review-tagline" placeholder="The Basics" autocomplete="off"></div>
+      <label class="check" id="review-key-label" style="display:none"><input type="checkbox" id="review-include-key" checked> Include answer key section</label>
+    </div>
+    <div class="dialog-actions">
+      <button class="act ghost" id="review-cancel">Cancel</button>
+      <button class="act" id="review-export">Export</button>
+    </div>
+    <div class="status" id="review-status" role="status"></div>
+  </div>
+</div>
+
+<!-- Word export options dialog -->
+<div class="modal-overlay hidden" id="docx-dialog-overlay" role="dialog" aria-modal="true" aria-label="Word document options">
+  <div class="modal" style="max-width:380px">
+    <h3>Word document</h3>
+    <div class="dialog-form" style="margin-top:12px">
+      <label class="check"><input type="checkbox" id="docx-include-key" checked> Include the answer key on a second page</label>
+    </div>
+    <div class="dialog-actions" style="margin-top:18px">
+      <button class="act ghost" id="docx-cancel">Cancel</button>
+      <button class="act" id="docx-export">Download</button>
+    </div>
+    <div class="status" id="docx-status" role="status"></div>
+  </div>
+</div>
 
 <div class="guide">
   <h2>Getting the file into Canvas</h2>
@@ -314,8 +468,11 @@ Answer Key
   </ol>
 
   <div class="callout">
-    <b>Leave "Overwrite assessment content with matching IDs" unchecked.</b> Checking it tells Canvas to replace existing content that shares an ID, and there is no undo. Every file this tool builds gets a fresh ID, so an import always makes a new quiz and never touches what is already in your course.
+    <b>About "Overwrite assessment content with matching IDs."</b> The builder now saves a stable identifier with each quiz file. If you save a quiz file and re-import it later, checking this box will replace the earlier version of the same quiz. Leave it unchecked if you want a new copy each time.
   </div>
+
+  <h3>Paper and study page exports</h3>
+  <p>The <b>Printable quiz</b> and <b>Answer key</b> buttons open a print dialog — choose "Save as PDF" to download a file. The quiz paper uses the same Letter layout as the Word document. The study page is a self-check HTML file you can share by link or upload anywhere — students click an answer and see whether they got it right, along with the rationale and the "Where to find it" note.</p>
 
   <h3>After the import</h3>
   <p>Open the quiz and click <b>Edit</b> to set the due date, time limit, and availability. Canvas imports quizzes unpublished, so students cannot see it until you publish. Preview it once before you do.</p>
@@ -326,11 +483,8 @@ Answer Key
   <h3>Question types it builds</h3>
   <p>Multiple choice, true/false, multiple answers, short answer, and essay. Matching, ordering, and file upload questions are not supported, so add those by hand after importing.</p>
 
-  <h3>If something looks wrong</h3>
-  <p>The most common cause is an answer key the tool could not connect to the questions. Watch the message after step 1: it tells you how many key entries it matched. If that number is lower than your question count, some items came through with no correct answer marked, and those get highlighted in amber in the review list. Fix them there before you export.</p>
-
   <div class="note">
-    <b>About your quiz content.</b> Editing and building the file happen in your browser, and so does reading when the layout is one the page recognizes. When the AI reader is used, the quiz text is sent once to Socialworky's server, relayed to the model, and returned as structured questions. It is not stored or logged. Everything you download stays on your computer.
+    <b>About your quiz content.</b> Editing and building the file happen in your browser. The draft is saved in this browser only — nothing is stored on this site. When the AI reader is used, the quiz text is sent once to Socialworky's server, relayed to the model, and returned as structured questions. It is not stored or logged. Everything you download stays on your computer.
   </div>
 </div>
 
@@ -343,67 +497,169 @@ Answer Key
 </div>
 
 <script>
-
-/* ------------------------------------------------------------------ *
- * Text hygiene. This is the part that fixes the junk characters.
- * ------------------------------------------------------------------ */
-
-// Repairs UTF-8 bytes that were decoded as Windows-1252 (the "â€™" family).
-function repairMojibake(s){
-  if(!/[ÂÃ][\u0080-\u00BF\u2000-\u203A]/.test(s)) return s;
-  try{
-    const bytes = Uint8Array.from([...s].map(c => c.charCodeAt(0) & 0xff));
-    const back = new TextDecoder('utf-8', {fatal:true}).decode(bytes);
-    return back;
-  }catch(e){ return s; }
-}
-
-// Folds typographic characters down to plain ASCII equivalents.
-function normalizePunctuation(s){
-  return s
-    .replace(/[\u2018\u2019\u201A\u201B\u2032]/g, "'")
-    .replace(/[\u201C\u201D\u201E\u201F\u2033]/g, '"')
-    .replace(/[\u2013\u2014\u2015]/g, '-')
-    .replace(/\u2026/g, '...')
-    .replace(/[\u00A0\u2007\u202F]/g, ' ')
-    .replace(/[\u200B-\u200D\uFEFF\u00AD]/g, '')
-    .replace(/[\u2022\u25CF\u25AA\u00B7]/g, '-')
-    .replace(/\u00A9/g,'(c)').replace(/\u00AE/g,'(R)').replace(/\u2122/g,'(TM)')
-    .replace(/\r\n?/g, '\n');
-}
-
-function clean(s){
-  s = repairMojibake(String(s == null ? '' : s));
-  if(document.getElementById('opt-clean').checked) s = normalizePunctuation(s);
-  return s.replace(/\r\n?/g,'\n').replace(/[ \t]+$/gm,'');
-}
+/* ================================================================== *
+ * Helpers
+ * ================================================================== */
 
 function esc(s){
   return String(s == null ? '' : s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
-// Question text goes into Canvas as HTML, so it is escaped twice on purpose.
-function html(s){ return '<p>' + esc(s).replace(/\n+/g,'</p><p>') + '</p>'; }
-function xmlHtml(s){ return esc(html(s)); }
 
-/* ------------------------------------------------------------------ *
- * File reading, with encoding detection for CSVs out of Excel.
- * ------------------------------------------------------------------ */
+function normOpts(){ return {normalize: document.getElementById('opt-clean').checked}; }
+
+const $ = id => document.getElementById(id);
+
+function say(el, msg, kind){
+  el.textContent = msg;
+  el.className = 'status' + (kind ? ' ' + kind : '');
+}
+
+function toFilename(title){
+  return (title || 'Quiz').replace(/[^\w\s-]/g,'').replace(/\s+/g,'_').replace(/-+/g,'_').slice(0,60) || 'Quiz';
+}
+
+function download(blob, filename){
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+
+/* ================================================================== *
+ * Quiz state
+ * ================================================================== */
+
+function newQuiz(){
+  return {
+    schemaVersion: 1,
+    title: 'Imported Quiz',
+    ident: QtiCore.newIdent(),
+    settings: {type:'assignment', shuffle:'false', attempts:1},
+    questions: [],
+    readings: [],
+    review: {heading:'', tagline:'', slug:''},
+    canvas: {instance:null, courseId:null, quizId:null},
+    revisions: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+}
+
+let quiz = newQuiz();
+
+// Sync settings inputs → quiz
+function syncSettingsFromInputs(){
+  quiz.title    = $('qtitle').value.trim() || 'Imported Quiz';
+  quiz.settings.type     = $('qtype').value;
+  quiz.settings.shuffle  = $('qshuffle').value;
+  quiz.settings.attempts = parseInt($('qattempts').value) || 1;
+}
+
+// Sync quiz → settings inputs
+function syncInputsFromQuiz(){
+  $('qtitle').value   = quiz.title;
+  $('qtype').value    = quiz.settings.type || 'assignment';
+  $('qshuffle').value = quiz.settings.shuffle || 'false';
+  $('qattempts').value = quiz.settings.attempts || 1;
+}
+
+/* ================================================================== *
+ * Autosave (debounced)
+ * ================================================================== */
+
+let _saveTimer;
+function scheduleSave(){
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(doSave, 500);
+}
+function doSave(){
+  if(!quiz.questions.length) return;
+  try{
+    syncSettingsFromInputs();
+    quiz.updatedAt = new Date().toISOString();
+    const payload = Object.assign({}, quiz, {savedAt: quiz.updatedAt});
+    localStorage.setItem('quizbuilder.draft', JSON.stringify(payload));
+  }catch(e){}
+}
+function clearDraft(){
+  try{ localStorage.removeItem('quizbuilder.draft'); }catch(e){}
+}
+
+/* ================================================================== *
+ * Draft restore
+ * ================================================================== */
+
+let _pendingDraft = null;
+
+function checkDraft(){
+  try{
+    const raw = localStorage.getItem('quizbuilder.draft');
+    if(!raw) return;
+    const d = JSON.parse(raw);
+    if(!d || !Array.isArray(d.questions) || !d.questions.length) return;
+    _pendingDraft = d;
+    const when = formatDraftDate(d.savedAt || d.updatedAt);
+    $('restore-info').textContent =
+      'You have an unsaved quiz from ' + when + ': "' + (d.title||'Untitled') + '", ' + d.questions.length + ' questions.';
+    $('restore-bar').classList.remove('hidden');
+  }catch(e){}
+}
+
+function formatDraftDate(iso){
+  if(!iso) return 'earlier';
+  try{
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-US',{weekday:'long'}) + ', ' +
+           d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  }catch(e){ return 'earlier'; }
+}
+
+$('btn-restore').onclick = () => {
+  if(!_pendingDraft) return;
+  loadQuizObject(_pendingDraft);
+  _pendingDraft = null;
+  $('restore-bar').classList.add('hidden');
+  say($('status1'), 'Draft restored: ' + quiz.questions.length + ' questions.', 'ok');
+};
+
+$('btn-discard').onclick = () => {
+  _pendingDraft = null;
+  clearDraft();
+  $('restore-bar').classList.add('hidden');
+};
+
+// Load a full quiz object (from draft or opened file)
+function loadQuizObject(obj){
+  quiz = Object.assign(newQuiz(), obj);
+  // Ensure ident survives
+  if(!quiz.ident) quiz.ident = QtiCore.newIdent();
+  if(!Array.isArray(quiz.questions)) quiz.questions = [];
+  if(!Array.isArray(quiz.readings)) quiz.readings = [];
+  if(!quiz.settings) quiz.settings = {type:'assignment',shuffle:'false',attempts:1};
+  // Normalize questions
+  quiz.questions = QtiCore.normalizeQuestions(quiz.questions, normOpts());
+  syncInputsFromQuiz();
+  showEditor();
+  render();
+  renderReadings();
+}
+
+/* ================================================================== *
+ * File reading
+ * ================================================================== */
 
 async function readTextSmart(file){
   const buf = await file.arrayBuffer();
-  try{
-    return new TextDecoder('utf-8', {fatal:true}).decode(buf);
-  }catch(e){
-    // Excel on a Mac or Windows often writes CSVs as Windows-1252, not UTF-8.
-    return new TextDecoder('windows-1252').decode(buf);
-  }
+  try{ return new TextDecoder('utf-8',{fatal:true}).decode(buf); }
+  catch(e){ return new TextDecoder('windows-1252').decode(buf); }
 }
 
 async function readDocx(file){
   const buf = await file.arrayBuffer();
-  const res = await mammoth.extractRawText({arrayBuffer: buf});
+  const res = await mammoth.extractRawText({arrayBuffer:buf});
   return res.value;
 }
 
@@ -411,17 +667,17 @@ async function readPdf(file){
   pdfjsLib.GlobalWorkerOptions.workerSrc =
     'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
   const buf = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+  const pdf = await pdfjsLib.getDocument({data:buf}).promise;
   let out = [];
-  for(let p = 1; p <= pdf.numPages; p++){
+  for(let p=1;p<=pdf.numPages;p++){
     const page = await pdf.getPage(p);
     const tc = await page.getTextContent();
-    let line = '', lastY = null;
+    let line='', lastY=null;
     for(const it of tc.items){
-      const y = it.transform[5];
-      if(lastY !== null && Math.abs(y - lastY) > 3){ out.push(line.trim()); line = ''; }
-      line += it.str + (it.hasEOL ? '\n' : ' ');
-      lastY = y;
+      const y=it.transform[5];
+      if(lastY!==null && Math.abs(y-lastY)>3){ out.push(line.trim()); line=''; }
+      line += it.str + (it.hasEOL?'\n':' ');
+      lastY=y;
     }
     out.push(line.trim());
   }
@@ -430,22 +686,22 @@ async function readPdf(file){
 
 async function readXlsx(file){
   const buf = await file.arrayBuffer();
-  const wb = XLSX.read(buf, {type:'array'});
-  const parts = [];
-  wb.SheetNames.forEach(name => {
-    const csv = XLSX.utils.sheet_to_csv(wb.Sheets[name], {blankrows:false});
+  const wb = XLSX.read(buf,{type:'array'});
+  const parts=[];
+  wb.SheetNames.forEach(name=>{
+    const csv=XLSX.utils.sheet_to_csv(wb.Sheets[name],{blankrows:false});
     if(csv.trim()) parts.push(csv.trim());
   });
   return parts.join('\n\n');
 }
 
 async function loadFile(file){
-  const n = file.name.toLowerCase();
+  const n=file.name.toLowerCase();
   if(n.endsWith('.docx')) return readDocx(file);
   if(n.endsWith('.pdf'))  return readPdf(file);
-  if(n.endsWith('.xlsx') || n.endsWith('.xls')) return readXlsx(file);
+  if(n.endsWith('.xlsx')||n.endsWith('.xls')) return readXlsx(file);
   if(n.endsWith('.rtf')){
-    const raw = await readTextSmart(file);
+    const raw=await readTextSmart(file);
     return raw.replace(/\\'([0-9a-f]{2})/gi,(m,h)=>String.fromCharCode(parseInt(h,16)))
               .replace(/\\par[d]?/g,'\n').replace(/\{\\[^{}]*\}/g,'')
               .replace(/\\[a-z]+-?\d* ?/gi,'').replace(/[{}]/g,'').trim();
@@ -453,652 +709,186 @@ async function loadFile(file){
   return readTextSmart(file);
 }
 
-/* ------------------------------------------------------------------ *
- * The forgiving parser. No AI, no network.
- * ------------------------------------------------------------------ */
+/* ================================================================== *
+ * Column mapper
+ * ================================================================== */
 
-const RE_QNUM   = /^\s*(?:Q(?:uestion)?\s*)?(\d{1,3})\s*[.):\]]\s+(.*)$/i;
-const RE_ANS    = /^\s*(\*?)\s*\(?([a-hA-H])\s*[.):\]]\s+(.*)$/;
-const RE_KEY    = /^\s*(?:ANS|ANSWER|KEY|CORRECT)\s*[:.\-]?\s*(.+)$/i;
-const RE_RAT    = /^\s*(?:RATIONALE|FEEDBACK|EXPLANATION|COMMENT|WHY)\s*[:.\-]?\s*(.*)$/i;
-const RE_PTS    = /^\s*(?:POINTS?|PTS)\s*[:.\-]?\s*([\d.]+)\s*$/i;
-const RE_TYPEHINT = /\[(multiple answers?|select all|short answer|fill[- ]in|essay|true\/?false|numerical)\]/i;
+let _mapperTable = null;
 
-// A line that is nothing but an answer-key heading. Everything after it is a key.
-const RE_KEYHEAD = /^\s*(?:[\w\s]{0,40}?[:\-]\s*)?(?:answer\s*key|answers?\s*(?:and|&|with)\s*rationales?|answer\s*sheet|key|solutions?)\s*:?\s*$/i;
+function openColumnMapper(table, forced){
+  _mapperTable = table;
+  const previewRows = table.rows.slice(0, Math.min(4, table.rows.length));
+  const w = table.width;
+  const ROLE_OPTIONS = QuizTable.ROLES;
 
-// Page furniture that should never become a question.
-const RE_JUNK = /^\s*(?:instructor(?:'s)?\s*copy|do not distribute|for instructor use|confidential|page\s*\d+(?:\s*of\s*\d+)?|name\s*:?\s*_*|date\s*:?\s*_*|\d{1,3})\s*\.?\s*$/i;
+  const infer = QuizTable.inferRoles(table);
 
-// Pulls "B", "B.", "(B)", "B, D" off the front of a line without swallowing
-// ordinary prose. The letter has to be followed by punctuation or end of line,
-// so "A client mentions..." is not read as answer A.
-function leadingLetters(s){
-  const m = String(s).trim().match(/^\*?\(?([A-Ha-h])\)?(?=$|[.,:;)\]\-\u2013\u2014/&]|\s+[-\u2013\u2014:])([^]*)$/);
-  if(!m) return null;
-  const letters = [m[1].toUpperCase()];
-  let rest = m[2] || '';
-  // Additional letters for select-all keys.
-  let more;
-  while((more = rest.match(/^\s*[,;/&]\s*\(?([A-Ha-h])\)?(?=$|[.,:;)\]\-\u2013\u2014/&\s])/))){
-    letters.push(more[1].toUpperCase());
-    rest = rest.slice(more[0].length);
-  }
-  rest = rest.replace(/^\s*[.):\]]?\s*[-\u2013\u2014:]?\s*/, '').trim();
-  return {letters, rest};
-}
+  // Header row of selects
+  const thead = $('mapper-head');
+  const tbody = $('mapper-body');
+  thead.innerHTML=''; tbody.innerHTML='';
 
-// Reads the lines after an answer-key heading into {n, letters, rationale}.
-function parseKeyLines(lines){
-  const entries = [];
-  let pendingNum = null;
-  for(const raw of lines){
-    const line = raw.trim();
-    if(!line){ continue; }
-    if(RE_JUNK.test(line) && !/^\d{1,3}\.?$/.test(line)) continue;
-
-    // Word tables flatten to a bare number on one line and the letter on the next.
-    if(/^\d{1,3}[.):\]]?$/.test(line)){ pendingNum = parseInt(line, 10); continue; }
-    if(pendingNum !== null){
-      const L = leadingLetters(line);
-      if(L){ entries.push({n: pendingNum, letters: L.letters, rationale: L.rest}); pendingNum = null; continue; }
-      pendingNum = null;
-    }
-
-    const m = line.match(/^(\d{1,3})\s*[.):\]]\s*(.+)$/);
-    if(m){
-      const L = leadingLetters(m[2]);
-      if(L){ entries.push({n: parseInt(m[1], 10), letters: L.letters, rationale: L.rest}); continue; }
-    }
-    // Anything else continues the rationale of the entry above it.
-    if(entries.length){
-      const last = entries[entries.length - 1];
-      last.rationale = (last.rationale ? last.rationale + ' ' : '') + line;
-    }
-  }
-  return entries;
-}
-
-// Answer key pages often restate the correct choice before the explanation
-// ("B - Insight" then "Insight is the client's understanding..."). Both halves
-// land in the rationale, so drop the echo. Only strips when the next word is
-// capitalized, which keeps a rationale that genuinely opens with the answer
-// ("Engaging is the first process") intact.
-function stripEchoedAnswer(rationale, answers){
-  if(!rationale) return rationale;
-  const words = s => (String(s).toLowerCase().match(/[a-z0-9]+/g) || []);
-  const rWords = words(rationale);
-  if(!rWords.length) return rationale;
-
-  const ordered = answers.filter(a => a.correct).concat(answers.filter(a => !a.correct));
-  for(const a of ordered){
-    const aWords = words(a.text);
-    if(!aWords.length || aWords.length > rWords.length) continue;
-    if(!aWords.every((w, i) => w === rWords[i])) continue;
-
-    if(aWords.length === rWords.length) return '';
-    const re = new RegExp('^\\W*(?:[A-Za-z0-9]+\\W*){' + aWords.length + '}');
-    const m = rationale.match(re);
-    if(!m) continue;
-    const tail = rationale.slice(m[0].length).trim();
-    if(!/^[A-Z]/.test(tail)) continue;
-    return tail;
-  }
-  return rationale;
-}
-
-function applyKey(qs, entries){
-  // Match on the question's own number when it has one, so a stray title line
-  // or an unnumbered item cannot shift the whole key by one.
-  const byNum = new Map();
-  qs.forEach(q => { if(q.num != null && !byNum.has(q.num)) byNum.set(q.num, q); });
-
-  let applied = 0;
-  for(const e of entries){
-    const q = byNum.get(e.n) || qs[e.n - 1];
-    if(!q) continue;
-    if(q.answers.length){
-      const before = q.answers.map(a => a.correct);
-      q.answers.forEach(a => a.correct = false);
-      let hit = false;
-      e.letters.forEach(L => {
-        const idx = L.toLowerCase().charCodeAt(0) - 97;
-        if(q.answers[idx]){ q.answers[idx].correct = true; hit = true; }
-      });
-      if(hit){
-        applied++;
-        if(e.letters.length > 1 && q.type !== 'multiple_answers_question') q.type = 'multiple_answers_question';
-      } else {
-        q.answers.forEach((a, i) => a.correct = before[i]);
-      }
-    }
-    if(e.rationale && !q.rationale){
-      const r = stripEchoedAnswer(e.rationale, q.answers);
-      if(r) q.rationale = r;
-    }
-  }
-  return applied;
-}
-
-// Fallback for keys with no heading: a run of trailing items that are bare
-// letters with no answer choices is a key, not a set of essay questions.
-function harvestTrailingKey(qs){
-  let i = qs.length - 1;
-  const entries = [];
-  while(i >= 0){
-    const q = qs[i];
-    if(q.answers.length || !q.num) break;
-    const L = leadingLetters(q.text);
-    if(!L || L.rest.length > 400) break;
-    entries.unshift({n: q.num, letters: L.letters, rationale: L.rest});
-    i--;
-  }
-  const kept = qs.slice(0, i + 1);
-  if(entries.length < 2 || !kept.length) return {qs, entries: []};
-  return {qs: kept, entries};
-}
-
-function typeFromHint(h){
-  h = (h||'').toLowerCase();
-  if(/multiple answers?|select all/.test(h)) return 'multiple_answers_question';
-  if(/short answer|fill/.test(h))            return 'short_answer_question';
-  if(/essay/.test(h))                        return 'essay_question';
-  if(/true/.test(h))                         return 'true_false_question';
-  return null;
-}
-
-function looksLikeTrueFalse(answers){
-  if(answers.length !== 2) return false;
-  const t = answers.map(a => a.text.trim().toLowerCase()).sort();
-  return t[0] === 'false' && t[1] === 'true';
-}
-
-// Picks the delimiter that appears most consistently across the first rows.
-function sniffDelimiter(text){
-  const head = text.split('\n').slice(0, 8).filter(l => l.trim());
-  const score = d => head.reduce((s, l) => s + l.split(d).length - 1, 0);
-  const cands = [[',', score(',')], ['\t', score('\t')], [';', score(';')]];
-  cands.sort((a, b) => b[1] - a[1]);
-  return cands[0][1] ? cands[0][0] : ',';
-}
-function csvShaped(text){
-  const d = sniffDelimiter(text);
-  const rows = text.split('\n').filter(l => l.trim()).slice(0, 6);
-  return rows.length >= 1 && rows.filter(l => l.split(d).length >= 3).length >= Math.ceil(rows.length * .6);
-}
-
-function parseCSV(text){
-  const rows = [];
-  let row = [], cell = '', q = false;
-  const delim = sniffDelimiter(text);
-  for(let i = 0; i < text.length; i++){
-    const c = text[i];
-    if(q){
-      if(c === '"' && text[i+1] === '"'){ cell += '"'; i++; }
-      else if(c === '"'){ q = false; }
-      else cell += c;
-    } else {
-      if(c === '"') q = true;
-      else if(c === delim){ row.push(cell); cell = ''; }
-      else if(c === '\n'){ row.push(cell); rows.push(row); row = []; cell = ''; }
-      else cell += c;
-    }
-  }
-  if(cell.length || row.length){ row.push(cell); rows.push(row); }
-  return rows.filter(r => r.some(x => x.trim() !== ''));
-}
-
-const RE_TYPECODE = /^(MC|MA|MR|MS|TF|ESS?|SA|FIB|FMB|NUM|MT|ORD)$/i;
-function typeFromCode(c){
-  c = c.toUpperCase();
-  if(/^(MA|MR|MS)$/.test(c)) return 'multiple_answers_question';
-  if(c === 'TF') return 'true_false_question';
-  if(/^ESS?$/.test(c)) return 'essay_question';
-  if(/^(SA|FIB|FMB)$/.test(c)) return 'short_answer_question';
-  return 'multiple_choice_question';
-}
-
-// Canvas / Respondus / Blackboard style rows with no header:
-//   TYPE, [title], [points], question, correct answer number(s), answer 1, answer 2, ..., [feedback]
-function parsePositionalCSV(rows){
-  const typed = rows.filter(r => RE_TYPECODE.test((r[0] || '').trim()));
-  if(!typed.length || typed.length < rows.length * .6) return null;
-  const out = [];
-  for(const r of typed){
-    const cells = r.map(c => (c == null ? '' : String(c)).replace(/\s+/g, ' ').trim());
-    const code = cells[0].toUpperCase();
-    // The stem is the first cell after the code that is neither blank nor a bare number.
-    let si = 1;
-    while(si < cells.length && (cells[si] === '' || /^\d+(\.\d+)?$/.test(cells[si]))) si++;
-    if(si >= cells.length) continue;
-    const ptsCell = cells.slice(1, si).find(c => /^\d+(\.\d+)?$/.test(c));
-    const q = {text: cells[si], answers: [], rationale: '', points: ptsCell ? parseFloat(ptsCell) || 1 : 1,
-               type: typeFromCode(code), shortAnswers: [], num: out.length + 1, hinted: true};
-    let rest = cells.slice(si + 1);
-    // Feedback: the last non-empty cell when it sits after a gap of blanks.
-    let lastIdx = rest.length - 1;
-    while(lastIdx >= 0 && rest[lastIdx] === '') lastIdx--;
-    if(lastIdx > 0 && rest[lastIdx - 1] === ''){ q.rationale = rest[lastIdx]; rest = rest.slice(0, lastIdx); }
-    let keyRaw = '';
-    if(q.type === 'short_answer_question'){
-      q.shortAnswers = rest.filter(Boolean);
-    } else if(q.type !== 'essay_question'){
-      if(rest.length && /^(\(?[\dA-Ha-h]\)?)(\s*[,;|/&]\s*\(?[\dA-Ha-h]\)?)*$/.test(rest[0])){ keyRaw = rest[0]; rest = rest.slice(1); }
-      else if(rest.length && rest[0] === ''){ rest = rest.slice(1); }
-      q.answers = rest.filter(Boolean).map(t => ({text: t, correct: false}));
-      if(q.type === 'true_false_question' && !q.answers.length)
-        q.answers = [{text:'True', correct:false}, {text:'False', correct:false}];
-      if(keyRaw){
-        keyRaw.split(/[,;|/&]/).forEach(k => {
-          k = k.replace(/[()]/g, '').trim();
-          const idx = /^\d+$/.test(k) ? parseInt(k, 10) - 1 : k.toLowerCase().charCodeAt(0) - 97;
-          if(q.answers[idx]) q.answers[idx].correct = true;
-          else if(q.type === 'true_false_question'){
-            const hit = q.answers.find(a => a.text.toLowerCase().startsWith(k.toLowerCase()));
-            if(hit) hit.correct = true;
-          }
-        });
-      }
-      if(q.answers.filter(a => a.correct).length > 1 && q.type === 'multiple_choice_question') q.type = 'multiple_answers_question';
-    }
-    out.push(q);
-  }
-  return out.length ? out : null;
-}
-
-// A header row is short label-like cells, not sentences.
-function looksLikeHeader(row){
-  const cells = row.map(c => (c || '').trim()).filter(Boolean);
-  if(cells.length < 2) return false;
-  return cells.every(c => c.length <= 40 && !/[.?!]\s|\s.{30,}/.test(c)) &&
-         cells.some(c => /question|prompt|stem|item|answer|choice|option|correct|key|feedback|rationale|type|points?/i.test(c));
-}
-
-function parseCSVQuiz(text){
-  const rows = parseCSV(text);
-  if(!rows.length) return null;
-  if(!looksLikeHeader(rows[0])) return parsePositionalCSV(rows);
-  if(rows.length < 2) return null;
-  const head = rows[0].map(h => h.trim().toLowerCase());
-  const qi = head.findIndex(h => /^(question|prompt|stem|item)/.test(h));
-  if(qi < 0) return null;
-  const ri = head.findIndex(h => /rationale|feedback|explanation|comment/.test(h));
-  const ci = head.findIndex(h => /^(correct|answer|key)$/.test(h));
-  const pi = head.findIndex(h => /^(points?|pts)$/.test(h));
-  const ti = head.findIndex(h => /^(type)$/.test(h));
-  const ai = head.map((h,i) => /^(answer|choice|option|distractor)\s*[a-z\d]?$/i.test(h) && i !== ci ? i : -1)
-                 .filter(i => i >= 0);
-  if(!ai.length) return null;
-
-  const out = [];
-  for(const r of rows.slice(1)){
-    const stem = (r[qi]||'').trim();
-    if(!stem) continue;
-    const answers = ai.map(i => (r[i]||'').trim()).filter(Boolean).map(t => ({text:t, correct:false}));
-    const keyRaw = ci >= 0 ? (r[ci]||'').trim() : '';
-    markKey(answers, keyRaw);
-    // A leading asterisk in the cell itself also marks the key.
-    answers.forEach(a => { if(a.text.startsWith('*')){ a.text = a.text.slice(1).trim(); a.correct = true; } });
-    let type = ti >= 0 ? typeFromHint(r[ti]) : null;
-    if(!type) type = looksLikeTrueFalse(answers) ? 'true_false_question'
-              : answers.filter(a=>a.correct).length > 1 ? 'multiple_answers_question'
-              : answers.length ? 'multiple_choice_question' : 'short_answer_question';
-    out.push({
-      text: stem, answers, type,
-      rationale: ri >= 0 ? (r[ri]||'').trim() : '',
-      points: pi >= 0 && r[pi] ? parseFloat(r[pi]) || 1 : 1,
-      shortAnswers: type === 'short_answer_question' ? [keyRaw].filter(Boolean) : [],
-      num: out.length + 1, hinted: true
+  const selects = [];
+  const headRow = document.createElement('tr');
+  for(let i=0;i<w;i++){
+    const th = document.createElement('th');
+    const sel = document.createElement('select');
+    ROLE_OPTIONS.forEach(r=>{
+      const o=document.createElement('option');
+      o.value=r; o.textContent=r.charAt(0).toUpperCase()+r.slice(1);
+      if(infer.roles[i]===r) o.selected=true;
+      sel.appendChild(o);
     });
+    selects.push(sel);
+    th.appendChild(sel);
+    headRow.appendChild(th);
   }
-  return out.length ? out : null;
-}
+  thead.appendChild(headRow);
 
-function markKey(answers, keyRaw){
-  if(!keyRaw) return;
-  const key = keyRaw.trim();
-  const letter = key.match(/^\(?([a-hA-H])\)?[.):\]]?$/);
-  if(letter){
-    const idx = letter[1].toLowerCase().charCodeAt(0) - 97;
-    if(answers[idx]) answers[idx].correct = true;
-    return;
-  }
-  // Comma separated letters, for select-all items.
-  if(/^[a-hA-H](\s*[,;/&]\s*[a-hA-H])+$/.test(key)){
-    key.split(/[,;/&]/).forEach(L => {
-      const idx = L.trim().toLowerCase().charCodeAt(0) - 97;
-      if(answers[idx]) answers[idx].correct = true;
-    });
-    return;
-  }
-  const hit = answers.find(a => a.text.trim().toLowerCase() === key.toLowerCase());
-  if(hit) hit.correct = true;
-}
-
-function parseText(raw){
-  const text = clean(raw);
-  parseText.keyApplied = 0; parseText.keyFound = 0;
-  if(csvShaped(text)){
-    const csv = parseCSVQuiz(text);
-    if(csv) return csv;
-  }
-
-  let lines = text.split('\n');
-
-  // Split off a trailing answer key page before anything else.
-  let keyLines = [];
-  for(let i = 1; i < lines.length; i++){
-    if(RE_KEYHEAD.test(lines[i])){
-      keyLines = lines.slice(i + 1);
-      lines = lines.slice(0, i);
-      break;
+  // Preview rows
+  previewRows.forEach(row=>{
+    const tr=document.createElement('tr');
+    for(let i=0;i<w;i++){
+      const td=document.createElement('td');
+      const v=(row[i]||'').trim();
+      td.textContent = v || '';
+      if(!v) td.className='cell-faint';
+      tr.appendChild(td);
     }
-  }
-
-  const qs = [];
-  let cur = null, pendingKey = '', lastTarget = null;
-
-  const push = () => {
-    if(!cur) return;
-    if(pendingKey) markKey(cur.answers, pendingKey);
-    if(!cur.type){
-      if(looksLikeTrueFalse(cur.answers)) cur.type = 'true_false_question';
-      else if(cur.answers.filter(a => a.correct).length > 1) cur.type = 'multiple_answers_question';
-      else if(cur.answers.length) cur.type = 'multiple_choice_question';
-      else if(pendingKey){ cur.type = 'short_answer_question'; cur.hinted = true; }
-      else cur.type = 'essay_question';
-    }
-    if(cur.type === 'short_answer_question' && !cur.shortAnswers.length && pendingKey)
-      cur.shortAnswers = pendingKey.split(/\s*[|;]\s*/).filter(Boolean);
-    qs.push(cur);
-    cur = null; pendingKey = ''; lastTarget = null;
-  };
-
-  for(const line of lines){
-    if(!line.trim()){ lastTarget = null; continue; }
-
-    const mq = line.match(RE_QNUM);
-    // Guard against an answer line that happens to be numbered.
-    if(mq && !RE_ANS.test(line)){
-      push();
-      let body = mq[2];
-      let type = null;
-      const hint = body.match(RE_TYPEHINT);
-      if(hint){ type = typeFromHint(hint[1]); body = body.replace(RE_TYPEHINT,'').trim(); }
-      cur = {text: body, answers: [], rationale: '', points: 1, type, shortAnswers: [], num: parseInt(mq[1], 10), hinted: !!type};
-      lastTarget = 'q';
-      continue;
-    }
-    if(RE_JUNK.test(line)){ lastTarget = null; continue; }
-    if(!cur){
-      // Text before the first numbered question starts an unnumbered item.
-      cur = {text: line.trim(), answers: [], rationale: '', points: 1, type: null, shortAnswers: [], num: null};
-      lastTarget = 'q';
-      continue;
-    }
-
-    const mr = line.match(RE_RAT);
-    if(mr){ cur.rationale = mr[1].trim(); lastTarget = 'r'; continue; }
-
-    const mk = line.match(RE_KEY);
-    if(mk){ pendingKey = mk[1].trim(); lastTarget = null; continue; }
-
-    const mp = line.match(RE_PTS);
-    if(mp){ cur.points = parseFloat(mp[1]) || 1; lastTarget = null; continue; }
-
-    const ma = line.match(RE_ANS);
-    if(ma){
-      let t = ma[3].trim();
-      let correct = ma[1] === '*';
-      if(/\*\s*$/.test(t)){ t = t.replace(/\*\s*$/,'').trim(); correct = true; }
-      cur.answers.push({text: t, correct});
-      lastTarget = 'a';
-      continue;
-    }
-
-    // A bare asterisk-led line is an unlettered answer.
-    const mstar = line.match(/^\s*([*-])\s+(.*)$/);
-    if(mstar && cur.answers.length !== 0){
-      cur.answers.push({text: mstar[2].trim(), correct: mstar[1] === '*'});
-      lastTarget = 'a';
-      continue;
-    }
-
-    // Anything else continues whatever we were last building.
-    if(lastTarget === 'a' && cur.answers.length) cur.answers[cur.answers.length-1].text += ' ' + line.trim();
-    else if(lastTarget === 'r') cur.rationale += ' ' + line.trim();
-    else if(lastTarget === 'q') cur.text += '\n' + line.trim();
-    else {
-      // A blank line broke the flow, so this prose starts a new item rather
-      // than getting glued onto the question above it.
-      push();
-      cur = {text: line.trim(), answers: [], rationale: '', points: 1, type: null, shortAnswers: [], num: null};
-      lastTarget = 'q';
-    }
-  }
-  push();
-
-  let out = qs.filter(q => q.text.trim() && !(q.answers.length === 0 && RE_JUNK.test(q.text)));
-
-  // A short unnumbered line sitting above the first numbered question is the
-  // document's title, not question one.
-  while(out.length > 1 && out[0].num == null && !out[0].answers.length &&
-        out[0].text.length < 120 && out.some(q => q.num != null)){
-    out.shift();
-  }
-
-  let entries = parseKeyLines(keyLines);
-  if(!entries.length){
-    const h = harvestTrailingKey(out);
-    out = h.qs; entries = h.entries;
-  }
-  parseText.keyApplied = applyKey(out, entries);
-  parseText.keyFound = entries.length;
-
-  // Re-derive types now that the key has landed.
-  out.forEach(q => {
-    if(q.answers.length && looksLikeTrueFalse(q.answers)) q.type = 'true_false_question';
-    else if(q.answers.filter(a => a.correct).length > 1) q.type = 'multiple_answers_question';
-    else if(q.answers.length && q.type === 'essay_question') q.type = 'multiple_choice_question';
+    tbody.appendChild(tr);
   });
-  return out;
+
+  // Set correct rule
+  $('mapper-correct-rule').value = infer.correctRule || 'first';
+  $('mapper-has-header').checked = !!table.hasHeader;
+  say($('mapper-status'),'');
+
+  $('mapper-overlay').classList.remove('hidden');
+  $('mapper-overlay')._selects = selects;
 }
 
-/* ------------------------------------------------------------------ *
- * QTI 1.2 output, aimed at Canvas Classic Quizzes.
- * ------------------------------------------------------------------ */
+$('mapper-cancel').onclick = () => {
+  $('mapper-overlay').classList.add('hidden');
+  _mapperTable = null;
+};
 
-function uid(p){
-  const h = 'abcdef0123456789';
-  let s = '';
-  for(let i = 0; i < 32; i++) s += h[Math.floor(Math.random()*16)];
-  return (p || 'g') + s;
+$('mapper-has-header').onchange = function(){
+  if(!_mapperTable) return;
+  _mapperTable.hasHeader = this.checked;
+  openColumnMapper(_mapperTable, false);
+};
+
+$('mapper-read').onclick = () => {
+  if(!_mapperTable) return;
+  const selects = $('mapper-overlay')._selects || [];
+  const roles = selects.map(s=>s.value);
+  const correctRule = $('mapper-correct-rule').value;
+  const skipHeader = $('mapper-has-header').checked;
+  const raw = QuizTable.buildQuestions(_mapperTable, roles, {correctRule, skipHeader});
+  const qs = QtiCore.normalizeQuestions(raw, normOpts());
+  if(!qs.length){ say($('mapper-status'),'No questions found with this mapping.','err'); return; }
+  $('mapper-overlay').classList.add('hidden');
+  _mapperTable = null;
+  finishRead(qs, 'Read from spreadsheet columns. Found ' + qs.length + ' questions. Check the wording and keys below.');
+};
+
+/* ================================================================== *
+ * Read handler
+ * ================================================================== */
+
+function localLooksRight(qs){
+  if(!qs||!qs.length) return false;
+  if(qs.some(q=>q.num==null)) return false;
+  if(qs.some(q=>QtiCore.problems(q).length)) return false;
+  if(qs.some(q=>(q.type==='essay_question'||q.type==='short_answer_question')&&!q.hinted)) return false;
+  return true;
 }
 
-function feedbackBlock(ident, text){
-  return `      <itemfeedback ident="${ident}">
-        <flow_mat>
-          <material>
-            <mattext texttype="text/html">${xmlHtml(text)}</mattext>
-          </material>
-        </flow_mat>
-      </itemfeedback>\n`;
+function setBusy(b){
+  $('btn-read').disabled=b; $('btn-ai').disabled=b;
 }
 
-function buildItem(q, n){
-  const ident = uid('i');
-  const ref = uid('r');
-  const isChoice = ['multiple_choice_question','true_false_question','multiple_answers_question'].includes(q.type);
-  const ids = q.answers.map((_, i) => String(1000 + n*20 + i));
-  const correctIds = q.answers.map((a, i) => a.correct ? ids[i] : null).filter(Boolean);
-  const wrongIds   = q.answers.map((a, i) => a.correct ? null : ids[i]).filter(Boolean);
-  const title = 'Question ' + (n + 1);
+function finishRead(qs, msg){
+  quiz.questions = qs;
+  // Reset AI flags when quiz is reloaded
+  quiz.questions.forEach(q=>{ delete q.aiFlags; });
+  showEditor();
+  render();
+  renderReadings();
+  say($('status1'), msg, 'ok');
+  $('review').scrollIntoView({behavior:'smooth',block:'start'});
+  scheduleSave();
+}
 
-  let x = `    <item ident="${ident}" title="${esc(title)}">
-      <itemmetadata>
-        <qtimetadata>
-          <qtimetadatafield><fieldlabel>question_type</fieldlabel><fieldentry>${q.type}</fieldentry></qtimetadatafield>
-          <qtimetadatafield><fieldlabel>points_possible</fieldlabel><fieldentry>${(q.points||1).toFixed(1)}</fieldentry></qtimetadatafield>
-          <qtimetadatafield><fieldlabel>assessment_question_identifierref</fieldlabel><fieldentry>${ref}</fieldentry></qtimetadatafield>`;
-  if(isChoice) x += `
-          <qtimetadatafield><fieldlabel>original_answer_ids</fieldlabel><fieldentry>${ids.join(',')}</fieldentry></qtimetadatafield>`;
-  x += `
-        </qtimetadata>
-      </itemmetadata>
-      <presentation>
-        <material>
-          <mattext texttype="text/html">${xmlHtml(q.text)}</mattext>
-        </material>\n`;
+function showEditor(){
+  $('review').classList.remove('hidden');
+  $('readings-step').classList.remove('hidden');
+  $('settings').classList.remove('hidden');
+}
 
-  if(isChoice){
-    const card = q.type === 'multiple_answers_question' ? 'Multiple' : 'Single';
-    x += `        <response_lid ident="response1" rcardinality="${card}">
-          <render_choice>\n`;
-    q.answers.forEach((a, i) => {
-      x += `            <response_label ident="${ids[i]}">
-              <material>
-                <mattext texttype="text/html">${xmlHtml(a.text)}</mattext>
-              </material>
-            </response_label>\n`;
-    });
-    x += `          </render_choice>
-        </response_lid>\n`;
-  } else {
-    x += `        <response_str ident="response1" rcardinality="Single">
-          <render_fib><response_label ident="answer1" rshuffle="No"/></render_fib>
-        </response_str>\n`;
+$('btn-read').onclick = async () => {
+  // Guard against overwriting an unresolved draft
+  if(_pendingDraft){
+    say($('status1'),'Restore or discard your saved draft first (see the bar above).','err');
+    $('restore-bar').scrollIntoView({behavior:'smooth',block:'start'});
+    return;
   }
-  x += `      </presentation>
-      <resprocessing>
-        <outcomes>
-          <decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/>
-        </outcomes>\n`;
+  const raw = $('src').value;
+  if(!raw.trim()) return say($('status1'),'Paste a quiz or upload a file first.','err');
 
-  if(q.rationale && q.rationale.trim()){
-    x += `        <respcondition continue="Yes">
-          <conditionvar><other/></conditionvar>
-          <displayfeedback feedbacktype="Response" linkrefid="general_fb"/>
-        </respcondition>\n`;
-  }
-
-  if(q.type === 'multiple_answers_question'){
-    x += `        <respcondition continue="No">
-          <conditionvar>
-            <and>\n`;
-    correctIds.forEach(id => { x += `              <varequal respident="response1">${id}</varequal>\n`; });
-    wrongIds.forEach(id => { x += `              <not><varequal respident="response1">${id}</varequal></not>\n`; });
-    x += `            </and>
-          </conditionvar>
-          <setvar action="Set" varname="SCORE">100</setvar>
-        </respcondition>\n`;
-  } else if(isChoice){
-    x += `        <respcondition continue="No">
-          <conditionvar>\n`;
-    (correctIds.length ? correctIds : [ids[0]]).forEach(id => {
-      x += `            <varequal respident="response1">${id}</varequal>\n`;
-    });
-    x += `          </conditionvar>
-          <setvar action="Set" varname="SCORE">100</setvar>
-        </respcondition>\n`;
-  } else if(q.type === 'short_answer_question'){
-    x += `        <respcondition continue="No">
-          <conditionvar>\n`;
-    (q.shortAnswers.length ? q.shortAnswers : ['']).forEach(a => {
-      x += `            <varequal respident="response1" case="No">${esc(a)}</varequal>\n`;
-    });
-    x += `          </conditionvar>
-          <setvar action="Set" varname="SCORE">100</setvar>
-        </respcondition>\n`;
-  } else {
-    x += `        <respcondition continue="No">
-          <conditionvar><other/></conditionvar>
-        </respcondition>\n`;
+  // Check for spreadsheet
+  const table = QuizTable.sniff(raw);
+  if(table && !table.hasHeader){ openColumnMapper(table); return; }
+  if(table && table.hasHeader){
+    // Pass through to QtiCore which handles header CSV
   }
 
-  x += `      </resprocessing>\n`;
-  if(q.rationale && q.rationale.trim()) x += feedbackBlock('general_fb', q.rationale);
-  x += `    </item>\n`;
-  return x;
-}
+  let local = [];
+  try{
+    const r = QtiCore.parseQuiz(raw, normOpts());
+    local = r.questions || [];
+    if(localLooksRight(local)){
+      let msg = 'Read in your browser. Found '+local.length+' questions.';
+      if(r.keyFound) msg += ' Separate answer key: '+r.keyApplied+' of '+r.keyFound+' entries matched.';
+      msg += ' Not right? Click "Read it with AI".';
+      finishRead(local, msg);
+      return;
+    }
+  }catch(e){ local=[]; }
+  await runAI(raw, local);
+};
 
-function buildAssessment(qs, cfg, ident){
-  let x = `<?xml version="1.0" encoding="UTF-8"?>
-<questestinterop xmlns="http://www.imsglobal.org/xsd/ims_qtiasiv1p2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/ims_qtiasiv1p2 http://www.imsglobal.org/xsd/ims_qtiasiv1p2p1.xsd">
-  <assessment ident="${ident}" title="${esc(cfg.title)}">
-    <qtimetadata>
-      <qtimetadatafield><fieldlabel>cc_maxattempts</fieldlabel><fieldentry>${cfg.attempts}</fieldentry></qtimetadatafield>
-    </qtimetadata>
-    <section ident="root_section">
-`;
-  qs.forEach((q, i) => { x += buildItem(q, i); });
-  x += `    </section>
-  </assessment>
-</questestinterop>
-`;
-  return x;
-}
+$('btn-ai').onclick = async () => {
+  if(_pendingDraft){
+    say($('status1'),'Restore or discard your saved draft first.','err');
+    return;
+  }
+  const raw = $('src').value;
+  if(!raw.trim()) return say($('status1'),'Paste a quiz or upload a file first.','err');
+  await runAI(raw, null);
+};
 
-function buildMeta(qs, cfg, ident){
-  const pts = qs.reduce((s, q) => s + (q.points || 1), 0);
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<quiz identifier="${ident}" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
-  <title>${esc(cfg.title)}</title>
-  <description></description>
-  <shuffle_answers>${cfg.shuffle}</shuffle_answers>
-  <scoring_policy>keep_highest</scoring_policy>
-  <hide_results></hide_results>
-  <quiz_type>${cfg.type}</quiz_type>
-  <points_possible>${pts.toFixed(1)}</points_possible>
-  <require_lockdown_browser>false</require_lockdown_browser>
-  <require_lockdown_browser_for_results>false</require_lockdown_browser_for_results>
-  <require_lockdown_browser_monitor>false</require_lockdown_browser_monitor>
-  <lockdown_browser_monitor_data/>
-  <show_correct_answers>true</show_correct_answers>
-  <anonymous_submissions>false</anonymous_submissions>
-  <could_be_locked>false</could_be_locked>
-  <allowed_attempts>${cfg.attempts}</allowed_attempts>
-  <one_question_at_a_time>false</one_question_at_a_time>
-  <cant_go_back>false</cant_go_back>
-  <available>false</available>
-  <one_time_results>false</one_time_results>
-  <show_correct_answers_last_attempt>false</show_correct_answers_last_attempt>
-  <only_visible_to_overrides>false</only_visible_to_overrides>
-  <module_locked>false</module_locked>
-</quiz>
-`;
-}
+$('btn-force-mapper').onclick = () => {
+  const raw = $('src').value;
+  if(!raw.trim()) return say($('status1'),'Paste some text first.','err');
+  const table = QuizTable.sniff(raw);
+  if(!table) return say($('status1'),'The text does not look like a spreadsheet (no tabs or consistent columns found).','err');
+  openColumnMapper(table, true);
+};
 
-function buildManifest(ident){
-  return `<?xml version="1.0" encoding="UTF-8"?>
-<manifest identifier="${uid('m')}" xmlns="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1" xmlns:lom="http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource" xmlns:imsmd="http://www.imsglobal.org/xsd/imsmd_v1p2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd">
-  <metadata>
-    <schema>IMS Content</schema>
-    <schemaversion>1.1.3</schemaversion>
-  </metadata>
-  <organizations/>
-  <resources>
-    <resource identifier="${ident}" type="imsqti_xmlv1p2">
-      <file href="${ident}/${ident}.xml"/>
-      <dependency identifierref="${ident}_dependency"/>
-    </resource>
-    <resource identifier="${ident}_dependency" type="associatedcontent/imscc_xmlv1p1/learning-application-resource" href="${ident}/assessment_meta.xml">
-      <file href="${ident}/assessment_meta.xml"/>
-    </resource>
-  </resources>
-</manifest>
-`;
-}
-/* ------------------------------------------------------------------ *
- * AI reader. Talks to the site's shared /api/chat relay.
- * ------------------------------------------------------------------ */
+/* ================================================================== *
+ * AI reader
+ * ================================================================== */
 
 const AI_MODEL      = 'gpt-4.1';
 const AI_MAX_TOKENS = 8000;
-const AI_CHUNK      = 9000;   // characters per request, keeps each call well under the relay's 45s limit
+const AI_CHUNK      = 9000;
 const AI_PARALLEL   = 3;
 const AI_MAX_CHARS  = 120000;
 
 const AI_SYSTEM = `You convert quizzes from any source into JSON for import into Canvas. The source may be plain text, text extracted from a Word document or PDF, rows from a spreadsheet, a Canvas/Respondus/Blackboard CSV export, Aiken format, or GIFT format. Layouts are often messy: numbering may be missing, answers may be in columns, the answer key may be a separate list, tables may have been flattened to one cell per line.
+
+The text field holds the complete question as it appears in the source: any vignette, scenario, dialogue, or case description that comes before the question sentence is part of the stem and must be included in full. Never summarize it or drop it. Rows that came from a spreadsheet may list the stem, a points value, the answer choices, and an explanation separated by tabs. Keep the whole first cell as the stem.
 
 Return ONLY a JSON array. No prose, no markdown fences.
 
@@ -1111,133 +901,185 @@ Rules:
 - Strip list markers ("1.", "Q3:", "a)", "(B)", "*") from text fields. Ignore page numbers, headers, footers, "Name:" lines, and instructions to students.
 - An asterisk, bold marker, "ANS:", "ANSWER:", "Correct:", or a separate answer key marks the correct choice. Apply a separate key to the right question by number.
 - If a key restates the answer text before the explanation, keep only the explanation in "rationale". Use "" when there is no rationale.
-- Spreadsheet rows starting with a type code follow this layout: TYPE, optional title, optional points, question, correct answer number(s), answer 1, answer 2, ..., optional feedback in the last cell. Codes: MC multiple choice, MA/MR multiple answers, TF true/false, ESS/E essay, SA/FIB short answer. The correct answer number is 1-based into the answer list; "1,3" means answers 1 and 3.
-- Spreadsheet rows with a header use the header names to find the question, answers, correct answer, feedback, points, and type columns.
+- Spreadsheet rows starting with a type code follow this layout: TYPE, optional title, optional points, question, correct answer number(s), answer 1, answer 2, ..., optional feedback in the last cell. Codes: MC multiple choice, MA/MR multiple answers, TF true/false, ESS/E essay, SA/FIB short answer.
 - Two choices reading True and False make a true_false_question with answers exactly "True" and "False".
 - More than one correct choice makes a multiple_answers_question.
 - "answers" is empty for essay and short answer items. Accepted responses for short answer go in "shortAnswers".
 - "points" is 1 unless the source states otherwise.
 - Keep questions in source order and include every question in the input.`;
 
+const AI_CHECK_SYSTEM = `You review multiple choice quiz questions for common flaws. Return ONLY a JSON array of objects. No prose, no markdown fences.
+
+Each object: {"index": 0, "flags": ["short sentence describing one problem"]}
+
+Only include items that have a real problem. Leave the array empty if everything is fine.
+
+Problems to look for (use these exact categories as the basis for your flag sentences):
+- The stem gives away the answer
+- More than one option is defensible
+- An option is not parallel with the others in length or grammar
+- The rationale does not match the marked answer
+- The rationale explains a different question than the one asked
+- "All of the above" or "None of the above" is present
+- A true/false item hinges on an absolute word like "always" or "never"
+
+Do NOT rewrite anything. Only flag, do not fix.`;
+
 async function callChat(system, messages, model, maxTokens){
-  const headers = {'content-type': 'application/json'};
-  const code = localStorage.getItem('clientbot_access_code');
-  if(code) headers['x-access-code'] = code;
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 60000);
+  const headers={'content-type':'application/json'};
+  const code=localStorage.getItem('clientbot_access_code');
+  if(code) headers['x-access-code']=code;
+  const ctrl=new AbortController();
+  const timer=setTimeout(()=>ctrl.abort(),60000);
   let res;
   try{
-    res = await fetch('/api/chat', {method:'POST', headers, signal: ctrl.signal,
-      body: JSON.stringify({system, messages, model, max_tokens: maxTokens})});
+    res=await fetch('/api/chat',{method:'POST',headers,signal:ctrl.signal,
+      body:JSON.stringify({system,messages,model,max_tokens:maxTokens})});
   }catch(e){
     clearTimeout(timer);
-    throw new Error(e.name === 'AbortError' ? 'the request timed out.' : 'network error. ' + e.message);
+    throw new Error(e.name==='AbortError'?'the request timed out.':'network error. '+e.message);
   }
   clearTimeout(timer);
-  if(res.status === 401){
-    const entered = prompt('Enter the access code for this tool:');
-    if(entered){ localStorage.setItem('clientbot_access_code', entered); return callChat(system, messages, model, maxTokens); }
+  if(res.status===401){
+    const entered=prompt('Enter the access code for this tool:');
+    if(entered){ localStorage.setItem('clientbot_access_code',entered); return callChat(system,messages,model,maxTokens); }
     throw new Error('an access code is required.');
   }
   let data;
-  try{ data = await res.json(); }catch(e){ throw new Error('the server did not return readable data (status ' + res.status + ').'); }
-  if(!res.ok) throw new Error((data && data.error) || ('status ' + res.status));
-  return (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('\n');
+  try{ data=await res.json(); }catch(e){ throw new Error('the server did not return readable data (status '+res.status+').'); }
+  if(!res.ok) throw new Error((data&&data.error)||('status '+res.status));
+  return (data.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('\n');
 }
 
 function extractArray(t){
-  t = String(t || '').replace(/```(?:json)?/gi, '');
-  const s = t.indexOf('['), e = t.lastIndexOf(']');
-  if(s < 0 || e < s) throw new Error('the AI reply was not in the expected format.');
-  const arr = JSON.parse(t.slice(s, e + 1));
+  t=String(t||'').replace(/```(?:json)?/gi,'');
+  const s=t.indexOf('['),e=t.lastIndexOf(']');
+  if(s<0||e<s) throw new Error('the AI reply was not in the expected format.');
+  const arr=JSON.parse(t.slice(s,e+1));
   if(!Array.isArray(arr)) throw new Error('the AI reply was not a list of questions.');
   return arr;
 }
 
-// Turns a table-shaped source into one readable line per row so the model
-// sees cell boundaries and a chunk never splits a row in half.
 function tableToLines(text){
-  const rows = parseCSV(text);
-  const lines = rows.map(r => r.map(c => String(c == null ? '' : c).replace(/\s+/g, ' ').trim()).join(' | '));
-  const header = rows.length && looksLikeHeader(rows[0]) ? lines[0] : '';
-  return {lines: header ? lines.slice(1) : lines, header};
+  const delim=text.split('\n')[0].includes('\t')?'\t':',';
+  const rows=QuizTable.parseDelimited(text,delim);
+  const lines=rows.map(r=>r.map(c=>String(c==null?'':c).replace(/\s+/g,' ').trim()).join(' | '));
+  const hasH=rows.length&&QuizTable.sniff(text)&&QuizTable.sniff(text).hasHeader;
+  return {lines:hasH?lines.slice(1):lines,header:hasH?lines[0]:''};
 }
 
-// Splits long input at paragraph or line boundaries. A trailing answer key
-// (and a spreadsheet header) is attached to every chunk so nothing loses its context.
 function splitForAI(text){
-  let header = '', key = '', body = text, units;
-  if(csvShaped(text)){
-    const t = tableToLines(text);
-    header = t.header; units = t.lines;
+  const norm=normOpts();
+  const split=QtiCore.splitSource(text,norm);
+  let header='',key=split.keyText||'',body=split.body||text,units;
+  const tbl=QuizTable.sniff(body);
+  if(tbl){
+    const t=tableToLines(body);
+    header=t.header; units=t.lines;
   } else {
-    const lines = text.split('\n');
-    for(let i = 1; i < lines.length; i++){
-      if(RE_KEYHEAD.test(lines[i])){ key = lines.slice(i).join('\n'); body = lines.slice(0, i).join('\n'); break; }
-    }
-    units = body.split(/\n\s*\n/).flatMap(p => p.length > AI_CHUNK ? p.split('\n') : [p]);
+    units=body.split(/\n\s*\n/).flatMap(p=>p.length>AI_CHUNK?p.split('\n'):[p]);
   }
-  const chunks = [];
-  let cur = '';
+  const chunks=[];
+  let cur='';
   for(const u of units){
     if(!u.trim()) continue;
-    if(cur && cur.length + u.length + 2 > AI_CHUNK){ chunks.push(cur); cur = ''; }
-    cur += u + '\n\n';
+    if(cur&&cur.length+u.length+2>AI_CHUNK){ chunks.push(cur); cur=''; }
+    cur+=u+'\n\n';
   }
   if(cur.trim()) chunks.push(cur);
-  return chunks.map(c => (header ? header + '\n' : '') + c.trim() + (key ? '\n\n' + key : ''));
-}
-
-function normalizeAI(q){
-  const TYPES_OK = ['multiple_choice_question','true_false_question','multiple_answers_question','short_answer_question','essay_question'];
-  const strip = t => clean(t || '').replace(/^\s*(?:\d{1,3}[.):]|[a-hA-H][.):]|\(\s*[a-hA-H]\s*\))\s+/, '').trim();
-  const out = {
-    text: strip(q.text),
-    type: TYPES_OK.includes(q.type) ? q.type : 'multiple_choice_question',
-    answers: (Array.isArray(q.answers) ? q.answers : []).map(a => ({text: strip(typeof a === 'string' ? a : a.text), correct: !!(a && a.correct)})).filter(a => a.text),
-    shortAnswers: (Array.isArray(q.shortAnswers) ? q.shortAnswers : []).map(x => clean(x)).filter(Boolean),
-    rationale: clean(q.rationale || ''),
-    points: parseFloat(q.points) || 1,
-    num: null, hinted: true
-  };
-  if(out.type === 'true_false_question'){
-    const wasTrue = out.answers.find(a => /^t/i.test(a.text));
-    const tCorrect = wasTrue ? wasTrue.correct : false;
-    const fCorrect = out.answers.some(a => /^f/i.test(a.text) && a.correct);
-    out.answers = [{text:'True', correct: tCorrect}, {text:'False', correct: fCorrect}];
-  }
-  if(out.type === 'multiple_choice_question' && out.answers.filter(a => a.correct).length > 1) out.type = 'multiple_answers_question';
-  if(['multiple_choice_question','multiple_answers_question'].includes(out.type) && !out.answers.length) out.type = 'essay_question';
-  return out;
+  return {chunks:chunks.map(c=>(header?header+'\n':'')+c.trim()+(key?'\n\n'+key:'')), keyText:key};
 }
 
 async function aiParse(raw, onProgress){
-  const text = clean(raw);
-  if(text.length > AI_MAX_CHARS) throw new Error('that is more text than the reader can take at once (about ' + Math.round(AI_MAX_CHARS/1000) + 'k characters). Split the quiz and run it in parts.');
-  const chunks = splitForAI(text);
-  const results = new Array(chunks.length);
-  let done = 0, next = 0;
-  const worker = async () => {
-    while(next < chunks.length){
-      const i = next++;
-      const reply = await callChat(AI_SYSTEM, [{role:'user', content: 'QUIZ:\n\n' + chunks[i]}], AI_MODEL, AI_MAX_TOKENS);
-      results[i] = extractArray(reply);
+  if(raw.length>AI_MAX_CHARS) throw new Error('that is more text than the reader can take at once (about '+Math.round(AI_MAX_CHARS/1000)+'k characters). Split the quiz and run it in parts.');
+  const norm=normOpts();
+  const {chunks,keyText}=splitForAI(raw);
+  const results=new Array(chunks.length);
+  let done=0,next=0;
+  const worker=async()=>{
+    while(next<chunks.length){
+      const i=next++;
+      const reply=await callChat(AI_SYSTEM,[{role:'user',content:'QUIZ:\n\n'+chunks[i]}],AI_MODEL,AI_MAX_TOKENS);
+      results[i]=extractArray(reply);
       done++;
-      if(onProgress) onProgress(done, chunks.length);
+      if(onProgress) onProgress(done,chunks.length);
     }
   };
-  await Promise.all(Array.from({length: Math.min(AI_PARALLEL, chunks.length)}, worker));
-  return results.flat().map(normalizeAI).filter(q => q.text);
+  await Promise.all(Array.from({length:Math.min(AI_PARALLEL,chunks.length)},worker));
+  const flat=results.flat();
+  let qs=QtiCore.normalizeQuestions(flat,norm);
+  if(keyText.trim()){
+    const r=QtiCore.applyKeyText(qs,keyText,norm);
+    if(r.applied) {} // applied inline
+  }
+  return qs;
 }
 
-/* ------------------------------------------------------------------ *
- * Interface
- * ------------------------------------------------------------------ */
+async function runAI(raw, fallback){
+  setBusy(true);
+  say($('status1'),'Reading your quiz with AI...');
+  try{
+    const qs=await aiParse(raw,(done,total)=>{
+      if(total>1) say($('status1'),'Reading your quiz with AI... part '+done+' of '+total+' done.');
+    });
+    if(!qs.length) throw new Error('the reader found no questions in that text.');
+    const bad=qs.filter(q=>QtiCore.problems(q).length).length;
+    finishRead(qs,'Read with AI. Found '+qs.length+' questions.'+(bad?' '+bad+' need a look before you export.':'')+' Check the wording and keys below.');
+  }catch(err){
+    if(fallback&&fallback.length){
+      finishRead(fallback,'The AI reader failed: '+err.message+' Showing the browser read instead. Check it carefully.');
+      say($('status1'),'The AI reader failed: '+err.message+' Showing the browser read instead. Check it carefully.','err');
+    }else{
+      say($('status1'),'The AI reader failed: '+err.message,'err');
+    }
+  }finally{
+    setBusy(false);
+  }
+}
 
-let QS = [];
+/* ================================================================== *
+ * "Check my questions" AI
+ * ================================================================== */
 
-const $ = id => document.getElementById(id);
-const TYPES = [
+$('btn-check-ai').onclick = async () => {
+  if(!quiz.questions.length) return;
+  say($('status-check'),'Checking your questions with AI...');
+  $('btn-check-ai').disabled=true;
+  try{
+    const payload=quiz.questions.map((q,i)=>({
+      index:i,
+      stem:q.text,
+      options:(q.answers||[]).map(a=>a.text),
+      correct:(q.answers||[]).map((a,j)=>a.correct?j:-1).filter(j=>j>=0),
+      rationale:q.rationale||''
+    }));
+    const reply=await callChat(AI_CHECK_SYSTEM,
+      [{role:'user',content:'QUESTIONS:\n\n'+JSON.stringify(payload)}],
+      AI_MODEL,4000);
+    const flags=extractArray(reply);
+    // Clear old flags
+    quiz.questions.forEach(q=>{ q.aiFlags=[]; });
+    let total=0;
+    flags.forEach(f=>{
+      if(f.index!=null&&quiz.questions[f.index]&&Array.isArray(f.flags)){
+        quiz.questions[f.index].aiFlags=(quiz.questions[f.index].aiFlags||[]).concat(f.flags);
+        total+=f.flags.length;
+      }
+    });
+    render();
+    say($('status-check'),total?total+' potential issue'+(total===1?'':'s')+' flagged. See amber notes below.':'No issues found — looking good!',total?'':'ok');
+  }catch(err){
+    say($('status-check'),'AI check failed: '+err.message,'err');
+  }finally{
+    $('btn-check-ai').disabled=false;
+  }
+};
+
+/* ================================================================== *
+ * Render questions
+ * ================================================================== */
+
+const TYPES=[
   ['multiple_choice_question','Multiple choice'],
   ['true_false_question','True / false'],
   ['multiple_answers_question','Multiple answers'],
@@ -1245,7 +1087,7 @@ const TYPES = [
   ['essay_question','Essay']
 ];
 
-const EXAMPLE = `1. A client mentions during intake that faith has been important to her since her diagnosis. The social worker wants to follow up in a way consistent with how spirituality is defined in the biopsychosocial-spiritual model. Which question fits best?
+const EXAMPLE=`1. A client mentions during intake that faith has been important to her since her diagnosis. The social worker wants to follow up in a way consistent with how spirituality is defined in the biopsychosocial-spiritual model. Which question fits best?
 a) Whether she attends services at a congregation regularly
 b) What she holds sacred and how she protects it
 c) Whether she believes a higher power is guiding her recovery
@@ -1272,299 +1114,685 @@ Answer Key
 4. B - Ambivalence is normal and expected, and holding both sides at once is what separates it from a lack of motivation.
 `;
 
-function say(el, msg, kind){
-  el.textContent = msg;
-  el.className = 'status' + (kind ? ' ' + kind : '');
-}
-
-$('tab-paste').onclick = () => switchTab(true);
-$('tab-file').onclick  = () => switchTab(false);
-function switchTab(paste){
-  $('tab-paste').setAttribute('aria-selected', paste);
-  $('tab-file').setAttribute('aria-selected', !paste);
-  $('pane-paste').classList.toggle('hidden', !paste);
-  $('pane-file').classList.toggle('hidden', paste);
-}
-
-$('btn-example').onclick = () => {
-  $('src').value = EXAMPLE;
-  $('qtitle').value = 'Example Quiz';
-  switchTab(true);
-  say($('status1'), 'Example loaded. Click "Read my quiz" to see what it does with a separate answer key.');
-};
-
-$('drop').onclick = () => $('file').click();
-$('drop').onkeydown = e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); $('file').click(); } };
-$('drop').ondragover = e => { e.preventDefault(); $('drop').classList.add('over'); };
-$('drop').ondragleave = () => $('drop').classList.remove('over');
-$('drop').ondrop = e => {
-  e.preventDefault();
-  $('drop').classList.remove('over');
-  if(e.dataTransfer.files[0]) takeFile(e.dataTransfer.files[0]);
-};
-$('file').onchange = e => { if(e.target.files[0]) takeFile(e.target.files[0]); };
-
-async function takeFile(f){
-  say($('status1'), 'Reading ' + f.name + '...');
-  try{
-    const txt = await loadFile(f);
-    $('src').value = txt;
-    if(!$('qtitle').value || $('qtitle').value === 'Imported Quiz')
-      $('qtitle').value = f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim() || 'Imported Quiz';
-    switchTab(true);
-    say($('status1'), 'Read ' + f.name + '. Check the text above, then click "Read my quiz".', 'ok');
-  }catch(err){
-    say($('status1'), 'Could not read that file. ' + err.message, 'err');
-  }
-}
-
-// Is the browser-side read trustworthy enough to show without the AI?
-// Every item numbered, no problems, and no item that silently became an essay
-// or short answer because the parser found nothing better to do with it.
-function localLooksRight(qs){
-  if(!qs || !qs.length) return false;
-  if(qs.some(q => q.num == null)) return false;
-  if(qs.some(q => problems(q).length)) return false;
-  if(qs.some(q => (q.type === 'essay_question' || q.type === 'short_answer_question') && !q.hinted)) return false;
-  return true;
-}
-
-function setBusy(b){
-  $('btn-read').disabled = b; $('btn-ai').disabled = b;
-}
-
-function showResult(msg){
-  render();
-  say($('status1'), msg, 'ok');
-  $('review').scrollIntoView({behavior:'smooth', block:'start'});
-}
-
-$('btn-read').onclick = async () => {
-  const raw = $('src').value;
-  if(!raw.trim()) return say($('status1'), 'Paste a quiz or upload a file first.', 'err');
-  let local = [];
-  try{ local = parseText(raw); }catch(e){ local = []; }
-  if(localLooksRight(local)){
-    QS = local;
-    let msg = 'Read in your browser. Found ' + QS.length + ' questions.';
-    if(parseText.keyFound)
-      msg += ' Separate answer key: ' + parseText.keyApplied + ' of ' + parseText.keyFound + ' entries matched.';
-    msg += ' Not right? Click "Read it with AI".';
-    showResult(msg);
-    return;
-  }
-  await runAI(raw, local);
-};
-
-$('btn-ai').onclick = async () => {
-  const raw = $('src').value;
-  if(!raw.trim()) return say($('status1'), 'Paste a quiz or upload a file first.', 'err');
-  await runAI(raw, null);
-};
-
-async function runAI(raw, fallback){
-  setBusy(true);
-  say($('status1'), 'Reading your quiz with AI...');
-  try{
-    QS = await aiParse(raw, (done, total) => {
-      if(total > 1) say($('status1'), 'Reading your quiz with AI... part ' + done + ' of ' + total + ' done.');
-    });
-    if(!QS.length) throw new Error('the reader found no questions in that text.');
-    const bad = QS.filter(q => problems(q).length).length;
-    showResult('Read with AI. Found ' + QS.length + ' questions.' + (bad ? ' ' + bad + ' need a look before you export.' : '') + ' Check the wording and keys below.');
-  }catch(err){
-    if(fallback && fallback.length){
-      QS = fallback;
-      render();
-      say($('status1'), 'The AI reader failed: ' + err.message + ' Showing the browser read instead. Check it carefully.', 'err');
-      $('review').scrollIntoView({behavior:'smooth', block:'start'});
-    } else {
-      say($('status1'), 'The AI reader failed: ' + err.message, 'err');
-    }
-  }finally{
-    setBusy(false);
-  }
-}
-
-function problems(q){
-  const p = [];
-  const needsKey = ['multiple_choice_question','true_false_question','multiple_answers_question'].includes(q.type);
-  if(needsKey && !q.answers.length) p.push('No answer choices found.');
-  if(needsKey && q.answers.length && !q.answers.some(a => a.correct)) p.push('No correct answer marked. Click a circle to set one.');
-  if(q.type === 'multiple_choice_question' && q.answers.filter(a=>a.correct).length > 1)
-    p.push('More than one answer is marked. Switch the type to multiple answers.');
-  if(q.type === 'short_answer_question' && !q.shortAnswers.length) p.push('No accepted answer text.');
-  return p;
-}
-
 function autoGrow(el){
-  el.style.height = 'auto';
-  el.style.height = (el.scrollHeight + 2) + 'px';
+  el.style.height='auto';
+  el.style.height=(el.scrollHeight+2)+'px';
 }
 
 function render(){
-  $('review').classList.remove('hidden');
-  $('settings').classList.remove('hidden');
-  const list = $('qlist');
-  list.innerHTML = '';
+  const list=$('qlist');
+  list.innerHTML='';
 
-  QS.forEach((q, i) => {
-    const probs = problems(q);
-    const box = document.createElement('div');
-    box.className = 'q' + (probs.length ? ' bad' : '');
+  quiz.questions.forEach((q,i)=>{
+    const probs=QtiCore.problems(q);
+    const box=document.createElement('div');
+    box.className='q'+(probs.length?' bad':'');
 
-    const head = document.createElement('div');
-    head.className = 'q-head';
-    const num = document.createElement('span');
-    num.className = 'q-num'; num.textContent = (i+1) + '.';
+    // Head row: num | stem textarea | tools
+    const head=document.createElement('div');
+    head.className='q-head';
+
+    const num=document.createElement('span');
+    num.className='q-num'; num.textContent=(i+1)+'.';
     head.appendChild(num);
 
-    const ta = document.createElement('textarea');
-    ta.className = 'q-text'; ta.rows = 1; ta.value = q.text;
-    ta.setAttribute('aria-label', 'Question ' + (i+1) + ' text');
-    ta.oninput = () => { q.text = ta.value; autoGrow(ta); };
+    const ta=document.createElement('textarea');
+    ta.className='q-text'; ta.rows=1; ta.value=q.text;
+    ta.setAttribute('aria-label','Question '+(i+1)+' text');
+    ta.oninput=()=>{ q.text=ta.value; autoGrow(ta); scheduleSave(); };
+    ta.onkeydown=e=>{ if(e.key==='ArrowUp'&&(e.altKey||e.metaKey)&&!e.shiftKey){ e.preventDefault(); moveQuestion(i,-1); } if(e.key==='ArrowDown'&&(e.altKey||e.metaKey)&&!e.shiftKey){ e.preventDefault(); moveQuestion(i,1); } };
     head.appendChild(ta);
 
-    const tools = document.createElement('div');
-    tools.className = 'q-tools';
-    const sel = document.createElement('select');
-    sel.setAttribute('aria-label', 'Question type');
-    TYPES.forEach(([v, l]) => {
-      const o = document.createElement('option');
-      o.value = v; o.textContent = l; if(q.type === v) o.selected = true;
+    const tools=document.createElement('div');
+    tools.className='q-tools';
+
+    // Move buttons
+    const upBtn=document.createElement('button');
+    upBtn.className='move-btn'; upBtn.textContent='↑'; upBtn.title='Move up';
+    upBtn.disabled=(i===0);
+    upBtn.onclick=()=>moveQuestion(i,-1);
+    const dnBtn=document.createElement('button');
+    dnBtn.className='move-btn'; dnBtn.textContent='↓'; dnBtn.title='Move down';
+    dnBtn.disabled=(i===quiz.questions.length-1);
+    dnBtn.onclick=()=>moveQuestion(i,1);
+    tools.append(upBtn,dnBtn);
+
+    const sel=document.createElement('select');
+    sel.setAttribute('aria-label','Question type');
+    TYPES.forEach(([v,l])=>{
+      const o=document.createElement('option');
+      o.value=v; o.textContent=l; if(q.type===v) o.selected=true;
       sel.appendChild(o);
     });
-    sel.onchange = () => { q.type = sel.value; render(); };
-    const pts = document.createElement('input');
-    pts.type = 'number'; pts.min = '0'; pts.step = '0.5'; pts.value = q.points;
-    pts.title = 'Points'; pts.setAttribute('aria-label', 'Points');
-    pts.oninput = () => { q.points = parseFloat(pts.value) || 0; };
-    const del = document.createElement('button');
-    del.className = 'mini'; del.textContent = 'Remove';
-    del.onclick = () => { QS.splice(i,1); render(); };
-    tools.append(sel, pts, del);
+    sel.onchange=()=>{ q.type=sel.value; render(); scheduleSave(); };
+
+    const pts=document.createElement('input');
+    pts.type='number'; pts.min='0'; pts.step='0.5'; pts.value=q.points;
+    pts.title='Points'; pts.setAttribute('aria-label','Points');
+    pts.oninput=()=>{ q.points=parseFloat(pts.value)||0; scheduleSave(); };
+
+    const del=document.createElement('button');
+    del.className='mini'; del.textContent='Remove';
+    del.onclick=()=>{ quiz.questions.splice(i,1); render(); scheduleSave(); };
+
+    tools.append(sel,pts,del);
     head.appendChild(tools);
     box.appendChild(head);
 
-    const isChoice = ['multiple_choice_question','true_false_question','multiple_answers_question'].includes(q.type);
+    const isChoice=QtiCore.CHOICE_TYPES.includes(q.type);
     if(isChoice){
-      const multi = q.type === 'multiple_answers_question';
-      q.answers.forEach((a, j) => {
-        const row = document.createElement('div');
-        row.className = 'ans' + (a.correct ? ' is-correct' : '');
-        const inp = document.createElement('input');
-        inp.type = multi ? 'checkbox' : 'radio';
-        inp.name = 'k' + i; inp.checked = a.correct;
-        inp.setAttribute('aria-label', 'Mark as correct');
-        inp.onchange = () => {
-          if(multi) a.correct = inp.checked;
-          else q.answers.forEach((x, k) => x.correct = (k === j));
-          render();
+      const multi=q.type==='multiple_answers_question';
+      q.answers.forEach((a,j)=>{
+        const row=document.createElement('div');
+        row.className='ans'+(a.correct?' is-correct':'');
+        const inp=document.createElement('input');
+        inp.type=multi?'checkbox':'radio';
+        inp.name='k'+i; inp.checked=a.correct;
+        inp.setAttribute('aria-label','Mark as correct');
+        inp.onchange=()=>{
+          if(multi) a.correct=inp.checked;
+          else q.answers.forEach((x,k)=>x.correct=(k===j));
+          render(); scheduleSave();
         };
-        const at = document.createElement('textarea');
-        at.rows = 1; at.value = a.text; at.style.flex = '1';
-        at.setAttribute('aria-label', 'Answer choice');
-        at.oninput = () => { a.text = at.value; autoGrow(at); };
-        const rm = document.createElement('button');
-        rm.className = 'mini'; rm.textContent = '\u00d7'; rm.title = 'Remove this choice';
-        rm.onclick = () => { q.answers.splice(j,1); render(); };
-        row.append(inp, at, rm);
+        const at=document.createElement('textarea');
+        at.rows=1; at.value=a.text; at.style.flex='1';
+        at.setAttribute('aria-label','Answer choice');
+        at.oninput=()=>{ a.text=at.value; autoGrow(at); scheduleSave(); };
+        at.onkeydown=e=>{
+          if(e.key==='Enter'&&!e.shiftKey&&j===q.answers.length-1){
+            e.preventDefault();
+            q.answers.push({text:'',correct:false});
+            render(); scheduleSave();
+            // Focus new answer
+            setTimeout(()=>{
+              const rows=box.querySelectorAll('.ans textarea');
+              if(rows[j+1]) rows[j+1].focus();
+            },0);
+          }
+        };
+        const rm=document.createElement('button');
+        rm.className='mini'; rm.textContent='×'; rm.title='Remove this choice';
+        rm.onclick=()=>{ q.answers.splice(j,1); render(); scheduleSave(); };
+        row.append(inp,at,rm);
         box.appendChild(row);
       });
-      const add = document.createElement('button');
-      add.className = 'mini'; add.textContent = '+ answer';
-      add.style.marginLeft = '32px'; add.style.marginTop = '5px';
-      add.onclick = () => { q.answers.push({text:'', correct:false}); render(); };
+      const add=document.createElement('button');
+      add.className='mini'; add.textContent='+ answer';
+      add.style.marginLeft='32px'; add.style.marginTop='5px';
+      add.onclick=()=>{ q.answers.push({text:'',correct:false}); render(); scheduleSave(); };
       box.appendChild(add);
-    } else if(q.type === 'short_answer_question'){
-      const row = document.createElement('div');
-      row.className = 'rat';
-      const lab = document.createElement('span'); lab.textContent = 'Accepted';
-      const sa = document.createElement('textarea');
-      sa.rows = 1; sa.style.flex = '1';
-      sa.value = q.shortAnswers.join(' | ');
-      sa.placeholder = 'Separate alternatives with |';
-      sa.setAttribute('aria-label', 'Accepted answers');
-      sa.oninput = () => { q.shortAnswers = sa.value.split('|').map(s=>s.trim()).filter(Boolean); autoGrow(sa); };
-      row.append(lab, sa);
+    } else if(q.type==='short_answer_question'){
+      const row=document.createElement('div');
+      row.className='rat';
+      const lab=document.createElement('span'); lab.textContent='Accepted';
+      const sa=document.createElement('textarea');
+      sa.rows=1; sa.style.flex='1';
+      sa.value=q.shortAnswers.join(' | ');
+      sa.placeholder='Separate alternatives with |';
+      sa.setAttribute('aria-label','Accepted answers');
+      sa.oninput=()=>{ q.shortAnswers=sa.value.split('|').map(s=>s.trim()).filter(Boolean); autoGrow(sa); scheduleSave(); };
+      row.append(lab,sa);
       box.appendChild(row);
     }
 
-    const rr = document.createElement('div');
-    rr.className = 'rat';
-    const rlab = document.createElement('span'); rlab.textContent = 'Rationale';
-    const rt = document.createElement('textarea');
-    rt.rows = 1; rt.style.flex = '1'; rt.value = q.rationale;
-    rt.placeholder = 'Shown to students after they submit';
-    rt.setAttribute('aria-label', 'Rationale');
-    rt.oninput = () => { q.rationale = rt.value; autoGrow(rt); };
-    rr.append(rlab, rt);
+    // Rationale
+    const rr=document.createElement('div');
+    rr.className='rat';
+    const rlab=document.createElement('span'); rlab.textContent='Rationale';
+    const rt=document.createElement('textarea');
+    rt.rows=1; rt.style.flex='1'; rt.value=q.rationale;
+    rt.placeholder='Shown to students after they submit';
+    rt.setAttribute('aria-label','Rationale');
+    rt.oninput=()=>{ q.rationale=rt.value; autoGrow(rt); scheduleSave(); };
+    rr.append(rlab,rt);
     box.appendChild(rr);
 
-    probs.forEach(p => {
-      const w = document.createElement('div');
-      w.className = 'warnline'; w.textContent = p;
+    // Source ("Where to find it")
+    const sr=document.createElement('div');
+    sr.className='src';
+    const slab=document.createElement('span');
+    slab.className='src-label'; slab.textContent='Where to find it';
+    sr.appendChild(slab);
+    // Readings select (if any readings defined)
+    if(quiz.readings.length){
+      const rsel=document.createElement('select');
+      rsel.setAttribute('aria-label','Reading');
+      const none=document.createElement('option');
+      none.value=''; none.textContent='—';
+      rsel.appendChild(none);
+      quiz.readings.forEach(r=>{
+        const o=document.createElement('option');
+        o.value=r.id; o.textContent=r.short||r.id;
+        if(q.readingId===r.id) o.selected=true;
+        rsel.appendChild(o);
+      });
+      rsel.onchange=()=>{
+        q.readingId=rsel.value||undefined;
+        if(rsel.value&&!srcTa.value.trim()){
+          const reading=quiz.readings.find(r=>r.id===rsel.value);
+          if(reading) srcTa.value=(reading.short||'')+', pp. ';
+          autoGrow(srcTa);
+        }
+        scheduleSave();
+      };
+      sr.appendChild(rsel);
+    }
+    const srcTa=document.createElement('textarea');
+    srcTa.rows=1; srcTa.style.flex='1';
+    srcTa.value=q.source||'';
+    srcTa.placeholder='e.g. Martin, pp. 924–925';
+    srcTa.setAttribute('aria-label','Source');
+    srcTa.oninput=()=>{ q.source=srcTa.value; autoGrow(srcTa); scheduleSave(); };
+    sr.appendChild(srcTa);
+    box.appendChild(sr);
+
+    // Problem lines
+    probs.forEach(p=>{
+      const w=document.createElement('div');
+      w.className='warnline'; w.textContent=p;
       box.appendChild(w);
     });
 
+    // AI flag lines
+    if(q.aiFlags&&q.aiFlags.length){
+      q.aiFlags.forEach((flag,fi)=>{
+        const fl=document.createElement('div');
+        fl.className='flagline';
+        const txt=document.createElement('span');
+        txt.textContent='AI: '+flag;
+        txt.style.flex='1';
+        const dismiss=document.createElement('button');
+        dismiss.textContent='Dismiss';
+        dismiss.onclick=()=>{ q.aiFlags.splice(fi,1); render(); };
+        fl.append(txt,dismiss);
+        box.appendChild(fl);
+      });
+    }
+
     list.appendChild(box);
-    // Size every textarea only after the card is in the document; a detached
-    // element measures a scrollHeight of 0 and would collapse to 2px tall.
     box.querySelectorAll('textarea').forEach(autoGrow);
   });
 
-  const bad = QS.filter(q => problems(q).length).length;
-  const pts = QS.reduce((s,q) => s + (q.points||0), 0);
-  const kinds = {};
-  QS.forEach(q => kinds[q.type] = (kinds[q.type]||0) + 1);
-  const kindText = TYPES.filter(([v]) => kinds[v]).map(([v,l]) => kinds[v] + ' ' + l.toLowerCase()).join(', ');
-  $('summary').innerHTML =
-    '<span><b>' + QS.length + '</b> questions</span>' +
-    '<span><b>' + pts + '</b> points</span>' +
-    (kindText ? '<span>' + kindText + '</span>' : '') +
-    (bad ? '<span style="color:var(--warn)"><b>' + bad + '</b> need attention</span>' : '');
+  // Summary
+  const bad=quiz.questions.filter(q=>QtiCore.problems(q).length).length;
+  const pts=quiz.questions.reduce((s,q)=>s+(q.points||0),0);
+  const kinds={};
+  quiz.questions.forEach(q=>kinds[q.type]=(kinds[q.type]||0)+1);
+  const kindText=TYPES.filter(([v])=>kinds[v]).map(([v,l])=>kinds[v]+' '+l.toLowerCase()).join(', ');
+  $('summary').innerHTML=
+    '<span><b>'+quiz.questions.length+'</b> questions</span>'+
+    '<span><b>'+pts+'</b> points</span>'+
+    (kindText?'<span>'+kindText+'</span>':'')+
+    (bad?'<span style="color:var(--warn)"><b>'+bad+'</b> need attention</span>':'');
 }
 
-// Re-fit every editable box when the window changes size (phone rotation,
-// a resized window), since the height is only computed on render and input.
-window.addEventListener('resize', () => {
+function moveQuestion(i, dir){
+  const j=i+dir;
+  if(j<0||j>=quiz.questions.length) return;
+  const tmp=quiz.questions[i];
+  quiz.questions[i]=quiz.questions[j];
+  quiz.questions[j]=tmp;
+  render(); scheduleSave();
+}
+
+window.addEventListener('resize',()=>{
   document.querySelectorAll('#qlist textarea').forEach(autoGrow);
 });
 
-function config(){
-  return {
-    title: $('qtitle').value.trim() || 'Imported Quiz',
-    type: $('qtype').value,
-    shuffle: $('qshuffle').value,
-    attempts: parseInt($('qattempts').value) || 1
-  };
+/* ================================================================== *
+ * Shuffle
+ * ================================================================== */
+
+$('btn-shuffle').onclick = () => {
+  if(!quiz.questions.length) return;
+  const res=QuizShuffle.shuffleAnswers(quiz.questions);
+  render(); scheduleSave();
+  if(!res.changed){ say($('status-check'),'Nothing to shuffle (no multiple choice questions, or fewer than 2 answers each).',''); return; }
+  const counts=res.counts;
+  const summary=Object.keys(counts).sort((a,b)=>+a-+b)
+    .map(p=>'abcdefgh'[p]+': '+counts[p]).join(', ');
+  say($('status-check'),'Shuffled '+res.changed+' question'+(res.changed===1?'':'s')+'. Correct answers now at: '+summary+'.');
+};
+
+/* ================================================================== *
+ * Readings panel
+ * ================================================================== */
+
+function newReadingId(){
+  const h='abcdef0123456789';
+  let s='r';
+  for(let i=0;i<6;i++) s+=h[Math.floor(Math.random()*16)];
+  return s;
 }
 
-$('btn-build').onclick = async () => {
-  if(!QS.length) return say($('status2'), 'Nothing to build yet.', 'err');
-  const bad = QS.filter(q => problems(q).length).length;
-  if(bad && !confirm(bad + ' question(s) still need attention. Build the file anyway?')) return;
+function renderReadings(){
+  const list=$('readings-list');
+  list.innerHTML='';
 
-  const cfg = config();
-  const ident = uid('g');
+  quiz.readings.forEach((r,i)=>{
+    const row=document.createElement('div');
+    row.className='reading-row';
+
+    const shortInp=document.createElement('input');
+    shortInp.className='reading-short';
+    shortInp.value=r.short||'';
+    shortInp.placeholder='Short name';
+    shortInp.setAttribute('aria-label','Short name');
+    shortInp.oninput=()=>{ r.short=shortInp.value; scheduleSave(); };
+
+    const citeTa=document.createElement('textarea');
+    citeTa.className='reading-citation';
+    citeTa.value=r.citation||'';
+    citeTa.placeholder='Full citation';
+    citeTa.setAttribute('aria-label','Citation');
+    citeTa.oninput=()=>{
+      r.citation=citeTa.value;
+      // Auto-fill short name from first word of citation if short is still empty
+      if(!r.short&&r.citation){
+        const first=r.citation.trim().split(/[\s,]/)[0];
+        if(first){ r.short=first; shortInp.value=first; }
+      }
+      autoGrow(citeTa); scheduleSave();
+    };
+
+    const rmBtn=document.createElement('button');
+    rmBtn.className='mini'; rmBtn.textContent='Remove';
+    rmBtn.onclick=()=>{
+      quiz.readings.splice(i,1);
+      // Remove readingId from questions pointing to this reading
+      quiz.questions.forEach(q=>{ if(q.readingId===r.id) delete q.readingId; });
+      renderReadings(); render(); scheduleSave();
+    };
+
+    row.append(shortInp,citeTa,rmBtn);
+    list.appendChild(row);
+    autoGrow(citeTa);
+  });
+
+  // Badge count
+  const badge=$('readings-badge');
+  if(quiz.readings.length){
+    badge.textContent=quiz.readings.length;
+    badge.style.display='';
+    $('readings-details').open=true;
+  } else {
+    badge.style.display='none';
+    $('readings-details').open=false;
+  }
+}
+
+$('btn-add-reading').onclick = () => {
+  quiz.readings.push({id:newReadingId(), short:'', citation:'', pdf:null});
+  renderReadings(); render(); scheduleSave();
+  // Open the details if closed
+  $('readings-details').open=true;
+};
+
+/* ================================================================== *
+ * Settings binding
+ * ================================================================== */
+
+['qtitle','qtype','qshuffle','qattempts'].forEach(id=>{
+  $(id).addEventListener('input',()=>{ syncSettingsFromInputs(); scheduleSave(); });
+  $(id).addEventListener('change',()=>{ syncSettingsFromInputs(); scheduleSave(); });
+});
+
+/* ================================================================== *
+ * Example
+ * ================================================================== */
+
+$('btn-example').onclick = () => {
+  $('src').value=EXAMPLE;
+  $('qtitle').value='Example Quiz';
+  switchTab(true);
+  say($('status1'),'Example loaded. Click "Read my quiz" to see what it does with a separate answer key.');
+};
+
+/* ================================================================== *
+ * File tab and drop
+ * ================================================================== */
+
+$('tab-paste').onclick=()=>switchTab(true);
+$('tab-file').onclick=()=>switchTab(false);
+function switchTab(paste){
+  $('tab-paste').setAttribute('aria-selected',paste);
+  $('tab-file').setAttribute('aria-selected',!paste);
+  $('pane-paste').classList.toggle('hidden',!paste);
+  $('pane-file').classList.toggle('hidden',paste);
+}
+
+$('drop').onclick=()=>$('file').click();
+$('drop').onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); $('file').click(); } };
+$('drop').ondragover=e=>{ e.preventDefault(); $('drop').classList.add('over'); };
+$('drop').ondragleave=()=>$('drop').classList.remove('over');
+$('drop').ondrop=e=>{ e.preventDefault(); $('drop').classList.remove('over'); if(e.dataTransfer.files[0]) takeFile(e.dataTransfer.files[0]); };
+$('file').onchange=e=>{ if(e.target.files[0]) takeFile(e.target.files[0]); };
+
+async function takeFile(f){
+  // .quiz.json → open as quiz file
+  if(f.name.toLowerCase().endsWith('.json')){ await openQuizFile(f); return; }
+  say($('status1'),'Reading '+f.name+'...');
   try{
-    const zip = new JSZip();
-    zip.file('imsmanifest.xml', buildManifest(ident));
-    const f = zip.folder(ident);
-    f.file(ident + '.xml', buildAssessment(QS, cfg, ident));
-    f.file('assessment_meta.xml', buildMeta(QS, cfg, ident));
-    const blob = await zip.generateAsync({type:'blob', mimeType:'application/zip'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = cfg.title.replace(/[^\w\s-]/g,'').replace(/\s+/g,'_').slice(0,60) + '_QTI.zip';
-    document.body.appendChild(a); a.click(); a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 4000);
-    say($('status2'), 'Downloaded. Keep it zipped. Import steps are below.', 'ok');
+    const txt=await loadFile(f);
+    $('src').value=txt;
+    if(!$('qtitle').value||$('qtitle').value==='Imported Quiz')
+      $('qtitle').value=f.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ').trim()||'Imported Quiz';
+    switchTab(true);
+    say($('status1'),'Read '+f.name+'. Check the text above, then click "Read my quiz".','ok');
   }catch(err){
-    say($('status2'), 'Build failed: ' + err.message, 'err');
+    say($('status1'),'Could not read that file. '+err.message,'err');
+  }
+}
+
+/* ================================================================== *
+ * Export: Canvas QTI
+ * ================================================================== */
+
+$('btn-build').onclick = async () => {
+  if(!quiz.questions.length) return say($('status2'),'Nothing to build yet.','err');
+  syncSettingsFromInputs();
+  const bad=quiz.questions.filter(q=>QtiCore.problems(q).length).length;
+  if(bad&&!confirm(bad+' question(s) still need attention. Build the file anyway?')) return;
+  try{
+    const pkg=QtiCore.buildPackage(quiz.questions,{
+      title:quiz.title,
+      type:quiz.settings.type,
+      shuffle:quiz.settings.shuffle,
+      attempts:quiz.settings.attempts,
+      ident:quiz.ident
+    });
+    const zip=new JSZip();
+    Object.entries(pkg.files).forEach(([path,content])=>zip.file(path,content));
+    const blob=await zip.generateAsync({type:'blob',mimeType:'application/zip'});
+    download(blob, toFilename(quiz.title)+'_QTI.zip');
+    say($('status2'),'Downloaded. Keep it zipped. Import steps are below.','ok');
+  }catch(err){
+    say($('status2'),'Build failed: '+err.message,'err');
   }
 };
+
+/* ================================================================== *
+ * Export: Printable quiz and answer key (PDF via print dialog)
+ * ================================================================== */
+
+function printHtml(html){
+  const w=window.open('','_blank');
+  if(!w){ alert('Pop-up blocked. Allow pop-ups for this site to print.'); return; }
+  w.document.write(html);
+  w.document.close();
+  // Wait for fonts before printing
+  w.document.fonts.ready.then(()=>{ w.focus(); w.print(); });
+}
+
+$('btn-print-quiz').onclick = () => {
+  if(!quiz.questions.length) return say($('status2'),'Nothing to print yet.','err');
+  syncSettingsFromInputs();
+  printHtml(QuizPaper.buildQuizHtml(quiz));
+};
+
+$('btn-print-key').onclick = () => {
+  if(!quiz.questions.length) return say($('status2'),'Nothing to print yet.','err');
+  syncSettingsFromInputs();
+  printHtml(QuizPaper.buildKeyHtml(quiz));
+};
+
+/* ================================================================== *
+ * Export: Word document (.docx)
+ * ================================================================== */
+
+$('btn-docx').onclick = () => {
+  if(!quiz.questions.length) return say($('status2'),'Nothing to export yet.','err');
+  $('docx-dialog-overlay').classList.remove('hidden');
+};
+$('docx-cancel').onclick = () => $('docx-dialog-overlay').classList.add('hidden');
+$('docx-export').onclick = async () => {
+  say($('docx-status'),'Building…');
+  $('docx-export').disabled=true;
+  try{
+    syncSettingsFromInputs();
+    const includeKey=$('docx-include-key').checked;
+    const blob=await buildDocx(quiz,includeKey);
+    download(blob, toFilename(quiz.title)+'.docx');
+    $('docx-dialog-overlay').classList.add('hidden');
+    say($('status2'),'Word document downloaded.','ok');
+  }catch(err){
+    say($('docx-status'),'Failed: '+err.message,'err');
+  }finally{
+    $('docx-export').disabled=false;
+  }
+};
+
+async function buildDocx(quiz, includeKey){
+  if(typeof docx==='undefined') throw new Error('Word export library not loaded. Check your internet connection and reload the page.');
+  const {Document,Paragraph,TextRun,PageBreak,Packer,AlignmentType}=docx;
+  const FONT='Calibri';
+  const LETTERS='abcdefghijklmnopqrstuvwxyz';
+
+  function titlePara(text){
+    return new Paragraph({
+      children:[new TextRun({text,bold:true,color:'000000',size:32,font:FONT})],
+      spacing:{after:120}
+    });
+  }
+  function namePara(){
+    return new Paragraph({
+      children:[new TextRun({text:'Name: _______________________________________',size:22,font:FONT})],
+      spacing:{after:80}
+    });
+  }
+  function qPara(text){
+    return new Paragraph({
+      children:[new TextRun({text,size:24,font:FONT})],
+      spacing:{before:280,after:60},
+      keepNext:true,keepLines:true
+    });
+  }
+  function ansPara(text,isLast){
+    return new Paragraph({
+      children:[new TextRun({text,size:24,font:FONT})],
+      indent:{left:480},
+      spacing:{after:40},
+      keepNext:!isLast
+    });
+  }
+  function blankPara(){
+    return new Paragraph({
+      children:[new TextRun({text:'',size:24,font:FONT})],
+      border:{bottom:{color:'000000',space:1,value:'single',size:6}},
+      indent:{left:480},
+      spacing:{after:280}
+    });
+  }
+  function keyHeadPara(text){
+    return new Paragraph({
+      children:[new TextRun({text,bold:true,size:24,font:FONT})],
+      spacing:{before:180,after:40},
+      keepLines:true
+    });
+  }
+  function keyRatPara(text){
+    return new Paragraph({
+      children:[new TextRun({text,size:24,font:FONT,color:'444444'})],
+      spacing:{after:60}
+    });
+  }
+
+  const CHOICE_TYPES_SET=new Set(['multiple_choice_question','true_false_question','multiple_answers_question']);
+  const pageProps={
+    page:{
+      size:{width:12240,height:15840},
+      margin:{top:1440,right:1440,bottom:1440,left:1440}
+    }
+  };
+
+  // Quiz section children
+  const quizChildren=[
+    titlePara(quiz.title||'Quiz'),
+    namePara()
+  ];
+  quiz.questions.forEach((q,i)=>{
+    let stem=String(q.text||'');
+    if(q.type==='multiple_answers_question'&&!/select all/i.test(stem)) stem+=' (Select all that apply.)';
+    quizChildren.push(qPara((i+1)+'. '+stem));
+    if(CHOICE_TYPES_SET.has(q.type)){
+      (q.answers||[]).forEach((a,j)=>{
+        quizChildren.push(ansPara(LETTERS[j]+'. '+a.text, j===q.answers.length-1));
+      });
+    } else {
+      const n=q.type==='essay_question'?6:1;
+      for(let k=0;k<n;k++) quizChildren.push(blankPara());
+    }
+  });
+
+  const sections=[{properties:pageProps, children:quizChildren}];
+
+  if(includeKey){
+    const keyTitle=QuizPaper.keyTitle(quiz.title);
+    const positions=QuizPaper.answerPositions(quiz.questions);
+    const keyChildren=[
+      titlePara(keyTitle),
+      new Paragraph({children:[new TextRun({text:'Instructor copy. Do not distribute with the quiz.',size:22,font:FONT,color:'444444'})],spacing:{after:60}}),
+    ];
+    if(positions){
+      keyChildren.push(new Paragraph({children:[new TextRun({text:'Answer positions: '+positions,size:22,font:FONT,color:'444444'})],spacing:{after:120}}));
+    }
+    quiz.questions.forEach((q,i)=>{
+      let line;
+      if(CHOICE_TYPES_SET.has(q.type)){
+        const hits=(q.answers||[]).map((a,j)=>a.correct?j:-1).filter(j=>j>=0);
+        line=!hits.length?(i+1)+'. No correct answer marked.'
+          :(i+1)+'. '+hits.map(j=>LETTERS[j]).join(', ')+'. '+hits.map(j=>(q.answers[j]||{}).text||'').join('; ');
+      } else if(q.type==='short_answer_question'){
+        line=(i+1)+'. '+(q.shortAnswers&&q.shortAnswers.length?q.shortAnswers.join(' | '):'No accepted answer text.');
+      } else { line=(i+1)+'. Essay'; }
+      keyChildren.push(keyHeadPara(line));
+      if(q.rationale&&q.rationale.trim()) keyChildren.push(keyRatPara(q.rationale));
+      if(q.source&&q.source.trim()) keyChildren.push(keyRatPara('Where to find it: '+q.source));
+    });
+    sections.push({
+      properties:{type:docx.SectionType?docx.SectionType.NEXT_PAGE:'nextPage', ...pageProps},
+      children:keyChildren
+    });
+  }
+
+  const doc=new Document({sections});
+  return Packer.toBlob(doc);
+}
+
+/* ================================================================== *
+ * Export: Plain text
+ * ================================================================== */
+
+function buildPlainText(withKey){
+  const lines=[];
+  const LETTERS='abcdefgh';
+  quiz.questions.forEach((q,i)=>{
+    let stem=q.text||'';
+    if(q.type==='multiple_answers_question'&&!/select all/i.test(stem)) stem+=' [multiple answers]';
+    else if(q.type==='short_answer_question') stem+=' [short answer]';
+    else if(q.type==='essay_question') stem+=' [essay]';
+    lines.push((i+1)+'. '+stem);
+    (q.answers||[]).forEach((a,j)=>{
+      const mark=(withKey&&a.correct)?'*':'';
+      lines.push(mark+LETTERS[j]+') '+a.text);
+    });
+    if(q.type==='short_answer_question'&&q.shortAnswers&&q.shortAnswers.length){
+      if(withKey) lines.push('ANS: '+q.shortAnswers.join(' | '));
+    }
+    if(withKey&&q.rationale&&q.rationale.trim()) lines.push('Rationale: '+q.rationale);
+    lines.push('');
+  });
+  return lines.join('\n');
+}
+
+$('btn-txt-key').onclick = () => {
+  if(!quiz.questions.length) return say($('status2'),'Nothing to export yet.','err');
+  syncSettingsFromInputs();
+  const txt=buildPlainText(true);
+  download(new Blob([txt],{type:'text/plain'}), toFilename(quiz.title)+'.txt');
+  say($('status2'),'Plain text (with key) downloaded.','ok');
+};
+$('btn-txt-student').onclick = () => {
+  if(!quiz.questions.length) return say($('status2'),'Nothing to export yet.','err');
+  syncSettingsFromInputs();
+  const txt=buildPlainText(false);
+  download(new Blob([txt],{type:'text/plain'}), toFilename(quiz.title)+'_student.txt');
+  say($('status2'),'Plain text (student copy) downloaded.','ok');
+};
+
+/* ================================================================== *
+ * Export: Study page (HTML)
+ * ================================================================== */
+
+$('btn-review-page').onclick = () => {
+  if(!quiz.questions.length) return say($('status2'),'Nothing to export yet.','err');
+  syncSettingsFromInputs();
+  $('review-heading').value=quiz.review&&quiz.review.heading?quiz.review.heading:(quiz.title||'');
+  $('review-tagline').value=quiz.review&&quiz.review.tagline?quiz.review.tagline:'';
+  say($('review-status'),'');
+  $('review-dialog-overlay').classList.remove('hidden');
+  $('review-heading').focus();
+};
+$('review-cancel').onclick=()=>$('review-dialog-overlay').classList.add('hidden');
+$('review-export').onclick=()=>{
+  const heading=($('review-heading').value||'').trim();
+  if(!heading){ say($('review-status'),'Enter a heading (e.g. "Week 2").','err'); return; }
+  const tagline=($('review-tagline').value||'').trim();
+  syncSettingsFromInputs();
+  // Save heading/tagline back to quiz
+  quiz.review=quiz.review||{};
+  quiz.review.heading=heading;
+  quiz.review.tagline=tagline;
+  const result=QuizReview.buildPage(quiz,{heading,tagline,standalone:true});
+  const fname=toFilename(heading)+'_review.html';
+  download(new Blob([result.html],{type:'text/html'}), fname);
+  $('review-dialog-overlay').classList.add('hidden');
+  let msg='Study page downloaded.';
+  if(result.skipped) msg+=' '+result.skipped+' short answer/essay item'+(result.skipped===1?' was':' were')+' skipped.';
+  say($('status2'),msg,'ok');
+  scheduleSave();
+};
+
+/* ================================================================== *
+ * Save and open quiz file (.quiz.json)
+ * ================================================================== */
+
+$('btn-save-file').onclick = () => {
+  if(!quiz.questions.length) return say($('status2'),'Nothing to save yet.','err');
+  syncSettingsFromInputs();
+  quiz.updatedAt=new Date().toISOString();
+  const json=JSON.stringify(quiz,null,2);
+  download(new Blob([json],{type:'application/json'}), toFilename(quiz.title)+'.quiz.json');
+  clearDraft();
+  say($('status2'),'Quiz file saved. Open it here any time to continue editing.','ok');
+};
+
+$('btn-open-file').onclick=()=>$('file-open').click();
+$('file-open').onchange=async e=>{
+  if(e.target.files[0]) await openQuizFile(e.target.files[0]);
+  e.target.value='';
+};
+
+async function openQuizFile(f){
+  say($('status1'),'Opening '+f.name+'...');
+  try{
+    const txt=await readTextSmart(f);
+    const obj=JSON.parse(txt);
+    if(!obj||!Array.isArray(obj.questions)) throw new Error('Not a valid quiz file (missing questions array).');
+    loadQuizObject(obj);
+    clearDraft();
+    say($('status1'),'Opened "'+((obj.title)||f.name.replace(/\.quiz\.json$/,''))+'": '+obj.questions.length+' questions.','ok');
+  }catch(err){
+    say($('status1'),'Could not open that file. '+err.message,'err');
+  }
+}
+
+/* ================================================================== *
+ * Init
+ * ================================================================== */
+
+checkDraft();
+
 </script>
 </body>
 </html>
