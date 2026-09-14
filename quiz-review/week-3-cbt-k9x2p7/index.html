@@ -512,17 +512,6 @@
       why.appendChild(body);
     }
 
-    if (q.source) {
-      var src = document.createElement('span');
-      src.className = 'source';
-      var srcLabel = document.createElement('b');
-      srcLabel.textContent = 'Where to find it';
-      var srcBody = document.createElement('span');
-      srcBody.textContent = q.source;
-      src.appendChild(srcLabel);
-      src.appendChild(srcBody);
-      why.appendChild(src);
-    }
 
     why.classList.add('show');
 
