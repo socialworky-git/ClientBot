@@ -137,11 +137,11 @@
     },
     {
       "id": "dd-16",
-      "setup": "A client whose teenager has started driving",
-      "quote": "Something is going to happen. It's only a matter of time.",
+      "setup": "A client who was passed over for a promotion last year",
+      "quote": "I'm not going to get it. I already know how this ends.",
       "answer": "Fortune telling",
       "others": ["Catastrophizing", "Should statements"],
-      "why": "A prediction stated as certainty, with no chain of escalating consequences. Catastrophizing would spell the disaster out and treat it as unbearable."
+      "why": "A specific future outcome is stated as already known and settled, closing off the question before it is examined. There is no cascade of consequences — just the prediction itself, treated as fact."
     },
     {
       "id": "dd-17",
@@ -154,10 +154,10 @@
     {
       "id": "dd-18",
       "setup": "A social work intern before a supervision meeting",
-      "quote": "If this goes badly, I'll be pulled from the placement and I'll never get licensed.",
+      "quote": "If this goes badly, I'll be put on a performance plan, which means I'll be pulled from the placement, and then no program will take me after that.",
       "answer": "Catastrophizing",
       "others": ["Fortune telling", "All-or-nothing thinking"],
-      "why": "One difficult meeting escalates to never being licensed. The tell is the chain, where each step is presented as the inevitable result of the one before."
+      "why": "One difficult meeting triggers a chain of escalating consequences, each presented as automatically following the last. Fortune telling would stop at a single predicted outcome; here every step is a new threshold crossed on the way to something worse."
     },
     {
       "id": "dd-19",
@@ -188,8 +188,8 @@
       "setup": "A client in their first semester of a graduate program",
       "quote": "I feel like a fraud in there, which tells me I don't belong.",
       "answer": "Emotional reasoning",
-      "others": ["Labeling", "Mind reading"],
-      "why": "The feeling is read as information about reality. Labeling would stop at the identity claim; here the client draws a further conclusion from the feeling itself."
+      "others": ["Mind reading", "Mental filter"],
+      "why": "The feeling is read as information about reality — the emotion itself is the evidence. Mind reading would be a claim about what classmates currently think; mental filter would mean fixating on one negative moment while the rest fades."
     },
     {
       "id": "dd-23",
