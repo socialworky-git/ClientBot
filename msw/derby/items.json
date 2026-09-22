@@ -1,0 +1,259 @@
+{
+  "activityId": "distortion-derby",
+  "version": "2026-09-draft-1",
+  "categories": [
+    "All-or-nothing thinking",
+    "Overgeneralization",
+    "Mental filter",
+    "Discounting the positive",
+    "Mind reading",
+    "Fortune telling",
+    "Catastrophizing",
+    "Emotional reasoning",
+    "Should statements",
+    "Labeling",
+    "Personalization"
+  ],
+  "items": [
+    {
+      "id": "dd-01",
+      "setup": "A client two weeks into a new exercise routine",
+      "quote": "I skipped Tuesday, so the whole month is blown. I might as well stop.",
+      "answer": "All-or-nothing thinking",
+      "others": ["Fortune telling", "Discounting the positive"],
+      "why": "One missed day puts the entire month in the failure category. Nothing partial is available, only intact or ruined."
+    },
+    {
+      "id": "dd-02",
+      "setup": "A client describing a first date",
+      "quote": "Either he's the one or the whole evening was a waste.",
+      "answer": "All-or-nothing thinking",
+      "others": ["Catastrophizing", "Emotional reasoning"],
+      "why": "Two categories with nothing between them. An evening that was pleasant but not life-changing has nowhere to land."
+    },
+    {
+      "id": "dd-03",
+      "setup": "A graduate student after a group presentation",
+      "quote": "I stumbled on one slide. Either you can present or you can't, and clearly I can't.",
+      "answer": "All-or-nothing thinking",
+      "others": ["Labeling", "Mental filter"],
+      "why": "The client names two fixed categories and sorts into one. Labeling would stop at the identity claim; here the either/or structure is what produces it."
+    },
+    {
+      "id": "dd-04",
+      "setup": "A client after a second unsuccessful job interview",
+      "quote": "That's twice now. I never get past a first interview.",
+      "answer": "Overgeneralization",
+      "others": ["Fortune telling", "Discounting the positive"],
+      "why": "Two instances become never. The tell is an absolute quantifier resting on a very small sample."
+    },
+    {
+      "id": "dd-05",
+      "setup": "A client whose neighbor did not wave back",
+      "quote": "Nobody in this building has any interest in knowing me.",
+      "answer": "Overgeneralization",
+      "others": ["Mind reading", "Personalization"],
+      "why": "One non-event expands to everyone in the building. Mind reading would be a claim about what the neighbor was thinking; this is a claim about how many people feel it."
+    },
+    {
+      "id": "dd-06",
+      "setup": "A client describing their marriage after an argument",
+      "quote": "Every conversation we have turns into this.",
+      "answer": "Overgeneralization",
+      "others": ["Mental filter", "Should statements"],
+      "why": "Every does the work. A mental filter would mean the client is only noticing the arguments; here they assert there is nothing else to notice."
+    },
+    {
+      "id": "dd-07",
+      "setup": "A client describing four days with extended family",
+      "quote": "Four days together and all I can think about is the twenty minutes my brother and I argued.",
+      "answer": "Mental filter",
+      "others": ["Discounting the positive", "Catastrophizing"],
+      "why": "The negative twenty minutes crowds out the other four days. Discounting the positive would mean explaining the good days away; here they simply drop out of view."
+    },
+    {
+      "id": "dd-08",
+      "setup": "A client reviewing written feedback on a paper",
+      "quote": "There were three positives and one criticism. I've read the criticism nine times.",
+      "answer": "Mental filter",
+      "others": ["Should statements", "Labeling"],
+      "why": "Attention keeps returning to the single negative item while the three positives go unread. The ratio the client reports is the giveaway."
+    },
+    {
+      "id": "dd-09",
+      "setup": "A client who received a thank-you card from someone they helped",
+      "quote": "Anyone would have gotten a card. It doesn't mean I did anything for her.",
+      "answer": "Discounting the positive",
+      "others": ["Mind reading", "All-or-nothing thinking"],
+      "why": "The evidence is admitted and then neutralized, so it cannot update the client's view of their own competence."
+    },
+    {
+      "id": "dd-10",
+      "setup": "A client praised by name in a staff meeting",
+      "quote": "My supervisor has to say things like that. It's her job.",
+      "answer": "Discounting the positive",
+      "others": ["Mind reading", "Personalization"],
+      "why": "The praise is reframed as an obligation rather than a judgment, which strips its value as evidence."
+    },
+    {
+      "id": "dd-11",
+      "setup": "A client whose friend has not replied in two days",
+      "quote": "She's annoyed with me. I can tell.",
+      "answer": "Mind reading",
+      "others": ["Fortune telling", "Emotional reasoning"],
+      "why": "A specific mental state is attributed to another person and treated as known. Fortune telling would predict an event rather than report someone's present thoughts."
+    },
+    {
+      "id": "dd-12",
+      "setup": "A client describing an interview panel",
+      "quote": "The one on the left had already decided against me before I sat down.",
+      "answer": "Mind reading",
+      "others": ["Personalization", "Catastrophizing"],
+      "why": "The interviewer's private conclusion is reported as fact, with no evidence offered for it."
+    },
+    {
+      "id": "dd-13",
+      "setup": "A client after a family gathering",
+      "quote": "They were all thinking I'd put on weight. Nobody said it, but they were thinking it.",
+      "answer": "Mind reading",
+      "others": ["Overgeneralization", "Mental filter"],
+      "why": "The client notes the absence of evidence out loud and keeps the conclusion anyway, which is the clearest form of this one."
+    },
+    {
+      "id": "dd-14",
+      "setup": "A client considering a return to school",
+      "quote": "I'd drop out by October. I know how it would go.",
+      "answer": "Fortune telling",
+      "others": ["Overgeneralization", "Emotional reasoning"],
+      "why": "A future outcome is stated as already known, then used to close the question before it is examined."
+    },
+    {
+      "id": "dd-15",
+      "setup": "A client invited to a friend's wedding",
+      "quote": "I'll stand in the corner all night and nobody will talk to me.",
+      "answer": "Fortune telling",
+      "others": ["Mind reading", "All-or-nothing thinking"],
+      "why": "The client narrates an event that has not happened. Mind reading would be a claim about what the other guests currently think of them."
+    },
+    {
+      "id": "dd-16",
+      "setup": "A client whose teenager has started driving",
+      "quote": "Something is going to happen. It's only a matter of time.",
+      "answer": "Fortune telling",
+      "others": ["Catastrophizing", "Should statements"],
+      "why": "A prediction stated as certainty, with no chain of escalating consequences. Catastrophizing would spell the disaster out and treat it as unbearable."
+    },
+    {
+      "id": "dd-17",
+      "setup": "A client who found an unexplained charge on a credit card",
+      "quote": "If this is fraud, they'll drain the account, we'll miss rent, and we'll be out by the first.",
+      "answer": "Catastrophizing",
+      "others": ["Fortune telling", "Personalization"],
+      "why": "A chain of escalating consequences is built from one uncertain event, each link treated as automatically following the last."
+    },
+    {
+      "id": "dd-18",
+      "setup": "A social work intern before a supervision meeting",
+      "quote": "If this goes badly, I'll be pulled from the placement and I'll never get licensed.",
+      "answer": "Catastrophizing",
+      "others": ["Fortune telling", "All-or-nothing thinking"],
+      "why": "One difficult meeting escalates to never being licensed. The tell is the chain, where each step is presented as the inevitable result of the one before."
+    },
+    {
+      "id": "dd-19",
+      "setup": "A client whose car made an unfamiliar noise",
+      "quote": "It's the transmission. That's four thousand dollars, which means no car, which means I lose the job.",
+      "answer": "Catastrophizing",
+      "others": ["Fortune telling", "Discounting the positive"],
+      "why": "One sound becomes a cascade ending in job loss, with no step along the way treated as uncertain."
+    },
+    {
+      "id": "dd-20",
+      "setup": "A client describing a decision they made at work",
+      "quote": "It feels like the wrong call, so it was the wrong call.",
+      "answer": "Emotional reasoning",
+      "others": ["Should statements", "All-or-nothing thinking"],
+      "why": "The feeling is the only evidence offered, and it is treated as settling a question of fact."
+    },
+    {
+      "id": "dd-21",
+      "setup": "A client asked to lead a project at work",
+      "quote": "I'm terrified, and you don't get that scared about something you can actually do.",
+      "answer": "Emotional reasoning",
+      "others": ["Fortune telling", "Discounting the positive"],
+      "why": "Fear is converted into evidence of incapacity. The emotion does the work a fact would normally have to do."
+    },
+    {
+      "id": "dd-22",
+      "setup": "A client in their first semester of a graduate program",
+      "quote": "I feel like a fraud in there, which tells me I don't belong.",
+      "answer": "Emotional reasoning",
+      "others": ["Labeling", "Mind reading"],
+      "why": "The feeling is read as information about reality. Labeling would stop at the identity claim; here the client draws a further conclusion from the feeling itself."
+    },
+    {
+      "id": "dd-23",
+      "setup": "A client three weeks after their mother's funeral",
+      "quote": "I ought to be functioning by now.",
+      "answer": "Should statements",
+      "others": ["Discounting the positive", "Emotional reasoning"],
+      "why": "A rule about the correct pace of grief is applied to the client's own experience, and the gap becomes a personal shortcoming."
+    },
+    {
+      "id": "dd-24",
+      "setup": "A client describing their role as the oldest sibling",
+      "quote": "I'm supposed to hold this family together. That's the job.",
+      "answer": "Should statements",
+      "others": ["Personalization", "Labeling"],
+      "why": "An unexamined obligation is stated as fact. Personalization would assign blame for an outcome; here the client is naming a standing duty."
+    },
+    {
+      "id": "dd-25",
+      "setup": "A client whose adult daughter rarely calls",
+      "quote": "A daughter should call her mother. That is how it works.",
+      "answer": "Should statements",
+      "others": ["Overgeneralization", "Mind reading"],
+      "why": "A rule about how another person must behave, with the distress arising from the violation rather than from the event itself."
+    },
+    {
+      "id": "dd-26",
+      "setup": "A client who forgot a coworker's name",
+      "quote": "I'm just an idiot. That's all there is to it.",
+      "answer": "Labeling",
+      "others": ["All-or-nothing thinking", "Emotional reasoning"],
+      "why": "A single lapse becomes a fixed global identity. The move is from a thing that happened to a noun about the self."
+    },
+    {
+      "id": "dd-27",
+      "setup": "A client describing a former partner",
+      "quote": "He's a narcissist. That explains all of it.",
+      "answer": "Labeling",
+      "others": ["Overgeneralization", "Mind reading"],
+      "why": "A person is reduced to a category that then substitutes for explanation. This one applies to other people as readily as to the self."
+    },
+    {
+      "id": "dd-28",
+      "setup": "A client who cried during a work presentation",
+      "quote": "Now I'm the weak one in that office.",
+      "answer": "Labeling",
+      "others": ["Mind reading", "Fortune telling"],
+      "why": "One moment becomes a permanent identity. Mind reading would be a claim about what coworkers currently think; this is a claim about who the client now is."
+    },
+    {
+      "id": "dd-29",
+      "setup": "A client whose team lost a long-standing contract",
+      "quote": "If I had caught that error, we'd still have them.",
+      "answer": "Personalization",
+      "others": ["Should statements", "Catastrophizing"],
+      "why": "Sole responsibility is taken for a multi-causal outcome, with everyone else's contribution absent from the account."
+    },
+    {
+      "id": "dd-30",
+      "setup": "A parent whose child is struggling in school",
+      "quote": "This is on me. I should have read to her more when she was little.",
+      "answer": "Personalization",
+      "others": ["Should statements", "Overgeneralization"],
+      "why": "The client names themselves as the cause of an outcome with many contributors. The should clause is the mechanism; the causal claim is the distortion."
+    }
+  ]
+}
