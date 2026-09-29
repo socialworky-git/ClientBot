@@ -171,6 +171,14 @@
     <div id="status2"></div>
   </div>
 
+  <!-- EXTRA EXCHANGE ZONE -->
+  <div id="extraZone" style="display:none">
+    <div id="toSummaryRow" class="row" style="margin-top:20px">
+      <button class="btn" id="addExtraBtn" onclick="addExtraExchange()">One more exchange with Jamie</button>
+      <button class="btnout" id="toSummaryBtn" onclick="toSummary()">Move to summary</button>
+    </div>
+  </div>
+
   <!-- STEP 3 -->
   <div id="step3" style="display:none">
     <div class="step">
@@ -215,13 +223,13 @@ const LINES=[
 ];
 const CONTENT=[LINES[1],LINES[2]];
 
-const REPLY_SYSTEM=`You play Jamie, a client in a social work training tool, and you also give the learner one brief, plain piece of feedback.
+const REPLY_SYSTEM=`You play Jamie, a client in a social work training tool, and you also give the learner brief coaching feedback.
 
 Jamie: 41, uses she/her, recently separated, raising two young kids while working full time, exhausted and pulling away from people, here because her doctor was concerned about how worn down she seemed. Jamie speaks plainly and a little guardedly. Jamie has not mentioned suicide and will not raise it unprompted; Jamie's words stay at the level of exhaustion, isolation, and hopelessness, never an explicit statement about wanting to die.
 
 You are given the conversation so far, the learner's latest reflection, and the content Jamie should convey next. Write Jamie's next line so it conveys that content but also responds naturally to the learner's reflection: if the reflection landed and felt understanding, Jamie opens up a little more; if it missed, Jamie still goes on but feels slightly less understood. Keep it to one to three sentences, first person, in Jamie's voice, she/her.
 
-Then write the learner ONE brief, matter-of-fact note (one or two plain sentences, no padding) describing how well their reflection captured the meaning behind Jamie's statement and reflected the pain or suffering to build empathy.
+Then write exactly two sentences of coaching feedback: what landed in the reflection, then the one thing to add or deepen. Always write as a coach observing the exchange. Refer to Jamie in the third person -- never write as Jamie or in Jamie's voice in the feedback. Do not use em dashes anywhere in your response.
 
 Respond with ONLY valid JSON, no code fences: {"jamie":"...","feedback":"..."}`;
 
@@ -232,10 +240,7 @@ The learner has just delivered a conversational suicide screening: a summary, a 
 - If it was thin or rushed, or the question was vague or euphemistic, Jamie answers more reserved and cautious, deflecting or minimizing.
 Keep Jamie's reply to one to three sentences, first person, she/her, in character. Candor here means more honesty about the depth of the pain and loneliness, not a detailed disclosure of plans.
 
-Then write brief, matter-of-fact feedback (plain and concise) covering:
-- the summary statement: did it gather Jamie's meaning so she felt heard;
-- the screening question: the main point is whether it used clear, unambiguous language that names suicide directly (for example "thoughts of suicide" or "killing yourself") rather than a vague euphemism (for example "hurt yourself" or "do something"); if they used a euphemism, point it out plainly.
-Only mention the linking phrase if it was missing or clearly skipped.
+Then write exactly two sentences of coaching feedback covering: first, whether the summary gathered Jamie's meaning so she felt heard; second, whether the screening question used clear, unambiguous language that names suicide directly (for example "thoughts of suicide" or "killing yourself") rather than a vague euphemism (for example "hurt yourself" or "do something") -- if a euphemism was used, name it plainly. Only mention the linking phrase if it was missing or clearly skipped. Always write as a coach observing the exchange. Refer to Jamie in the third person -- never write as Jamie or in Jamie's voice in the feedback. Do not use em dashes anywhere in your response.
 
 Respond with ONLY valid JSON, no code fences: {"jamie":"...","feedback":"..."}`;
 
@@ -248,6 +253,8 @@ function setStatus(id,t){document.getElementById(id).innerHTML=t?('<div class="s
 function noteHTML(label,text){return '<div class="note-fb"><b>'+esc(label)+'</b>'+esc(text)+'</div>';}
 
 let stmt2="",stmt3="";
+let extraCount=0;
+const extraExchanges=[];
 
 async function callChat(system,msgs,model,maxTokens){
   const headers={"content-type":"application/json"};
@@ -276,6 +283,7 @@ function extractJSON(t){const s=t.indexOf("{"),e=t.lastIndexOf("}");if(s<0||e<0)
 function convoText(upto){
   let t="[Jamie]: "+LINES[0]+"\n[Learner reflection]: "+val("c1");
   if(upto>=2) t+="\n[Jamie]: "+stmt2+"\n[Learner reflection]: "+val("c2");
+  for(const x of extraExchanges) t+="\n[Jamie]: "+x.jamie+"\n[Learner reflection]: "+x.learner;
   if(upto>=3) t+="\n[Jamie]: "+stmt3;
   return t;
 }
@@ -308,6 +316,16 @@ async function send1(){
   document.getElementById("fb1").innerHTML=noteHTML("On your reflection",r.feedback);
   setStatus("status1","");reveal("step2");
 }
+const EXTRA_SYSTEM=`You play Jamie, a client in a social work training tool, and you also give the learner brief coaching feedback.
+
+Jamie: 41, uses she/her, recently separated, raising two young kids while working full time, exhausted and pulling away from people, here because her doctor was concerned. Jamie speaks plainly and a little guardedly. Jamie has not mentioned suicide and will not raise it unprompted; Jamie's words stay at the level of exhaustion, isolation, and hopelessness.
+
+The learner has chosen to stay in the conversation a little longer. Write Jamie's reply to the learner's reflection -- stay consistent with the story, respond naturally to what was reflected, and keep the same tone and depth as the rest of the conversation. Do not introduce new plot points or advance toward suicidal disclosure. Keep it to one to three sentences, first person, she/her.
+
+Then write exactly two sentences of coaching feedback: what landed in the reflection, then the one thing to add or deepen. Always write as a coach observing the exchange. Refer to Jamie in the third person -- never write as Jamie or in Jamie's voice in the feedback. Do not use em dashes anywhere in your response.
+
+Respond with ONLY valid JSON, no code fences: {"jamie":"...","feedback":"..."}`;
+
 async function send2(){
   if(!val("c2")){setNudge("nudge2","Add your reflection before sending.");return;}
   setNudge("nudge2","");
@@ -315,8 +333,64 @@ async function send2(){
   const r=await replyTurn(convoText(2),CONTENT[1]);
   stmt3=r.jamie;document.getElementById("stmt3").textContent=stmt3;
   document.getElementById("fb2").innerHTML=noteHTML("On your reflection",r.feedback);
-  setStatus("status2","");reveal("step3");
+  setStatus("status2","");
+  reveal("extraZone");
 }
+
+function addExtraExchange(){
+  if(extraCount>=2) return;
+  extraCount++;
+  const zone=document.getElementById("extraZone");
+  const idx=extraCount;
+  const div=document.createElement("div");
+  div.id="extra"+idx;
+  div.innerHTML=`<div class="step" style="margin-top:20px">
+    <div class="client"><div class="who">Jamie</div><span id="extJamie${idx}"></span></div>
+    <div class="prompt">Your reflection</div>
+    <textarea id="extC${idx}"></textarea><div class="pmirror" data-for="extC${idx}"></div>
+  </div>
+  <div id="extFb${idx}"></div>
+  <div class="nudge" id="extNudge${idx}"></div>
+  <div class="row" id="extRow${idx}">
+    <button class="btn" id="extSend${idx}" onclick="sendExtra(${idx})">Send reflection</button>
+  </div>
+  <div id="extStatus${idx}"></div>`;
+  zone.insertBefore(div,document.getElementById("toSummaryRow"));
+  const prevJamie=idx===1?stmt3:extraExchanges[extraExchanges.length-1].jamie;
+  document.getElementById("extJamie"+idx).textContent=prevJamie;
+  document.getElementById("addExtraBtn").disabled=(extraCount>=2);
+  div.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+async function sendExtra(idx){
+  const cid="extC"+idx;
+  const v=document.getElementById(cid)?document.getElementById(cid).value.trim():"";
+  if(!v){document.getElementById("extNudge"+idx).textContent="Add your reflection before sending.";return;}
+  document.getElementById("extNudge"+idx).textContent="";
+  document.getElementById("extSend"+idx).disabled=true;
+  document.getElementById("extStatus"+idx).innerHTML='<div class="status">Jamie is responding...</div>';
+  const convo=convoText(2);
+  let prevExchange="";
+  for(const x of extraExchanges) prevExchange+="\n[Jamie]: "+x.jamie+"\n[Learner reflection]: "+x.learner;
+  try{
+    const raw=await callChat(EXTRA_SYSTEM,[{role:"user",content:"Conversation so far:\n"+convo+prevExchange+"\n\nLearner's latest reflection: \""+v+"\"\n\nGive Jamie's next line and the brief feedback."}],MODEL,350);
+    const p=extractJSON(raw);
+    extraExchanges.push({jamie:p.jamie||"",learner:v});
+    document.getElementById("extStatus"+idx).innerHTML="";
+    document.getElementById("extFb"+idx).innerHTML=noteHTML("On your reflection",p.feedback||"");
+    document.getElementById("extRow"+idx).innerHTML="";
+    if(extraCount<2){
+      document.getElementById("addExtraBtn").disabled=false;
+    }
+  }catch(e){
+    extraExchanges.push({jamie:"",learner:v});
+    document.getElementById("extStatus"+idx).innerHTML="";
+    document.getElementById("extFb"+idx).innerHTML=noteHTML("On your reflection","(The feedback couldn't load this time, but you can keep going.)");
+    document.getElementById("extRow"+idx).innerHTML="";
+  }
+}
+
+function toSummary(){reveal("step3");}
 async function send3(){
   if(!val("screen")){setNudge("nudge3","Add your screening question before sending.");return;}
   setNudge("nudge3","");
