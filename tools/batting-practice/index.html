@@ -89,13 +89,6 @@
     padding:8px 14px;margin-top:12px;font-size:13px;color:var(--heroMuted);display:flex;gap:6px;align-items:center;}
   .pitcher-strip .ps-name{font-weight:700;color:var(--ink);}
 
-  /* Pitch box */
-  .pitch{background:#EEF1F4;border:1px solid #D5DDE5;border-left:3px solid #3E4A57;border-radius:10px;
-    padding:14px 16px;font-size:16px;color:#26313C;margin-top:16px;}
-  .pitch .who{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:#3E4A57;margin-bottom:4px;}
-  .pitch.show{animation:pitchin .5s ease;}
-  @keyframes pitchin{0%{transform:translateY(-12px) scale(.97);opacity:0}100%{transform:none;opacity:1}}
-
   /* History toggle */
   .history-toggle{font-size:12px;color:var(--muted);cursor:pointer;margin-top:6px;display:inline-block;user-select:none;}
   .history-toggle:hover{color:var(--accentDeep);}
@@ -104,24 +97,18 @@
   .history-box .he{margin-bottom:6px;} .history-box .he:last-child{margin-bottom:0;}
   .history-box .hl{font-weight:700;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--accentDeep);}
 
-  /* Speed bonus */
-  .cdwrap{height:14px;background:#e4e4e7;border-radius:8px;margin-top:12px;position:relative;}
-  .cdbar{height:100%;width:100%;background:linear-gradient(90deg,var(--accent),var(--accentDeep));border-radius:8px;position:relative;}
-  .cdball{position:absolute;right:-7px;top:50%;font-size:17px;line-height:1;animation:spin .9s linear infinite;}
-  @keyframes spin{from{transform:translateY(-50%) rotate(0)}to{transform:translateY(-50%) rotate(360deg)}}
-  .cdlabel{font-size:11px;color:var(--muted);margin-top:5px;}
-
   textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;font-size:15px;
     font-family:var(--sans);background:#fff;color:var(--ink);outline:none;resize:vertical;min-height:56px;margin-top:12px;}
   textarea:focus{border-color:var(--accent);}
   .tip{font-size:11.5px;color:var(--muted);margin-top:5px;}
 
-  /* Call + result */
-  .call{text-align:center;font-size:30px;font-weight:800;letter-spacing:1px;margin:30px 0 10px;}
-  .call.show{animation:pop .55s cubic-bezier(.2,.7,.3,1.2);}
-  @keyframes pop{0%{transform:scale(.5);opacity:0}40%{transform:scale(1.22);opacity:1}100%{transform:scale(1);opacity:1}}
-  .call .gain{display:block;font-size:14px;font-weight:700;color:var(--muted);letter-spacing:0;margin-top:8px;}
+  /* Result area (rationale + client reply; call pill is drawn by scene) */
   .fb{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14.5px;margin-top:6px;}
+  .pitch{background:#EEF1F4;border:1px solid #D5DDE5;border-left:3px solid #3E4A57;border-radius:10px;
+    padding:14px 16px;font-size:16px;color:#26313C;margin-top:16px;}
+  .pitch .who{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:#3E4A57;margin-bottom:4px;}
+  .pitch.show{animation:pitchin .5s ease;}
+  @keyframes pitchin{0%{transform:translateY(-12px) scale(.97);opacity:0}100%{transform:none;opacity:1}}
   .err{color:var(--accentDeep);font-size:13px;margin-top:8px;}
   .status{font-size:13px;font-style:italic;color:var(--accentDeep);margin-top:8px;}
 
@@ -180,7 +167,7 @@
         <li><span class="pill p-hr">Home run</span> Complex reflection that evokes change. You focus on the client's reasons, hopes, or concerns that point toward change.</li>
         <li><span class="pill p-k">Strikeout</span> A question, advice, or praise.</li>
       </ul>
-      <div style="margin-top:8px;font-size:13.5px;color:var(--muted)">The ball rolling toward home is your speed bonus. Swing while it lasts for extra points, but a rushed single is still a single. Take a breath and go for the home run.</div>
+      <div style="margin-top:8px;font-size:13.5px;color:var(--muted)">Watch the pitch clock in the scene — swing while it lasts for extra points, but a rushed single is still a single. Take a breath and go for the home run.</div>
     </div>
     <div class="row"><button class="btn" id="playball">Play ball</button></div>
   </div>
@@ -202,8 +189,8 @@
       </div>
     </div>
 
-    <!-- At-bat -->
-    <div id="atbat" class="hidden">
+    <!-- Scene wrap: stays visible across at-bat and result phases -->
+    <div id="sceneWrap" class="hidden">
       <!-- Compact pitcher strip -->
       <div class="pitcher-strip">
         <span class="ps-name" id="psName"></span>
@@ -215,19 +202,24 @@
         <div class="history-box hidden" id="historyBox"></div>
       </div>
 
-      <div class="pitch" id="pitch"><div class="who" id="pitchWho">Client</div><span id="pitchText"></span></div>
-      <div class="cdwrap"><div class="cdbar" id="cdbar"><span class="cdball">&#9918;</span></div></div>
-      <div class="cdlabel">Speed bonus</div>
+      <!-- Animated at-bat scene (replaces pitch box + speed bar) -->
+      <div id="atbatScene" style="margin-top:12px"></div>
+
+      <!-- Screen-reader live region for call outcome -->
+      <div aria-live="polite" class="hidden" id="callAnnounce"></div>
+    </div>
+
+    <!-- At-bat -->
+    <div id="atbat" class="hidden">
       <textarea id="reflection" placeholder="Reflect it back..."></textarea>
       <div class="tip">Tip: your computer's built-in dictation works great here if typing slows you down.</div>
       <div id="err"></div>
-      <div class="row"><button class="btn" id="swing">Swing</button></div>
+      <div class="row"><button class="btn" id="swing" disabled>Swing</button></div>
       <div id="status"></div>
     </div>
 
     <!-- Result -->
     <div id="result" class="hidden">
-      <div class="call" id="call"></div>
       <div class="fb" id="fb"></div>
       <div class="pitch hidden" id="replyPitch">
         <div class="who" id="replyWho">Client</div>
@@ -262,6 +254,7 @@
   <div class="foot">A Socialworky training resource. Opening client statements are written by Socialworky; scoring and client replies are AI generated for practice. Please use only fictional details.</div>
 </div>
 
+<script src="atbat-scene.js"></script>
 <script>
 const GEN_MODEL="gpt-4.1-mini";
 const EVAL_MODEL="gpt-4.1";
@@ -390,6 +383,7 @@ function skillHint(log){
 
 // State
 let seenPitchers,pitchers,inning,swingInInning,currentPitch,inningLog,innings,score,tally;
+let scene=null;
 
 function startGame(){
   // Pick 3 pitchers, preferring unseen ones this session
@@ -403,6 +397,12 @@ function startGame(){
   score=0;
   tally={evocative_reflection:0,complex_reflection:0,simple_reflection:0,other:0};
   innings=[];
+  // Init scene once; reset if already created
+  if(!scene){
+    scene=createAtBatScene(document.getElementById("atbatScene"),{bonusMs:BONUS_MS});
+  }else{
+    scene.reset();
+  }
   hide("start");hide("end");show("game");
   updateScoreboard();
   startInning();
@@ -414,10 +414,11 @@ function startInning(){
   const p=pitchers[inning];
   currentPitch=p.opening;
   // Show pitcher card
-  hide("atbat");hide("result");
+  hide("sceneWrap");hide("atbat");hide("result");
   document.getElementById("pcName").textContent=p.name+", "+p.age;
   document.getElementById("pcFocus").textContent=p.focus;
   show("pitcherCard");
+  if(scene) scene.reset();
   updateScoreboard();
 }
 
@@ -428,6 +429,7 @@ function stepUp(){
   document.getElementById("psFocus").textContent=p.focus;
   hide("historyArea");
   document.getElementById("historyBox").classList.add("hidden");
+  show("sceneWrap");
   show("atbat");
   loadPitch();
 }
@@ -437,25 +439,17 @@ function loadPitch(){
   document.getElementById("err").innerHTML="";
   document.getElementById("reflection").value="";
   document.getElementById("status").innerHTML="";
+  document.getElementById("swing").disabled=true;
   const p=pitchers[inning];
-  document.getElementById("pitchWho").textContent=p.name;
-  document.getElementById("pitchText").textContent=currentPitch;
-  const pitchEl=document.getElementById("pitch");
-  pitchEl.classList.remove("show");void pitchEl.offsetWidth;pitchEl.classList.add("show");
-  document.getElementById("swing").disabled=false;
-  pitchStart=Date.now();startCountdown();
-  document.getElementById("reflection").focus();
-  show("atbat");
+  // Start windup; pitchStart set at release (~850ms)
+  scene.pitch({who:p.name,text:currentPitch}).then(()=>{
+    pitchStart=Date.now();
+    document.getElementById("swing").disabled=false;
+    document.getElementById("reflection").focus();
+  });
 }
 
-let pitchStart;
-function startCountdown(){
-  const bar=document.getElementById("cdbar");
-  bar.style.transition="none";bar.style.width="100%";
-  void bar.offsetWidth;
-  bar.style.transition="width "+(BONUS_MS/1000)+"s linear";
-  bar.style.width="0%";
-}
+let pitchStart=0;
 
 function updateScoreboard(){
   document.getElementById("scoreN").textContent=score;
@@ -467,7 +461,8 @@ async function swing(){
   const refl=document.getElementById("reflection").value.trim();
   if(!refl){document.getElementById("err").innerHTML='<div class="err">Take a swing: type a reflection first.</div>';return;}
   document.getElementById("err").innerHTML="";
-  const elapsed=Date.now()-pitchStart;
+  scene.hold();
+  const elapsed=scene.elapsed();
   const swingBtn=document.getElementById("swing");
   const statusEl=document.getElementById("status");
   swingBtn.disabled=true;statusEl.innerHTML='<div class="status">The umpire is calling it...</div>';
@@ -481,6 +476,7 @@ async function swing(){
         strikeout_type:null,rationale:"Single: that one was hard to read. Try a clear reflection that hands the client's meaning back."};
     }
   }catch(e){
+    scene.resume();
     statusEl.innerHTML="";swingBtn.disabled=false;
     document.getElementById("err").innerHTML='<div class="err">Couldn\'t score that swing. '+esc(e.message)+'</div>';
     return;
@@ -497,38 +493,41 @@ async function swing(){
   updateScoreboard();
   statusEl.innerHTML="";
 
-  // Show call immediately
-  const callEl=document.getElementById("call");
-  callEl.innerHTML='<span class="pill '+hit.cls+'" style="font-size:34px;padding:6px 22px">'+hit.call+'</span>'
-    +'<span class="gain">'+(hit.pts>0?("+"+hit.pts+" pts"+(bonus>0?(" and +"+bonus+" speed bonus"):"")):"no points, shake it off")+'</span>';
-  callEl.classList.remove("show");void callEl.offsetWidth;callEl.classList.add("show");
-  document.getElementById("fb").textContent=evalResult.rationale||"";
-  hide("atbat");
+  // Announce call to screen readers
+  document.getElementById("callAnnounce").textContent=hit.call;
 
-  // Determine next button label
+  // Show rationale immediately
+  document.getElementById("fb").textContent=evalResult.rationale||"";
+
+  // Determine gain text for scene
+  const gainText=hit.pts>0?("+"+hit.pts+" pts"+(bonus>0?(" and +"+bonus+" speed bonus"):"")):"no points, shake it off";
+
+  // Transition: hide at-bat input, show result section
+  hide("atbat");
   const nextBtn=document.getElementById("next");
   if(isLastSwing && inning>=INNINGS-1) nextBtn.textContent="See box score";
   else if(isLastSwing) nextBtn.textContent="Next inning";
   else nextBtn.textContent="Next pitch";
   nextBtn.disabled=true;
-
-  // Show result section, hide reply until it loads
   hide("replyPitch");
   document.getElementById("replyStatus").innerHTML='<div class="status" style="margin-top:10px"><em>'+esc(p.name)+' is thinking...</em></div>';
   show("result");
 
-  // Call 2: get client reply
-  getClientReply(p,refl,cat,evalResult,isLastSwing).then(reply=>{
-    inningLog[inningLog.length-1].reply=reply;
-    const replyEl=document.getElementById("replyPitch");
-    document.getElementById("replyWho").textContent=p.name;
-    document.getElementById("replyText").textContent=reply;
-    document.getElementById("replyStatus").innerHTML="";
-    replyEl.classList.remove("show");void replyEl.offsetWidth;replyEl.classList.add("show");
-    show("replyPitch");
-    if(!isLastSwing) currentPitch=reply;
-    nextBtn.disabled=false;
-  });
+  // Play scene animation and get client reply in parallel
+  const [,reply]=await Promise.all([
+    scene.result(cat,gainText),
+    getClientReply(p,refl,cat,evalResult,isLastSwing)
+  ]);
+
+  inningLog[inningLog.length-1].reply=reply;
+  const replyEl=document.getElementById("replyPitch");
+  document.getElementById("replyWho").textContent=p.name;
+  document.getElementById("replyText").textContent=reply;
+  document.getElementById("replyStatus").innerHTML="";
+  replyEl.classList.remove("show");void replyEl.offsetWidth;replyEl.classList.add("show");
+  show("replyPitch");
+  if(!isLastSwing) currentPitch=reply;
+  nextBtn.disabled=false;
 }
 
 async function getClientReply(p,refl,cat,evalResult,isLast){
@@ -559,6 +558,8 @@ function nextAction(){
     endInning();
   }else{
     updateHistory();
+    hide("result");
+    show("atbat");
     loadPitch();
   }
 }
@@ -596,7 +597,8 @@ function endInning(){
 }
 
 function endGame(){
-  hide("game");show("end");
+  hide("game");hide("sceneWrap");show("end");
+  if(scene) scene.reset();
   document.getElementById("finalScore").textContent=score;
   const totalHR=tally.evocative_reflection;
   document.getElementById("finalLine").textContent=totalHR+" home run"+(totalHR===1?"":"s")+" in "+(INNINGS*SWINGS_PER_INNING)+" swings.";
