@@ -509,7 +509,7 @@ async function swing(){
   if(isLastSwing && inning>=INNINGS-1) nextBtn.textContent="See box score";
   else if(isLastSwing) nextBtn.textContent="Next inning";
   else nextBtn.textContent="Next pitch";
-  nextBtn.disabled=true;
+  nextBtn.style.display="";nextBtn.disabled=true;
   hide("replyPitch");
   document.getElementById("replyStatus").innerHTML='<div class="status" style="margin-top:10px"><em>'+esc(p.name)+' is thinking...</em></div>';
   show("result");
@@ -527,8 +527,24 @@ async function swing(){
   document.getElementById("replyStatus").innerHTML="";
   replyEl.classList.remove("show");void replyEl.offsetWidth;replyEl.classList.add("show");
   show("replyPitch");
-  if(!isLastSwing) currentPitch=reply;
-  nextBtn.disabled=false;
+  if(!isLastSwing){
+    currentPitch=reply;
+    // Auto-advance to keep the timer honest — show reply briefly then load next pitch
+    nextBtn.style.display="none";
+    let countdown=5;
+    const timerEl=document.createElement("div");
+    timerEl.className="status";timerEl.style.marginTop="10px";
+    timerEl.textContent="Next pitch in "+countdown+"…";
+    document.getElementById("replyStatus").appendChild(timerEl);
+    const iv=setInterval(()=>{
+      countdown--;
+      if(countdown<=0){clearInterval(iv);nextAction();}
+      else timerEl.textContent="Next pitch in "+countdown+"…";
+    },1000);
+  }else{
+    nextBtn.style.display="";
+    nextBtn.disabled=false;
+  }
 }
 
 async function getClientReply(p,refl,cat,evalResult,isLast){

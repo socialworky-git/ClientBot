@@ -50,7 +50,7 @@
 <g data-k="batter"><rect x="619" y="242" width="22" height="56" rx="11" fill="#2D5FA8"/><circle cx="630" cy="228" r="11" fill="#2D5FA8"/>
 <line data-k="bat" x1="622" y1="258" x2="670" y2="212" stroke="#C8945A" stroke-width="6" stroke-linecap="round"/>
 <g data-k="stars" opacity="0"><circle cx="646" cy="204" r="2.6" fill="#C8945A"/><circle cx="622" cy="218" r="2.6" fill="#C8945A"/><circle cx="622" cy="190" r="2.6" fill="#C8945A"/></g></g>
-<circle data-k="mitt" cx="684" cy="276" r="10" fill="#5C3526"/>
+<circle data-k="mitt" cx="-100" cy="-100" r="0" fill="none"/>
 <circle data-k="flash" cx="575" cy="270" r="6" fill="#fff" opacity="0"/>
 <g data-k="ball" opacity="0"><circle r="6" fill="#fff"/><path d="M-3 -5 Q0 0 -3 5" fill="none" stroke="#C2452F" stroke-width="1.2"/><path d="M3 -5 Q0 0 3 5" fill="none" stroke="#C2452F" stroke-width="1.2"/></g>
 <g data-k="fx"></g>
@@ -119,8 +119,8 @@
         if (o.hr && !fxOn && st >= 650) { fxOn = true; fireworks(); }
         if (ph === 'swing' && st >= (o.hr ? 2600 : 1700)) { ph = 'done'; done && done(); }
       } else {
-        if (st < 160) { const [hx, hy] = q(P0, PC, PE, s0), t = st / 160; setBall(hx + (MITT[0] - hx) * t, hy + b0 + (MITT[1] - hy - b0) * t, st, 1, 1); } else setBall(MITT[0], MITT[1], 0, 1, 1);
-        const mt = (st - 160) / 180; E.mitt.setAttribute('transform', mt > 0 && mt < 1 ? `translate(684 276) scale(${(1 + .3 * Math.sin(Math.PI * mt)).toFixed(3)}) translate(-684 -276)` : '');
+        if (st < 200) { const [hx, hy] = q(P0, PC, PE, s0), t = st / 200; setBall(hx + (800 - hx) * t, hy + b0 + (290 - hy - b0) * t, st, 1, st < 160 ? 1 : (1 - (st - 160) / 40).toFixed(2)); } else E.ball.setAttribute('opacity', 0);
+        E.mitt.setAttribute('transform', '');
         const bt = st - 240; setBat(bt < 0 ? 0 : bt < 300 ? -200 * ease(bt / 300) : bt < 900 ? -200 : bt < 1300 ? -200 * (1 - ease((bt - 900) / 400)) : 0);
         const w = (st - 520) / 680; E.batter.setAttribute('transform', w > 0 && w < 1 ? `rotate(${(9 * Math.sin(w * Math.PI * 3) * (1 - w)).toFixed(2)} 630 298)` : '');
         E.stars.setAttribute('opacity', st > 560 && st < 1900 ? Math.min(1, (st - 560) / 120, (1900 - st) / 200).toFixed(2) : 0);
