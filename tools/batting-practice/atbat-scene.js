@@ -26,21 +26,30 @@
 @keyframes abs-fw{0%{transform:translate(0,0);opacity:0}8%{opacity:1}55%{transform:translate(var(--dx),var(--dy));opacity:1}100%{transform:translate(var(--ex),var(--ey));opacity:0}}
 @keyframes abs-lights{0%{opacity:.3}10%,30%,50%,80%{opacity:1}20%,40%{opacity:.45}100%{opacity:.3}}
 @keyframes abs-sky{0%{opacity:0}10%{opacity:.16}40%,100%{opacity:0}}
-@media (prefers-reduced-motion:reduce){.abs-bubble>div,.abs-call,.abs-fw,.abs-lights,.abs-sky{animation-duration:.01s!important}}`;
+.abs-cloud-far{animation:abs-cloud-far 70s linear infinite}
+.abs-cloud-near{animation:abs-cloud-near 45s linear infinite}
+@keyframes abs-cloud-far{0%{transform:translateX(-40px)}100%{transform:translateX(60px)}}
+@keyframes abs-cloud-near{0%{transform:translateX(-60px)}100%{transform:translateX(80px)}}
+@media (prefers-reduced-motion:reduce){.abs-bubble>div,.abs-call,.abs-fw,.abs-lights,.abs-sky,.abs-cloud-far,.abs-cloud-near{animation-duration:.01s!important}}`;
 
   const FIELD = `
 <svg class="abs-field" viewBox="0 0 760 360" aria-hidden="true">
 <!-- sky is the CSS gradient on .abs; clouds sit on top of it -->
-<g opacity="0.72">
+<g class="abs-cloud-far" opacity="0.65">
   <ellipse cx="90" cy="52" rx="58" ry="19" fill="#fff"/>
   <ellipse cx="126" cy="40" rx="38" ry="15" fill="#fff"/>
   <ellipse cx="60" cy="48" rx="32" ry="13" fill="#fff"/>
-  <ellipse cx="390" cy="68" rx="72" ry="21" fill="#fff"/>
-  <ellipse cx="428" cy="54" rx="46" ry="16" fill="#fff"/>
-  <ellipse cx="355" cy="64" rx="40" ry="14" fill="#fff"/>
   <ellipse cx="640" cy="44" rx="60" ry="18" fill="#fff"/>
   <ellipse cx="676" cy="33" rx="38" ry="14" fill="#fff"/>
   <ellipse cx="608" cy="40" rx="34" ry="12" fill="#fff"/>
+</g>
+<g class="abs-cloud-near" opacity="0.82">
+  <ellipse cx="280" cy="62" rx="72" ry="21" fill="#fff"/>
+  <ellipse cx="318" cy="48" rx="46" ry="16" fill="#fff"/>
+  <ellipse cx="245" cy="58" rx="40" ry="14" fill="#fff"/>
+  <ellipse cx="530" cy="55" rx="62" ry="20" fill="#fff"/>
+  <ellipse cx="568" cy="42" rx="42" ry="15" fill="#fff"/>
+  <ellipse cx="496" cy="51" rx="36" ry="13" fill="#fff"/>
 </g>
 <rect x="0" y="300" width="760" height="60" fill="#24382C"/>
 <ellipse cx="110" cy="300" rx="56" ry="9" fill="rgba(235,120,107,.25)"/>
