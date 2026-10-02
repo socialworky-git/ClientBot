@@ -31,7 +31,6 @@
   const FIELD = `
 <svg class="abs-field" viewBox="0 0 760 360" aria-hidden="true">
 <rect x="0" y="300" width="760" height="60" fill="#24382C"/>
-<rect x="18" y="16" width="40" height="12" rx="3" fill="#fff" opacity=".3"/><rect x="702" y="16" width="40" height="12" rx="3" fill="#fff" opacity=".3"/>
 <ellipse cx="110" cy="300" rx="56" ry="9" fill="rgba(235,120,107,.25)"/>
 <g data-k="body"><rect x="98" y="244" width="24" height="54" rx="12" fill="#EB786B"/><circle cx="110" cy="229" r="12" fill="#EB786B"/>
 <line data-k="arm" x1="110" y1="254" x2="110" y2="280" stroke="#C2452F" stroke-width="7" stroke-linecap="round"/></g>
@@ -84,7 +83,7 @@
         c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', i % 3 ? 3 : 4); c.setAttribute('fill', cols[i % 4]); c.setAttribute('class', 'abs-fw');
         c.style.cssText = `--dx:${(Math.cos(a) * r).toFixed(1)}px;--dy:${(Math.sin(a) * r).toFixed(1)}px;--ex:${(Math.cos(a) * r * 1.15).toFixed(1)}px;--ey:${(Math.sin(a) * r * 1.15 + 18).toFixed(1)}px;animation-delay:${delay}s`;
         E.fx.appendChild(c); } });
-      E.fx.insertAdjacentHTML('afterbegin', '<g class="abs-lights"><rect x="18" y="16" width="40" height="12" rx="3" fill="#fff"/><rect x="702" y="16" width="40" height="12" rx="3" fill="#fff"/><circle cx="38" cy="22" r="30" fill="#fff" opacity=".14"/><circle cx="722" cy="22" r="30" fill="#fff" opacity=".14"/></g><rect class="abs-sky" width="760" height="360" fill="#fff"/>'); };
+      E.fx.insertAdjacentHTML('afterbegin', '<rect class="abs-sky" width="760" height="360" fill="#fff"/>'); };
 
     function loop(now) {
       raf = requestAnimationFrame(loop);
