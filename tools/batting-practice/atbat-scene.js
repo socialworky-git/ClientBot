@@ -11,14 +11,14 @@
 .abs{position:relative;width:100%;aspect-ratio:760/360;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#AEDCF5 0%,#CBE9F7 55%,#D4EDDA 100%);font-family:var(--sans,'Hanken Grotesk',Arial,sans-serif)}
 .abs svg.abs-field{position:absolute;inset:0;width:100%;height:100%;display:block}
 .abs-bubble{position:absolute;left:4.5%;top:7%;width:52%;transition:opacity .4s}
-.abs-bubble>div{background:#fff;border:1px solid #D5DDE5;border-left:3px solid #3E4A57;border-radius:10px;padding:11px 14px;font-size:14.5px;line-height:1.45;color:#26313C;transform-origin:6% 100%;box-shadow:0 8px 22px rgba(0,0,0,.18);animation:abs-bubble .45s cubic-bezier(.2,.7,.3,1.1) both}
+.abs-bubble>div{background:#fff;border:1px solid #B8C4CE;border-left:3px solid #3E4A57;border-radius:10px;padding:11px 14px;font-size:14.5px;line-height:1.45;color:#1A2530;transform-origin:6% 100%;box-shadow:0 8px 28px rgba(0,0,0,.28);animation:abs-bubble .45s cubic-bezier(.2,.7,.3,1.1) both}
 .abs-who{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:#3E4A57;margin-bottom:3px}
 .abs-clock{position:absolute;right:2.4%;top:5%;width:78px;height:78px}
 .abs-clock svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .abs-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums}
 .abs-call{position:absolute;left:52%;top:46%;display:flex;flex-direction:column;align-items:center;gap:8px;animation:abs-pill .5s cubic-bezier(.2,.7,.3,1.2) both}
 .abs-call b{font-weight:800;font-size:30px;letter-spacing:1px;color:#fff;border-radius:28px;padding:6px 22px;white-space:nowrap}
-.abs-call span{font-size:13px;font-weight:700;color:#C9D8CE;white-space:nowrap}
+.abs-call span{font-size:13px;font-weight:700;color:#d4ead8;white-space:nowrap;text-shadow:0 1px 3px rgba(0,0,0,.5)}
 .abs-fw{animation:abs-fw 1.5s cubic-bezier(.15,.7,.3,1) both}
 .abs-lights{animation:abs-lights 2s linear both}.abs-sky{animation:abs-sky 1.6s linear both}
 @keyframes abs-bubble{0%{transform:scale(.25);opacity:0}70%{transform:scale(1.03);opacity:1}100%{transform:scale(1);opacity:1}}
@@ -47,16 +47,16 @@
 <g data-k="body"><rect x="98" y="244" width="24" height="54" rx="12" fill="#EB786B"/><circle cx="110" cy="229" r="12" fill="#EB786B"/>
 <line data-k="arm" x1="110" y1="254" x2="110" y2="280" stroke="#C2452F" stroke-width="7" stroke-linecap="round"/></g>
 <polygon points="592,298 608,298 612,302 600,306 588,302" fill="#fff" opacity=".85"/>
-<circle data-k="mitt" cx="684" cy="276" r="12" fill="#7A5048"/>
-<g data-k="batter"><rect x="619" y="242" width="22" height="56" rx="11" fill="#fff"/><circle cx="630" cy="228" r="11" fill="#fff"/>
-<line data-k="bat" x1="622" y1="258" x2="670" y2="212" stroke="#F6D4CD" stroke-width="6" stroke-linecap="round"/>
-<g data-k="stars" opacity="0"><circle cx="646" cy="204" r="2.6" fill="#F6D4CD"/><circle cx="622" cy="218" r="2.6" fill="#F6D4CD"/><circle cx="622" cy="190" r="2.6" fill="#F6D4CD"/></g></g>
+<g data-k="batter"><rect x="619" y="242" width="22" height="56" rx="11" fill="#2D5FA8"/><circle cx="630" cy="228" r="11" fill="#2D5FA8"/>
+<line data-k="bat" x1="622" y1="258" x2="670" y2="212" stroke="#C8945A" stroke-width="6" stroke-linecap="round"/>
+<g data-k="stars" opacity="0"><circle cx="646" cy="204" r="2.6" fill="#C8945A"/><circle cx="622" cy="218" r="2.6" fill="#C8945A"/><circle cx="622" cy="190" r="2.6" fill="#C8945A"/></g></g>
+<circle data-k="mitt" cx="684" cy="276" r="10" fill="#5C3526"/>
 <circle data-k="flash" cx="575" cy="270" r="6" fill="#fff" opacity="0"/>
 <g data-k="ball" opacity="0"><circle r="6" fill="#fff"/><path d="M-3 -5 Q0 0 -3 5" fill="none" stroke="#C2452F" stroke-width="1.2"/><path d="M3 -5 Q0 0 3 5" fill="none" stroke="#C2452F" stroke-width="1.2"/></g>
 <g data-k="fx"></g>
 </svg>
-<div class="abs-clock" data-k="clock"><svg viewBox="0 0 78 78"><circle cx="39" cy="39" r="32" fill="rgba(30,60,50,.55)" stroke="rgba(30,60,50,.35)" stroke-width="7"/>
-<circle data-k="ring" cx="39" cy="39" r="32" fill="none" stroke="#9FB8A8" stroke-width="7" stroke-linecap="round" stroke-dasharray="201.06" stroke-dashoffset="0"/></svg>
+<div class="abs-clock" data-k="clock"><svg viewBox="0 0 78 78"><circle cx="39" cy="39" r="32" fill="rgba(20,40,35,.7)" stroke="rgba(20,40,35,.5)" stroke-width="7"/>
+<circle data-k="ring" cx="39" cy="39" r="32" fill="none" stroke="#7AAFC0" stroke-width="7" stroke-linecap="round" stroke-dasharray="201.06" stroke-dashoffset="0"/></svg>
 <div class="abs-num" data-k="num">25</div></div>`;
 
   // Outcome table. Keys match deriveCategory() in the game.
