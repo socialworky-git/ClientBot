@@ -8,7 +8,7 @@
 */
 (function () {
   const CSS = `
-.abs{position:relative;width:100%;aspect-ratio:760/360;border-radius:12px;overflow:hidden;background:#1C2B22;font-family:var(--sans,'Hanken Grotesk',Arial,sans-serif)}
+.abs{position:relative;width:100%;aspect-ratio:760/360;border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#AEDCF5 0%,#CBE9F7 55%,#D4EDDA 100%);font-family:var(--sans,'Hanken Grotesk',Arial,sans-serif)}
 .abs svg.abs-field{position:absolute;inset:0;width:100%;height:100%;display:block}
 .abs-bubble{position:absolute;left:4.5%;top:7%;width:52%;transition:opacity .4s}
 .abs-bubble>div{background:#fff;border:1px solid #D5DDE5;border-left:3px solid #3E4A57;border-radius:10px;padding:11px 14px;font-size:14.5px;line-height:1.45;color:#26313C;transform-origin:6% 100%;box-shadow:0 8px 22px rgba(0,0,0,.18);animation:abs-bubble .45s cubic-bezier(.2,.7,.3,1.1) both}
@@ -30,6 +30,18 @@
 
   const FIELD = `
 <svg class="abs-field" viewBox="0 0 760 360" aria-hidden="true">
+<!-- sky is the CSS gradient on .abs; clouds sit on top of it -->
+<g opacity="0.72">
+  <ellipse cx="90" cy="52" rx="58" ry="19" fill="#fff"/>
+  <ellipse cx="126" cy="40" rx="38" ry="15" fill="#fff"/>
+  <ellipse cx="60" cy="48" rx="32" ry="13" fill="#fff"/>
+  <ellipse cx="390" cy="68" rx="72" ry="21" fill="#fff"/>
+  <ellipse cx="428" cy="54" rx="46" ry="16" fill="#fff"/>
+  <ellipse cx="355" cy="64" rx="40" ry="14" fill="#fff"/>
+  <ellipse cx="640" cy="44" rx="60" ry="18" fill="#fff"/>
+  <ellipse cx="676" cy="33" rx="38" ry="14" fill="#fff"/>
+  <ellipse cx="608" cy="40" rx="34" ry="12" fill="#fff"/>
+</g>
 <rect x="0" y="300" width="760" height="60" fill="#24382C"/>
 <ellipse cx="110" cy="300" rx="56" ry="9" fill="rgba(235,120,107,.25)"/>
 <g data-k="body"><rect x="98" y="244" width="24" height="54" rx="12" fill="#EB786B"/><circle cx="110" cy="229" r="12" fill="#EB786B"/>
@@ -43,7 +55,7 @@
 <g data-k="ball" opacity="0"><circle r="6" fill="#fff"/><path d="M-3 -5 Q0 0 -3 5" fill="none" stroke="#C2452F" stroke-width="1.2"/><path d="M3 -5 Q0 0 3 5" fill="none" stroke="#C2452F" stroke-width="1.2"/></g>
 <g data-k="fx"></g>
 </svg>
-<div class="abs-clock" data-k="clock"><svg viewBox="0 0 78 78"><circle cx="39" cy="39" r="32" fill="#1C2B22" stroke="#24382C" stroke-width="7"/>
+<div class="abs-clock" data-k="clock"><svg viewBox="0 0 78 78"><circle cx="39" cy="39" r="32" fill="rgba(30,60,50,.55)" stroke="rgba(30,60,50,.35)" stroke-width="7"/>
 <circle data-k="ring" cx="39" cy="39" r="32" fill="none" stroke="#9FB8A8" stroke-width="7" stroke-linecap="round" stroke-dasharray="201.06" stroke-dashoffset="0"/></svg>
 <div class="abs-num" data-k="num">25</div></div>`;
 
