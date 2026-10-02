@@ -33,18 +33,13 @@
     --bg:#FFFFFF; --surface:#F6F7F8; --ink:#1A1A1A; --muted:#5B5B5B; --line:#E4E4E7;
     --accent:#EB786B; --accentDeep:#C2452F;
     --coral-bg:#FDEEEB; --coral-line:#F6D4CD; --heroMuted:#7A5048; --white:#FFFFFF;
-    --field:#3F7D4E; --fielddk:#2B5D38; --dirt:#C8A06A;
     --sans:'Hanken Grotesk', Arial,Helvetica,"Helvetica Neue",system-ui,sans-serif;
   }
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);padding:22px;line-height:1.5;}
   .wrap{max-width:720px;margin:0 auto;}
-  .hublink{display:inline-block;margin-bottom:10px;font-size:13px;color:var(--accentDeep);text-decoration:none;}
-  .eyebrow{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);}
-  h1{font-size:25px;font-weight:700;margin:4px 0 0;}
-  .tagline{color:var(--muted);font-size:13.5px;margin-top:3px;}
+  .hidden{display:none;}
 
-  /* ---- Standardized Socialworky tool hero (gamified icon) ---- */
   .toolhero{display:flex;align-items:center;gap:16px;background:var(--coral-bg);
     border:1px solid var(--coral-line);border-radius:12px;box-shadow:inset 4px 0 0 var(--accent);
     padding:18px 22px 18px 24px;margin-bottom:18px;}
@@ -56,7 +51,6 @@
   .toolhero .brand .bot{color:var(--accentDeep);}
   .toolhero .tagline{color:var(--heroMuted);font-size:14px;margin-top:3px;}
 
-  /* ---- Standardized orientation panel ("Instructions") ---- */
   .orient{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:16px 0 0;}
   .orient .ohd{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:14px;}
   .orient .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;}
@@ -64,13 +58,12 @@
   .orient .step .n{width:24px;height:24px;border-radius:50%;background:var(--coral-bg);color:var(--accentDeep);
     font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
   .orient .step .tx{font-size:13.5px;color:var(--ink);line-height:1.45;}
-  .intro{color:var(--muted);font-size:15px;margin:14px 0 0;}
-  .hidden{display:none;}
 
   .rules{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-top:16px;font-size:14px;}
+  .rules p{margin:0 0 8px;font-weight:700;}
   .rules ul{margin:8px 0 0;padding-left:18px;} .rules li{margin:4px 0;}
   .pill{display:inline-block;font-weight:700;border-radius:20px;padding:1px 9px;font-size:12px;color:#fff;}
-  .p-single{background:#6B8E9E;} .p-double{background:#2E7D54;} .p-triple{background:#4E86A0;} .p-hr{background:var(--accentDeep);} .p-k{background:#9aa0a6;}
+  .p-single{background:#6B8E9E;} .p-double{background:#2E7D54;} .p-hr{background:var(--accentDeep);} .p-k{background:#9aa0a6;}
 
   .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:12px 20px;font-size:15px;
     font-weight:700;font-family:var(--sans);cursor:pointer;transition:background .15s;}
@@ -80,21 +73,38 @@
     padding:10px 16px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:16px;}
 
-  .focusbar{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;
-    padding:11px 15px;margin-top:16px;font-size:15px;}
-  .focusbar b{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--accentDeep);margin-right:8px;}
-
+  /* Scoreboard */
   .scoreboard{background:#1C2B22;color:#fff;border-radius:12px;padding:12px 18px;display:flex;gap:26px;align-items:center;margin-top:14px;}
   .sb .n{font-size:24px;font-weight:800;line-height:1;}
   .sb .n.score{color:var(--accent);}
   .sb .l{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#9FB8A8;margin-top:3px;}
 
+  /* Pitcher card */
+  .pitcher-card{background:var(--coral-bg);border:1px solid var(--coral-line);border-radius:12px;
+    padding:20px 22px;margin-top:16px;text-align:center;}
+  .pitcher-card .pc-name{font-size:22px;font-weight:800;letter-spacing:-0.3px;color:var(--ink);}
+  .pitcher-card .pc-focus{font-size:13.5px;color:var(--heroMuted);margin-top:4px;}
+  .pitcher-card .pc-focus b{color:var(--accentDeep);}
+  .pitcher-strip{background:var(--coral-bg);border:1px solid var(--coral-line);border-radius:8px;
+    padding:8px 14px;margin-top:12px;font-size:13px;color:var(--heroMuted);display:flex;gap:6px;align-items:center;}
+  .pitcher-strip .ps-name{font-weight:700;color:var(--ink);}
+
+  /* Pitch box */
   .pitch{background:#EEF1F4;border:1px solid #D5DDE5;border-left:3px solid #3E4A57;border-radius:10px;
     padding:14px 16px;font-size:16px;color:#26313C;margin-top:16px;}
   .pitch .who{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:#3E4A57;margin-bottom:4px;}
   .pitch.show{animation:pitchin .5s ease;}
   @keyframes pitchin{0%{transform:translateY(-12px) scale(.97);opacity:0}100%{transform:none;opacity:1}}
 
+  /* History toggle */
+  .history-toggle{font-size:12px;color:var(--muted);cursor:pointer;margin-top:6px;display:inline-block;user-select:none;}
+  .history-toggle:hover{color:var(--accentDeep);}
+  .history-box{background:var(--surface);border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;margin-top:6px;font-size:13px;color:var(--muted);line-height:1.6;}
+  .history-box .he{margin-bottom:6px;} .history-box .he:last-child{margin-bottom:0;}
+  .history-box .hl{font-weight:700;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--accentDeep);}
+
+  /* Speed bonus */
   .cdwrap{height:14px;background:#e4e4e7;border-radius:8px;margin-top:12px;position:relative;}
   .cdbar{height:100%;width:100%;background:linear-gradient(90deg,var(--accent),var(--accentDeep));border-radius:8px;position:relative;}
   .cdball{position:absolute;right:-7px;top:50%;font-size:17px;line-height:1;animation:spin .9s linear infinite;}
@@ -106,6 +116,7 @@
   textarea:focus{border-color:var(--accent);}
   .tip{font-size:11.5px;color:var(--muted);margin-top:5px;}
 
+  /* Call + result */
   .call{text-align:center;font-size:30px;font-weight:800;letter-spacing:1px;margin:30px 0 10px;}
   .call.show{animation:pop .55s cubic-bezier(.2,.7,.3,1.2);}
   @keyframes pop{0%{transform:scale(.5);opacity:0}40%{transform:scale(1.22);opacity:1}100%{transform:scale(1);opacity:1}}
@@ -114,18 +125,25 @@
   .err{color:var(--accentDeep);font-size:13px;margin-top:8px;}
   .status{font-size:13px;font-style:italic;color:var(--accentDeep);margin-top:8px;}
 
+  /* End / box score */
+  .eyebrow{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);}
   .summary .big{font-size:40px;font-weight:800;color:var(--accentDeep);}
-  .bd{margin-top:12px;}
+  .box-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px;}
+  .box-table th{text-align:left;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;
+    color:var(--muted);border-bottom:2px solid var(--line);padding:6px 8px 6px 0;}
+  .box-table td{padding:7px 8px 7px 0;border-bottom:1px solid var(--line);}
+  .box-table tr:last-child td{border-bottom:none;}
+  .box-table .num{text-align:center;font-weight:700;}
+  .bd{margin-top:16px;}
   .bdrow{display:flex;align-items:center;gap:10px;margin:6px 0;font-size:14px;}
-  .bdrow .lab{width:180px;font-weight:700;}
+  .bdrow .lab{width:130px;font-weight:700;}
   .bdbar{flex:1;height:12px;background:#eee;border-radius:6px;overflow:hidden;}
   .bdbar span{display:block;height:100%;background:var(--accent);}
   .obs{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-top:14px;font-size:14.5px;}
   .foot{color:var(--muted);font-size:12px;margin-top:28px;border-top:1px solid var(--line);padding-top:14px;}
-  @media (max-width:560px){ body{padding:14px;} h1{font-size:21px;} .btn{width:100%;} .scoreboard{gap:18px;} }
+  @media (max-width:560px){ body{padding:14px;} .btn{width:100%;} .scoreboard{gap:18px;} }
 </style>
 
-<!-- Shared shell: header band + content column use one width & gutter site-wide. -->
 <style>
   body{ padding-top:0; padding-left:0; padding-right:0; }
   .wrap, .page{ max-width:var(--sw-maxw,820px); margin-left:auto; margin-right:auto;
@@ -139,7 +157,7 @@
     <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/></svg></div>
     <div>
       <div class="brand">Reflection <span class="bot">Batting Practice</span></div>
-      <div class="tagline">Ten pitches, a new change focus each time</div>
+      <div class="tagline">Three innings, three clients. Swing for the home run.</div>
     </div>
   </div>
 
@@ -148,38 +166,55 @@
     <div class="orient">
       <div class="ohd">Instructions</div>
       <div class="steps">
-        <div class="step"><div class="n">1</div><div class="tx">Each pitch is a client statement with its own change focus shown above it.</div></div>
-        <div class="step"><div class="n">2</div><div class="tx">Reflect it back and swing before the speed bonus runs out.</div></div>
-        <div class="step"><div class="n">3</div><div class="tx">The more skillful the reflection, the bigger the hit. Ten pitches, then your box score.</div></div>
+        <div class="step"><div class="n">1</div><div class="tx">Each inning, a new client steps up to pitch. Their change focus is on the pitcher card.</div></div>
+        <div class="step"><div class="n">2</div><div class="tx">Reflect what they say and swing before the speed bonus runs out.</div></div>
+        <div class="step"><div class="n">3</div><div class="tx">The client reacts to your swing, and their reply is your next pitch. Four swings per inning, three innings, then your box score.</div></div>
       </div>
     </div>
     <div class="rules">
-      <b>How the swings score:</b>
+      <p>Swing for the fences!</p>
+      <p style="font-weight:400;font-size:13.5px;color:var(--muted);margin-bottom:8px">Every pitch has some change talk and some sustain talk mixed in. Your goal is a home run: a reflection that draws out the client's own reasons for change.</p>
       <ul>
-        <li><span class="pill p-single">Single</span> Simple reflection (you repeat or rephrase)</li>
-        <li><span class="pill p-double">Double</span> Complex reflection (you add meaning or emotion, including feeling and double-sided reflections)</li>
-        <li><span class="pill p-triple">Triple</span> Affirmation (you name a real strength)</li>
-        <li><span class="pill p-hr">Home run</span> A reflection that grows the client's change talk or softens their sustain talk</li>
-        <li><span class="pill p-k">Strikeout</span> A question, advice, or praise, not a reflection</li>
+        <li><span class="pill p-single">Single</span> Simple reflection. You repeat or rephrase what the client said.</li>
+        <li><span class="pill p-double">Double</span> Complex reflection. You add meaning or feeling, like a double-sided reflection.</li>
+        <li><span class="pill p-hr">Home run</span> Complex reflection that evokes change. You focus on the client's reasons, hopes, or concerns that point toward change.</li>
+        <li><span class="pill p-k">Strikeout</span> A question, advice, or praise.</li>
       </ul>
-      <div style="margin-top:8px">The baseball rolling toward home is your speed bonus. Swing while it lasts for extra points. A rushed weak reflection still only earns the weak score, so think first.</div>
+      <div style="margin-top:8px;font-size:13.5px;color:var(--muted)">The ball rolling toward home is your speed bonus. Swing while it lasts for extra points, but a rushed single is still a single. Take a breath and go for the home run.</div>
     </div>
     <div class="row"><button class="btn" id="playball">Play ball</button></div>
-    <div id="startStatus"></div>
-    <div id="startErr"></div>
   </div>
 
   <!-- GAME -->
   <div id="game" class="hidden">
-    <div id="setupMsg"></div>
-
     <div class="scoreboard">
       <div class="sb"><div class="n score" id="scoreN">0</div><div class="l">Score</div></div>
-      <div class="sb"><div class="n" id="pitchN">1 / 10</div><div class="l">Pitch</div></div>
+      <div class="sb"><div class="n" id="inningN">1 / 3</div><div class="l">Inning</div></div>
+      <div class="sb"><div class="n" id="pitchN">1 / 4</div><div class="l">Pitch</div></div>
     </div>
 
-    <div id="atbat">
-      <div class="focusbar" id="focusbar"></div>
+    <!-- Pitcher card (full, shown at inning start) -->
+    <div id="pitcherCard" class="pitcher-card hidden">
+      <div class="pc-name" id="pcName"></div>
+      <div class="pc-focus"><b>Change focus:</b> <span id="pcFocus"></span></div>
+      <div class="row" style="justify-content:center;margin-top:16px">
+        <button class="btn" id="stepUp">Step up to the plate</button>
+      </div>
+    </div>
+
+    <!-- At-bat -->
+    <div id="atbat" class="hidden">
+      <!-- Compact pitcher strip -->
+      <div class="pitcher-strip">
+        <span class="ps-name" id="psName"></span>
+        <span>&middot; Change focus: <span id="psFocus"></span></span>
+      </div>
+
+      <div id="historyArea" class="hidden">
+        <span class="history-toggle" id="histToggle">&#9660; Earlier in this inning</span>
+        <div class="history-box hidden" id="historyBox"></div>
+      </div>
+
       <div class="pitch" id="pitch"><div class="who" id="pitchWho">Client</div><span id="pitchText"></span></div>
       <div class="cdwrap"><div class="cdbar" id="cdbar"><span class="cdball">&#9918;</span></div></div>
       <div class="cdlabel">Speed bonus</div>
@@ -190,9 +225,15 @@
       <div id="status"></div>
     </div>
 
+    <!-- Result -->
     <div id="result" class="hidden">
       <div class="call" id="call"></div>
       <div class="fb" id="fb"></div>
+      <div class="pitch hidden" id="replyPitch">
+        <div class="who" id="replyWho">Client</div>
+        <span id="replyText"></span>
+      </div>
+      <div id="replyStatus"></div>
       <div class="row"><button class="btn" id="next">Next pitch</button></div>
     </div>
   </div>
@@ -202,50 +243,105 @@
     <div class="eyebrow" style="margin-top:18px">Final box score</div>
     <div class="big" id="finalScore">0</div>
     <div style="color:var(--muted);font-size:14px" id="finalLine"></div>
+    <table class="box-table" id="boxTable">
+      <thead><tr>
+        <th>Inning</th><th>Pitcher</th>
+        <th class="num">HR</th><th class="num">2B</th><th class="num">1B</th><th class="num">K</th>
+        <th class="num">Pts</th>
+      </tr></thead>
+      <tbody id="boxBody"></tbody>
+    </table>
     <div class="bd" id="breakdown"></div>
     <div class="obs" id="observations"></div>
     <div class="row">
-      <button class="btn" id="again">Face a new client</button>
+      <button class="btn" id="again">Face new clients</button>
       <a class="btnout" href="/tools/" style="text-decoration:none;display:inline-block">All tools</a>
     </div>
   </div>
 
-  <div class="foot">A Socialworky training resource. The client and scoring are AI-generated for practice. Please use only fictional details.</div>
+  <div class="foot">A Socialworky training resource. Opening client statements are written by Socialworky; scoring and client replies are AI generated for practice. Please use only fictional details.</div>
 </div>
 
 <script>
 const GEN_MODEL="gpt-4.1-mini";
 const EVAL_MODEL="gpt-4.1";
 const BONUS_MS=25000;
+const SWINGS_PER_INNING=4;
+const INNINGS=3;
 
 const HIT={
   simple_reflection:{call:"SINGLE",bases:1,pts:10,cls:"p-single"},
   complex_reflection:{call:"DOUBLE",bases:2,pts:20,cls:"p-double"},
-  affirmation:{call:"TRIPLE",bases:3,pts:30,cls:"p-triple"},
-  change_reflection:{call:"HOME RUN",bases:4,pts:50,cls:"p-hr"},
+  evocative_reflection:{call:"HOME RUN",bases:4,pts:50,cls:"p-hr"},
   other:{call:"STRIKEOUT",bases:0,pts:0,cls:"p-k"}
 };
 
-let score,pitchNum,totalPitches,tally,history,pitchStart,client;
+const PITCHERS=[
+  {id:"jasmine",name:"Jasmine",age:24,focus:"Quitting vaping",
+   change:["Gets winded on stairs","Wants to start running with a friend"],
+   sustain:["Helps with stress","Most of her friends vape"],
+   opening:"Everybody I know vapes, so it doesn't feel like a big deal. But I couldn't even run a mile with my friend last week. That was kind of embarrassing."},
+  {id:"walt",name:"Walt",age:67,focus:"Taking blood pressure medication daily",
+   change:["Wants to be around for his grandkids","Doctor was worried about his numbers"],
+   sustain:["Feels fine","Forgets without a routine"],
+   opening:"I feel fine, so it's hard to remember to take a pill for something I can't even feel. But my doctor didn't like my numbers, and I want to see my grandkids grow up."},
+  {id:"marcus",name:"Marcus",age:42,focus:"Walking more",
+   change:["Back pain","Wants more energy for his kids"],
+   sustain:["Tired after work","Doesn't have time"],
+   opening:"By the time I get home I'm wiped out. The last thing I want to do is go for a walk. My back's been bugging me though, and the doctor said moving more would help."},
+  {id:"priya",name:"Priya",age:31,focus:"Drinking less soda",
+   change:["Wants to feel less sluggish in the afternoon","Trying to save money"],
+   sustain:["Needs the caffeine at work","Likes the taste"],
+   opening:"I have like four a day. It's the only thing getting me through the afternoon. But I crash so hard around three, and I'm starting to think the soda might be part of that."},
+  {id:"daniel",name:"Daniel",age:51,focus:"Cutting back on drinking",
+   change:["Sleeping badly","His wife has mentioned it"],
+   sustain:["Helps him unwind","It's just a couple of beers"],
+   opening:"It's just a couple beers after work. Everybody does that. I have been sleeping terribly though, and my wife keeps saying maybe that's why."},
+  {id:"lena",name:"Lena",age:35,focus:"Cooking at home more",
+   change:["Wants to eat healthier","Spending too much on takeout"],
+   sustain:["No energy to cook after work","Doesn't feel like a good cook"],
+   opening:"Cooking after a long day just feels like one more chore. And I'm not great at it anyway. But I looked at how much I spent on takeout last month and almost fell over."}
+];
 
-const GEN_SYSTEM=`You are creating material for a Motivational Interviewing reflection drill. Create ten separate practice pitches. Each pitch is a different client with a different change focus, so the set stays varied: a specific behavior that client feels two ways about changing (for example, cutting back on drinking, starting to exercise, leaving an unhealthy relationship, taking medication, quitting vaping, setting boundaries with a parent). For each, write one short first-person client statement (one or two sentences) that gives a learner something to reflect, mixing change talk, sustain talk, ambivalence, and emotion across the ten. Vary the topics widely.
-Respond with ONLY a JSON object, no code fences and no extra text:
-{"pitches":[{"changeTarget":"the behavior this client is ambivalent about, stated plainly","statement":"the client's words"}, ... ten total]}`;
+const EVAL_SYSTEM=`You are a Motivational Interviewing coach scoring one learner reflection in a practice game. You are given the client's change target, the client's statement, and the learner's response.
 
-const EVAL_SYSTEM=`You are a Motivational Interviewing coach scoring a learner's reflection in a drill. You are given the client's change target, the client statement, and the learner's response. Classify the response into EXACTLY ONE category, in this order of priority:
-- other: the response is not a reflection or an affirmation. This means an actual question (it seeks new information and takes interrogative form or ends with a question mark), direct advice or persuasion (the clinician introduces their OWN recommendation, opinion, or new information), or praise (a clinician-centered "I" statement or verbal gold star such as "I'm proud of you" or "I think that's great").
-- change_reflection: a reflection that strategically cultivates the client's change talk or softens their sustain talk in service of the change target (selectively reflecting the change side, a double-sided reflection that lands on the change side, or an amplified or understated reflection that draws out reasons to change). This is the highest skill.
-- affirmation: names a genuine strength, effort, or positive quality of the client. An affirmation focuses on the client and centers on "you," not on the clinician's own feelings.
-- complex_reflection: adds meaning, emotion, or depth, including feeling reflections, double-sided reflections, and reflecting back a consequence or meaning the client themselves implied.
-- simple_reflection: repeats or lightly rephrases the client's words with little added meaning.
+Answer three yes/no checks:
 
-Important judging rules:
-- A reflection is still a reflection when it is phrased tentatively or as a hunch. Openers like "it sounds like," "so you feel," "you're not sure," or "part of you wants" are reflections, NOT questions, even when the tone is uncertain. Only treat a response as a question when it genuinely asks for new information.
-- Reflecting a consequence, fear, or meaning that the client themselves implied is a complex reflection, NOT advice. It is only advice or persuasion when the clinician adds their own recommendation or new information that did not come from the client.
-- When a response is borderline, lean toward the reflection categories rather than "other." Reserve "other" for responses that are clearly a question, advice, or praise.
+1. is_reflection: Is the response a reflection, meaning a statement that hands the client's meaning back to them? Tentative phrasing ("it sounds like," "part of you," "you're not sure") still counts as a reflection. It is NOT a reflection if it genuinely asks for new information (a question), offers the clinician's own advice, opinion, or new information, or praises the client from the clinician's point of view ("I'm proud of you," "That's great"). Reflecting a consequence or fear the client implied is a reflection, not advice. When borderline, lean toward true.
 
-Pick the single best fit. Then write ONE short, encouraging sentence of feedback: for a simple reflection, nudge them to add meaning or to steer toward change; for other, briefly say why it does not count and how to make it a reflection.
-Respond with ONLY a JSON object, no code fences: {"category":"...","feedback":"..."}`;
+2. is_complex: Only if is_reflection is true. Does it go beyond the client's words by adding meaning, feeling, or both sides of their ambivalence? Repeating or lightly rephrasing is false.
+
+3. focuses_on_change: Only if is_complex is true. Does it put the focus on the client's reasons, hopes, or concerns that point toward the change target (downsides of the status quo or upsides of change)? A reflection of sustain talk only is false. A double sided reflection is true only when it clearly puts the weight on the change side, usually by ending there and adding meaning to it.
+
+If is_reflection is false, also check is_affirmation: does the response name a genuine strength, effort, or value of the client, focused on "you" (for example, "You really care about being there for your kids")? Clinician centered praise ("I'm proud of you," "That's great") is NOT an affirmation. If is_reflection is true, set is_affirmation to false.
+
+If is_reflection and is_affirmation are both false, set strikeout_type to "question", "advice", "praise", or "other". Otherwise set it to null.
+
+Write a rationale of one or two short sentences. Start with the call (Single, Double, Home run, or Strikeout). Lead with the concrete fix for getting to the next level, not a diagnosis. For a home run, name what made it work. For an affirmation, call it a Double, say it was a nice affirmation, and suggest a reflection that would aim at change.
+
+Respond with ONLY a JSON object, no code fences:
+{"is_reflection":true,"is_affirmation":false,"is_complex":false,"focuses_on_change":false,"strikeout_type":null,"rationale":"..."}`;
+
+const REPLY_SYSTEM=`You are playing a client in a Motivational Interviewing practice game. Stay in character as the client described in the profile. Use only facts from the profile; you may add small everyday details that fit, but never contradict it.
+
+Write the client's next line in response to the learner's reflection. Rules:
+- 2 to 4 sentences, first person, casual and natural.
+- Always include something the learner can reflect: some sustain talk AND some change talk about the change target, unless told this is the last line of the inning.
+- React to the call:
+  - single: brief confirmation, then a little more of the same story
+  - double: confirmation plus a new detail; mostly sustain with some change if the reflection reached toward it
+  - double + affirmation: accept it warmly, maybe a little surprised, then continue the story
+  - home_run: pick up the change side and expand on it; keep a small bit of sustain
+  - strikeout + question: short closed answer, then a bit more
+  - strikeout + advice: mild "yes, but"
+  - strikeout + praise: brush it off lightly
+  - strikeout + other: slight confusion, then continue
+- Strikeout reactions are mild. Never hostile or rude.
+- Skill hint: easier = make change talk easy to spot; normal = balanced; harder = tuck change talk in among sustain talk.
+- If this is the last line of the inning, give a natural closing thought that reflects how the conversation went. No question at the end.
+- Do not mention suicide, self harm, abuse, or crisis content.
+
+Respond with ONLY a JSON object, no code fences: {"reply":"..."}`;
 
 function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
 function show(id){document.getElementById(id).classList.remove("hidden");}
@@ -275,33 +371,84 @@ async function callChat(system,msgs,model,maxTokens){
 }
 function extractJSON(t){const s=t.indexOf("{"),e=t.lastIndexOf("}");if(s<0||e<0)throw new Error("bad json");return JSON.parse(t.slice(s,e+1));}
 
-async function newClientAndStart(){
-  hide("start");hide("end");show("game");
-  document.getElementById("setupMsg").innerHTML='<div class="status">Lining up your pitches...</div>';
-  document.getElementById("atbat").classList.add("hidden");hide("result");
-  try{
-    const raw=await callChat(GEN_SYSTEM,[{role:"user",content:"Create the ten pitches."}],GEN_MODEL,1000);
-    const c=extractJSON(raw);
-    if(!c.pitches||!c.pitches.length) throw new Error("no pitches returned");
-    client=c;
-    totalPitches=Math.min(10,c.pitches.length);
-    score=0;pitchNum=1;
-    tally={simple_reflection:0,complex_reflection:0,affirmation:0,change_reflection:0,other:0};
-    history=[];
-    document.getElementById("setupMsg").innerHTML="";
-    renderScore();
-    document.getElementById("atbat").classList.remove("hidden");
-    loadPitch();
-  }catch(e){
-    document.getElementById("setupMsg").innerHTML='<div class="err">Couldn\'t set up the round. '+esc(e.message)+' <button class="btnout" id="cretry">Try again</button></div>';
-    document.getElementById("cretry").onclick=newClientAndStart;
-  }
+function deriveCategory(r){
+  if(!r.is_reflection) return r.is_affirmation?"complex_reflection":"other";
+  if(!r.is_complex) return "simple_reflection";
+  if(!r.focuses_on_change) return "complex_reflection";
+  return "evocative_reflection";
 }
 
-function renderScore(){
-  document.getElementById("scoreN").textContent=score;
-  document.getElementById("pitchN").textContent=pitchNum+" / "+totalPitches;
+function skillHint(log){
+  if(log.length<2) return "normal";
+  const last2=log.slice(-2).map(e=>e.category);
+  const allStrong=last2.every(c=>c==="evocative_reflection");
+  const allWeak=last2.every(c=>c==="simple_reflection"||c==="other");
+  if(allStrong) return "harder";
+  if(allWeak) return "easier";
+  return "normal";
 }
+
+// State
+let seenPitchers,pitchers,inning,swingInInning,currentPitch,inningLog,innings,score,tally;
+
+function startGame(){
+  // Pick 3 pitchers, preferring unseen ones this session
+  const available=[...PITCHERS];
+  const preferred=available.filter(p=>!seenPitchers.has(p.id));
+  const pool=preferred.length>=3?preferred:available;
+  const shuffled=[...pool].sort(()=>Math.random()-.5);
+  pitchers=shuffled.slice(0,3);
+  pitchers.forEach(p=>seenPitchers.add(p.id));
+  inning=0;
+  score=0;
+  tally={evocative_reflection:0,complex_reflection:0,simple_reflection:0,other:0};
+  innings=[];
+  hide("start");hide("end");show("game");
+  updateScoreboard();
+  startInning();
+}
+
+function startInning(){
+  inningLog=[];
+  swingInInning=0;
+  const p=pitchers[inning];
+  currentPitch=p.opening;
+  // Show pitcher card
+  hide("atbat");hide("result");
+  document.getElementById("pcName").textContent=p.name+", "+p.age;
+  document.getElementById("pcFocus").textContent=p.focus;
+  show("pitcherCard");
+  updateScoreboard();
+}
+
+function stepUp(){
+  hide("pitcherCard");
+  const p=pitchers[inning];
+  document.getElementById("psName").textContent=p.name+", "+p.age;
+  document.getElementById("psFocus").textContent=p.focus;
+  hide("historyArea");
+  document.getElementById("historyBox").classList.add("hidden");
+  show("atbat");
+  loadPitch();
+}
+
+function loadPitch(){
+  hide("result");
+  document.getElementById("err").innerHTML="";
+  document.getElementById("reflection").value="";
+  document.getElementById("status").innerHTML="";
+  const p=pitchers[inning];
+  document.getElementById("pitchWho").textContent=p.name;
+  document.getElementById("pitchText").textContent=currentPitch;
+  const pitchEl=document.getElementById("pitch");
+  pitchEl.classList.remove("show");void pitchEl.offsetWidth;pitchEl.classList.add("show");
+  document.getElementById("swing").disabled=false;
+  pitchStart=Date.now();startCountdown();
+  document.getElementById("reflection").focus();
+  show("atbat");
+}
+
+let pitchStart;
 function startCountdown(){
   const bar=document.getElementById("cdbar");
   bar.style.transition="none";bar.style.width="100%";
@@ -310,17 +457,10 @@ function startCountdown(){
   bar.style.width="0%";
 }
 
-function loadPitch(){
-  hide("result");show("atbat");
-  document.getElementById("err").innerHTML="";
-  document.getElementById("reflection").value="";
-  const p=client.pitches[pitchNum-1];
-  document.getElementById("focusbar").innerHTML='<b>Change focus</b>'+esc(p.changeTarget||"");
-  document.getElementById("pitchText").textContent=p.statement;
-  const pitch=document.getElementById("pitch");pitch.classList.remove("show");void pitch.offsetWidth;pitch.classList.add("show");
-  document.getElementById("swing").disabled=false;
-  pitchStart=Date.now();startCountdown();
-  document.getElementById("reflection").focus();
+function updateScoreboard(){
+  document.getElementById("scoreN").textContent=score;
+  document.getElementById("inningN").textContent=(inning+1)+" / "+INNINGS;
+  document.getElementById("pitchN").textContent=(swingInInning+1)+" / "+SWINGS_PER_INNING;
 }
 
 async function swing(){
@@ -328,66 +468,194 @@ async function swing(){
   if(!refl){document.getElementById("err").innerHTML='<div class="err">Take a swing: type a reflection first.</div>';return;}
   document.getElementById("err").innerHTML="";
   const elapsed=Date.now()-pitchStart;
-  const swingBtn=document.getElementById("swing"),status=document.getElementById("status");
-  swingBtn.disabled=true;status.innerHTML='<div class="status">The umpire is calling it...</div>';
-  const p=client.pitches[pitchNum-1];
+  const swingBtn=document.getElementById("swing");
+  const statusEl=document.getElementById("status");
+  swingBtn.disabled=true;statusEl.innerHTML='<div class="status">The umpire is calling it...</div>';
+  const p=pitchers[inning];
+  let evalResult;
   try{
-    const raw=await callChat(EVAL_SYSTEM,[{role:"user",content:'Change target: "'+p.changeTarget+'"\nClient statement: "'+p.statement+'"\nLearner response: "'+refl+'"'}],EVAL_MODEL,300);
-    let parsed;try{parsed=extractJSON(raw);}catch(e){parsed={category:"other",feedback:"That one was hard to read. Try a clear reflection that hands the client's meaning back to them."};}
-    let cat=parsed.category; if(!HIT[cat])cat="other";
-    const hit=HIT[cat];
-    const bonus=hit.pts>0?Math.max(0,Math.round((1-elapsed/BONUS_MS)*10)):0;
-    const gained=hit.pts+bonus;
-    score+=gained;tally[cat]++;history.push(cat);
-    renderScore();
-    status.innerHTML="";
-    const callEl=document.getElementById("call");
-    callEl.innerHTML='<span class="pill '+hit.cls+'" style="font-size:34px;padding:6px 22px">'+hit.call+'</span>'
-      +'<span class="gain">'+(hit.pts>0?("+"+hit.pts+" pts"+(bonus>0?(" and +"+bonus+" speed bonus"):"")):"no points, shake it off")+'</span>';
-    callEl.classList.remove("show");void callEl.offsetWidth;callEl.classList.add("show");
-    document.getElementById("fb").textContent=parsed.feedback||"";
-    hide("atbat");show("result");
+    const raw=await callChat(EVAL_SYSTEM,[{role:"user",content:
+      'Change target: "'+p.focus+'"\nClient statement: "'+currentPitch+'"\nLearner response: "'+refl+'"'}],EVAL_MODEL,300);
+    try{evalResult=extractJSON(raw);}catch(e){
+      evalResult={is_reflection:true,is_affirmation:false,is_complex:false,focuses_on_change:false,
+        strikeout_type:null,rationale:"Single: that one was hard to read. Try a clear reflection that hands the client's meaning back."};
+    }
   }catch(e){
-    status.innerHTML="";swingBtn.disabled=false;
+    statusEl.innerHTML="";swingBtn.disabled=false;
     document.getElementById("err").innerHTML='<div class="err">Couldn\'t score that swing. '+esc(e.message)+'</div>';
+    return;
+  }
+  const cat=deriveCategory(evalResult);
+  const hit=HIT[cat]||HIT.other;
+  const bonus=hit.pts>0?Math.max(0,Math.round((1-elapsed/BONUS_MS)*10)):0;
+  const gained=hit.pts+bonus;
+  score+=gained;tally[cat]++;
+  swingInInning++;
+  const isLastSwing=swingInInning>=SWINGS_PER_INNING;
+  inningLog.push({pitch:currentPitch,reflection:refl,category:cat,
+    strikeoutType:evalResult.strikeout_type||null,rationale:evalResult.rationale||"",reply:""});
+  updateScoreboard();
+  statusEl.innerHTML="";
+
+  // Show call immediately
+  const callEl=document.getElementById("call");
+  callEl.innerHTML='<span class="pill '+hit.cls+'" style="font-size:34px;padding:6px 22px">'+hit.call+'</span>'
+    +'<span class="gain">'+(hit.pts>0?("+"+hit.pts+" pts"+(bonus>0?(" and +"+bonus+" speed bonus"):"")):"no points, shake it off")+'</span>';
+  callEl.classList.remove("show");void callEl.offsetWidth;callEl.classList.add("show");
+  document.getElementById("fb").textContent=evalResult.rationale||"";
+  hide("atbat");
+
+  // Determine next button label
+  const nextBtn=document.getElementById("next");
+  if(isLastSwing && inning>=INNINGS-1) nextBtn.textContent="See box score";
+  else if(isLastSwing) nextBtn.textContent="Next inning";
+  else nextBtn.textContent="Next pitch";
+  nextBtn.disabled=true;
+
+  // Show result section, hide reply until it loads
+  hide("replyPitch");
+  document.getElementById("replyStatus").innerHTML='<div class="status" style="margin-top:10px"><em>'+esc(p.name)+' is thinking...</em></div>';
+  show("result");
+
+  // Call 2: get client reply
+  getClientReply(p,refl,cat,evalResult,isLastSwing).then(reply=>{
+    inningLog[inningLog.length-1].reply=reply;
+    const replyEl=document.getElementById("replyPitch");
+    document.getElementById("replyWho").textContent=p.name;
+    document.getElementById("replyText").textContent=reply;
+    document.getElementById("replyStatus").innerHTML="";
+    replyEl.classList.remove("show");void replyEl.offsetWidth;replyEl.classList.add("show");
+    show("replyPitch");
+    if(!isLastSwing) currentPitch=reply;
+    nextBtn.disabled=false;
+  });
+}
+
+async function getClientReply(p,refl,cat,evalResult,isLast){
+  const hint=skillHint(inningLog.slice(0,-1));
+  const callLabel=cat==="evocative_reflection"?"home_run":
+    cat==="complex_reflection"?(evalResult.is_affirmation?"double + affirmation":"double"):
+    cat==="simple_reflection"?"single":
+    "strikeout + "+(evalResult.strikeout_type||"other");
+  const history=inningLog.map(e=>"[Pitch]: "+e.pitch+"\n[Learner]: "+e.reflection).join("\n");
+  const profileSummary=p.name+", "+p.age+". Change target: "+p.focus+". "
+    +"Change talk: "+p.change.join("; ")+". Sustain talk: "+p.sustain.join("; ")+".";
+  const userMsg="Profile: "+profileSummary+"\n\nConversation so far:\n"+history
+    +"\n\nCall: "+callLabel+"\nSkill hint: "+hint
+    +(isLast?"\n\nThis is the last line of the inning.":"");
+  for(let attempt=0;attempt<2;attempt++){
+    try{
+      const raw=await callChat(REPLY_SYSTEM,[{role:"user",content:userMsg}],GEN_MODEL,250);
+      const parsed=extractJSON(raw);
+      if(parsed.reply) return parsed.reply;
+    }catch(e){if(attempt===1) break;}
+  }
+  return "Yeah. I guess I'm still stuck between "+p.sustain[0].toLowerCase()+" and "+p.change[0].toLowerCase()+".";
+}
+
+function nextAction(){
+  const isLastSwing=swingInInning>=SWINGS_PER_INNING;
+  if(isLastSwing){
+    endInning();
+  }else{
+    updateHistory();
+    loadPitch();
   }
 }
 
-function nextPitch(){
-  pitchNum++;
-  if(pitchNum>totalPitches){endGame();return;}
-  renderScore();loadPitch();
+function updateHistory(){
+  if(inningLog.length===0) return;
+  const area=document.getElementById("historyArea");
+  const box=document.getElementById("historyBox");
+  show("historyArea");
+  box.innerHTML=inningLog.map((e,i)=>{
+    const h=HIT[e.category]||HIT.other;
+    return '<div class="he"><span class="hl">Swing '+(i+1)+' &mdash; '+h.call+'</span><br>'
+      +esc(e.pitch)+'<br><em style="color:var(--muted)">You: '+esc(e.reflection)+'</em></div>';
+  }).join("");
+}
+
+function endInning(){
+  const p=pitchers[inning];
+  const innTally={hr:0,db:0,sg:0,k:0,pts:0};
+  inningLog.forEach(e=>{
+    const h=HIT[e.category]||HIT.other;
+    innTally.pts+=h.pts;
+    if(e.category==="evocative_reflection") innTally.hr++;
+    else if(e.category==="complex_reflection") innTally.db++;
+    else if(e.category==="simple_reflection") innTally.sg++;
+    else innTally.k++;
+  });
+  innings.push({pitcher:p.name,tally:innTally});
+  inning++;
+  if(inning>=INNINGS){endGame();}
+  else{
+    hide("result");
+    startInning();
+  }
 }
 
 function endGame(){
   hide("game");show("end");
   document.getElementById("finalScore").textContent=score;
-  const hits=totalPitches-tally.other;
-  document.getElementById("finalLine").textContent=hits+" "+(hits===1?"hit":"hits")+" out of "+totalPitches+" pitches.";
-  const order=[["change_reflection","Home runs (change talk)"],["affirmation","Triples (affirmations)"],["complex_reflection","Doubles (complex)"],["simple_reflection","Singles (simple)"],["other","Strikeouts"]];
+  const totalHR=tally.evocative_reflection;
+  document.getElementById("finalLine").textContent=totalHR+" home run"+(totalHR===1?"":"s")+" in "+(INNINGS*SWINGS_PER_INNING)+" swings.";
+
+  // Box score table
+  let rows="";
+  innings.forEach((inn,i)=>{
+    rows+='<tr><td>'+(i+1)+'</td><td>'+esc(inn.pitcher)+'</td>'
+      +'<td class="num">'+inn.tally.hr+'</td><td class="num">'+inn.tally.db+'</td>'
+      +'<td class="num">'+inn.tally.sg+'</td><td class="num">'+inn.tally.k+'</td>'
+      +'<td class="num">'+inn.tally.pts+'</td></tr>';
+  });
+  document.getElementById("boxBody").innerHTML=rows;
+
+  // Breakdown bars
+  const total=INNINGS*SWINGS_PER_INNING;
+  const bds=[
+    ["evocative_reflection","Home runs"],
+    ["complex_reflection","Doubles"],
+    ["simple_reflection","Singles"],
+    ["other","Strikeouts"]
+  ];
   let html="";
-  order.forEach(([k,lab])=>{
-    const pct=Math.round((tally[k]/totalPitches)*100);
-    html+='<div class="bdrow"><div class="lab">'+lab+'</div><div class="bdbar"><span style="width:'+pct+'%"></span></div><div>'+tally[k]+' ('+pct+'%)</div></div>';
+  bds.forEach(([k,lab])=>{
+    const pct=Math.round((tally[k]/total)*100);
+    html+='<div class="bdrow"><div class="lab">'+lab+'</div><div class="bdbar"><span style="width:'+pct+'%"></span></div><div>'+tally[k]+'</div></div>';
   });
   document.getElementById("breakdown").innerHTML=html;
   document.getElementById("observations").textContent=observe();
 }
+
 function observe(){
-  const deep=tally.complex_reflection+tally.change_reflection;
-  if(tally.other>=4) return "A lot of those swings were questions or advice rather than reflections. A reflection is a statement that hands the client's meaning back to them. Lead with what they feel, not with a question.";
-  if(tally.change_reflection>=4) return "Real power at the plate. You were not just reflecting, you were steering, growing the client's change talk and easing the pull of sustain talk. That is the heart of MI.";
-  if(deep>=6) return "Strong, layered reflections again and again. You reached past the surface for meaning and emotion. Now look for chances to land on the change side and turn those doubles into home runs.";
-  if(tally.simple_reflection>=6) return "Steady contact, but a lot of singles. Next time take a bigger swing: add the emotion or meaning underneath, or reflect the change side, and watch the hits grow.";
-  if(tally.affirmation===0) return "Nice mix of reflections. One thing missing: affirmations. Try naming a genuine strength you hear, focused on the client, to round out your game.";
-  return "A balanced game with real range. Keep reaching for the reflections that draw out change talk; those are the ones that move a client.";
+  const total=INNINGS*SWINGS_PER_INNING;
+  const deep=tally.complex_reflection+tally.evocative_reflection;
+  if(tally.other>=4) return "A lot of those swings were questions or advice. Try handing the client's meaning back as a statement, and watch how they open up.";
+  if(tally.evocative_reflection>=5) return "Big game at the plate. You kept finding the change talk and drawing it out. That's the heart of MI.";
+  if(deep>=6) return "Strong, layered reflections. Next time, try ending on the change side to turn more of those doubles into home runs.";
+  if(tally.simple_reflection>=6) return "Steady contact, mostly singles. Add the feeling or meaning underneath, then aim it at what they want to change.";
+  return "Nice range. Keep reaching for the reflections that draw out change talk. Those are the ones that move a client.";
 }
 
-document.getElementById("playball").onclick=newClientAndStart;
+// History toggle
+document.getElementById("histToggle").onclick=function(){
+  const box=document.getElementById("historyBox");
+  const open=!box.classList.contains("hidden");
+  box.classList.toggle("hidden",open);
+  this.textContent=(open?"&#9660;":"&#9650;")+" Earlier in this inning";
+};
+
+// Init
+seenPitchers=new Set();
+document.getElementById("playball").onclick=startGame;
+document.getElementById("stepUp").onclick=stepUp;
 document.getElementById("swing").onclick=swing;
-document.getElementById("next").onclick=nextPitch;
-document.getElementById("again").onclick=newClientAndStart;
-document.getElementById("reflection").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();if(!document.getElementById("swing").disabled)swing();}});
+document.getElementById("next").onclick=nextAction;
+document.getElementById("again").onclick=startGame;
+document.getElementById("reflection").addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();if(!document.getElementById("swing").disabled)swing();}
+});
 </script>
 </body>
 </html>
