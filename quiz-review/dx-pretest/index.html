@@ -196,6 +196,7 @@
   </section>
 </div>
 
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script>
 /** @license
  *
@@ -963,113 +964,173 @@ var QUESTIONS = [
   // ---- PDF ----
   function clean(s) { return String(s).replace(/[^\x20-\x7E]/g, "?"); }
 
-  function buildPdf() {
-    var jsPDF = window.jspdf.jsPDF;
-    var doc = new jsPDF({ unit: "pt", format: "letter" });
-    var PW = 612, PH = 792, M = 54, W = PW - 2 * M, BOTTOM = PH - 60;
-    var CORAL = [228, 87, 46], INK = [38, 33, 31], MUTED = [110, 101, 97], RULE = [200, 190, 184];
+  async function buildPdf() {
+    var PLib = window.PDFLib;
+    var PDFDocument = PLib.PDFDocument;
+    var StandardFonts = PLib.StandardFonts;
+    var rgb = PLib.rgb;
+
+    var pdfDoc = await PDFDocument.create();
+    var fontReg = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    var fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+    var PW = 612, PH = 792, M = 54, W = PW - 2 * M, BOTTOM_MARGIN = 60;
+    var CORAL = rgb(228/255, 87/255, 46/255);
+    var INK = rgb(38/255, 33/255, 31/255);
+    var MUTED = rgb(110/255, 101/255, 97/255);
     var LH = 14;
     var student = clean((nameVal || "").trim()) || "(no name entered)";
     var today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-    var y = M;
 
-    // title block
-    doc.setTextColor.apply(doc, CORAL);
-    doc.setFont("helvetica", "bold"); doc.setFontSize(11);
-    doc.text("SOCIALWORKY", M, y); y += 22;
-    doc.setTextColor.apply(doc, INK);
-    doc.setFontSize(20);
-    doc.text("Diagnosis & the LMSW Exam: Pre-Test", M, y); y += 18;
-    doc.setFont("helvetica", "normal"); doc.setFontSize(12);
-    doc.text("My Answers", M, y); y += 22;
-    doc.setFontSize(11);
-    doc.setFont("helvetica", "bold"); doc.text("Name:", M, y);
-    doc.setFont("helvetica", "normal"); doc.text(student, M + 38, y);
-    doc.setFont("helvetica", "bold"); doc.text("Date:", M + 330, y);
-    doc.setFont("helvetica", "normal"); doc.text(today, M + 364, y); y += 18;
-    doc.setTextColor.apply(doc, MUTED); doc.setFontSize(10);
-    var note = doc.splitTextToSize("Your selected answer is filled in. During the lecture, check Right or Wrong for each question and use the notes lines to jot down the reasoning.", W);
-    doc.text(note, M, y); y += note.length * 12 + 6;
-    doc.setDrawColor.apply(doc, CORAL); doc.setLineWidth(1.5);
-    doc.line(M, y, M + W, y); y += 20;
+    var form = pdfDoc.getForm();
+    var page, y;
+
+    function newPage() {
+      page = pdfDoc.addPage([PW, PH]);
+      y = M;
+    }
+
+    // top-down y → pdf-lib baseline y (bottom-up)
+    function ty(topY) { return PH - topY; }
+    // top-down y → pdf-lib rect bottom y (bottom-up), h = rect height
+    function ry(topY, h) { return PH - topY - h; }
+
+    function wrapText(text, font, size, maxWidth) {
+      var words = text.split(' ');
+      var lines = [], line = '';
+      for (var i = 0; i < words.length; i++) {
+        var test = line ? line + ' ' + words[i] : words[i];
+        if (font.widthOfTextAtSize(test, size) <= maxWidth) {
+          line = test;
+        } else {
+          if (line) lines.push(line);
+          line = words[i];
+        }
+      }
+      if (line) lines.push(line);
+      return lines.length ? lines : [''];
+    }
+
+    function drawText(text, x, topY, opts) {
+      var font = opts.bold ? fontBold : fontReg;
+      var size = opts.size || 10.5;
+      var color = opts.color || INK;
+      page.drawText(text, { x: x, y: ty(topY), size: size, font: font, color: color });
+    }
+
+    newPage();
+
+    // Title block
+    drawText("SOCIALWORKY", M, y, { bold: true, size: 11, color: CORAL }); y += 22;
+    drawText("Diagnosis & the LMSW Exam: Pre-Test", M, y, { bold: true, size: 20 }); y += 18;
+    drawText("My Answers", M, y, { size: 12 }); y += 22;
+    drawText("Name:", M, y, { bold: true, size: 11 });
+    drawText(student, M + 38, y, { size: 11 });
+    drawText("Date:", M + 330, y, { bold: true, size: 11 });
+    drawText(today, M + 364, y, { size: 11 }); y += 18;
+
+    var noteText = "Your selected answer is filled in. During the lecture, check Right or Wrong for each question and use the notes field to jot down the reasoning.";
+    var noteLines = wrapText(noteText, fontReg, 10, W);
+    for (var ni = 0; ni < noteLines.length; ni++) {
+      drawText(noteLines[ni], M, y, { size: 10, color: MUTED }); y += 12;
+    }
+    y += 6;
+
+    page.drawLine({ start: { x: M, y: ty(y) }, end: { x: M + W, y: ty(y) }, thickness: 1.5, color: CORAL });
+    y += 20;
 
     var OPT_INDENT = 26;
-    QUESTIONS.forEach(function (q) {
-      doc.setFontSize(10.5);
-      doc.setFont("helvetica", "normal");
-      var vig = doc.splitTextToSize(clean(q.vignette), W);
-      doc.setFont("helvetica", "bold");
-      var stem = q.stem ? doc.splitTextToSize(clean(q.stem), W) : [];
-      var optLines = q.options.map(function (o, i) {
-        doc.setFont("helvetica", answers[q.n] === i ? "bold" : "normal");
-        return doc.splitTextToSize(clean(o), W - OPT_INDENT);
+    QUESTIONS.forEach(function(q) {
+      var vigLines = wrapText(clean(q.vignette), fontReg, 10.5, W);
+      var stemLines = q.stem ? wrapText(clean(q.stem), fontBold, 10.5, W) : [];
+      var optLinesList = q.options.map(function(o, i) {
+        var f = answers[q.n] === i ? fontBold : fontReg;
+        return wrapText(clean(o), f, 10.5, W - OPT_INDENT);
       });
-      var h = 16 + vig.length * LH + (stem.length ? stem.length * LH + 4 : 0) + 6;
-      optLines.forEach(function (l) { h += l.length * LH + 6; });
-      h += 24 /* check row */ + 20 /* second notes line */ + 12;
-      if (y + h > BOTTOM) { doc.addPage(); y = M; }
 
-      // question label
-      doc.setFont("helvetica", "bold"); doc.setFontSize(9.5);
-      doc.setTextColor.apply(doc, CORAL);
-      doc.text("QUESTION " + q.n, M, y); y += 15;
+      var h = 16 + vigLines.length * LH + (stemLines.length ? stemLines.length * LH + 4 : 0) + 6;
+      optLinesList.forEach(function(l) { h += l.length * LH + 6; });
+      h += 6 + 14 + 46; // check row + notes field
 
-      // vignette
-      doc.setTextColor.apply(doc, INK); doc.setFontSize(10.5);
-      doc.setFont("helvetica", "normal");
-      doc.text(vig, M, y); y += vig.length * LH;
-      if (stem.length) {
+      if (y + h > PH - BOTTOM_MARGIN) { newPage(); }
+
+      // Question label
+      drawText("QUESTION " + q.n, M, y, { bold: true, size: 9.5, color: CORAL }); y += 15;
+
+      // Vignette
+      for (var vi = 0; vi < vigLines.length; vi++) {
+        drawText(vigLines[vi], M, y, { size: 10.5 }); y += LH;
+      }
+      if (stemLines.length) {
         y += 4;
-        doc.setFont("helvetica", "bold");
-        doc.text(stem, M, y); y += stem.length * LH;
+        for (var si = 0; si < stemLines.length; si++) {
+          drawText(stemLines[si], M, y, { bold: true, size: 10.5 }); y += LH;
+        }
       }
       y += 6;
 
-      // options
-      q.options.forEach(function (o, i) {
+      // Options
+      q.options.forEach(function(o, i) {
         var sel = answers[q.n] === i;
-        var lines = optLines[i];
+        var lines = optLinesList[i];
         var cy = y - 3.5;
-        doc.setDrawColor.apply(doc, INK); doc.setLineWidth(1);
-        doc.circle(M + 6, cy, 4.5, sel ? "FD" : "S");
-        if (sel) { doc.setFillColor.apply(doc, INK); doc.circle(M + 6, cy, 4.5, "F"); }
-        doc.setFont("helvetica", sel ? "bold" : "normal");
-        doc.setTextColor.apply(doc, INK);
-        doc.text(LETTERS[i] + ".", M + 16, y);
-        doc.text(lines, M + OPT_INDENT + 4, y);
-        y += lines.length * LH + 6;
+        var cr = 4.5;
+        if (sel) {
+          page.drawEllipse({ x: M + 6, y: ty(cy), xScale: cr, yScale: cr, color: INK });
+        } else {
+          page.drawEllipse({ x: M + 6, y: ty(cy), xScale: cr, yScale: cr, borderColor: INK, borderWidth: 1 });
+        }
+        drawText(LETTERS[i] + ".", M + 16, y, { bold: sel, size: 10.5 });
+        for (var li = 0; li < lines.length; li++) {
+          drawText(lines[li], M + OPT_INDENT + 4, y, { bold: sel, size: 10.5 });
+          y += LH;
+        }
+        y += 6;
       });
 
-      // check row
+      // Check row with interactive fields
       y += 6;
-      doc.setFont("helvetica", "normal"); doc.setFontSize(9.5);
-      doc.setTextColor.apply(doc, MUTED);
-            doc.setDrawColor.apply(doc, MUTED); doc.setLineWidth(0.8);
-      doc.rect(M, y - 8, 9, 9, "S");  doc.text("Right", M + 14, y);
-      doc.rect(M + 56, y - 8, 9, 9, "S"); doc.text("Wrong", M + 70, y);
-      doc.text("Notes:", M + 124, y);
-      doc.setDrawColor.apply(doc, RULE); doc.setLineWidth(0.6);
-      doc.line(M + 156, y + 1, M + W, y + 1);
-      y += 20;
-      doc.line(M, y + 1, M + W, y + 1);
-      y += 24;
+      var checkY = y;
+
+      var rightCb = form.createCheckBox("q" + q.n + "_right");
+      rightCb.addToPage(page, { x: M, y: ry(checkY - 8, 10), width: 10, height: 10 });
+      drawText("Right", M + 14, checkY, { size: 9.5, color: MUTED });
+
+      var wrongCb = form.createCheckBox("q" + q.n + "_wrong");
+      wrongCb.addToPage(page, { x: M + 56, y: ry(checkY - 8, 10), width: 10, height: 10 });
+      drawText("Wrong", M + 70, checkY, { size: 9.5, color: MUTED });
+
+      drawText("Notes:", M + 124, checkY, { size: 9.5, color: MUTED });
+
+      var notesField = form.createTextField("q" + q.n + "_notes");
+      notesField.enableMultiline();
+      notesField.setFontSize(9);
+      notesField.addToPage(page, { x: M + 156, y: ry(checkY + 18, 32), width: W - 156, height: 32,
+        borderColor: rgb(200/255, 190/255, 184/255), borderWidth: 0.6, backgroundColor: rgb(1,1,1) });
+
+      y += 56;
     });
 
-    // footers
-    var pages = doc.getNumberOfPages();
-    for (var p = 1; p <= pages; p++) {
-      doc.setPage(p);
-      doc.setFont("helvetica", "normal"); doc.setFontSize(8.5);
-      doc.setTextColor.apply(doc, MUTED);
-      doc.text("socialworky.com  |  Diagnosis & the LMSW Exam Pre-Test  |  " + student, M, PH - 32);
-      doc.text("Page " + p + " of " + pages, PW - M, PH - 32, { align: "right" });
+    // Footers
+    var pageCount = pdfDoc.getPageCount();
+    for (var p = 0; p < pageCount; p++) {
+      var pg = pdfDoc.getPage(p);
+      var footY = BOTTOM_MARGIN - 28;
+      var footLeft = "socialworky.com  |  Diagnosis & the LMSW Exam Pre-Test  |  " + student;
+      var footRight = "Page " + (p + 1) + " of " + pageCount;
+      pg.drawText(footLeft, { x: M, y: footY, size: 8.5, font: fontReg, color: MUTED });
+      pg.drawText(footRight, {
+        x: PW - M - fontReg.widthOfTextAtSize(footRight, 8.5),
+        y: footY, size: 8.5, font: fontReg, color: MUTED
+      });
     }
 
     var fname = "LMSW-Diagnosis-PreTest-" + (clean((nameVal || "").trim()).replace(/[^A-Za-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "Answers") + ".pdf";
-    return { doc: doc, name: fname };
+    var pdfBytes = await pdfDoc.save();
+    return { bytes: pdfBytes, name: fname };
   }
 
-  function makePdf() {
+  async function makePdf() {
     var firstMissing = null;
     QUESTIONS.forEach(function (q) {
       if (answers[q.n] === undefined) {
@@ -1090,10 +1151,21 @@ var QUESTIONS = [
       document.getElementById("name").focus();
       return;
     }
-    var out = buildPdf();
-    out.doc.save(out.name);
-    document.getElementById("done").hidden = false;
-    document.getElementById("done").scrollIntoView({ block: "center" });
+    finishBtn.disabled = true;
+    finishBtn.textContent = "Building PDF…";
+    try {
+      var out = await buildPdf();
+      var blob = new Blob([out.bytes], { type: "application/pdf" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = out.name; a.click();
+      URL.revokeObjectURL(url);
+      document.getElementById("done").hidden = false;
+      document.getElementById("done").scrollIntoView({ block: "center" });
+    } finally {
+      finishBtn.disabled = false;
+      finishBtn.textContent = "Download my answer sheet (PDF)";
+    }
   }
 
   finishBtn.addEventListener("click", makePdf);
