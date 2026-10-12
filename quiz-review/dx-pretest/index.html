@@ -1104,9 +1104,9 @@ var QUESTIONS = [
 
       var notesField = form.createTextField("q" + q.n + "_notes");
       notesField.enableMultiline();
-      notesField.setFontSize(9);
       notesField.addToPage(page, { x: M + 156, y: ry(checkY + 18, 32), width: W - 156, height: 32,
         borderColor: rgb(200/255, 190/255, 184/255), borderWidth: 0.6, backgroundColor: rgb(1,1,1) });
+      notesField.setFontSize(9);
 
       y += 56;
     });
