@@ -1126,6 +1126,7 @@ var QUESTIONS = [
     }
 
     var fname = "LMSW-Diagnosis-PreTest-" + (clean((nameVal || "").trim()).replace(/[^A-Za-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "Answers") + ".pdf";
+    form.updateFieldAppearances(fontReg);
     var pdfBytes = await pdfDoc.save();
     return { bytes: pdfBytes, name: fname };
   }
