@@ -1151,6 +1151,11 @@ var QUESTIONS = [
       document.getElementById("name").focus();
       return;
     }
+    if (!window.PDFLib) {
+      hint.textContent = "PDF library not loaded yet — please wait a moment and try again.";
+      hint.classList.add("err");
+      return;
+    }
     finishBtn.disabled = true;
     finishBtn.textContent = "Building PDF…";
     try {
@@ -1158,10 +1163,20 @@ var QUESTIONS = [
       var blob = new Blob([out.bytes], { type: "application/pdf" });
       var url = URL.createObjectURL(blob);
       var a = document.createElement("a");
-      a.href = url; a.download = out.name; a.click();
-      URL.revokeObjectURL(url);
+      a.style.display = "none";
+      a.href = url;
+      a.download = out.name;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function() {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
       document.getElementById("done").hidden = false;
       document.getElementById("done").scrollIntoView({ block: "center" });
+    } catch(err) {
+      hint.textContent = "Could not build PDF: " + (err && err.message ? err.message : String(err));
+      hint.classList.add("err");
     } finally {
       finishBtn.disabled = false;
       finishBtn.textContent = "Download my answer sheet (PDF)";
