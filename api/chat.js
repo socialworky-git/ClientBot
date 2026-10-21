@@ -28,6 +28,20 @@ async function callOpenAI(payload, apiKey) {
   }
 }
 
+// Learner-chosen practice language (see /lang.js). English adds nothing, so
+// existing prompts behave exactly as before unless a preference is set.
+function languageNote(lang) {
+  const clean = String(lang || "").replace(/[^\p{L}\p{M}\s'\-]/gu, "").trim().slice(0, 40);
+  if (!clean || /^english$/i.test(clean)) return "";
+  return (
+    `\n\nLANGUAGE: The learner's practice language is ${clean}. Write everything the learner reads ` +
+    `(client dialogue, coaching, feedback, rationales, persona text) in natural, idiomatic ${clean}, ` +
+    `as a ${clean}-speaking client or coach would say it. If the learner writes in a different language, ` +
+    `follow the learner. When the response must be JSON, keep the structure, keys, behavior codes, ` +
+    `booleans, and null values exactly as specified; only the free-text string values are in ${clean}.`
+  );
+}
+
 export default async function handler(req, res) {
   const started = Date.now();
 
@@ -60,12 +74,13 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { system, messages, model, max_tokens } = body || {};
+  const { system, messages, model, max_tokens, lang } = body || {};
   const useModel = model || "gpt-4.1-mini";
 
   // OpenAI takes the system prompt as the first message in the list.
   const oaMessages = [];
-  if (system) oaMessages.push({ role: "system", content: system });
+  const fullSystem = (system || "") + languageNote(lang);
+  if (fullSystem) oaMessages.push({ role: "system", content: fullSystem });
   (messages || []).forEach((m) => oaMessages.push({ role: m.role, content: m.content }));
 
   // The GPT-5 family uses max_completion_tokens and a fixed temperature.

@@ -141,6 +141,7 @@
 <body>
 <div class="wrap">
   <script src="/header.js"></script>
+  <script src="/lang.js"></script>
   <div class="toolhero">
     <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/></svg></div>
     <div>
@@ -170,6 +171,7 @@
       </ul>
       <div style="margin-top:8px;font-size:13.5px;color:var(--muted)">Watch the pitch clock in the scene — swing while it lasts for extra points, but a rushed single is still a single. Take a breath and go for the home run.</div>
     </div>
+    <div id="langPick" style="margin:14px 0 4px"></div>
     <div class="row"><button class="btn" id="playball">Play ball</button></div>
   </div>
 
@@ -350,7 +352,7 @@ async function callChat(system,msgs,model,maxTokens){
   let res;
   try{
     res=await fetch("/api/chat",{method:"POST",headers,signal:ctrl.signal,
-      body:JSON.stringify({system,messages:msgs,model,max_tokens:maxTokens})});
+      body:JSON.stringify({system,messages:msgs,model,max_tokens:maxTokens,lang:window.SW_LANG?SW_LANG.get():undefined})});
   }catch(e){clearTimeout(timer);throw new Error(e.name==="AbortError"?"the request timed out":("network error - "+e.message));}
   clearTimeout(timer);
   if(res.status===401){
@@ -668,6 +670,7 @@ document.getElementById("histToggle").onclick=function(){
 // Init
 seenPitchers=new Set();
 document.getElementById("playball").onclick=startGame;
+if(window.SW_LANG) SW_LANG.mount(document.getElementById("langPick"),{note:"The clients will pitch in this language, and the calls on your swings will be explained in it too."});
 document.getElementById("stepUp").onclick=stepUp;
 document.getElementById("swing").onclick=swing;
 document.getElementById("next").onclick=nextAction;
