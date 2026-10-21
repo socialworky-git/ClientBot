@@ -11,6 +11,9 @@
     '.sw-header .wordmark .sub:hover{color:#fff;}',
     '.sw-header .signout{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:\'Hanken Grotesk\',Arial,Helvetica,system-ui,sans-serif;font-size:13px;font-weight:600;padding:5px 13px;border-radius:6px;cursor:pointer;}',
     '.sw-header .signout:hover{background:rgba(255,255,255,.28);}',
+    '.sw-header .acctwrap{display:flex;align-items:center;gap:14px;}',
+    '.sw-header .acct{color:rgba(255,255,255,.85);font-family:\'Hanken Grotesk\',Arial,Helvetica,system-ui,sans-serif;font-size:13px;font-weight:600;text-decoration:none;}',
+    '.sw-header .acct:hover{color:#fff;text-decoration:underline;text-underline-offset:2px;}',
     /* color-curtain */
     '@keyframes sw-curtain-in{from{transform:translateY(100%);}to{transform:translateY(0);}}',
     '@keyframes sw-curtain-out{from{transform:translateY(0);}to{transform:translateY(-100%);}}',
@@ -35,7 +38,7 @@
     +'<span class="sep">/</span>'
     +'<a href="/msw/" class="sub">Graduate Student Hub</a>'
     +'</div>'
-    +(showSignOut ? '<button class="signout" id="signOutBtn">Sign out</button>' : '')
+    +(showSignOut ? '<span class="acctwrap"><a class="acct" href="/account/">My practice</a><button class="signout" id="signOutBtn">Sign out</button></span>' : '')
     +'</div></div>';
   document.currentScript.insertAdjacentHTML('afterend',html);
 
