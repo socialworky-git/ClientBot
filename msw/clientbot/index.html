@@ -191,6 +191,7 @@
 <!-- Main page -->
 <div id="page">
   <script src="/msw/header.js"></script>
+<script src="/lang.js"></script>
 
   <div class="wrap">
     <div id="app"></div>
@@ -344,7 +345,7 @@ async function callChat(system,msgs,model,maxTokens,attempt){
   let res,networkErr=null;
   try{
     res=await fetch("/api/chat",{method:"POST",headers,signal:ctrl.signal,
-      body:JSON.stringify({system,messages:msgs,model,max_tokens:maxTokens})});
+      body:JSON.stringify({system,messages:msgs,model,max_tokens:maxTokens,lang:window.SW_LANG?SW_LANG.get():undefined})});
   }catch(e){networkErr=e.name==="AbortError"?"the request timed out after 50 seconds":("network error - "+e.message);}
   clearTimeout(timer);
   if(!networkErr&&res.status===401){
@@ -431,6 +432,7 @@ function renderHome(){
     </div>`).join("");
   app.innerHTML=headerHtml()+`
     ${orientHtml(ORIENT_STEPS)}
+    <div id="langPick" style="margin:14px 0 6px"></div>
     <div class="seclabel">Choose a client</div>
     <div class="cards">
       ${coreCards}
@@ -443,6 +445,7 @@ function renderHome(){
     </div>`;
   app.querySelectorAll("[data-core]").forEach(b=>b.onclick=()=>startCore(+b.dataset.core));
   app.querySelector("[data-build]").onclick=()=>{view="build";render();};
+  if(window.SW_LANG) SW_LANG.mount(document.getElementById("langPick"));
 }
 
 function renderBuild(){
