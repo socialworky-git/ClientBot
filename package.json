@@ -1,0 +1,9 @@
+{
+  "name": "socialworky",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@clerk/backend": "^2.4.0",
+    "@neondatabase/serverless": "^1.0.1"
+  }
+}

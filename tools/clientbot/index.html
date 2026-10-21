@@ -203,6 +203,7 @@
 <div class="wrap">
 <script src="/header.js"></script>
 <script src="/lang.js"></script>
+<script src="/track.js"></script>
 <div id="app"></div>
 </div>
 
@@ -438,6 +439,7 @@ function renderHome(){
   app.innerHTML=headerHtml()+`
     ${orientHtml(ORIENT_STEPS)}
     <div id="langPick" style="margin:14px 0 6px"></div>
+    <div id="trackNote" style="margin:0 0 10px"></div>
     <div class="seclabel">Choose a client</div>
     <div class="cards">
       ${coreCards}
@@ -451,6 +453,7 @@ function renderHome(){
   app.querySelectorAll("[data-core]").forEach(b=>b.onclick=()=>startCore(+b.dataset.core));
   app.querySelector("[data-build]").onclick=()=>{view="build";render();};
   if(window.SW_LANG) SW_LANG.mount(document.getElementById("langPick"));
+  if(window.SW_TRACK) SW_TRACK.mountNotice(document.getElementById("trackNote"),"clientbot");
 }
 
 function renderBuild(){
@@ -496,14 +499,28 @@ async function generateClient(){
     const raw=await callChat(GENERATOR_SYSTEM,[{role:"user",content:ask}],CODER_MODEL,1000);
     const c=extractJSON(raw);
     activeSystem=c.persona; activeCard=c.card||(c.name+"."); activeTarget=c.target||""; activeName=c.name||"Client";
+    beginTracking(true);
     messages=[];reportData=null;view="session";busy=false;render();
   }catch(e){
     busy=false;gen.disabled=false;gen.textContent="Generate client";
     showErr("Couldn't generate a client. Reason: "+e.message,true);
   }
 }
+let activeCustom=false;
+function beginTracking(custom){
+  activeCustom=!!custom;
+  if(!window.SW_TRACK)return;
+  SW_TRACK.start("clientbot",{scenario:activeCustom?"custom":activeName,meta:{custom:activeCustom}});
+  SW_TRACK.event("scenario",{custom:activeCustom},{name:activeName,target:activeTarget,card:activeCard});
+}
+function trackReport(R,turns){
+  if(!window.SW_TRACK)return;
+  SW_TRACK.event("report",{codes:R.rows.map(r=>r.code)},{rows:R.rows.map(r=>({text:r.text,code:r.code,rationale:r.rationale}))});
+  SW_TRACK.end({completed:true,summary:{turns,counts:R.counts,metrics:R.metrics,globals:R.globals}});
+}
 function startCore(i){
   const c=CORE[i];activeSystem=c.system;activeCard=c.card;activeTarget=c.target||"";activeName=c.name;
+  beginTracking(false);
   messages=[];reportData=null;view="session";render();
 }
 
@@ -516,6 +533,7 @@ async function sendTurn(){
   try{
     const reply=(await callChat(activeSystem,clientHistory(messages),CLIENT_MODEL,600)).trim();
     messages.push({role:"client",text:reply});
+    if(window.SW_TRACK) SW_TRACK.event("turn",{turn:messages.filter(m=>m.role==="counselor").length},{counselor:text,client:reply});
   }catch(e){showErr("ClientBot didn't respond. Reason: "+e.message,true);}
   setBusy(false);
 }
@@ -526,6 +544,7 @@ async function askCoach(){
   try{
     const note=(await callChat(COACH_SYSTEM,[{role:"user",content:"Here is the session so far. Coach my next move.\n\n"+transcript}],CLIENT_MODEL,400)).trim();
     messages.push({role:"coach",text:note});
+    if(window.SW_TRACK) SW_TRACK.event("coach",{turn:messages.filter(m=>m.role==="counselor").length},{note});
   }catch(e){showErr("CoachBot didn't respond. Reason: "+e.message,true);}
   setBusy(false);
 }
@@ -537,7 +556,7 @@ async function endSession(){
   const numbered=turns.map((m,i)=>(i+1)+". "+m.text).join("\n");
   try{
     const raw=await callChat(CODER_SYSTEM,[{role:"user",content:"FULL DIALOGUE:\n"+dialogue+"\n\nCOUNSELOR UTTERANCES TO CODE:\n"+numbered}],CODER_MODEL,1200);
-    reportData=buildReport(extractJSON(raw),turns);busy=false;view="report";render();
+    reportData=buildReport(extractJSON(raw),turns);trackReport(reportData,turns.length);busy=false;view="report";render();
   }catch(e){showErr("Couldn't generate the feedback. Reason: "+e.message,true);setBusy(false);}
 }
 function reset(){messages=[];reportData=null;view="session";render();}
@@ -654,7 +673,7 @@ function renderReport(){
     </div>`;
   document.getElementById("savepdf").onclick=printDoc;
   document.getElementById("submit").onclick=submitByEmail;
-  document.getElementById("again").onclick=()=>{messages=[];reportData=null;view="session";render();};
+  document.getElementById("again").onclick=()=>{beginTracking(activeCustom);messages=[];reportData=null;view="session";render();};
   document.getElementById("home").onclick=()=>{view="home";render();};
   wireErrLink();
   window.scrollTo(0,0);

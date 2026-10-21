@@ -142,6 +142,7 @@
 <div class="wrap">
   <script src="/header.js"></script>
   <script src="/lang.js"></script>
+  <script src="/track.js"></script>
   <div class="toolhero">
     <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-8a2 2 0 0 1 2 -2z"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 11h.01"/><path d="M18 13h.01"/></svg></div>
     <div>
@@ -172,6 +173,7 @@
       <div style="margin-top:8px;font-size:13.5px;color:var(--muted)">Watch the pitch clock in the scene — swing while it lasts for extra points, but a rushed single is still a single. Take a breath and go for the home run.</div>
     </div>
     <div id="langPick" style="margin:14px 0 4px"></div>
+    <div id="trackNote" style="margin:10px 0 4px"></div>
     <div class="row"><button class="btn" id="playball">Play ball</button></div>
   </div>
 
@@ -400,6 +402,7 @@ function startGame(){
   score=0;
   tally={evocative_reflection:0,complex_reflection:0,simple_reflection:0,other:0};
   innings=[];
+  if(window.SW_TRACK) SW_TRACK.start("batting-practice",{scenario:pitchers.map(p=>p.id).join(",")});
   // Init scene once; reset if already created
   if(!scene){
     scene=createAtBatScene(document.getElementById("atbatScene"),{bonusMs:BONUS_MS});
@@ -493,6 +496,10 @@ async function swing(){
   const isLastSwing=swingInInning>=SWINGS_PER_INNING;
   inningLog.push({pitch:currentPitch,reflection:refl,category:cat,
     strikeoutType:evalResult.strikeout_type||null,rationale:evalResult.rationale||"",reply:""});
+  if(window.SW_TRACK) SW_TRACK.event("swing",
+    {inning:inning+1,swing:swingInInning,pitcher:p.id,category:cat,affirmation:!!evalResult.is_affirmation,
+     strikeout_type:evalResult.strikeout_type||null,points:hit.pts,bonus:bonus,elapsed_ms:Math.round(elapsed)},
+    {pitch:currentPitch,reflection:refl,rationale:evalResult.rationale||""});
   updateScoreboard();
   statusEl.innerHTML="";
 
@@ -619,6 +626,7 @@ function endGame(){
   hide("game");hide("sceneWrap");show("end");
   if(scene) scene.reset();
   document.getElementById("finalScore").textContent=score;
+  if(window.SW_TRACK) SW_TRACK.end({completed:true,summary:{score,tally,innings,swings:INNINGS*SWINGS_PER_INNING}});
   const totalHR=tally.evocative_reflection;
   document.getElementById("finalLine").textContent=totalHR+" home run"+(totalHR===1?"":"s")+" in "+(INNINGS*SWINGS_PER_INNING)+" swings.";
 
@@ -671,6 +679,7 @@ document.getElementById("histToggle").onclick=function(){
 seenPitchers=new Set();
 document.getElementById("playball").onclick=startGame;
 if(window.SW_LANG) SW_LANG.mount(document.getElementById("langPick"),{note:"The clients will pitch in this language, and the calls on your swings will be explained in it too."});
+if(window.SW_TRACK) SW_TRACK.mountNotice(document.getElementById("trackNote"),"batting-practice");
 document.getElementById("stepUp").onclick=stepUp;
 document.getElementById("swing").onclick=swing;
 document.getElementById("next").onclick=nextAction;

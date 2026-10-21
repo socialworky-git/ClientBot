@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>My practice | Socialworky</title>
+<meta name="robots" content="noindex, nofollow" />
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />
+<link rel="stylesheet" href="/tokens.css" />
+<script>
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:var(--sw-maxw);margin:0 auto;padding:0 var(--sw-gutter) 56px;}
+  h1{font-size:clamp(24px,3.5vw,34px);font-weight:800;letter-spacing:-.02em;margin:18px 0 6px;}
+  .lead{color:var(--muted);font-size:15.5px;margin:0 0 22px;max-width:620px;}
+  .seclabel{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--accentDeep);
+    margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line);}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .stat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+  .stat .n{font-size:26px;font-weight:800;letter-spacing:-.02em;color:var(--accentDeep);line-height:1.1;}
+  .stat .l{font-size:12.5px;color:var(--muted);margin-top:4px;}
+  .sess{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:10px;}
+  .sess .tool{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--accent);}
+  .sess .nm{font-size:16px;font-weight:700;margin:3px 0 2px;}
+  .sess .when{font-size:12.5px;color:var(--muted);}
+  .sess .kv{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:13.5px;}
+  .sess .kv span b{font-weight:700;}
+  .sess .main{flex:1;min-width:0;}
+  .sess .side{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:none;}
+  .pill{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:999px;}
+  .pill.done{background:#E6F4EC;color:#2E7D54;}
+  .pill.part{background:#FDF1E6;color:#B26A00;}
+  .pill.on{background:#E6F4EC;color:#2E7D54;} .pill.off{background:#F0F0F2;color:var(--muted);}
+  .del{font:600 12.5px var(--sans);color:var(--muted);background:none;border:0;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:0;}
+  .del:hover{color:var(--accentDeep);}
+  .btn{font:700 14px var(--sans);background:var(--accent);color:#fff;border:0;border-radius:9px;padding:10px 18px;cursor:pointer;}
+  .btn:hover{background:var(--accentDeep);} .btn:disabled{opacity:.55;cursor:default;}
+  .btnout{font:700 14px var(--sans);background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:10px 18px;cursor:pointer;}
+  .btnout:hover{border-color:var(--accent);color:var(--accentDeep);}
+  .disc p{margin:0 0 10px;font-size:14.5px;}
+  .disc ul{margin:0 0 10px;padding-left:20px;font-size:14.5px;}
+  .disc li{margin:3px 0;}
+  .consentrow{display:flex;gap:10px;align-items:flex-start;margin:14px 0 6px;font-size:15px;font-weight:600;}
+  .consentrow input{margin-top:4px;width:18px;height:18px;}
+  .profile{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 4px;}
+  .field label{display:block;font-size:13px;font-weight:700;margin-bottom:4px;}
+  .field input,.field select{width:100%;font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;}
+  .status{font-size:13px;color:var(--muted);margin-top:10px;}
+  .status.err{color:#B23A2E;}
+  .empty{color:var(--muted);font-size:14.5px;font-style:italic;margin-top:10px;}
+  .gate{text-align:center;padding:60px 20px;}
+  .gate a{display:inline-block;background:var(--accent);color:#fff;font-weight:700;padding:12px 28px;border-radius:10px;text-decoration:none;margin-top:14px;}
+  .hidden{display:none;}
+  .foot{color:var(--muted);font-size:12.5px;margin-top:36px;border-top:1px solid var(--line);padding-top:14px;}
+  .foot a{color:var(--muted);}
+  @media(max-width:640px){.stats{grid-template-columns:1fr 1fr;}.profile{grid-template-columns:1fr;}.sess{flex-direction:column;}.sess .side{flex-direction:row;align-items:center;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <script src="/header.js"></script>
+  <script src="/lang.js"></script>
+
+  <div id="loading" class="gate">Loading your practice…</div>
+
+  <div id="gate" class="gate hidden">
+    <h1>My practice</h1>
+    <p class="lead" style="margin:0 auto">Sign in to see your practice history and research participation settings.</p>
+    <a href="/login.html?redirect_url=/account/">Sign in</a>
+  </div>
+
+  <div id="page" class="hidden">
+    <h1>My practice</h1>
+    <p class="lead">Your saved sessions from ClientBot and Reflection Batting Practice, plus your practice language and research participation choices.</p>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="seclabel">Research participation</div>
+    <div class="card disc" id="research">
+      <p><strong>Help improve how clinicians learn Motivational Interviewing.</strong> Socialworky's practice tools are built and maintained by Nathan Kratz, LCSW. With your permission, de-identified records of your practice sessions may be used for research and for publications about how people learn MI skills.</p>
+      <p>If you opt in:</p>
+      <ul>
+        <li>The scores, behavior codes, timing, completion, language, and scenario from each session are kept, as they are for everyone with practice history on.</li>
+        <li>In addition, the text you type and the AI client's and coach's replies are stored, so that the quality of reflections and conversations can be studied.</li>
+        <li>You may answer a few optional profile questions below. Skip any you prefer not to answer.</li>
+        <li>Research datasets replace your account with a random identifier. Your name and email are never part of them.</li>
+      </ul>
+      <p>Participation is voluntary and does not affect your access to any tool. You can withdraw here at any time; that stops further collection, and you can email <a href="mailto:kratz9@gmail.com">kratz9@gmail.com</a> to ask that previously collected records be removed. Please never enter real client information into any tool, whether or not you participate.</p>
+      <label class="consentrow"><input type="checkbox" id="optin" /><span>I agree to let my de-identified practice records, including the text of my sessions, be used for research as described above.</span></label>
+      <div class="profile" id="profile">
+        <div class="field"><label for="p_role">Your role</label>
+          <select id="p_role"><option value="">Prefer not to say</option><option value="student">Student / trainee</option><option value="clinician">Practicing clinician</option><option value="trainer">MI trainer</option><option value="educator">Educator / faculty</option><option value="other">Other</option></select></div>
+        <div class="field"><label for="p_country">Country</label><input id="p_country" maxlength="60" placeholder="Optional" /></div>
+        <div class="field"><label for="p_years">Years of MI experience</label><input id="p_years" type="number" min="0" max="60" placeholder="Optional" /></div>
+        <div class="field"><label for="p_mint">MINT member?</label>
+          <select id="p_mint"><option value="">Prefer not to say</option><option value="yes">Yes</option><option value="no">No</option></select></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px">
+        <button class="btn" id="saveConsent">Save</button>
+        <span class="pill off" id="consentPill">Not participating</span>
+      </div>
+      <div class="status" id="consentStatus"></div>
+    </div>
+
+    <div class="seclabel">Practice language</div>
+    <div class="card"><div id="langPick"></div></div>
+
+    <div class="seclabel">Practice history</div>
+    <div id="history"></div>
+
+    <div class="foot">Practice history is private to your account. Read the <a href="/privacy.html">Privacy Policy</a> for details on what is stored and how to delete it.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var TOOL_LABEL={"batting-practice":"Reflection Batting Practice","clientbot":"ClientBot"};
+  var CONSENT_VERSION="2026-10-v1";
+  var consent=null, sessions=[];
+
+  function $(id){return document.getElementById(id);}
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+  function pct(n){return Math.round(n*100)+"%";}
+  function fmtDate(iso){try{return new Date(iso).toLocaleString(undefined,{dateStyle:"medium",timeStyle:"short"});}catch(e){return iso;}}
+
+  async function api(path,opts){
+    opts=opts||{};
+    var headers={"content-type":"application/json"};
+    var t=await Clerk.session.getToken();
+    if(t) headers.authorization="Bearer "+t;
+    var res=await fetch(path,{method:opts.method||"GET",headers:headers,body:opts.body?JSON.stringify(opts.body):undefined});
+    var data=null; try{data=await res.json();}catch(e){}
+    if(!res.ok){var err=new Error((data&&data.error)||("status "+res.status));err.code=data&&data.code;err.status=res.status;throw err;}
+    return data;
+  }
+
+  function renderStats(){
+    var total=sessions.length, done=sessions.filter(function(s){return s.completed;}).length;
+    var bp=sessions.filter(function(s){return s.tool==="batting-practice"&&s.completed&&s.summary;});
+    var hr=0,sw=0; bp.forEach(function(s){hr+=(s.summary.tally&&s.summary.tally.evocative_reflection)||0;sw+=s.summary.swings||12;});
+    var cb=sessions.filter(function(s){return s.tool==="clientbot"&&s.completed&&s.summary&&s.summary.metrics&&s.summary.metrics.pctCR!=null;});
+    var cr=cb.length?cb.reduce(function(a,s){return a+s.summary.metrics.pctCR;},0)/cb.length:null;
+    var coach=sessions.reduce(function(a,s){return a+(s.coach_requests||0);},0);
+    $("stats").innerHTML=
+      '<div class="stat"><div class="n">'+total+'</div><div class="l">Sessions ('+(total?pct(done/total):"0%")+' completed)</div></div>'+
+      '<div class="stat"><div class="n">'+(sw?pct(hr/sw):"—")+'</div><div class="l">Home-run rate in batting practice</div></div>'+
+      '<div class="stat"><div class="n">'+(cr==null?"—":pct(cr))+'</div><div class="l">Avg. complex reflections in ClientBot</div></div>'+
+      '<div class="stat"><div class="n">'+coach+'</div><div class="l">CoachBot requests</div></div>';
+  }
+
+  function sessionKv(s){
+    var m=s.summary||{};
+    if(s.tool==="batting-practice"){
+      var t=m.tally||{};
+      return [["Score",m.score],["Home runs",t.evocative_reflection],["Doubles",t.complex_reflection],["Singles",t.simple_reflection],["Strikeouts",t.other]];
+    }
+    var x=m.metrics||{}, g=m.globals||{};
+    return [["Turns",m.turns],["R:Q",x.rq==null?null:x.rq.toFixed(1)+":1"],["Complex",x.pctCR==null?null:pct(x.pctCR)],
+      ["Open Q",x.pctOQ==null?null:pct(x.pctOQ)],["MI adherent",x.adherent],["Non-adherent",x.nonadherent],["Empathy",g.empathy]];
+  }
+
+  function renderHistory(){
+    var h=$("history");
+    if(!sessions.length){h.innerHTML='<p class="empty">No saved sessions yet. Finish a ClientBot session or a full batting practice game while signed in and it will show up here.</p>';return;}
+    h.innerHTML=sessions.map(function(s){
+      var kv=sessionKv(s).filter(function(p){return p[1]!=null&&p[1]!=="";}).map(function(p){return '<span>'+esc(p[0])+' <b>'+esc(p[1])+'</b></span>';}).join("");
+      var coach=s.coach_requests?'<span>CoachBot <b>'+s.coach_requests+'</b></span>':"";
+      var name=s.tool==="clientbot"?(s.scenario==="custom"?"Custom client":(s.scenario||"Client")):"Three innings";
+      return '<div class="sess" data-id="'+esc(s.id)+'"><div class="main">'+
+        '<div class="tool">'+esc(TOOL_LABEL[s.tool]||s.tool)+'</div>'+
+        '<div class="nm">'+esc(name)+'</div>'+
+        '<div class="when">'+esc(fmtDate(s.started_at))+(s.language&&s.language!=="English"?' · '+esc(s.language):'')+'</div>'+
+        '<div class="kv">'+kv+coach+'</div></div>'+
+        '<div class="side"><span class="pill '+(s.completed?"done":"part")+'">'+(s.completed?"Completed":"Not finished")+'</span>'+
+        '<button class="del" data-del="'+esc(s.id)+'">Delete</button></div></div>';
+    }).join("");
+    h.querySelectorAll("[data-del]").forEach(function(b){
+      b.onclick=async function(){
+        if(!confirm("Delete this session from your history? This cannot be undone."))return;
+        b.disabled=true;
+        try{await api("/api/history",{method:"POST",body:{delete:b.dataset.del}});
+          sessions=sessions.filter(function(s){return s.id!==b.dataset.del;});renderStats();renderHistory();
+        }catch(e){b.disabled=false;alert("Couldn't delete: "+e.message);}
+      };
+    });
+  }
+
+  function renderConsent(){
+    var on=!!(consent&&consent.granted);
+    $("optin").checked=on;
+    $("profile").style.display=on||$("optin").checked?"grid":"none";
+    var p=(consent&&consent.profile)||{};
+    $("p_role").value=p.role||""; $("p_country").value=p.country||""; $("p_years").value=p.years_mi==null?"":p.years_mi; $("p_mint").value=p.mint_member||"";
+    var pill=$("consentPill");
+    pill.className="pill "+(on?"on":"off");
+    pill.textContent=on?"Participating since "+fmtDate(consent.at):"Not participating";
+    if(on&&consent.version!==CONSENT_VERSION) $("consentStatus").textContent="The disclosure wording has been updated since you agreed. Please review it and save again.";
+  }
+
+  $("optin").addEventListener("change",function(){$("profile").style.display=this.checked?"grid":"none";});
+  $("saveConsent").onclick=async function(){
+    var btn=this; btn.disabled=true; var st=$("consentStatus"); st.className="status"; st.textContent="Saving…";
+    try{
+      var out=await api("/api/consent",{method:"POST",body:{granted:$("optin").checked,
+        profile:{role:$("p_role").value,country:$("p_country").value,years_mi:$("p_years").value===""?null:$("p_years").value,mint_member:$("p_mint").value}}});
+      consent=out.consent; renderConsent(); st.textContent=$("optin").checked?"Thank you. Your choice is saved.":"Saved. Research participation is off.";
+    }catch(e){st.className="status err";st.textContent="Couldn't save: "+e.message;}
+    btn.disabled=false;
+  };
+
+  async function load(){
+    try{
+      var data=await api("/api/history");
+      sessions=data.sessions||[]; consent=data.consent||null;
+    }catch(e){
+      if(e.status===503){$("history").innerHTML='<p class="empty">Practice history storage isn\'t set up yet.</p>';$("stats").innerHTML="";return;}
+      $("history").innerHTML='<p class="empty">Couldn\'t load your history: '+esc(e.message)+'</p>';return;
+    }
+    renderStats(); renderHistory(); renderConsent();
+  }
+
+  var tries=0;
+  var poll=setInterval(function(){
+    if(window.Clerk&&Clerk.loaded){
+      clearInterval(poll);
+      $("loading").classList.add("hidden");
+      if(!Clerk.user){$("gate").classList.remove("hidden");return;}
+      $("page").classList.remove("hidden");
+      if(window.SW_LANG) SW_LANG.mount($("langPick"),{note:"Used by ClientBot and Reflection Batting Practice for the client, coaching, and feedback."});
+      load();
+    }else if(++tries>60){clearInterval(poll);$("loading").textContent="Sign-in didn't load. Please refresh the page.";}
+  },250);
+})();
+</script>
+</body>
+</html>

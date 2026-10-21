@@ -4,3 +4,6 @@
 # Editor / OS cruft
 Thumbs.db
 *.swp
+
+# Dependencies
+node_modules/

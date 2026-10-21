@@ -117,7 +117,7 @@
     ".sw-nav__links a{font-size:15px;font-weight:600;color:#5B5B5B;text-decoration:none;}" +
     ".sw-nav__links a:hover{color:#C2452F;}" +
     /* auth control (Sign in link / account button) sits at the end of the nav */
-    ".sw-nav__auth{display:flex;align-items:center;min-height:28px;}" +
+    ".sw-nav__auth{display:flex;align-items:center;min-height:28px;gap:14px;}" +
     ".sw-nav__auth a{font-size:15px;font-weight:600;color:#5B5B5B;text-decoration:none;}" +
     ".sw-nav__auth a:hover{color:#C2452F;}" +
     /* dropdown */
@@ -342,8 +342,8 @@
 
     // Fill the header's auth control.
     if (signedIn) {
-      authSlot.innerHTML = "";
-      Clerk.mountUserButton(authSlot);
+      authSlot.innerHTML = '<a href="/account/" class="sw-nav__acct">My practice</a><div class="sw-nav__ub"></div>';
+      Clerk.mountUserButton(authSlot.querySelector(".sw-nav__ub"));
     } else {
       authSlot.innerHTML = '<a href="' + LOGIN_PAGE + '">Sign in</a>';
     }
